@@ -31,4 +31,4 @@ The **Artificial-Neural-Network-Based-Video-Engine** is a Java application that 
 Contributions are welcome! Feel free to fork this repository, submit a pull request, or raise issues for improvements. The project is open to enhancements in both the neural network models and video processing capabilities.
 
 ## Here is a picture showcasing the design of the app.
-![app preview](https://imgur.com/a/9IPEmET.jpg)
+![app preview](https://imgur.com/fcJvPKW.jpg)
