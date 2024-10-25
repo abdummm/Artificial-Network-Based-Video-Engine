@@ -6,34 +6,25 @@ The **Artificial-Neural-Network-Based-Video-Engine** is a Java application that 
 
 ## Features
 
-- **Frame Interpolation**: Automatically generates intermediate frames between two existing frames to produce smoother video playback, particularly in lower frame-rate videos.
-- **Resolution Enhancement**: Uses deep learning models to upscale low-resolution videos while maintaining sharpness and clarity, ideal for restoring old or compressed footage.
-- **Noise Reduction**: Intelligent noise reduction powered by neural networks helps clean up grainy or noisy video footage without sacrificing detail.
-- **Video Editing**: Enables AI-based video segmentation, object tracking, and scene detection, making it easier to cut, merge, or apply effects to specific parts of a video.
-- **Real-time Processing**: Processes video content in real-time or near real-time, depending on hardware capabilities, thanks to the efficiency of the ANN models.
-- **Customizable Neural Models**: Allows users to integrate their custom-trained neural networks to achieve specific video editing effects, making the engine highly adaptable for different use cases.
+- **Text-to-Image Generation**: the video engine leverages OpenAI's DALL-E 3 for creating images based on prompts in configurable aspect ratios of 9:16, 16:9, 1:1.
+- **Audio Integration**: The video engine supports various audio file formats: MP3, WAV, FLAC. It also allows users to overlay audio onto video clips.
+- **Multilingual Support**: Generate videos with captions in different languages.
+- **User Interface**: Includes an intuitive JavaFX-based interface for ease of use.
+- **Customization**: Configure font styles, colors, and positions for text overlays.
 
 ## Technologies Used
 
-- **Programming Language**: Java and JavaFX
+- **Programming Languages used**: Java, JavaFX and FXML
 - **API Usage**: OpenAI API was used to generate the images based on the text input
 - **Video Processing Library**: FFmpegFrameRecorder for Java to handle video input/output, frame capture, and manipulation
-- **Multithreading**: Utilizes Java’s multithreading capabilities for efficient video frame processing
-- **File Formats Supported**: MP4
-
-## Usage
-
-1. **Video Input**: Load a video file using the engine's command-line interface or GUI.
-2. **Apply Enhancements**: Choose the neural network-based enhancement options such as frame interpolation, resolution upscaling, or noise reduction.
-3. **Custom Neural Networks**: If you have a custom-trained neural network model, you can load it into the engine and apply its specific video editing capabilities.
-4. **Process and Export**: The processed video can be exported in the desired format, with options to control encoding settings such as bitrate and frame rate.
+- **File Formats Supported**: MP3, WAV and FLAC for audio, MP4 for videos and JPG for images
+- **Libraries Used**: OkHTTP was used to handle API requests and Jackson was used For JSON processing
 
 ## Future Improvements
 
-- **GPU Acceleration**: Further optimizations for NVIDIA CUDA and other GPU frameworks to speed up video processing.
-- **Deepfake Detection**: Integrate AI models to detect deepfakes and manipulated video content.
-- **Motion Tracking**: Enhance the video editing toolset with more advanced motion tracking features.
-- **Live Video Editing**: Enable real-time video editing during live streams or video calls.
+- **Hardware Acceleration**: Further optimizations for NVIDIA CUDA and other GPU frameworks to speed up video processing.
+- **Cloud Integration**: Introduce cloud-based storage for handling larger video files and improving accessibility across devices.
+- **Mobile App Version**: Develop a mobile version of the app to allow users to edit videos on the mobile for improved accessibility.
 
 ## Contribution
 
