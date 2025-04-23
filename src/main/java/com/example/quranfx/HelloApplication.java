@@ -77,7 +77,9 @@ public class HelloApplication extends Application {
     private String sound_path = "";
     private Stage main_stage;
 
-    private ArrayList<Reciters_info> reciters_info_ArrayList = new ArrayList<>();
+    private Long[] durations;
+    private Long[] end_of_the_picture_durations;
+    private double duration = 0;
 
 
     @Override
@@ -436,7 +438,15 @@ public class HelloApplication extends Application {
                             } else if (helloController.size_of_image.getValue().equals("1:1")) {
                                 image_holder = Base64_image.getInstance().square_place_holder;
                             }
-                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), image_holder, Long.MAX_VALUE, new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse())));
+                            if(durations.length == 0){
+                                chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), image_holder, Long.MAX_VALUE, new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse())));
+                            } else {
+                                if(j == 0){
+                                    chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), image_holder, durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse())));
+                                } else {
+                                    chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), image_holder, end_of_the_picture_durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse())));
+                                }
+                            }
                             set_up_the_fourth_screen(helloController);
                         }
                     }
@@ -665,6 +675,13 @@ public class HelloApplication extends Application {
         helloController.list_view_with_the_verses_preview.scrollTo(0);
         if(mediaPlayer!=null){
             mediaPlayer.stop();
+        }
+        duration = 0;
+        if(durations!=null){
+            Arrays.fill(durations, null);
+        }
+        if(end_of_the_picture_durations!=null){
+            Arrays.fill(end_of_the_picture_durations,null);
         }
         helloController.duration_of_media.setText("00:00");
         helloController.upload_image_button_for_each_ayat.setText("Upload Image");
@@ -978,7 +995,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent event) {
                 if (helloController.play_sound.getText().equals("Play")) {
-                    if (mediaPlayer.getCurrentTime().toMillis() >= media.getDuration().toMillis()) {
+                    if (mediaPlayer.getCurrentTime().toMillis() >= get_duration()) {
                         mediaPlayer.seek(Duration.ZERO);
                     }
                     helloController.play_sound.setText("Pause");
@@ -1014,8 +1031,8 @@ public class HelloApplication extends Application {
         mediaPlayer.setOnReady(new Runnable() {
             @Override
             public void run() {
-                helloController.sound_slider_fourth_screen.setMax(media.getDuration().toMillis());
-                chatgpt_responses.get(chatgpt_responses.size() - 1).setTime_in_milliseconds((long) mediaPlayer.getMedia().getDuration().toMillis());
+                helloController.sound_slider_fourth_screen.setMax(get_duration());
+                chatgpt_responses.get(chatgpt_responses.size() - 1).setTime_in_milliseconds((long) get_duration());
             }
         });
     }
@@ -2387,13 +2404,13 @@ public class HelloApplication extends Application {
         if(sound_path.isEmpty()){
             boolean did_i_ever_fail_a_recitation = false;
             OkHttpClient client = new OkHttpClient();
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             String ayat = helloController.enter_the_ayats_wanted.getText();
             int start_ayat = return_start_ayat(ayat);
             int end_ayat = return_end_ayat(ayat);
             int number_of_ayats = end_ayat-start_ayat+1;
             String[] mp3Urls = new String[number_of_ayats];
-            Long[] durations = new Long[number_of_ayats];
+            durations = new Long[number_of_ayats];
+            end_of_the_picture_durations = new Long[number_of_ayats];
             byte[][] each_mp3_sound = new byte[number_of_ayats][];
             String base_url = "";
             if(!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits().isEmpty()){
@@ -2410,7 +2427,7 @@ public class HelloApplication extends Application {
                 mp3Urls[counter] = base_url.concat(surat_number).concat(ayat_number).concat(".mp3");
                 counter++;
             }
-            System.out.println(Arrays.toString(mp3Urls));
+            duration = 0;
             for (int i = 0;i<number_of_ayats;i++) {
                 Request request = new Request.Builder().url(mp3Urls[i]).build();
                 try (Response response = client.newCall(request).execute()) {
@@ -2436,6 +2453,12 @@ public class HelloApplication extends Application {
                     }
                     Mp3File mp3File = new Mp3File(tempFile);
                     durations[i] = mp3File.getLengthInMilliseconds();
+                    duration+=durations[i];
+                    if(i == 0){
+                        end_of_the_picture_durations[i] = durations[i];
+                    } else {
+                        end_of_the_picture_durations[i] = durations[i] + end_of_the_picture_durations[i-1];
+                    }
                     each_mp3_sound[i] = mp3Bytes;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -2445,7 +2468,6 @@ public class HelloApplication extends Application {
                     throw new RuntimeException(e);
                 }
             }
-            System.out.println(Arrays.toString(durations));
             File dir = new File("temp");
             if (!dir.exists()) {
                 dir.mkdirs();
@@ -2457,12 +2479,19 @@ public class HelloApplication extends Application {
                 File file = new File("temp/combined.mp3");
                 file.deleteOnExit();
                 sound_path =  file.getAbsolutePath();
-
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    private double get_duration(){
+        if(duration>0){
+            return duration;
+        } else {
+            return mediaPlayer.getMedia().getDuration().toMillis();
         }
     }
 }
