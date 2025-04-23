@@ -18,6 +18,8 @@ module com.example.quranfx {
     requires javafx.swing;
     requires org.bytedeco.javacv;
     requires org.bytedeco.ffmpeg;
+    requires org.apache.commons.lang3;
+    requires mp3agic;
 
     opens com.example.quranfx to javafx.fxml;
     exports com.example.quranfx;

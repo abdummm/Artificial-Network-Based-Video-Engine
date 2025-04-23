@@ -225,6 +225,9 @@ public class HelloController {
     @FXML
     public Spinner top_margin_text_arabic_surat;
 
+    @FXML
+    public Button cancel_video;
 
-
+    @FXML
+    public ListView<Reciters_info> list_view_with_the_recitors;
 }

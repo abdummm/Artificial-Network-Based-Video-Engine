@@ -2,6 +2,9 @@ package com.example.quranfx;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.UnsupportedTagException;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -30,7 +33,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -42,11 +46,14 @@ import javafx.util.converter.IntegerStringConverter;
 import okhttp3.*;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import org.apache.commons.lang3.StringUtils;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
 import org.jsoup.*;
+
+import javax.swing.*;
 
 
 public class HelloApplication extends Application {
@@ -68,6 +75,9 @@ public class HelloApplication extends Application {
     private MediaPlayer mediaPlayer;
     private boolean is_the_slider_being_held_right_now = false;
     private String sound_path = "";
+    private Stage main_stage;
+
+    private ArrayList<Reciters_info> reciters_info_ArrayList = new ArrayList<>();
 
 
     @Override
@@ -77,12 +87,14 @@ public class HelloApplication extends Application {
         stage.setTitle("السلام عليكم ورحمة الله وبركاته");
         stage.setScene(scene);
         stage.show();
+        stage.toFront();
+        stage.requestFocus();
+        main_stage = stage;
         HelloController helloController = fxmlLoader.getController();
         call_chapters_api(helloController);
         listen_to_surat_choose(helloController);
         dalle_spinner_listener(helloController);
         ratio_spinner_listen(helloController);
-        listen_to_list_view(helloController);
         listen_to_previous_button_clicked(helloController);
         listen_to_next_button_clicked(helloController);
         watch_the_advanced_settings_box(helloController);
@@ -154,6 +166,9 @@ public class HelloApplication extends Application {
         set_the_cursor_at_the_end_of_the_dont_size_arabic_surat(helloController);
         set_the_formatter_for_the_english_text_color_arabic_surat(helloController);
         listen_to_all_of_the_buttons_for_english_text_position_arabic_text_surat(helloController);
+        listen_to_cancel_button_third_screen(helloController);
+        get_all_of_the_recitors(helloController);
+        listen_to_the_recitor_list_view_click(helloController);
     }
 
     public static void main(String[] args) {
@@ -336,11 +351,17 @@ public class HelloApplication extends Application {
         }
         JsonNode nameNode = return_name_node(chapters_string);
         int verse_count = Integer.parseInt(String.valueOf(nameNode.get("chapters").get(id).get("verses_count")));
-        int start_ayat = return_start_ayat(ayat);
-        int end_ayat = return_end_ayat(ayat);
         ayat = ayat.replace(" ", "");
         if (ayat.matches("[1-9]+[0-9]*[-]{1}[1-9]+[0-9]*") || ayat.matches("[1-9]+") || ayat.matches("[1-9][0-9]*")) {
-            if (ayat.contains("-")) {
+            if (StringUtils.countMatches(ayat, "-") == 0) {
+                if (Integer.parseInt(ayat) > verse_count) {
+                    return "too_many_verses";
+                } else {
+                    return "ok";
+                }
+            } else if (StringUtils.countMatches(ayat, "-") == 1) {
+                int start_ayat = return_start_ayat(ayat);
+                int end_ayat = return_end_ayat(ayat);
                 if (end_ayat > verse_count) {
                     return "too_many_verses";
                 } else if (end_ayat < start_ayat) {
@@ -349,11 +370,7 @@ public class HelloApplication extends Application {
                     return "ok";
                 }
             } else {
-                if (Integer.parseInt(ayat) > verse_count) {
-                    return "too_many_verses";
-                } else {
-                    return "ok";
-                }
+                return "too_many_dashes";
             }
         } else {
             return "incorrect_format";
@@ -362,6 +379,9 @@ public class HelloApplication extends Application {
 
     private void show_alert(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.setAlwaysOnTop(true);
+        alert.initOwner(main_stage);
         alert.setTitle("Error!");
         alert.setHeaderText("An error has occurred");
         alert.setContentText(message);
@@ -416,7 +436,7 @@ public class HelloApplication extends Application {
                             } else if (helloController.size_of_image.getValue().equals("1:1")) {
                                 image_holder = Base64_image.getInstance().square_place_holder;
                             }
-                            chatgpt_responses.add(new Verse_class_final(update_the_verse_text(array_list_with_verses.get(j).getVerse()), array_list_with_verses.get(j).getVerse_number(), image_holder, Long.MAX_VALUE, new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse())));
+                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), image_holder, Long.MAX_VALUE, new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse())));
                             set_up_the_fourth_screen(helloController);
                         }
                     }
@@ -582,6 +602,8 @@ public class HelloApplication extends Application {
     }
 
     private void reset_all_of_the_advanced_settings(HelloController helloController) {
+        helloController.choose_the_surat.scrollTo(0);
+        helloController.choose_the_surat.getSelectionModel().clearSelection();
         helloController.which_chatgpt_to_use.getValueFactory().setValue("Dalle 3");
         helloController.size_of_image.getValueFactory().setValue("9:16");
         helloController.style_of_image.getValueFactory().setValue("Natural");
@@ -599,26 +621,65 @@ public class HelloApplication extends Application {
         helloController.which_chatgpt_to_use.setVisible(false);
         helloController.style_of_image.setManaged(false);
         helloController.style_of_image.setVisible(false);
+        helloController.enter_the_ayats_wanted.setText("");
+        helloController.choose_sound_third_screen.setText("Upload Sound");
+        helloController.list_view_with_the_recitors.scrollTo(0);
+        helloController.list_view_with_the_recitors.getSelectionModel().clearSelection();
 
+        helloController.enable_english_text.setSelected(false);
+        helloController.spinner_to_choose_font.setValue("Arial");
+        helloController.font_size_text_field.getValueFactory().setValue(10D);
+        helloController.english_text_color_in_ayat.setText("#FFFFFF");
+        set_all_of_the_english_text_position_buttons_not_selected(helloController);
+        helloController.position_of_english_text_button_center.setSelected(true);
+        helloController.top_margin_english_text.getValueFactory().setValue(0D);
+        helloController.english_translation_settings.setManaged(false);
+        helloController.english_translation_settings.setVisible(false);
 
-    }
+        helloController.add_arabic_text_fourth_screen.setSelected(false);
+        helloController.spinner_to_choose_font_arabic.setValue("Arial");
+        helloController.font_size_text_field_arabic.getValueFactory().setValue(10D);
+        helloController.text_color_in_ayat_arabic.setText("#FFFFFF");
+        set_all_of_the_english_text_position_buttons_not_selected_arabic(helloController);
+        helloController.position_of_english_text_button_center_arabic.setSelected(true);
+        helloController.top_margin_text_arabic.getValueFactory().setValue(0D);
+        helloController.arabic_translation_settings.setManaged(false);
+        helloController.arabic_translation_settings.setVisible(false);
 
-    private void listen_to_list_view(HelloController helloController) {
-        helloController.choose_the_surat.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                helloController.choose_surat_screen.setVisible(false);
-                helloController.choose_ayat_screen.setVisible(true);
-                set_up_second_screen(helloController, helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
-            }
-        });
+        helloController.add_surat_name_in_video.setSelected(false);
+        helloController.spinner_to_choose_font_arabic_surat.setValue("Arial");
+        helloController.font_size_text_field_arabic_surat.getValueFactory().setValue(10D);
+        helloController.text_color_in_ayat_arabic_surat.setText("#FFFFFF");
+        set_all_of_the_english_text_position_buttons_not_selected_arabic_surat(helloController);
+        helloController.position_of_english_text_button_center_arabic_surat.setSelected(true);
+        helloController.top_margin_text_arabic_surat.getValueFactory().setValue(0D);
+        helloController.surat_name_settings.setManaged(false);
+        helloController.surat_name_settings.setVisible(false);
+        helloController.choose_brightness_of_an_image.getValueFactory().setValue(100);
+
+        helloController.play_sound.setText("Play");
+
+        helloController.sound_slider_fourth_screen.setValue(0);
+        helloController.list_view_with_the_verses_preview.getSelectionModel().select(0);
+        helloController.list_view_with_the_verses_preview.getFocusModel().focus(0);
+        helloController.list_view_with_the_verses_preview.scrollTo(0);
+        if(mediaPlayer!=null){
+            mediaPlayer.stop();
+        }
+        helloController.duration_of_media.setText("00:00");
+        helloController.upload_image_button_for_each_ayat.setText("Upload Image");
+        selected_verse = 0;
+        sound_path = "";
+        array_list_with_times.clear();
+        array_list_with_verses.clear();
+        chatgpt_responses.clear();
+
     }
 
     private void listen_to_previous_button_clicked(HelloController helloController) {
         helloController.previous_page_second_screen.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                helloController.enter_the_ayats_wanted.setText("");
                 helloController.choose_surat_screen.setVisible(true);
                 helloController.choose_ayat_screen.setVisible(false);
                 reset_all_of_the_advanced_settings(helloController);
@@ -631,9 +692,10 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent event) {
                 String result = is_the_ayat_format_correct(helloController.enter_the_ayats_wanted.getText(), helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
-                if (result.equals("ok") && !sound_path.isEmpty()) {
+                if (result.equals("ok") && (!sound_path.isEmpty() || !helloController.list_view_with_the_recitors.getSelectionModel().isEmpty())) {
                     helloController.generating_screen.setVisible(true);
                     helloController.choose_ayat_screen.setVisible(false);
+                    get_the_sound_and_concat_them_into_one(helloController);
                     set_up_third_screen(helloController, helloController.enter_the_ayats_wanted.getText(), helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
                 } else if (result.equals("incorrect_format")) {
                     show_alert("The format or the number of the ayat you entered is incorrect. Please follow this format: \"15-25\" or \"12\". Verses started at 1");
@@ -643,8 +705,10 @@ public class HelloApplication extends Application {
                     show_alert("The ending ayat is less than the starting ayat, please be sure to make sure that the ending ayat is bigger than the starting ayat");
                 } else if (result.equals("Empty")) {
                     show_alert("The ayat section can't be left empty");
-                } else if (sound_path.isEmpty()) {
-                    show_alert("Please select a sound before proceeding");
+                } else if (result.equals("too_many_dashes")) {
+                    show_alert("There is more than one dash \"-\" in the ayat section, please only include one.");
+                } else if (sound_path.isEmpty() && helloController.list_view_with_the_recitors.getSelectionModel().isEmpty()) {
+                    show_alert("Please select a sound before proceeding. You can do so by uploading a sound or by simply selecting a reciter.");
                 }
             }
         });
@@ -896,7 +960,7 @@ public class HelloApplication extends Application {
         update_the_name_of_the_image_button_fourth_screen(helloController, selected_verse);
         set_the_english_text_of_the_ayat_in_the_image_view(helloController, selected_verse);
         set_the_ayat_settings(helloController, selected_verse);
-        hide_and_show_the_time_text_field_editor(helloController,selected_verse);
+        hide_and_show_the_time_text_field_editor(helloController, selected_verse);
     }
 
     private void update_the_information_about_the_ayat(HelloController helloController, int verse_selected) {
@@ -951,7 +1015,7 @@ public class HelloApplication extends Application {
             @Override
             public void run() {
                 helloController.sound_slider_fourth_screen.setMax(media.getDuration().toMillis());
-                chatgpt_responses.get(chatgpt_responses.size()-1).setTime_in_milliseconds((long) mediaPlayer.getMedia().getDuration().toMillis());
+                chatgpt_responses.get(chatgpt_responses.size() - 1).setTime_in_milliseconds((long) mediaPlayer.getMedia().getDuration().toMillis());
             }
         });
     }
@@ -1116,7 +1180,7 @@ public class HelloApplication extends Application {
     private void only_allow_digits_and_dash_for_ayat_input(HelloController helloController) {
         UnaryOperator<TextFormatter.Change> filter = change -> {
             String newText = change.getControlNewText();
-            if (newText.matches("[123456789-]*")) {  // Regex to allow only 1-9, space, and dash
+            if (newText.matches("[0123456789-]*")) {  // Regex to allow only 1-9, space, and dash
                 return change;
             }
             return null; // Reject the change
@@ -1143,55 +1207,56 @@ public class HelloApplication extends Application {
         helloController.upload_image_button_for_each_ayat.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                boolean too_many_images_selected = false;
                 FileChooser fileChooser = new FileChooser();
-
                 //Set extension filter
-                FileChooser.ExtensionFilter extFilterJPG = new FileChooser.ExtensionFilter("JPG files (*.JPG)", "*.JPG");
-                FileChooser.ExtensionFilter extFilterjpg = new FileChooser.ExtensionFilter("jpg files (*.jpg)", "*.jpg");
-                FileChooser.ExtensionFilter extFilterPNG = new FileChooser.ExtensionFilter("PNG files (*.PNG)", "*.PNG");
-                FileChooser.ExtensionFilter extFilterpng = new FileChooser.ExtensionFilter("png files (*.png)", "*.png");
-                FileChooser.ExtensionFilter extFilterHEIC = new FileChooser.ExtensionFilter("HEIC files (*.HEIC)", "*.HEIC");
-                fileChooser.getExtensionFilters()
-
-                        .addAll(extFilterJPG, extFilterjpg, extFilterPNG, extFilterpng, extFilterHEIC);
+                FileChooser.ExtensionFilter image_filter = new FileChooser.ExtensionFilter("Image Files (*.png, *.jpg, *.jpeg, *.heic)", "*.png", "*.PNG", "*.jpg", "*.JPG", "*.jpeg", "*.JPEG", "*.heic", "*.HEIC");
+                fileChooser.getExtensionFilters().addAll(image_filter);
                 //Show open file dialog
-                File file = fileChooser.showOpenDialog(null);
-                if (file != null) {
-                    try {
-                        Image image = new Image(new FileInputStream(file));
-                        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
-                        BufferedImage formattedImage = null;
-                        if ((helloController.size_of_image.getValue().equals("1:1") && bufferedImage.getWidth() == bufferedImage.getHeight()) || (helloController.size_of_image.getValue().equals("9:16") && bufferedImage.getWidth() * 16D == bufferedImage.getHeight() * 9D) || (helloController.size_of_image.getValue().equals("16:9") && bufferedImage.getWidth() * 9D == bufferedImage.getHeight() * 16D)) {
-                            formattedImage = bufferedImage;
-                        } else {
-                            if (helloController.size_of_image.getValue().equals("9:16")) {
-                                int targetWidth = bufferedImage.getWidth();
-                                int targetHeight = targetWidth * 16 / 9;  // Calculate the new height for a 9:16 ratio
-                                // Create a new black image with a 9:16 ratio
-                                formattedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
-                                Graphics g = formattedImage.createGraphics();
-                                g.setColor(java.awt.Color.BLACK);
-                                g.fillRect(0, 0, targetWidth, targetHeight);  // Fill the background with black
-                                int buffer_at_the_top = (targetHeight - bufferedImage.getHeight()) / 2;
-                                g.drawImage(bufferedImage, 0, buffer_at_the_top, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
-                                g.dispose();
-                            } else if (helloController.size_of_image.getValue().equals("16:9")) {
-
-                            } else if (helloController.size_of_image.getValue().equals("1:1")) {
-
-                            }
+                List<File> files = fileChooser.showOpenMultipleDialog(null);
+                if (files != null && !files.isEmpty()) {
+                    for(int i = 0;i<files.size();i++){
+                        if(selected_verse+i>=chatgpt_responses.size()){
+                            too_many_images_selected = true;
+                            break;
                         }
-                        chatgpt_responses.get(selected_verse).setBase_64_image(SwingFXUtils.toFXImage(formattedImage, null));
-                        add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
-                        helloController.upload_image_button_for_each_ayat.setText("Change Image");
-                        set_the_image_fourth_screen(helloController, selected_verse);
-                        helloController.list_view_with_the_verses_preview.refresh();
+                        try {
+                            Image image = new Image(new FileInputStream(files.get(i)));
+                            BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
+                            BufferedImage formattedImage = null;
+                            if ((helloController.size_of_image.getValue().equals("1:1") && bufferedImage.getWidth() == bufferedImage.getHeight()) || (helloController.size_of_image.getValue().equals("9:16") && bufferedImage.getWidth() * 16D == bufferedImage.getHeight() * 9D) || (helloController.size_of_image.getValue().equals("16:9") && bufferedImage.getWidth() * 9D == bufferedImage.getHeight() * 16D)) {
+                                formattedImage = bufferedImage;
+                            } else {
+                                if (helloController.size_of_image.getValue().equals("9:16")) {
+                                    int targetWidth = bufferedImage.getWidth();
+                                    int targetHeight = targetWidth * 16 / 9;  // Calculate the new height for a 9:16 ratio
+                                    // Create a new black image with a 9:16 ratio
+                                    formattedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+                                    Graphics g = formattedImage.createGraphics();
+                                    g.setColor(java.awt.Color.BLACK);
+                                    g.fillRect(0, 0, targetWidth, targetHeight);  // Fill the background with black
+                                    int buffer_at_the_top = (targetHeight - bufferedImage.getHeight()) / 2;
+                                    g.drawImage(bufferedImage, 0, buffer_at_the_top, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
+                                    g.dispose();
+                                } else if (helloController.size_of_image.getValue().equals("16:9")) {
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                                } else if (helloController.size_of_image.getValue().equals("1:1")) {
+
+                                }
+                            }
+                            chatgpt_responses.get(selected_verse+i).setBase_64_image(SwingFXUtils.toFXImage(formattedImage, null));
+                            add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse+i).getAyatSettings(), selected_verse+i);
+                            helloController.upload_image_button_for_each_ayat.setText("Change Image");
+                            set_the_image_fourth_screen(helloController, selected_verse);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    helloController.list_view_with_the_verses_preview.refresh();
+                    if(too_many_images_selected){
+                        show_alert("Too many images selected. Only the number of images matching the remaining verses will be used.");
                     }
                 }
-
             }
         });
     }
@@ -1235,7 +1300,11 @@ public class HelloApplication extends Application {
                 FileChooser.ExtensionFilter extFilterFLAC = new FileChooser.ExtensionFilter("FLAC files (*.flac)", "*.flac");
                 fileChooser.getExtensionFilters().addAll(extFilterMP3, extFilterWAV, extFilterFLAC);
                 File file = fileChooser.showOpenDialog(null);
-                sound_path = file.getAbsolutePath();
+                if(file!=null){
+                    sound_path = file.getAbsolutePath();
+                    helloController.choose_sound_third_screen.setText("Change Sound");
+                    helloController.list_view_with_the_recitors.getSelectionModel().clearSelection();
+                }
             }
         });
     }
@@ -1250,7 +1319,7 @@ public class HelloApplication extends Application {
     }
 
     private void create_video(HelloController helloController) {
-        String videoFileName = "output.mp4";
+        String videoFileName = "/Users/abdelrahmanabdelkader/Downloads/output.mp4";
         int captureWidth = 0;
         int captureHeight = 0;
         if (helloController.size_of_image.getValue().equals("9:16")) {
@@ -1285,6 +1354,7 @@ public class HelloApplication extends Application {
         recorder.setAudioBitrate(audioBitrate);
         recorder.setAudioChannels(channels);
         recorder.setVideoQuality(0); // Maximum quality
+        recorder.setTimestamp(System.currentTimeMillis());
         Java2DFrameConverter converter = new Java2DFrameConverter();
         try {
             recorder.start();
@@ -1744,6 +1814,7 @@ public class HelloApplication extends Application {
                 update_current_ayat_settings(helloController);
                 add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
                 helloController.chatgpt_image_view.setImage(chatgpt_responses.get(selected_verse).getEditied_base_64_image());
+                helloController.list_view_with_the_verses_preview.refresh();
             }
         });
     }
@@ -1830,8 +1901,16 @@ public class HelloApplication extends Application {
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 helloController.arabic_translation_settings.setManaged(newValue);
                 helloController.arabic_translation_settings.setVisible(newValue);
+                update_current_ayat_settings(helloController);
                 add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
                 helloController.chatgpt_image_view.setImage(chatgpt_responses.get(selected_verse).getEditied_base_64_image());
+                for (int i = 0; i < chatgpt_responses.size(); i++) {
+                    if (i != selected_verse) {
+                        chatgpt_responses.get(i).getAyatSettings().set_ayat_settings(chatgpt_responses.get(selected_verse).getAyatSettings());
+                        add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), i);
+                    }
+                }
+                helloController.list_view_with_the_verses_preview.refresh();
             }
         });
     }
@@ -2001,20 +2080,20 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void hide_and_show_the_time_text_field_editor(HelloController helloController,int selected_verse){
-        if(selected_verse == chatgpt_responses.size()-1){
+    private void hide_and_show_the_time_text_field_editor(HelloController helloController, int selected_verse) {
+        if (selected_verse == chatgpt_responses.size() - 1) {
             helloController.end_time_of_each_image.setVisible(false);
         } else {
             helloController.end_time_of_each_image.setVisible(true);
         }
     }
 
-    private String remove_qoutes_from_arabic_text(String arabic_verse){
+    private String remove_qoutes_from_arabic_text(String arabic_verse) {
         arabic_verse = arabic_verse.replaceAll("\"", "");
         return arabic_verse;
     }
 
-    private void add_surat_name_checkbox_listen(HelloController helloController){
+    private void add_surat_name_checkbox_listen(HelloController helloController) {
         helloController.add_surat_name_in_video.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -2026,7 +2105,7 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void set_up_combobox_arabic_surat(HelloController helloController){
+    private void set_up_combobox_arabic_surat(HelloController helloController) {
         ObservableList<String> items = FXCollections.observableArrayList();
         items.addAll(Font.getFamilies());
         helloController.spinner_to_choose_font_arabic_surat.setItems(items);
@@ -2057,11 +2136,11 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void set_first_item_of_the_combobox_surat_font(HelloController helloController){
+    private void set_first_item_of_the_combobox_surat_font(HelloController helloController) {
         helloController.spinner_to_choose_font_arabic_surat.setValue("Arial");
     }
 
-    private void set_up_surant_name_font_size_spinner(HelloController helloController){
+    private void set_up_surant_name_font_size_spinner(HelloController helloController) {
         helloController.font_size_text_field_arabic_surat.setEditable(true);
         helloController.font_size_text_field_arabic_surat.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 100.0, 10.0, 0.1));
         helloController.font_size_text_field_arabic_surat.getValueFactory().setConverter(new StringConverter<Double>() {
@@ -2191,5 +2270,199 @@ public class HelloApplication extends Application {
         });
     }
 
+    private void listen_to_cancel_button_third_screen(HelloController helloController) {
+        helloController.cancel_video.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                helloController.show_the_result_screen.setVisible(false);
+                helloController.choose_surat_screen.setVisible(true);
+                reset_all_of_the_advanced_settings(helloController);
+            }
+        });
+    }
 
+    private String capatilize_first_letter(String text){
+        if(text.isEmpty()){
+            return "";
+        }
+        if(Character.isLetter(text.charAt(0))){
+            return text.substring(0, 1).toUpperCase() + text.substring(1);
+        } else {
+            return text;
+        }
+    }
+
+    private void get_all_of_the_recitors(HelloController helloController) {
+        HttpUrl httpurl = new HttpUrl.Builder()
+                .scheme("https")
+                .host("api.mp3quran.net")
+                .addPathSegment("verse")
+                .addPathSegment("verse_en.json")
+                .build();
+
+        OkHttpClient client = new OkHttpClient().newBuilder().build();
+
+        Request request = new Request.Builder()
+                .url(httpurl)
+                .method("GET", null)
+                .addHeader("Accept", "application/json")
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            String jsonString = response.body().string();
+            ArrayList<Reciters_info> arrayList_with_reciters_info = process_the_audio_recirotrs(jsonString);
+            set_up_the_recitors_list_view(helloController,arrayList_with_reciters_info);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private ArrayList<Reciters_info> process_the_audio_recirotrs(String json_text){
+        JsonNode nameNode = return_name_node(json_text);
+        ArrayNode arrayNode = (ArrayNode) nameNode.get("reciters_verse");
+        HashMap<String,Integer> hashMap_counter = new HashMap<>();
+        for(int i = 0;i< arrayNode.size();i++){
+            JsonNode local = arrayNode.get(i);
+            hashMap_counter.put(local.get("name").asText(),hashMap_counter.getOrDefault(local.get("name").asText(),0)+1);
+        }
+        ArrayList<Reciters_info> reciters_infoArrayList = new ArrayList<>();
+        Reciters_info english_reciter = null;
+        for(int i = 0;i<arrayNode.size();i++){
+            JsonNode local = arrayNode.get(i);
+            Reciters_info recitersInfo;
+            if(hashMap_counter.get(local.get("name").asText()) == 1){
+                recitersInfo = new Reciters_info(local.get("id").asInt(),local.get("name").asText(),local.get("audio_url_bit_rate_32_").asText(),local.get("audio_url_bit_rate_64").asText(),local.get("audio_url_bit_rate_128").asText());
+            } else {
+                recitersInfo = new Reciters_info(local.get("id").asInt(),local.get("name").asText(),local.get("name").asText().concat(" - ").concat(local.get("rewaya").asText()).concat(" - ").concat(local.get("musshaf_type").asText()),local.get("audio_url_bit_rate_32_").asText(),local.get("audio_url_bit_rate_64").asText(),local.get("audio_url_bit_rate_128").asText());
+            }
+            if(local.get("id").asInt() == 224 && local.get("name").asText().equals("(English) Translated by Sahih International Recited by Ibrahim Walk")){
+                english_reciter = recitersInfo;
+            } else {
+                reciters_infoArrayList.add(recitersInfo);
+            }
+        }
+        reciters_infoArrayList.sort(new Comparator<Reciters_info>() {
+            @Override
+            public int compare(Reciters_info o1, Reciters_info o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        if(english_reciter!=null){
+            reciters_infoArrayList.add(english_reciter);
+        }
+        return reciters_infoArrayList;
+    }
+
+    private void set_up_the_recitors_list_view(HelloController helloController,List<Reciters_info> reciters_info_list){
+        ObservableList<Reciters_info> items = FXCollections.observableArrayList();
+        items.addAll(reciters_info_list);
+        helloController.list_view_with_the_recitors.setItems(items);
+        helloController.list_view_with_the_recitors.setCellFactory(lv -> new ListCell<Reciters_info>() {
+            @Override
+            protected void updateItem(Reciters_info item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getDisplayed_name());  // assuming getName() returns the name property
+                    setAlignment(Pos.CENTER); // or Pos.CENTER_LEFT, Pos.CENTER_RIGHT
+                }
+            }
+        });
+    }
+
+    private void listen_to_the_recitor_list_view_click(HelloController helloController){
+        helloController.list_view_with_the_recitors.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                sound_path = "";
+                helloController.choose_sound_third_screen.setText("Upload Sound");
+            }
+        });
+    }
+
+    private void get_the_sound_and_concat_them_into_one(HelloController helloController){
+        if(sound_path.isEmpty()){
+            boolean did_i_ever_fail_a_recitation = false;
+            OkHttpClient client = new OkHttpClient();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            String ayat = helloController.enter_the_ayats_wanted.getText();
+            int start_ayat = return_start_ayat(ayat);
+            int end_ayat = return_end_ayat(ayat);
+            int number_of_ayats = end_ayat-start_ayat+1;
+            String[] mp3Urls = new String[number_of_ayats];
+            Long[] durations = new Long[number_of_ayats];
+            byte[][] each_mp3_sound = new byte[number_of_ayats][];
+            String base_url = "";
+            if(!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits().isEmpty()){
+                base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits();
+            } else if(!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_64_bits().isEmpty()){
+                base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_64_bits();
+            }  else if(!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_32_bits().isEmpty()){
+                base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_32_bits();
+            }
+            String surat_number = String.format("%03d", helloController.choose_the_surat.getSelectionModel().getSelectedIndex()+1);
+            int counter = 0;
+            for(int i = start_ayat;i<=end_ayat;i++){
+                String ayat_number = String.format("%03d", i);
+                mp3Urls[counter] = base_url.concat(surat_number).concat(ayat_number).concat(".mp3");
+                counter++;
+            }
+            System.out.println(Arrays.toString(mp3Urls));
+            for (int i = 0;i<number_of_ayats;i++) {
+                Request request = new Request.Builder().url(mp3Urls[i]).build();
+                try (Response response = client.newCall(request).execute()) {
+                    if (!response.isSuccessful()) {
+                        if(!did_i_ever_fail_a_recitation){
+                            show_alert("Failed to parse a recitation.");
+                            did_i_ever_fail_a_recitation = true;
+                        }
+                        continue;
+                    }
+                    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                    try (InputStream input = response.body().byteStream()) {
+                        byte[] temp = new byte[4096];
+                        int bytesRead;
+                        while ((bytesRead = input.read(temp)) != -1) {
+                            buffer.write(temp, 0, bytesRead);
+                        }
+                    }
+                    byte[] mp3Bytes = buffer.toByteArray();
+                    File tempFile = File.createTempFile("temp_mp3_", ".mp3");
+                    try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                        fos.write(mp3Bytes);
+                    }
+                    Mp3File mp3File = new Mp3File(tempFile);
+                    durations[i] = mp3File.getLengthInMilliseconds();
+                    each_mp3_sound[i] = mp3Bytes;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InvalidDataException e) {
+                    throw new RuntimeException(e);
+                } catch (UnsupportedTagException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            System.out.println(Arrays.toString(durations));
+            File dir = new File("temp");
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            try (FileOutputStream output = new FileOutputStream("temp/combined.mp3")) {
+                for (int i = 0;i<number_of_ayats;i++) {
+                    output.write(each_mp3_sound[i]);
+                }
+                File file = new File("temp/combined.mp3");
+                file.deleteOnExit();
+                sound_path =  file.getAbsolutePath();
+
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }
