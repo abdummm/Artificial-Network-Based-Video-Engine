@@ -22,9 +22,6 @@ public class Verse_class {
         return verse_number;
     }
 
-    public String getSurat() {
-        return surat;
-    }
 
     public String getArabic_verse() {
         return arabic_verse;

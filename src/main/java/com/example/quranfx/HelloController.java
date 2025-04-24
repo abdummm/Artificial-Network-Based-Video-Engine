@@ -230,4 +230,7 @@ public class HelloController {
 
     @FXML
     public ListView<Reciters_info> list_view_with_the_recitors;
+
+    @FXML
+    public Label total_duration_of_media;
 }

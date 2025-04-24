@@ -247,12 +247,17 @@
                             <Insets left="10.0" top="10.0" />
                         </HBox.margin>
                     </Button>
+                    <Label fx:id="duration_of_media" text="00:00">
+                        <HBox.margin>
+                            <Insets left="10.0" top="10.0" />
+                        </HBox.margin>
+                    </Label>
                     <Slider fx:id="sound_slider_fourth_screen" HBox.hgrow="ALWAYS">
                         <HBox.margin>
                             <Insets left="10.0" top="10.0" />
                         </HBox.margin>
                     </Slider>
-                    <Label fx:id="duration_of_media" text="00:00">
+                    <Label fx:id="total_duration_of_media" text="00:00">
                         <HBox.margin>
                             <Insets left="10.0" top="10.0" />
                         </HBox.margin>

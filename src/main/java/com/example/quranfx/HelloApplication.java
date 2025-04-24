@@ -2,9 +2,6 @@ package com.example.quranfx;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mpatric.mp3agic.InvalidDataException;
-import com.mpatric.mp3agic.Mp3File;
-import com.mpatric.mp3agic.UnsupportedTagException;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -17,8 +14,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.*;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
@@ -43,16 +40,19 @@ import java.util.function.UnaryOperator;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
+import javazoom.jl.decoder.*;
 import okhttp3.*;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
+import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
 import org.jsoup.*;
 
+import javax.sound.sampled.*;
 import javax.swing.*;
 
 
@@ -171,6 +171,7 @@ public class HelloApplication extends Application {
         listen_to_cancel_button_third_screen(helloController);
         get_all_of_the_recitors(helloController);
         listen_to_the_recitor_list_view_click(helloController);
+        clear_temp_directory();
     }
 
     public static void main(String[] args) {
@@ -438,10 +439,10 @@ public class HelloApplication extends Application {
                             } else if (helloController.size_of_image.getValue().equals("1:1")) {
                                 image_holder = Base64_image.getInstance().square_place_holder;
                             }
-                            if(durations.length == 0){
+                            if (durations == null || durations.length == 0) {
                                 chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), image_holder, Long.MAX_VALUE, new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse())));
                             } else {
-                                if(j == 0){
+                                if (j == 0) {
                                     chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), image_holder, durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse())));
                                 } else {
                                     chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), image_holder, end_of_the_picture_durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse())));
@@ -673,15 +674,15 @@ public class HelloApplication extends Application {
         helloController.list_view_with_the_verses_preview.getSelectionModel().select(0);
         helloController.list_view_with_the_verses_preview.getFocusModel().focus(0);
         helloController.list_view_with_the_verses_preview.scrollTo(0);
-        if(mediaPlayer!=null){
+        if (mediaPlayer != null) {
             mediaPlayer.stop();
         }
         duration = 0;
-        if(durations!=null){
+        if (durations != null) {
             Arrays.fill(durations, null);
         }
-        if(end_of_the_picture_durations!=null){
-            Arrays.fill(end_of_the_picture_durations,null);
+        if (end_of_the_picture_durations != null) {
+            Arrays.fill(end_of_the_picture_durations, null);
         }
         helloController.duration_of_media.setText("00:00");
         helloController.upload_image_button_for_each_ayat.setText("Upload Image");
@@ -830,7 +831,6 @@ public class HelloApplication extends Application {
         listen_to_end_of_audio_fourth_screen(helloController);
         listen_to_slider_audio(helloController);
         set_up_the_width_and_height_of_the_image_in_fourth_screen(helloController);
-
     }
 
     private void set_the_visibility_of_the_buttons(HelloController helloController, int position) {
@@ -904,17 +904,21 @@ public class HelloApplication extends Application {
                     setText(null);
                     setGraphic(null);
                 } else {
-                    imageView.setImage(item.getEditied_base_64_image());
                     if (helloController.size_of_image.getValue().equals("9:16")) {
                         imageView.setFitHeight(80);
                         imageView.setFitWidth(45);
+                        imageView.setImage(resizeImage(item.getEditied_base_64_image(), 45, 80));
                     } else if (helloController.size_of_image.getValue().equals("16:9")) {
                         imageView.setFitWidth(80);
                         imageView.setFitHeight(45);
+                        imageView.setImage(resizeImage(item.getEditied_base_64_image(), 80, 45));
                     } else if (helloController.size_of_image.getValue().equals("1:1")) {
                         imageView.setFitWidth(45);
                         imageView.setFitHeight(45);
+                        imageView.setImage(resizeImage(item.getEditied_base_64_image(), 45, 45));
                     }
+                    imageView.setPreserveRatio(true);
+                    imageView.setSmooth(true);
                     text.setText(String.valueOf(item.getVerse_number()));
                     vBox.getChildren().setAll(imageView, text); // Stack the image and text vertically
                     vBox.setAlignment(Pos.CENTER);
@@ -1033,6 +1037,7 @@ public class HelloApplication extends Application {
             public void run() {
                 helloController.sound_slider_fourth_screen.setMax(get_duration());
                 chatgpt_responses.get(chatgpt_responses.size() - 1).setTime_in_milliseconds((long) get_duration());
+                set_the_time_total_time(helloController,get_duration());
             }
         });
     }
@@ -1067,8 +1072,8 @@ public class HelloApplication extends Application {
 
     private void update_the_duration_time(HelloController helloController, double total_millis) {
         int totalSeconds = (int) TimeUnit.MILLISECONDS.toSeconds((long) total_millis);
-        int minutes = (int) (totalSeconds / 60);
-        int seconds = (int) (totalSeconds % 60);
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
         String minutes_string;
         String seconds_string;
         if (minutes < 10) {
@@ -1232,19 +1237,19 @@ public class HelloApplication extends Application {
                 //Show open file dialog
                 List<File> files = fileChooser.showOpenMultipleDialog(null);
                 if (files != null && !files.isEmpty()) {
-                    for(int i = 0;i<files.size();i++){
-                        if(selected_verse+i>=chatgpt_responses.size()){
+                    for (int i = 0; i < files.size(); i++) {
+                        if (selected_verse + i >= chatgpt_responses.size()) {
                             too_many_images_selected = true;
                             break;
                         }
                         try {
                             Image image = new Image(new FileInputStream(files.get(i)));
-                            BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
-                            BufferedImage formattedImage = null;
-                            if ((helloController.size_of_image.getValue().equals("1:1") && bufferedImage.getWidth() == bufferedImage.getHeight()) || (helloController.size_of_image.getValue().equals("9:16") && bufferedImage.getWidth() * 16D == bufferedImage.getHeight() * 9D) || (helloController.size_of_image.getValue().equals("16:9") && bufferedImage.getWidth() * 9D == bufferedImage.getHeight() * 16D)) {
-                                formattedImage = bufferedImage;
+                            if ((helloController.size_of_image.getValue().equals("1:1") && image.getWidth() == image.getHeight()) || (helloController.size_of_image.getValue().equals("9:16") && image.getWidth() * 16D == image.getHeight() * 9D) || (helloController.size_of_image.getValue().equals("16:9") && image.getWidth() * 9D == image.getHeight() * 16D)) {
+                                chatgpt_responses.get(selected_verse + i).setBase_64_image(image);
                             } else {
                                 if (helloController.size_of_image.getValue().equals("9:16")) {
+                                    BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
+                                    BufferedImage formattedImage = null;
                                     int targetWidth = bufferedImage.getWidth();
                                     int targetHeight = targetWidth * 16 / 9;  // Calculate the new height for a 9:16 ratio
                                     // Create a new black image with a 9:16 ratio
@@ -1255,14 +1260,16 @@ public class HelloApplication extends Application {
                                     int buffer_at_the_top = (targetHeight - bufferedImage.getHeight()) / 2;
                                     g.drawImage(bufferedImage, 0, buffer_at_the_top, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
                                     g.dispose();
+                                    chatgpt_responses.get(selected_verse + i).setBase_64_image(SwingFXUtils.toFXImage(formattedImage, null));
+                                    bufferedImage.flush();
+                                    formattedImage.flush();
                                 } else if (helloController.size_of_image.getValue().equals("16:9")) {
 
                                 } else if (helloController.size_of_image.getValue().equals("1:1")) {
 
                                 }
                             }
-                            chatgpt_responses.get(selected_verse+i).setBase_64_image(SwingFXUtils.toFXImage(formattedImage, null));
-                            add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse+i).getAyatSettings(), selected_verse+i);
+                            add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse + i).getAyatSettings(), selected_verse + i);
                             helloController.upload_image_button_for_each_ayat.setText("Change Image");
                             set_the_image_fourth_screen(helloController, selected_verse);
                         } catch (Exception e) {
@@ -1270,7 +1277,7 @@ public class HelloApplication extends Application {
                         }
                     }
                     helloController.list_view_with_the_verses_preview.refresh();
-                    if(too_many_images_selected){
+                    if (too_many_images_selected) {
                         show_alert("Too many images selected. Only the number of images matching the remaining verses will be used.");
                     }
                 }
@@ -1317,7 +1324,7 @@ public class HelloApplication extends Application {
                 FileChooser.ExtensionFilter extFilterFLAC = new FileChooser.ExtensionFilter("FLAC files (*.flac)", "*.flac");
                 fileChooser.getExtensionFilters().addAll(extFilterMP3, extFilterWAV, extFilterFLAC);
                 File file = fileChooser.showOpenDialog(null);
-                if(file!=null){
+                if (file != null) {
                     sound_path = file.getAbsolutePath();
                     helloController.choose_sound_third_screen.setText("Change Sound");
                     helloController.list_view_with_the_recitors.getSelectionModel().clearSelection();
@@ -1358,7 +1365,7 @@ public class HelloApplication extends Application {
         // Configure the FFmpegFrameRecorder
         FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(videoFileName, captureWidth, captureHeight, channels);
         recorder.setVideoCodec(org.bytedeco.ffmpeg.global.avcodec.AV_CODEC_ID_H264);
-        recorder.setAudioCodec(org.bytedeco.ffmpeg.global.avcodec.AV_CODEC_ID_FLAC);
+        recorder.setAudioCodec(org.bytedeco.ffmpeg.global.avcodec.AV_CODEC_ID_AAC);
         recorder.setFormat("mp4");
         recorder.setFrameRate(frameRate);
         recorder.setSampleRate(sampleRate);
@@ -1366,7 +1373,7 @@ public class HelloApplication extends Application {
         recorder.setVideoOption("crf", "10");
         recorder.setVideoOption("tune", "stillimage");
         recorder.setVideoBitrate(20000000);
-        recorder.setVideoOption("profile", "high");
+        //recorder.setVideoOption("profile", "high");
         recorder.setVideoOption("level", "5.1");
         recorder.setAudioBitrate(audioBitrate);
         recorder.setAudioChannels(channels);
@@ -1726,6 +1733,7 @@ public class HelloApplication extends Application {
             }
         }
         g.dispose();
+        bufferedImage.flush();
         chatgpt_responses.get(selected_verse).setEditied_base_64_image(SwingFXUtils.toFXImage(bufferedImage, null));
     }
 
@@ -2298,11 +2306,11 @@ public class HelloApplication extends Application {
         });
     }
 
-    private String capatilize_first_letter(String text){
-        if(text.isEmpty()){
+    private String capatilize_first_letter(String text) {
+        if (text.isEmpty()) {
             return "";
         }
-        if(Character.isLetter(text.charAt(0))){
+        if (Character.isLetter(text.charAt(0))) {
             return text.substring(0, 1).toUpperCase() + text.substring(1);
         } else {
             return text;
@@ -2329,32 +2337,32 @@ public class HelloApplication extends Application {
             Response response = client.newCall(request).execute();
             String jsonString = response.body().string();
             ArrayList<Reciters_info> arrayList_with_reciters_info = process_the_audio_recirotrs(jsonString);
-            set_up_the_recitors_list_view(helloController,arrayList_with_reciters_info);
+            set_up_the_recitors_list_view(helloController, arrayList_with_reciters_info);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private ArrayList<Reciters_info> process_the_audio_recirotrs(String json_text){
+    private ArrayList<Reciters_info> process_the_audio_recirotrs(String json_text) {
         JsonNode nameNode = return_name_node(json_text);
         ArrayNode arrayNode = (ArrayNode) nameNode.get("reciters_verse");
-        HashMap<String,Integer> hashMap_counter = new HashMap<>();
-        for(int i = 0;i< arrayNode.size();i++){
+        HashMap<String, Integer> hashMap_counter = new HashMap<>();
+        for (int i = 0; i < arrayNode.size(); i++) {
             JsonNode local = arrayNode.get(i);
-            hashMap_counter.put(local.get("name").asText(),hashMap_counter.getOrDefault(local.get("name").asText(),0)+1);
+            hashMap_counter.put(local.get("name").asText(), hashMap_counter.getOrDefault(local.get("name").asText(), 0) + 1);
         }
         ArrayList<Reciters_info> reciters_infoArrayList = new ArrayList<>();
         Reciters_info english_reciter = null;
-        for(int i = 0;i<arrayNode.size();i++){
+        for (int i = 0; i < arrayNode.size(); i++) {
             JsonNode local = arrayNode.get(i);
             Reciters_info recitersInfo;
-            if(hashMap_counter.get(local.get("name").asText()) == 1){
-                recitersInfo = new Reciters_info(local.get("id").asInt(),local.get("name").asText(),local.get("audio_url_bit_rate_32_").asText(),local.get("audio_url_bit_rate_64").asText(),local.get("audio_url_bit_rate_128").asText());
+            if (hashMap_counter.get(local.get("name").asText()) == 1) {
+                recitersInfo = new Reciters_info(local.get("id").asInt(), local.get("name").asText(), local.get("name").asText().replace("Shaik ", ""), local.get("audio_url_bit_rate_32_").asText(), local.get("audio_url_bit_rate_64").asText(), local.get("audio_url_bit_rate_128").asText());
             } else {
-                recitersInfo = new Reciters_info(local.get("id").asInt(),local.get("name").asText(),local.get("name").asText().concat(" - ").concat(local.get("rewaya").asText()).concat(" - ").concat(local.get("musshaf_type").asText()),local.get("audio_url_bit_rate_32_").asText(),local.get("audio_url_bit_rate_64").asText(),local.get("audio_url_bit_rate_128").asText());
+                recitersInfo = new Reciters_info(local.get("id").asInt(), local.get("name").asText(), local.get("name").asText().replace("Shaik ", "").concat(" - ").concat(local.get("rewaya").asText()).concat(" - ").concat(local.get("musshaf_type").asText()), local.get("audio_url_bit_rate_32_").asText(), local.get("audio_url_bit_rate_64").asText(), local.get("audio_url_bit_rate_128").asText());
             }
-            if(local.get("id").asInt() == 224 && local.get("name").asText().equals("(English) Translated by Sahih International Recited by Ibrahim Walk")){
+            if (local.get("id").asInt() == 224 && local.get("name").asText().equals("(English) Translated by Sahih International Recited by Ibrahim Walk")) {
                 english_reciter = recitersInfo;
             } else {
                 reciters_infoArrayList.add(recitersInfo);
@@ -2363,16 +2371,16 @@ public class HelloApplication extends Application {
         reciters_infoArrayList.sort(new Comparator<Reciters_info>() {
             @Override
             public int compare(Reciters_info o1, Reciters_info o2) {
-                return o1.getName().compareTo(o2.getName());
+                return o1.getDisplayed_name().compareTo(o2.getDisplayed_name());
             }
         });
-        if(english_reciter!=null){
+        if (english_reciter != null) {
             reciters_infoArrayList.add(english_reciter);
         }
         return reciters_infoArrayList;
     }
 
-    private void set_up_the_recitors_list_view(HelloController helloController,List<Reciters_info> reciters_info_list){
+    private void set_up_the_recitors_list_view(HelloController helloController, List<Reciters_info> reciters_info_list) {
         ObservableList<Reciters_info> items = FXCollections.observableArrayList();
         items.addAll(reciters_info_list);
         helloController.list_view_with_the_recitors.setItems(items);
@@ -2390,7 +2398,7 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void listen_to_the_recitor_list_view_click(HelloController helloController){
+    private void listen_to_the_recitor_list_view_click(HelloController helloController) {
         helloController.list_view_with_the_recitors.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -2400,39 +2408,47 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void get_the_sound_and_concat_them_into_one(HelloController helloController){
-        if(sound_path.isEmpty()){
+    private double get_duration() {
+        return media.getDuration().toMillis();
+    }
+
+    private void get_the_sound_and_concat_them_into_one(HelloController helloController) {
+        if (sound_path.isEmpty()) {
             boolean did_i_ever_fail_a_recitation = false;
             OkHttpClient client = new OkHttpClient();
             String ayat = helloController.enter_the_ayats_wanted.getText();
             int start_ayat = return_start_ayat(ayat);
             int end_ayat = return_end_ayat(ayat);
-            int number_of_ayats = end_ayat-start_ayat+1;
+            int number_of_ayats = end_ayat - start_ayat + 1;
             String[] mp3Urls = new String[number_of_ayats];
             durations = new Long[number_of_ayats];
             end_of_the_picture_durations = new Long[number_of_ayats];
-            byte[][] each_mp3_sound = new byte[number_of_ayats][];
+
             String base_url = "";
-            if(!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits().isEmpty()){
+            if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits().isEmpty()) {
                 base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits();
-            } else if(!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_64_bits().isEmpty()){
+            } else if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_64_bits().isEmpty()) {
                 base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_64_bits();
-            }  else if(!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_32_bits().isEmpty()){
+            } else if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_32_bits().isEmpty()) {
                 base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_32_bits();
             }
-            String surat_number = String.format("%03d", helloController.choose_the_surat.getSelectionModel().getSelectedIndex()+1);
+            String surat_number = String.format("%03d", helloController.choose_the_surat.getSelectionModel().getSelectedIndex() + 1);
             int counter = 0;
-            for(int i = start_ayat;i<=end_ayat;i++){
+            for (int i = start_ayat; i <= end_ayat; i++) {
                 String ayat_number = String.format("%03d", i);
                 mp3Urls[counter] = base_url.concat(surat_number).concat(ayat_number).concat(".mp3");
                 counter++;
             }
             duration = 0;
-            for (int i = 0;i<number_of_ayats;i++) {
+            File dir = new File("temp");
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            for (int i = 0; i < number_of_ayats; i++) {
                 Request request = new Request.Builder().url(mp3Urls[i]).build();
                 try (Response response = client.newCall(request).execute()) {
                     if (!response.isSuccessful()) {
-                        if(!did_i_ever_fail_a_recitation){
+                        if (!did_i_ever_fail_a_recitation) {
                             show_alert("Failed to parse a recitation.");
                             did_i_ever_fail_a_recitation = true;
                         }
@@ -2447,51 +2463,116 @@ public class HelloApplication extends Application {
                         }
                     }
                     byte[] mp3Bytes = buffer.toByteArray();
-                    File tempFile = File.createTempFile("temp_mp3_", ".mp3");
+                    File tempFile = new File("temp", String.format("%03d.mp3", i));
+                    tempFile.deleteOnExit();
                     try (FileOutputStream fos = new FileOutputStream(tempFile)) {
                         fos.write(mp3Bytes);
                     }
-                    Mp3File mp3File = new Mp3File(tempFile);
-                    durations[i] = mp3File.getLengthInMilliseconds();
-                    duration+=durations[i];
-                    if(i == 0){
+                    durations[i] = getDurationWithFFmpeg(tempFile);
+                    System.out.println(i + durations[i]);
+                    duration += durations[i];
+                    if (i == 0) {
                         end_of_the_picture_durations[i] = durations[i];
                     } else {
-                        end_of_the_picture_durations[i] = durations[i] + end_of_the_picture_durations[i-1];
+                        end_of_the_picture_durations[i] = durations[i] + end_of_the_picture_durations[i - 1];
                     }
-                    each_mp3_sound[i] = mp3Bytes;
                 } catch (IOException e) {
                     e.printStackTrace();
-                } catch (InvalidDataException e) {
-                    throw new RuntimeException(e);
-                } catch (UnsupportedTagException e) {
-                    throw new RuntimeException(e);
                 }
             }
-            File dir = new File("temp");
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-            try (FileOutputStream output = new FileOutputStream("temp/combined.mp3")) {
-                for (int i = 0;i<number_of_ayats;i++) {
-                    output.write(each_mp3_sound[i]);
+            File listFile = new File("temp/list.txt");
+            listFile.deleteOnExit();
+            try (PrintWriter writer = new PrintWriter(listFile)) {
+                for (int i = 0; i < number_of_ayats; i++) {
+                    String filename = String.format("%03d.mp3", i);
+                    writer.println("file '" + filename + "'");
                 }
-                File file = new File("temp/combined.mp3");
-                file.deleteOnExit();
-                sound_path =  file.getAbsolutePath();
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
+            }
+            try {
+                ProcessBuilder pb = new ProcessBuilder(
+                        "ffmpeg", "-f", "concat", "-safe", "0",
+                        "-i", "temp/list.txt",
+                        "-c", "copy",
+                        "temp/combined.mp3"
+                );
+                pb.redirectErrorStream(true); // Combine stderr with stdout
+                Process process = pb.start();
+                int exitCode = process.waitFor();
+                if (exitCode != 0) {
+                    show_alert("Audio encoding failed. FFMPEG");
+                } else {
+                    File out_put_file = new File("temp/combined.mp3");
+                    out_put_file.deleteOnExit();
+                    sound_path = out_put_file.getAbsolutePath();
+                }
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private Image resizeImage(Image input, double targetWidth, double targetHeight) {
+        WritableImage output = new WritableImage((int) targetWidth, (int) targetHeight);
+        PixelReader reader = input.getPixelReader();
+        PixelWriter writer = output.getPixelWriter();
+
+        double scaleX = input.getWidth() / targetWidth;
+        double scaleY = input.getHeight() / targetHeight;
+
+        for (int y = 0; y < targetHeight; y++) {
+            for (int x = 0; x < targetWidth; x++) {
+                int pixelX = (int) (x * scaleX);
+                int pixelY = (int) (y * scaleY);
+                writer.setArgb(x, y, reader.getArgb(pixelX, pixelY));
+            }
+        }
+        return output;
+    }
+
+    private void clear_temp_directory() {
+        File file = new File("temp/");
+        boolean isPresent = file.exists() && file.isDirectory();
+        if (isPresent) {
+            try {
+                FileUtils.cleanDirectory(file);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    private double get_duration(){
-        if(duration>0){
-            return duration;
-        } else {
-            return mediaPlayer.getMedia().getDuration().toMillis();
+    private long getDurationWithFFmpeg(File mp3File) {
+        try {
+            ProcessBuilder pb = new ProcessBuilder(
+                    "ffprobe", "-v", "error",
+                    "-show_entries", "format=duration",
+                    "-of", "default=noprint_wrappers=1:nokey=1",
+                    mp3File.getAbsolutePath()
+            );
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line = reader.readLine();
+                process.waitFor();
+                if (line != null) {
+                    double seconds = Double.parseDouble(line.trim());
+                    return (long) (seconds * 1000); // convert to milliseconds
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to get duration: " + e.getMessage());
         }
+        return 0;
+    }
+
+    private void set_the_time_total_time(HelloController helloController,double time){
+        int totalSeconds = (int) TimeUnit.MILLISECONDS.toSeconds((long) time);
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+        String minutes_string = String.format("%02d",minutes);
+        String seconds_string = String.format("%02d",seconds);
+        helloController.total_duration_of_media.setText(minutes_string.concat(":").concat(seconds_string));
     }
 }
