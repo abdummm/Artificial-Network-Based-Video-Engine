@@ -461,11 +461,18 @@
                             </HBox.margin>
                         </Button>
                     </HBox>
-                    <Button fx:id="upload_image_button_for_each_ayat" text="Upload Image">
+                    <HBox alignment="CENTER">
                         <VBox.margin>
                             <Insets top="10.0" />
                         </VBox.margin>
-                    </Button>
+                        <Button fx:id="upload_image_button_for_each_ayat" text="Upload Image">
+                        </Button>
+                        <Button fx:id="set_image_to_all" text="Set image to all">
+                            <HBox.margin>
+                                <Insets left="10.0" />
+                            </HBox.margin>
+                        </Button>
+                    </HBox>
                 </VBox>
             </StackPane>
         </right>

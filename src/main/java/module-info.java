@@ -19,8 +19,8 @@ module com.example.quranfx {
     requires org.bytedeco.javacv;
     requires org.bytedeco.ffmpeg;
     requires org.apache.commons.lang3;
-    requires jlayer;
     requires org.apache.commons.io;
+    requires thumbnailator;
 
     opens com.example.quranfx to javafx.fxml;
     exports com.example.quranfx;

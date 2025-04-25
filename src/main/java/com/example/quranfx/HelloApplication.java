@@ -28,6 +28,7 @@ import javafx.stage.Stage;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.RescaleOp;
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.*;
@@ -40,7 +41,6 @@ import java.util.function.UnaryOperator;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
-import javazoom.jl.decoder.*;
 import okhttp3.*;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -52,6 +52,7 @@ import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
 import org.jsoup.*;
 
+import javax.imageio.ImageIO;
 import javax.sound.sampled.*;
 import javax.swing.*;
 
@@ -79,7 +80,6 @@ public class HelloApplication extends Application {
 
     private Long[] durations;
     private Long[] end_of_the_picture_durations;
-    private double duration = 0;
 
 
     @Override
@@ -171,6 +171,8 @@ public class HelloApplication extends Application {
         listen_to_cancel_button_third_screen(helloController);
         get_all_of_the_recitors(helloController);
         listen_to_the_recitor_list_view_click(helloController);
+        listen_to_set_image_to_all(helloController);
+        make_temp_dir();
         clear_temp_directory();
     }
 
@@ -431,13 +433,13 @@ public class HelloApplication extends Application {
                     add_to_array_list_with_verses(String.valueOf(Jsoup.parse(String.valueOf(translations_array_node.get(0).get("text"))).text()), ayat_number, arabic_ayat);
                     if (!helloController.generate_chat_gpt_images.isSelected() && array_list_with_verses.size() == initial_number_of_ayats) {
                         for (int j = 0; j < array_list_with_verses.size(); j++) {
-                            Image image_holder = Base64_image.getInstance().vertical_place_holder;
+                            BufferedImage image_holder = return_buffer_image_from_file(Base64_image.getInstance().file_path_vertical_place_holder);
                             if (helloController.size_of_image.getValue().equals("9:16")) {
-                                image_holder = Base64_image.getInstance().vertical_place_holder;
+                                image_holder = return_buffer_image_from_file(Base64_image.getInstance().file_path_vertical_place_holder);
                             } else if (helloController.size_of_image.getValue().equals("16:9")) {
-                                image_holder = Base64_image.getInstance().horizontal_place_holder;
+                                image_holder = return_buffer_image_from_file(Base64_image.getInstance().file_path_horizontal_place_holder);
                             } else if (helloController.size_of_image.getValue().equals("1:1")) {
-                                image_holder = Base64_image.getInstance().square_place_holder;
+                                image_holder = return_buffer_image_from_file(Base64_image.getInstance().file_path_square_place_holder);
                             }
                             if (durations == null || durations.length == 0) {
                                 chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), image_holder, Long.MAX_VALUE, new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse())));
@@ -677,7 +679,6 @@ public class HelloApplication extends Application {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
         }
-        duration = 0;
         if (durations != null) {
             Arrays.fill(durations, null);
         }
@@ -847,16 +848,7 @@ public class HelloApplication extends Application {
     }
 
     private void set_the_image_fourth_screen(HelloController helloController, int position) {
-        /*if (helloController.enable_english_text.isSelected()) {
-            if (chatgpt_responses.get(position).getBase_64_image().equals(chatgpt_responses.get(position).getEditied_base_64_image())) {
-                add_the_text_to_the_photo(helloController, chatgpt_responses.get(position).getAyatSettings(), position);
-                helloController.chatgpt_image_view.setImage(base_64_to_image(chatgpt_responses.get(position).getEditied_base_64_image()));
-            }
-            helloController.chatgpt_image_view.setImage(base_64_to_image(chatgpt_responses.get(position).getEditied_base_64_image()));
-        } else {
-            helloController.chatgpt_image_view.setImage(base_64_to_image(chatgpt_responses.get(position).getBase_64_image()));
-        }*/
-        helloController.chatgpt_image_view.setImage(chatgpt_responses.get(position).getEditied_base_64_image());
+        helloController.chatgpt_image_view.setImage(buffer_image_to_image(chatgpt_responses.get(position).getEditied_base_64_image()));
     }
 
     private void next_photo_click_listen(HelloController helloController) {
@@ -907,15 +899,15 @@ public class HelloApplication extends Application {
                     if (helloController.size_of_image.getValue().equals("9:16")) {
                         imageView.setFitHeight(80);
                         imageView.setFitWidth(45);
-                        imageView.setImage(resizeImage(item.getEditied_base_64_image(), 45, 80));
+                        imageView.setImage(item.getThumbnail_vertical());
                     } else if (helloController.size_of_image.getValue().equals("16:9")) {
                         imageView.setFitWidth(80);
                         imageView.setFitHeight(45);
-                        imageView.setImage(resizeImage(item.getEditied_base_64_image(), 80, 45));
+                        imageView.setImage(item.getThumbnail_horizontal());
                     } else if (helloController.size_of_image.getValue().equals("1:1")) {
                         imageView.setFitWidth(45);
                         imageView.setFitHeight(45);
-                        imageView.setImage(resizeImage(item.getEditied_base_64_image(), 45, 45));
+                        imageView.setImage(item.getThumbnail_square());
                     }
                     imageView.setPreserveRatio(true);
                     imageView.setSmooth(true);
@@ -930,6 +922,7 @@ public class HelloApplication extends Application {
 
     private void select_the_correct_verse_in_the_list_view(HelloController helloController, int position) {
         helloController.list_view_with_the_verses_preview.getSelectionModel().select(position);
+        //helloController.list_view_with_the_verses_preview.scrollTo(position);
         helloController.list_view_with_the_verses_preview.requestFocus();
     }
 
@@ -1245,7 +1238,7 @@ public class HelloApplication extends Application {
                         try {
                             Image image = new Image(new FileInputStream(files.get(i)));
                             if ((helloController.size_of_image.getValue().equals("1:1") && image.getWidth() == image.getHeight()) || (helloController.size_of_image.getValue().equals("9:16") && image.getWidth() * 16D == image.getHeight() * 9D) || (helloController.size_of_image.getValue().equals("16:9") && image.getWidth() * 9D == image.getHeight() * 16D)) {
-                                chatgpt_responses.get(selected_verse + i).setBase_64_image(image);
+                                chatgpt_responses.get(selected_verse + i).setBase_64_image(image_to_buffered_image(image));
                             } else {
                                 if (helloController.size_of_image.getValue().equals("9:16")) {
                                     BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
@@ -1260,7 +1253,7 @@ public class HelloApplication extends Application {
                                     int buffer_at_the_top = (targetHeight - bufferedImage.getHeight()) / 2;
                                     g.drawImage(bufferedImage, 0, buffer_at_the_top, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
                                     g.dispose();
-                                    chatgpt_responses.get(selected_verse + i).setBase_64_image(SwingFXUtils.toFXImage(formattedImage, null));
+                                    chatgpt_responses.get(selected_verse + i).setBase_64_image(formattedImage);
                                     bufferedImage.flush();
                                     formattedImage.flush();
                                 } else if (helloController.size_of_image.getValue().equals("16:9")) {
@@ -1275,6 +1268,7 @@ public class HelloApplication extends Application {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                        chatgpt_responses.get(selected_verse + i).setImage_edited(true);
                     }
                     helloController.list_view_with_the_verses_preview.refresh();
                     if (too_many_images_selected) {
@@ -1293,7 +1287,12 @@ public class HelloApplication extends Application {
     }
 
     private void update_the_name_of_the_image_button_fourth_screen(HelloController helloController, int selected_verse) {
-        if (helloController.size_of_image.getValue().equals("9:16")) {
+        if(chatgpt_responses.get(selected_verse).isImage_edited()){
+            helloController.upload_image_button_for_each_ayat.setText("Change Image");
+        } else {
+            helloController.upload_image_button_for_each_ayat.setText("Upload Image");
+        }
+        /*if (helloController.size_of_image.getValue().equals("9:16")) {
             if (chatgpt_responses.get(selected_verse).getBase_64_image().equals(Base64_image.getInstance().vertical_place_holder)) {
                 helloController.upload_image_button_for_each_ayat.setText("Upload Image");
             } else {
@@ -1311,7 +1310,7 @@ public class HelloApplication extends Application {
             } else {
                 helloController.upload_image_button_for_each_ayat.setText("Change Image");
             }
-        }
+        }*/
     }
 
     private void upload_sound_listen(HelloController helloController) {
@@ -1383,7 +1382,7 @@ public class HelloApplication extends Application {
         try {
             recorder.start();
             for (int i = 0; i < chatgpt_responses.size(); i++) {
-                BufferedImage image_fake = SwingFXUtils.fromFXImage(chatgpt_responses.get(i).getEditied_base_64_image(), null);
+                BufferedImage image_fake = chatgpt_responses.get(i).getEditied_base_64_image();
                 BufferedImage image = new BufferedImage(image_fake.getWidth(), image_fake.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
                 image.getGraphics().drawImage(image_fake, 0, 0, null);
                 long time_on_screen;
@@ -1424,7 +1423,7 @@ public class HelloApplication extends Application {
                 helloController.english_translation_settings.setManaged(newValue);
                 helloController.english_translation_settings.setVisible(newValue);
                 add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
-                helloController.chatgpt_image_view.setImage(chatgpt_responses.get(selected_verse).getEditied_base_64_image());
+                helloController.chatgpt_image_view.setImage(buffer_image_to_image(chatgpt_responses.get(selected_verse).getEditied_base_64_image()));
             }
         });
     }
@@ -1559,7 +1558,7 @@ public class HelloApplication extends Application {
     private void set_the_english_text_of_the_ayat_in_the_image_view(HelloController helloController, int selected_verse) {
         if (helloController.enable_english_text.isSelected() && chatgpt_responses.get(selected_verse).getBase_64_image().equals(chatgpt_responses.get(selected_verse).getEditied_base_64_image())) {
             add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
-            helloController.chatgpt_image_view.setImage(chatgpt_responses.get(selected_verse).getEditied_base_64_image());
+            helloController.chatgpt_image_view.setImage(buffer_image_to_image(chatgpt_responses.get(selected_verse).getEditied_base_64_image()));
         }
     }
 
@@ -1629,18 +1628,21 @@ public class HelloApplication extends Application {
     }
 
     private void add_the_text_to_the_photo(HelloController helloController, Ayat_settings ayatSettings, int selected_verse) {
-        Image image = chatgpt_responses.get(selected_verse).getBase_64_image();
-        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
+        BufferedImage bufferedImage = chatgpt_responses.get(selected_verse).getBase_64_image();
+        float brightnessFactor = (float) (ayatSettings.getBrightness_of_image() / 100.0); // e.g., 0.6 for 60%
+
+        RescaleOp rescaleOp = new RescaleOp(brightnessFactor, 0, null);
+        rescaleOp.filter(bufferedImage, bufferedImage);
         Graphics2D g = bufferedImage.createGraphics();
-        {
+        /*{
             double difference = 100 - ayatSettings.getBrightness_of_image();
             double real_difference = (difference / 100) * 255;
             Color dimColor = new Color(0, 0, 0, (int) real_difference);
             g.setColor(dimColor);
             g.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
-        }
+        }*/
         {
-            double font_size = (ayatSettings.getEnglish_font_size() / 500D) * Math.sqrt(Math.pow(image.getHeight(), 2) + Math.pow(image.getWidth(), 2));
+            double font_size = (ayatSettings.getEnglish_font_size() / 500D) * Math.sqrt(Math.pow(bufferedImage.getHeight(), 2) + Math.pow(bufferedImage.getWidth(), 2));
             java.awt.Font font = new java.awt.Font(ayatSettings.getEnglish_font_name(), java.awt.Font.PLAIN, (int) font_size);
             g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -1675,7 +1677,7 @@ public class HelloApplication extends Application {
             }
         }
         {
-            double font_size = (ayatSettings.getArabic_font_size() / 500D) * Math.sqrt(Math.pow(image.getHeight(), 2) + Math.pow(image.getWidth(), 2));
+            double font_size = (ayatSettings.getArabic_font_size() / 500D) * Math.sqrt(Math.pow(bufferedImage.getHeight(), 2) + Math.pow(bufferedImage.getWidth(), 2));
             java.awt.Font font = new java.awt.Font(ayatSettings.getArabic_font_name(), java.awt.Font.PLAIN, (int) font_size);
             FontMetrics metrics = g.getFontMetrics(font);
             g.setFont(font);
@@ -1704,7 +1706,7 @@ public class HelloApplication extends Application {
             }
         }
         {
-            double font_size = (ayatSettings.getSurat_font_size() / 500D) * Math.sqrt(Math.pow(image.getHeight(), 2) + Math.pow(image.getWidth(), 2));
+            double font_size = (ayatSettings.getSurat_font_size() / 500D) * Math.sqrt(Math.pow(bufferedImage.getHeight(), 2) + Math.pow(bufferedImage.getWidth(), 2));
             java.awt.Font font = new java.awt.Font(ayatSettings.getSurat_font_name(), java.awt.Font.PLAIN, (int) font_size);
             FontMetrics metrics = g.getFontMetrics(font);
             g.setFont(font);
@@ -1733,8 +1735,8 @@ public class HelloApplication extends Application {
             }
         }
         g.dispose();
+        chatgpt_responses.get(selected_verse).setEditied_base_64_image(bufferedImage);
         bufferedImage.flush();
-        chatgpt_responses.get(selected_verse).setEditied_base_64_image(SwingFXUtils.toFXImage(bufferedImage, null));
     }
 
     public ArrayList<String> wrapText(String text, FontMetrics metrics, int maxWidth) {
@@ -1820,7 +1822,7 @@ public class HelloApplication extends Application {
             public void handle(ActionEvent event) {
                 update_current_ayat_settings(helloController);
                 add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
-                helloController.chatgpt_image_view.setImage(chatgpt_responses.get(selected_verse).getEditied_base_64_image());
+                helloController.chatgpt_image_view.setImage(buffer_image_to_image(chatgpt_responses.get(selected_verse).getEditied_base_64_image()));
                 for (int i = 0; i < chatgpt_responses.size(); i++) {
                     if (i != selected_verse) {
                         chatgpt_responses.get(i).getAyatSettings().set_ayat_settings(chatgpt_responses.get(selected_verse).getAyatSettings());
@@ -1838,7 +1840,7 @@ public class HelloApplication extends Application {
             public void handle(ActionEvent event) {
                 update_current_ayat_settings(helloController);
                 add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
-                helloController.chatgpt_image_view.setImage(chatgpt_responses.get(selected_verse).getEditied_base_64_image());
+                helloController.chatgpt_image_view.setImage(buffer_image_to_image(chatgpt_responses.get(selected_verse).getEditied_base_64_image()));
                 helloController.list_view_with_the_verses_preview.refresh();
             }
         });
@@ -1928,7 +1930,7 @@ public class HelloApplication extends Application {
                 helloController.arabic_translation_settings.setVisible(newValue);
                 update_current_ayat_settings(helloController);
                 add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
-                helloController.chatgpt_image_view.setImage(chatgpt_responses.get(selected_verse).getEditied_base_64_image());
+                helloController.chatgpt_image_view.setImage(buffer_image_to_image(chatgpt_responses.get(selected_verse).getEditied_base_64_image()));
                 for (int i = 0; i < chatgpt_responses.size(); i++) {
                     if (i != selected_verse) {
                         chatgpt_responses.get(i).getAyatSettings().set_ayat_settings(chatgpt_responses.get(selected_verse).getAyatSettings());
@@ -2125,7 +2127,7 @@ public class HelloApplication extends Application {
                 helloController.surat_name_settings.setManaged(newValue);
                 helloController.surat_name_settings.setVisible(newValue);
                 add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
-                helloController.chatgpt_image_view.setImage(chatgpt_responses.get(selected_verse).getEditied_base_64_image());
+                helloController.chatgpt_image_view.setImage(buffer_image_to_image(chatgpt_responses.get(selected_verse).getEditied_base_64_image()));
             }
         });
     }
@@ -2357,6 +2359,9 @@ public class HelloApplication extends Application {
         for (int i = 0; i < arrayNode.size(); i++) {
             JsonNode local = arrayNode.get(i);
             Reciters_info recitersInfo;
+            if(!local.get("audio_url_bit_rate_128").asText().contains("https") && !local.get("audio_url_bit_rate_64").asText().contains("https")&& !local.get("audio_url_bit_rate_32_").asText().contains("https")){
+                continue;
+            }
             if (hashMap_counter.get(local.get("name").asText()) == 1) {
                 recitersInfo = new Reciters_info(local.get("id").asInt(), local.get("name").asText(), local.get("name").asText().replace("Shaik ", ""), local.get("audio_url_bit_rate_32_").asText(), local.get("audio_url_bit_rate_64").asText(), local.get("audio_url_bit_rate_128").asText());
             } else {
@@ -2439,11 +2444,6 @@ public class HelloApplication extends Application {
                 mp3Urls[counter] = base_url.concat(surat_number).concat(ayat_number).concat(".mp3");
                 counter++;
             }
-            duration = 0;
-            File dir = new File("temp");
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
             for (int i = 0; i < number_of_ayats; i++) {
                 Request request = new Request.Builder().url(mp3Urls[i]).build();
                 try (Response response = client.newCall(request).execute()) {
@@ -2463,14 +2463,12 @@ public class HelloApplication extends Application {
                         }
                     }
                     byte[] mp3Bytes = buffer.toByteArray();
-                    File tempFile = new File("temp", String.format("%03d.mp3", i));
+                    File tempFile = new File("temp/sound", String.format("%03d.mp3", i));
                     tempFile.deleteOnExit();
                     try (FileOutputStream fos = new FileOutputStream(tempFile)) {
                         fos.write(mp3Bytes);
                     }
                     durations[i] = getDurationWithFFmpeg(tempFile);
-                    System.out.println(i + durations[i]);
-                    duration += durations[i];
                     if (i == 0) {
                         end_of_the_picture_durations[i] = durations[i];
                     } else {
@@ -2480,7 +2478,7 @@ public class HelloApplication extends Application {
                     e.printStackTrace();
                 }
             }
-            File listFile = new File("temp/list.txt");
+            File listFile = new File("temp/sound/","list.txt");
             listFile.deleteOnExit();
             try (PrintWriter writer = new PrintWriter(listFile)) {
                 for (int i = 0; i < number_of_ayats; i++) {
@@ -2493,9 +2491,9 @@ public class HelloApplication extends Application {
             try {
                 ProcessBuilder pb = new ProcessBuilder(
                         "ffmpeg", "-f", "concat", "-safe", "0",
-                        "-i", "temp/list.txt",
+                        "-i", "temp/sound/list.txt",
                         "-c", "copy",
-                        "temp/combined.mp3"
+                        "temp/sound/combined.mp3"
                 );
                 pb.redirectErrorStream(true); // Combine stderr with stdout
                 Process process = pb.start();
@@ -2503,7 +2501,7 @@ public class HelloApplication extends Application {
                 if (exitCode != 0) {
                     show_alert("Audio encoding failed. FFMPEG");
                 } else {
-                    File out_put_file = new File("temp/combined.mp3");
+                    File out_put_file = new File("temp/sound/combined.mp3");
                     out_put_file.deleteOnExit();
                     sound_path = out_put_file.getAbsolutePath();
                 }
@@ -2532,11 +2530,26 @@ public class HelloApplication extends Application {
     }
 
     private void clear_temp_directory() {
-        File file = new File("temp/");
-        boolean isPresent = file.exists() && file.isDirectory();
-        if (isPresent) {
+        File base_images_file = new File("temp/images/base/");
+        File edited_images_file = new File("temp/images/edited/");
+        File sounds_files = new File("temp/sound/");
+        if (base_images_file.exists() && base_images_file.isDirectory()) {
             try {
-                FileUtils.cleanDirectory(file);
+                FileUtils.cleanDirectory(base_images_file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (edited_images_file.exists() && edited_images_file.isDirectory()) {
+            try {
+                FileUtils.cleanDirectory(edited_images_file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (sounds_files.exists() && sounds_files.isDirectory()) {
+            try {
+                FileUtils.cleanDirectory(sounds_files);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -2574,5 +2587,73 @@ public class HelloApplication extends Application {
         String minutes_string = String.format("%02d",minutes);
         String seconds_string = String.format("%02d",seconds);
         helloController.total_duration_of_media.setText(minutes_string.concat(":").concat(seconds_string));
+    }
+
+    private void listen_to_set_image_to_all(HelloController helloController){
+        helloController.set_image_to_all.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                BufferedImage current_image = chatgpt_responses.get(selected_verse).getBase_64_image();
+                for(int i = 0;i<chatgpt_responses.size();i++){
+                    if(i!=selected_verse){
+                        chatgpt_responses.get(i).setBase_64_image(current_image);
+                    }
+                }
+                for(int i = 0;i<chatgpt_responses.size();i++){
+                    if(i!=selected_verse){
+                        add_the_text_to_the_photo(helloController, chatgpt_responses.get(i).getAyatSettings(), i);
+                    }
+                }
+                helloController.list_view_with_the_verses_preview.refresh();
+            }
+        });
+    }
+
+    private void make_temp_dir(){
+        File directory = new File("temp/");
+        File images = new File("temp/images");
+        File sound = new File("temp/sound");
+        File images_base = new File("temp/images/base");
+        File images_edited = new File("temp/images/edited");
+        if (!directory.exists()){
+            directory.mkdirs();
+        }
+        if (!images.exists()){
+            images.mkdirs();
+        }
+        if (!sound.exists()){
+            sound.mkdirs();
+        }
+        if (!images_base.exists()){
+            images_base.mkdirs();
+        }
+        if (!images_edited.exists()){
+            images_edited.mkdirs();
+        }
+    }
+
+    private BufferedImage return_buffer_image_from_file(String file_path){
+        BufferedImage image = null;
+        try {
+            File input = new File(file_path);
+            if(input.exists()){
+                image = ImageIO.read(input);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return image;
+    }
+
+    private Image buffer_image_to_image(BufferedImage bufferedImage){
+        return SwingFXUtils.toFXImage(bufferedImage, null);
+    }
+
+    private BufferedImage image_to_buffered_image(Image image){
+        return SwingFXUtils.fromFXImage(image, null);
+    }
+
+    private void check_if_scroll_bar_is_visible(){
+
     }
 }

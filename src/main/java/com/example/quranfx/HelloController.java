@@ -233,4 +233,7 @@ public class HelloController {
 
     @FXML
     public Label total_duration_of_media;
+
+    @FXML
+    public Button set_image_to_all;
 }

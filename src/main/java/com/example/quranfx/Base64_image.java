@@ -14,10 +14,12 @@ public class Base64_image {
         return instance;
     }
 
-    public Image vertical_place_holder = new Image(new File("src/main/java/com/example/quranfx/9_16_no_image.jpg").toURI().toString());
-    public Image horizontal_place_holder = new Image(new File("src/main/java/com/example/quranfx/16_9_no_image.jpg").toURI().toString());
-    public Image square_place_holder = new Image(new File("src/main/java/com/example/quranfx/1_1_no_image.jpg").toURI().toString());
-
+    public Image vertical_place_holder = new Image(new File("default_images/9_16_no_image.bmp").toURI().toString());
+    public Image horizontal_place_holder = new Image(new File("default_images/16_9_no_image.bmp").toURI().toString());
+    public Image square_place_holder = new Image(new File("default_images/1_1_no_image.bmp").toURI().toString());
+    public String file_path_vertical_place_holder = "default_images/9_16_no_image.bmp";
+    public String file_path_horizontal_place_holder = "default_images/16_9_no_image.bmp";
+    public String file_path_square_place_holder = "default_images/1_1_no_image.bmp";
 
 
 }
