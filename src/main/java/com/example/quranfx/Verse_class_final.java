@@ -105,6 +105,7 @@ public class Verse_class_final {
             Path outputPath = Paths.get("temp", "images", sub_file, verse_number + "." + format);
             File outputFile = outputPath.toFile();
             ImageIO.write(bufferedImage, format, outputFile); // format = "png", "jpg", etc.
+            outputFile.deleteOnExit();
         } catch (IOException e) {
             e.printStackTrace();
         }

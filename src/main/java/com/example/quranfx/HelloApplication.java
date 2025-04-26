@@ -11,6 +11,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -450,8 +451,8 @@ public class HelloApplication extends Application {
                                     chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), image_holder, end_of_the_picture_durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse())));
                                 }
                             }
-                            set_up_the_fourth_screen(helloController);
                         }
+                        set_up_the_fourth_screen(helloController);
                     }
                 }
             }
@@ -832,6 +833,7 @@ public class HelloApplication extends Application {
         listen_to_end_of_audio_fourth_screen(helloController);
         listen_to_slider_audio(helloController);
         set_up_the_width_and_height_of_the_image_in_fourth_screen(helloController);
+        check_if_scroll_bar_is_visible(helloController);
     }
 
     private void set_the_visibility_of_the_buttons(HelloController helloController, int position) {
@@ -932,6 +934,7 @@ public class HelloApplication extends Application {
             public void handle(MouseEvent event) {
                 selected_verse = helloController.list_view_with_the_verses_preview.getSelectionModel().getSelectedIndex();
                 the_verse_changed(helloController, selected_verse);
+                scroll_to_specific_verse_time();
             }
         });
     }
@@ -1030,7 +1033,7 @@ public class HelloApplication extends Application {
             public void run() {
                 helloController.sound_slider_fourth_screen.setMax(get_duration());
                 chatgpt_responses.get(chatgpt_responses.size() - 1).setTime_in_milliseconds((long) get_duration());
-                set_the_time_total_time(helloController,get_duration());
+                set_the_time_total_time(helloController, get_duration());
             }
         });
     }
@@ -1287,7 +1290,7 @@ public class HelloApplication extends Application {
     }
 
     private void update_the_name_of_the_image_button_fourth_screen(HelloController helloController, int selected_verse) {
-        if(chatgpt_responses.get(selected_verse).isImage_edited()){
+        if (chatgpt_responses.get(selected_verse).isImage_edited()) {
             helloController.upload_image_button_for_each_ayat.setText("Change Image");
         } else {
             helloController.upload_image_button_for_each_ayat.setText("Upload Image");
@@ -1343,6 +1346,10 @@ public class HelloApplication extends Application {
 
     private void create_video(HelloController helloController) {
         String videoFileName = "/Users/abdelrahmanabdelkader/Downloads/output.mp4";
+        File file = new File(videoFileName);
+        if (file.exists() && !file.isDirectory()) {
+            file.delete();
+        }
         int captureWidth = 0;
         int captureHeight = 0;
         if (helloController.size_of_image.getValue().equals("9:16")) {
@@ -2359,7 +2366,7 @@ public class HelloApplication extends Application {
         for (int i = 0; i < arrayNode.size(); i++) {
             JsonNode local = arrayNode.get(i);
             Reciters_info recitersInfo;
-            if(!local.get("audio_url_bit_rate_128").asText().contains("https") && !local.get("audio_url_bit_rate_64").asText().contains("https")&& !local.get("audio_url_bit_rate_32_").asText().contains("https")){
+            if (!local.get("audio_url_bit_rate_128").asText().contains("https") && !local.get("audio_url_bit_rate_64").asText().contains("https") && !local.get("audio_url_bit_rate_32_").asText().contains("https")) {
                 continue;
             }
             if (hashMap_counter.get(local.get("name").asText()) == 1) {
@@ -2478,7 +2485,7 @@ public class HelloApplication extends Application {
                     e.printStackTrace();
                 }
             }
-            File listFile = new File("temp/sound/","list.txt");
+            File listFile = new File("temp/sound/", "list.txt");
             listFile.deleteOnExit();
             try (PrintWriter writer = new PrintWriter(listFile)) {
                 for (int i = 0; i < number_of_ayats; i++) {
@@ -2492,8 +2499,10 @@ public class HelloApplication extends Application {
                 ProcessBuilder pb = new ProcessBuilder(
                         "ffmpeg", "-f", "concat", "-safe", "0",
                         "-i", "temp/sound/list.txt",
-                        "-c", "copy",
-                        "temp/sound/combined.mp3"
+                        "-c:a", "pcm_s16le",  // <-- WAV encoding
+                        "-ar", "44100",       // <-- 44.1kHz sample rate (standard)
+                        "-ac", "1",           // <-- 2 channels (stereo); use "1" if you want mono
+                        "temp/sound/combined.wav"
                 );
                 pb.redirectErrorStream(true); // Combine stderr with stdout
                 Process process = pb.start();
@@ -2501,7 +2510,7 @@ public class HelloApplication extends Application {
                 if (exitCode != 0) {
                     show_alert("Audio encoding failed. FFMPEG");
                 } else {
-                    File out_put_file = new File("temp/sound/combined.mp3");
+                    File out_put_file = new File("temp/sound/combined.wav");
                     out_put_file.deleteOnExit();
                     sound_path = out_put_file.getAbsolutePath();
                 }
@@ -2580,27 +2589,29 @@ public class HelloApplication extends Application {
         return 0;
     }
 
-    private void set_the_time_total_time(HelloController helloController,double time){
+    private void set_the_time_total_time(HelloController helloController, double time) {
         int totalSeconds = (int) TimeUnit.MILLISECONDS.toSeconds((long) time);
         int minutes = totalSeconds / 60;
         int seconds = totalSeconds % 60;
-        String minutes_string = String.format("%02d",minutes);
-        String seconds_string = String.format("%02d",seconds);
+        String minutes_string = String.format("%02d", minutes);
+        String seconds_string = String.format("%02d", seconds);
         helloController.total_duration_of_media.setText(minutes_string.concat(":").concat(seconds_string));
     }
 
-    private void listen_to_set_image_to_all(HelloController helloController){
+    private void listen_to_set_image_to_all(HelloController helloController) {
         helloController.set_image_to_all.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 BufferedImage current_image = chatgpt_responses.get(selected_verse).getBase_64_image();
-                for(int i = 0;i<chatgpt_responses.size();i++){
-                    if(i!=selected_verse){
+
+                for (int i = 0; i < chatgpt_responses.size(); i++) {
+                    chatgpt_responses.get(i).setImage_edited(true);
+                    if (i != selected_verse) {
                         chatgpt_responses.get(i).setBase_64_image(current_image);
                     }
                 }
-                for(int i = 0;i<chatgpt_responses.size();i++){
-                    if(i!=selected_verse){
+                for (int i = 0; i < chatgpt_responses.size(); i++) {
+                    if (i != selected_verse) {
                         add_the_text_to_the_photo(helloController, chatgpt_responses.get(i).getAyatSettings(), i);
                     }
                 }
@@ -2609,34 +2620,34 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void make_temp_dir(){
+    private void make_temp_dir() {
         File directory = new File("temp/");
         File images = new File("temp/images");
         File sound = new File("temp/sound");
         File images_base = new File("temp/images/base");
         File images_edited = new File("temp/images/edited");
-        if (!directory.exists()){
+        if (!directory.exists()) {
             directory.mkdirs();
         }
-        if (!images.exists()){
+        if (!images.exists()) {
             images.mkdirs();
         }
-        if (!sound.exists()){
+        if (!sound.exists()) {
             sound.mkdirs();
         }
-        if (!images_base.exists()){
+        if (!images_base.exists()) {
             images_base.mkdirs();
         }
-        if (!images_edited.exists()){
+        if (!images_edited.exists()) {
             images_edited.mkdirs();
         }
     }
 
-    private BufferedImage return_buffer_image_from_file(String file_path){
+    private BufferedImage return_buffer_image_from_file(String file_path) {
         BufferedImage image = null;
         try {
             File input = new File(file_path);
-            if(input.exists()){
+            if (input.exists()) {
                 image = ImageIO.read(input);
             }
         } catch (IOException e) {
@@ -2645,15 +2656,36 @@ public class HelloApplication extends Application {
         return image;
     }
 
-    private Image buffer_image_to_image(BufferedImage bufferedImage){
+    private Image buffer_image_to_image(BufferedImage bufferedImage) {
         return SwingFXUtils.toFXImage(bufferedImage, null);
     }
 
-    private BufferedImage image_to_buffered_image(Image image){
+    private BufferedImage image_to_buffered_image(Image image) {
         return SwingFXUtils.fromFXImage(image, null);
     }
 
-    private void check_if_scroll_bar_is_visible(){
+    private void check_if_scroll_bar_is_visible(HelloController helloController) {
+        ChangeListener<Bounds> listener = new ChangeListener<Bounds>() {
+            @Override
+            public void changed(ObservableValue<? extends Bounds> observableValue, Bounds oldBounds, Bounds newBounds) {
+                if (newBounds.getWidth() > 0 && newBounds.getHeight() > 0) {
+                    ScrollBar hBar = (ScrollBar) helloController.list_view_with_the_verses_preview.lookup(".scroll-bar:horizontal");
+                    ScrollBar vBar = (ScrollBar) helloController.list_view_with_the_verses_preview.lookup(".scroll-bar:vertical");
+                    if (hBar != null && hBar.isVisible() && hBar.getMax() > 0 && vBar != null && vBar.isVisible() && vBar.getMax() > 0) {
+                        helloController.list_view_with_the_verses_preview.setMaxHeight(helloController.list_view_with_the_verses_preview.getHeight() + hBar.getHeight());
+                    }
+                    helloController.list_view_with_the_verses_preview.layoutBoundsProperty().removeListener(this);
+                }
+            }
+        };
+        helloController.list_view_with_the_verses_preview.layoutBoundsProperty().addListener(listener);
+    }
 
+    private void scroll_to_specific_verse_time() {
+        if (selected_verse == 0) {
+            mediaPlayer.seek(Duration.millis(0));
+        } else {
+            mediaPlayer.seek(Duration.millis(chatgpt_responses.get(selected_verse - 1).getTime_in_milliseconds()));
+        }
     }
 }
