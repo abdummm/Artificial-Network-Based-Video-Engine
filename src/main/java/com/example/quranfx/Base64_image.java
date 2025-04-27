@@ -1,7 +1,9 @@
 package com.example.quranfx;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,12 +16,11 @@ public class Base64_image {
         return instance;
     }
 
-    public Image vertical_place_holder = new Image(new File("default_images/9_16_no_image.bmp").toURI().toString());
-    public Image horizontal_place_holder = new Image(new File("default_images/16_9_no_image.bmp").toURI().toString());
-    public Image square_place_holder = new Image(new File("default_images/1_1_no_image.bmp").toURI().toString());
-    public String file_path_vertical_place_holder = "default_images/9_16_no_image.bmp";
-    public String file_path_horizontal_place_holder = "default_images/16_9_no_image.bmp";
-    public String file_path_square_place_holder = "default_images/1_1_no_image.bmp";
+    public BufferedImage vertical_place_holder = image_to_buffered_image(new Image(new File("default_images/9_16_no_image.bmp").toURI().toString()));
+    public BufferedImage horizontal_place_holder = image_to_buffered_image(new Image(new File("default_images/16_9_no_image.bmp").toURI().toString()));
+    public BufferedImage square_place_holder = image_to_buffered_image(new Image(new File("default_images/1_1_no_image.bmp").toURI().toString()));
 
-
+    private BufferedImage image_to_buffered_image(Image image) {
+        return SwingFXUtils.fromFXImage(image, null);
+    }
 }

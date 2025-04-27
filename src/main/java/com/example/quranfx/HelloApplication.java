@@ -34,9 +34,7 @@ import java.io.*;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.UnaryOperator;
 
 import javafx.util.Duration;
@@ -434,21 +432,13 @@ public class HelloApplication extends Application {
                     add_to_array_list_with_verses(String.valueOf(Jsoup.parse(String.valueOf(translations_array_node.get(0).get("text"))).text()), ayat_number, arabic_ayat);
                     if (!helloController.generate_chat_gpt_images.isSelected() && array_list_with_verses.size() == initial_number_of_ayats) {
                         for (int j = 0; j < array_list_with_verses.size(); j++) {
-                            BufferedImage image_holder = return_buffer_image_from_file(Base64_image.getInstance().file_path_vertical_place_holder);
-                            if (helloController.size_of_image.getValue().equals("9:16")) {
-                                image_holder = return_buffer_image_from_file(Base64_image.getInstance().file_path_vertical_place_holder);
-                            } else if (helloController.size_of_image.getValue().equals("16:9")) {
-                                image_holder = return_buffer_image_from_file(Base64_image.getInstance().file_path_horizontal_place_holder);
-                            } else if (helloController.size_of_image.getValue().equals("1:1")) {
-                                image_holder = return_buffer_image_from_file(Base64_image.getInstance().file_path_square_place_holder);
-                            }
                             if (durations == null || durations.length == 0) {
-                                chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), image_holder, Long.MAX_VALUE, new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse())));
+                                chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), Long.MAX_VALUE, new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()),return_the_aspect_ratio_as_an_object(helloController)));
                             } else {
                                 if (j == 0) {
-                                    chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), image_holder, durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse())));
+                                    chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()),return_the_aspect_ratio_as_an_object(helloController)));
                                 } else {
-                                    chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), image_holder, end_of_the_picture_durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse())));
+                                    chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), end_of_the_picture_durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()),return_the_aspect_ratio_as_an_object(helloController)));
                                 }
                             }
                         }
@@ -530,14 +520,6 @@ public class HelloApplication extends Application {
                                     throw new RuntimeException(e);
                                 }
                             } else {
-                                Image image_holder = Base64_image.getInstance().vertical_place_holder;
-                                if (helloController.size_of_image.getValue().equals("9:16")) {
-                                    image_holder = Base64_image.getInstance().vertical_place_holder;
-                                } else if (helloController.size_of_image.getValue().equals("16:9")) {
-                                    image_holder = Base64_image.getInstance().horizontal_place_holder;
-                                } else if (helloController.size_of_image.getValue().equals("1:1")) {
-                                    image_holder = Base64_image.getInstance().square_place_holder;
-                                }
                                 //chatgpt_responses.add(new Verse_class_final(verseClass.getVerse(), verseClass.getVerse_number(), image_holder, verseClass.getVerse_number() * 1000, new Ayat_settings(),));
                             }
                         }
@@ -687,6 +669,7 @@ public class HelloApplication extends Application {
             Arrays.fill(end_of_the_picture_durations, null);
         }
         helloController.duration_of_media.setText("00:00");
+        helloController.total_duration_of_media.setText("00:00");
         helloController.upload_image_button_for_each_ayat.setText("Upload Image");
         selected_verse = 0;
         sound_path = "";
@@ -1067,22 +1050,7 @@ public class HelloApplication extends Application {
     }
 
     private void update_the_duration_time(HelloController helloController, double total_millis) {
-        int totalSeconds = (int) TimeUnit.MILLISECONDS.toSeconds((long) total_millis);
-        int minutes = totalSeconds / 60;
-        int seconds = totalSeconds % 60;
-        String minutes_string;
-        String seconds_string;
-        if (minutes < 10) {
-            minutes_string = "0".concat(String.valueOf(minutes));
-        } else {
-            minutes_string = String.valueOf(minutes);
-        }
-        if (seconds < 10) {
-            seconds_string = "0".concat(String.valueOf(seconds));
-        } else {
-            seconds_string = String.valueOf(seconds);
-        }
-        helloController.duration_of_media.setText(minutes_string.concat(":").concat(seconds_string));
+        helloController.duration_of_media.setText(formatTime((long) total_millis));
     }
 
     private void listen_to_full_screen_button(HelloController helloController) {
@@ -1164,6 +1132,9 @@ public class HelloApplication extends Application {
     }
 
     private void change_the_image_based_on_audio_fourth_screen(HelloController helloController, Double time_of_audio_millis) {
+        if(chatgpt_responses.isEmpty()){// check that array_is_not_empty
+            return;
+        }
         if (time_of_audio_millis > chatgpt_responses.get(selected_verse).getTime_in_milliseconds() && selected_verse < chatgpt_responses.size() - 1) {
             selected_verse++;
             while (time_of_audio_millis > chatgpt_responses.get(selected_verse).getTime_in_milliseconds() && selected_verse < chatgpt_responses.size() - 1) {
@@ -2427,15 +2398,18 @@ public class HelloApplication extends Application {
     private void get_the_sound_and_concat_them_into_one(HelloController helloController) {
         if (sound_path.isEmpty()) {
             boolean did_i_ever_fail_a_recitation = false;
-            OkHttpClient client = new OkHttpClient();
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(90, TimeUnit.SECONDS)
+                    .build();
             String ayat = helloController.enter_the_ayats_wanted.getText();
             int start_ayat = return_start_ayat(ayat);
             int end_ayat = return_end_ayat(ayat);
             int number_of_ayats = end_ayat - start_ayat + 1;
-            String[] mp3Urls = new String[number_of_ayats];
+            BlockingQueue<String> verseQueue = new LinkedBlockingQueue<>();
             durations = new Long[number_of_ayats];
             end_of_the_picture_durations = new Long[number_of_ayats];
-
+            HashMap<String,Integer> tie_verses_to_indexes = new HashMap<>();
             String base_url = "";
             if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits().isEmpty()) {
                 base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits();
@@ -2448,10 +2422,75 @@ public class HelloApplication extends Application {
             int counter = 0;
             for (int i = start_ayat; i <= end_ayat; i++) {
                 String ayat_number = String.format("%03d", i);
-                mp3Urls[counter] = base_url.concat(surat_number).concat(ayat_number).concat(".mp3");
+                String full_ayat = base_url.concat(surat_number).concat(ayat_number).concat(".mp3");
+                verseQueue.offer(base_url.concat(surat_number).concat(ayat_number).concat(".mp3"));
+                tie_verses_to_indexes.put(full_ayat,counter);
                 counter++;
             }
-            for (int i = 0; i < number_of_ayats; i++) {
+            int number_of_threads = Runtime.getRuntime().availableProcessors()*4;
+            ExecutorService executor = Executors.newFixedThreadPool(number_of_threads);
+            for(int i = 0;i<number_of_threads;i++){
+                executor.submit(() -> {
+                    while (true) {
+                        try {
+                            String verse_url = verseQueue.poll(1, TimeUnit.SECONDS);
+                            if (verse_url == null) {
+                                break; // Exit if no more verses to process
+                            }
+                            int verse_number = tie_verses_to_indexes.get(verse_url);
+                            Request request = new Request.Builder().url(verse_url).build();
+                            try (Response response = client.newCall(request).execute()) {
+                                if (!response.isSuccessful()) {
+                                    /*if (!did_i_ever_fail_a_recitation) {
+                                        show_alert("Failed to parse a recitation.");
+                                        did_i_ever_fail_a_recitation = true;
+                                    }*/
+                                    continue;
+                                }
+                                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                                try (InputStream input = response.body().byteStream()) {
+                                    byte[] temp = new byte[4096];
+                                    int bytesRead;
+                                    while ((bytesRead = input.read(temp)) != -1) {
+                                        buffer.write(temp, 0, bytesRead);
+                                    }
+                                }
+                                byte[] mp3Bytes = buffer.toByteArray();
+                                File tempFile = new File("temp/sound", String.format("%03d.mp3", verse_number));
+                                tempFile.deleteOnExit();
+                                try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                                    fos.write(mp3Bytes);
+                                }
+                                durations[verse_number] = getDurationWithFFmpeg(tempFile);
+                                /*if (verse_number == 0) {
+                                    end_of_the_picture_durations[verse_number] = durations[verse_number];
+                                } else {
+                                    end_of_the_picture_durations[verse_number] = durations[verse_number] + end_of_the_picture_durations[verse_number - 1];
+                                }*/
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            break;
+                        }
+                    }
+                });
+            }
+            executor.shutdown();
+            try {
+                executor.awaitTermination(1, TimeUnit.HOURS); // Wait for all threads to finish
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            if(number_of_ayats>0){
+                end_of_the_picture_durations[0] = durations[0];
+                for(int i = 1;i<number_of_ayats;i++){
+                    end_of_the_picture_durations[i] = durations[i] + end_of_the_picture_durations[i - 1];
+                }
+            }
+            /*for (int i = 0; i < number_of_ayats; i++) {
                 Request request = new Request.Builder().url(mp3Urls[i]).build();
                 try (Response response = client.newCall(request).execute()) {
                     if (!response.isSuccessful()) {
@@ -2484,7 +2523,7 @@ public class HelloApplication extends Application {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
+            }*/
             File listFile = new File("temp/sound/", "list.txt");
             listFile.deleteOnExit();
             try (PrintWriter writer = new PrintWriter(listFile)) {
@@ -2518,24 +2557,6 @@ public class HelloApplication extends Application {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    private Image resizeImage(Image input, double targetWidth, double targetHeight) {
-        WritableImage output = new WritableImage((int) targetWidth, (int) targetHeight);
-        PixelReader reader = input.getPixelReader();
-        PixelWriter writer = output.getPixelWriter();
-
-        double scaleX = input.getWidth() / targetWidth;
-        double scaleY = input.getHeight() / targetHeight;
-
-        for (int y = 0; y < targetHeight; y++) {
-            for (int x = 0; x < targetWidth; x++) {
-                int pixelX = (int) (x * scaleX);
-                int pixelY = (int) (y * scaleY);
-                writer.setArgb(x, y, reader.getArgb(pixelX, pixelY));
-            }
-        }
-        return output;
     }
 
     private void clear_temp_directory() {
@@ -2590,12 +2611,7 @@ public class HelloApplication extends Application {
     }
 
     private void set_the_time_total_time(HelloController helloController, double time) {
-        int totalSeconds = (int) TimeUnit.MILLISECONDS.toSeconds((long) time);
-        int minutes = totalSeconds / 60;
-        int seconds = totalSeconds % 60;
-        String minutes_string = String.format("%02d", minutes);
-        String seconds_string = String.format("%02d", seconds);
-        helloController.total_duration_of_media.setText(minutes_string.concat(":").concat(seconds_string));
+        helloController.total_duration_of_media.setText(formatTime((long) time));
     }
 
     private void listen_to_set_image_to_all(HelloController helloController) {
@@ -2687,5 +2703,29 @@ public class HelloApplication extends Application {
         } else {
             mediaPlayer.seek(Duration.millis(chatgpt_responses.get(selected_verse - 1).getTime_in_milliseconds()));
         }
+    }
+
+    private String formatTime(double timeInMillis) {
+        int totalSeconds = (int) (timeInMillis / 1000);
+        int hours = totalSeconds / 3600;
+        int minutes = (totalSeconds % 3600) / 60;
+        int seconds = totalSeconds % 60;
+
+        if (hours > 0) {
+            return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        } else {
+            return String.format("%02d:%02d", minutes, seconds);
+        }
+    }
+
+    private Pic_aspect_ratio return_the_aspect_ratio_as_an_object(HelloController helloController){
+        if (helloController.size_of_image.getValue().equals("9:16")) {
+            return Pic_aspect_ratio.aspect_vertical_9_16;
+        } else if (helloController.size_of_image.getValue().equals("16:9")) {
+            return Pic_aspect_ratio.aspect_horizontal_16_9;
+        } else if (helloController.size_of_image.getValue().equals("1:1")) {
+            return Pic_aspect_ratio.aspect_square_1_1;
+        }
+        return Pic_aspect_ratio.aspect_vertical_9_16;
     }
 }
