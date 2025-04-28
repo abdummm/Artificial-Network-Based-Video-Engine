@@ -52,8 +52,6 @@ import org.bytedeco.javacv.Java2DFrameConverter;
 import org.jsoup.*;
 
 import javax.imageio.ImageIO;
-import javax.sound.sampled.*;
-import javax.swing.*;
 
 
 public class HelloApplication extends Application {
@@ -79,6 +77,7 @@ public class HelloApplication extends Application {
 
     private Long[] durations;
     private Long[] end_of_the_picture_durations;
+    private int number_of_audio_channels = 2;
 
 
     @Override
@@ -842,6 +841,7 @@ public class HelloApplication extends Application {
             public void handle(ActionEvent event) {
                 selected_verse++;
                 the_verse_changed(helloController, selected_verse);
+                scroll_to_specific_verse_time();
             }
         });
     }
@@ -852,6 +852,7 @@ public class HelloApplication extends Application {
             public void handle(ActionEvent event) {
                 selected_verse--;
                 the_verse_changed(helloController, selected_verse);
+                scroll_to_specific_verse_time();
             }
         });
     }
@@ -951,7 +952,7 @@ public class HelloApplication extends Application {
     private void the_verse_changed(HelloController helloController, int selected_verse) {
         long startTime = System.nanoTime();
         set_the_visibility_of_the_buttons(helloController, selected_verse);
-        add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
+        //add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
         set_the_image_fourth_screen(helloController, selected_verse);
         set_selected_verse_text(helloController, selected_verse);
         select_the_correct_verse_in_the_list_view(helloController, selected_verse);
@@ -978,9 +979,9 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent event) {
                 if (helloController.play_sound.getText().equals("Play")) {
-                    if (mediaPlayer.getCurrentTime().toMillis() >= get_duration()) {
+                    /*if (mediaPlayer.getCurrentTime().toMillis() >= get_duration()) {
                         mediaPlayer.seek(Duration.ZERO);
-                    }
+                    }*/
                     helloController.play_sound.setText("Pause");
                     mediaPlayer.play();
                 } else if (helloController.play_sound.getText().equals("Pause")) {
@@ -1025,7 +1026,9 @@ public class HelloApplication extends Application {
         mediaPlayer.setOnEndOfMedia(new Runnable() {
             @Override
             public void run() {
+                mediaPlayer.pause();
                 helloController.play_sound.setText("Play");
+                System.out.println(mediaPlayer.getStatus().toString());
             }
         });
     }
@@ -1337,10 +1340,9 @@ public class HelloApplication extends Application {
 
         int audioBitrate = 1024000; // Standard quality
         int sampleRate = 48000;    // CD quality audio
-        int channels = 2;          // Stereo
 
         // Configure the FFmpegFrameRecorder
-        FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(videoFileName, captureWidth, captureHeight, channels);
+        FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(videoFileName, captureWidth, captureHeight, number_of_audio_channels);
         recorder.setVideoCodec(org.bytedeco.ffmpeg.global.avcodec.AV_CODEC_ID_H264);
         recorder.setAudioCodec(org.bytedeco.ffmpeg.global.avcodec.AV_CODEC_ID_AAC);
         recorder.setFormat("mp4");
@@ -1353,7 +1355,7 @@ public class HelloApplication extends Application {
         //recorder.setVideoOption("profile", "high");
         recorder.setVideoOption("level", "5.1");
         recorder.setAudioBitrate(audioBitrate);
-        recorder.setAudioChannels(channels);
+        recorder.setAudioChannels(number_of_audio_channels);
         recorder.setVideoQuality(0); // Maximum quality
         recorder.setTimestamp(System.currentTimeMillis());
         Java2DFrameConverter converter = new Java2DFrameConverter();
@@ -1607,8 +1609,7 @@ public class HelloApplication extends Application {
 
     private void add_the_text_to_the_photo(HelloController helloController, Ayat_settings ayatSettings, int selected_verse) {
         BufferedImage bufferedImage = chatgpt_responses.get(selected_verse).getBase_64_image();
-        float brightnessFactor = (float) (ayatSettings.getBrightness_of_image() / 100.0); // e.g., 0.6 for 60%
-
+        float brightnessFactor = (float) (ayatSettings.getBrightness_of_image() / 100.0);
         RescaleOp rescaleOp = new RescaleOp(brightnessFactor, 0, null);
         rescaleOp.filter(bufferedImage, bufferedImage);
         Graphics2D g = bufferedImage.createGraphics();
@@ -1633,7 +1634,7 @@ public class HelloApplication extends Application {
             g.setColor(Color.decode(ayatSettings.getEnglish_color_hex()));
             ArrayList<String> strings_to_be_drawn;
             if (helloController.enable_english_text.isSelected()) {
-                strings_to_be_drawn = wrapText(chatgpt_responses.get(selected_verse).getVerse(), metrics, bufferedImage.getWidth());
+                strings_to_be_drawn = wrapText(chatgpt_responses.get(selected_verse).getVerse(), metrics, bufferedImage.getWidth(),10);
             } else {
                 strings_to_be_drawn = new ArrayList<>();
                 strings_to_be_drawn.add("");
@@ -1662,7 +1663,7 @@ public class HelloApplication extends Application {
             g.setColor(Color.decode(ayatSettings.getArabic_color_hex()));
             ArrayList<String> strings_to_be_drawn;
             if (helloController.add_arabic_text_fourth_screen.isSelected()) {
-                strings_to_be_drawn = wrapText(remove_qoutes_from_arabic_text(chatgpt_responses.get(selected_verse).getArabic_verse()), metrics, bufferedImage.getWidth());
+                strings_to_be_drawn = wrapText(remove_qoutes_from_arabic_text(chatgpt_responses.get(selected_verse).getArabic_verse()), metrics, bufferedImage.getWidth(),10);
             } else {
                 strings_to_be_drawn = new ArrayList<>();
                 strings_to_be_drawn.add("");
@@ -1691,7 +1692,7 @@ public class HelloApplication extends Application {
             g.setColor(Color.decode(ayatSettings.getSurat_color_hex()));
             ArrayList<String> strings_to_be_drawn;
             if (helloController.add_surat_name_in_video.isSelected()) {
-                strings_to_be_drawn = wrapText(remove_qoutes_from_arabic_text(surat_name_selected), metrics, bufferedImage.getWidth());
+                strings_to_be_drawn = wrapText(remove_qoutes_from_arabic_text(surat_name_selected), metrics, bufferedImage.getWidth(),10);
             } else {
                 strings_to_be_drawn = new ArrayList<>();
                 strings_to_be_drawn.add("");
@@ -1717,12 +1718,15 @@ public class HelloApplication extends Application {
         bufferedImage.flush();
     }
 
-    public ArrayList<String> wrapText(String text, FontMetrics metrics, int maxWidth) {
+    public ArrayList<String> wrapText(String text, FontMetrics metrics, int maxWidth,int margin_left_and_right) {
+        double max_width_double = maxWidth;
+        max_width_double /= 100;
+        max_width_double *= margin_left_and_right;
         String[] text_split = text.split(" ");
         String currentLine = "";
         ArrayList<String> new_strings = new ArrayList<>();
         for (int i = 0; i < text_split.length; i++) {
-            int width = metrics.stringWidth(currentLine.concat(text_split[i]).concat(" ")) + 15;
+            int width = metrics.stringWidth(currentLine.concat(text_split[i]).concat(" ")) + (int) max_width_double;
             if (width > maxWidth) {
                 new_strings.add(currentLine);
                 currentLine = text_split[i].concat(" ");
@@ -2462,11 +2466,6 @@ public class HelloApplication extends Application {
                                     fos.write(mp3Bytes);
                                 }
                                 durations[verse_number] = getDurationWithFFmpeg(tempFile);
-                                /*if (verse_number == 0) {
-                                    end_of_the_picture_durations[verse_number] = durations[verse_number];
-                                } else {
-                                    end_of_the_picture_durations[verse_number] = durations[verse_number] + end_of_the_picture_durations[verse_number - 1];
-                                }*/
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -2480,9 +2479,16 @@ public class HelloApplication extends Application {
             }
             executor.shutdown();
             try {
-                executor.awaitTermination(1, TimeUnit.HOURS); // Wait for all threads to finish
+                executor.awaitTermination(5, TimeUnit.MINUTES); // Wait for all threads to finish
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
+            }
+            File tempFile = new File("temp/sound", String.format("%03d.mp3", start_ayat));
+            int get_the_number_of_audio_channels = getNumberOfChannels(tempFile.getAbsolutePath());
+            if(get_the_number_of_audio_channels == -1){
+                number_of_audio_channels = 2;
+            } else {
+                number_of_audio_channels = get_the_number_of_audio_channels;
             }
             if(number_of_ayats>0){
                 end_of_the_picture_durations[0] = durations[0];
@@ -2490,40 +2496,6 @@ public class HelloApplication extends Application {
                     end_of_the_picture_durations[i] = durations[i] + end_of_the_picture_durations[i - 1];
                 }
             }
-            /*for (int i = 0; i < number_of_ayats; i++) {
-                Request request = new Request.Builder().url(mp3Urls[i]).build();
-                try (Response response = client.newCall(request).execute()) {
-                    if (!response.isSuccessful()) {
-                        if (!did_i_ever_fail_a_recitation) {
-                            show_alert("Failed to parse a recitation.");
-                            did_i_ever_fail_a_recitation = true;
-                        }
-                        continue;
-                    }
-                    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                    try (InputStream input = response.body().byteStream()) {
-                        byte[] temp = new byte[4096];
-                        int bytesRead;
-                        while ((bytesRead = input.read(temp)) != -1) {
-                            buffer.write(temp, 0, bytesRead);
-                        }
-                    }
-                    byte[] mp3Bytes = buffer.toByteArray();
-                    File tempFile = new File("temp/sound", String.format("%03d.mp3", i));
-                    tempFile.deleteOnExit();
-                    try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-                        fos.write(mp3Bytes);
-                    }
-                    durations[i] = getDurationWithFFmpeg(tempFile);
-                    if (i == 0) {
-                        end_of_the_picture_durations[i] = durations[i];
-                    } else {
-                        end_of_the_picture_durations[i] = durations[i] + end_of_the_picture_durations[i - 1];
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }*/
             File listFile = new File("temp/sound/", "list.txt");
             listFile.deleteOnExit();
             try (PrintWriter writer = new PrintWriter(listFile)) {
@@ -2540,7 +2512,7 @@ public class HelloApplication extends Application {
                         "-i", "temp/sound/list.txt",
                         "-c:a", "pcm_s16le",  // <-- WAV encoding
                         "-ar", "44100",       // <-- 44.1kHz sample rate (standard)
-                        "-ac", "1",           // <-- 2 channels (stereo); use "1" if you want mono
+                        "-ac", String.valueOf(number_of_audio_channels),           // <-- 2 channels (stereo); use "1" if you want mono
                         "temp/sound/combined.wav"
                 );
                 pb.redirectErrorStream(true); // Combine stderr with stdout
@@ -2727,5 +2699,31 @@ public class HelloApplication extends Application {
             return Pic_aspect_ratio.aspect_square_1_1;
         }
         return Pic_aspect_ratio.aspect_vertical_9_16;
+    }
+
+    public int getNumberOfChannels(String audioFilePath) {
+        try {
+            ProcessBuilder pb = new ProcessBuilder(
+                    "ffprobe",
+                    "-v", "error",
+                    "-select_streams", "a:0",
+                    "-show_entries", "stream=channels",
+                    "-of", "default=noprint_wrappers=1:nokey=1",
+                    audioFilePath
+            );
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line = reader.readLine();
+            process.waitFor();
+
+            if (line != null) {
+                return Integer.parseInt(line.trim());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1; // Return -1 if error
     }
 }
