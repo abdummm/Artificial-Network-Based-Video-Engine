@@ -13,6 +13,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -38,8 +39,10 @@ public class Verse_class_final {
         this.arabic_verse = arabic_verse;
         this.pic_aspect_ratio = pic_aspect_ratio;
         this.image_edited = false;
-        save_image_to_disk(get_the_right_basic_image_aspect_ratio(pic_aspect_ratio), verse_number, "base");
-        save_image_to_disk(get_the_right_basic_image_aspect_ratio(pic_aspect_ratio), verse_number, "edited");
+        //save_image_to_disk(get_the_right_basic_image_aspect_ratio(pic_aspect_ratio), verse_number, "base");
+        //save_image_to_disk(get_the_right_basic_image_aspect_ratio(pic_aspect_ratio), verse_number, "edited");
+        copy_the_image("based");
+        copy_the_image("edited");
         set_the_thumbnail(get_the_right_basic_image_aspect_ratio(pic_aspect_ratio));
     }
 
@@ -154,9 +157,21 @@ public class Verse_class_final {
     }
 
     private void set_the_thumbnail(BufferedImage bufferedImage) {
+        int width = 45;
+        int height = 80;
+        if (pic_aspect_ratio == Pic_aspect_ratio.aspect_vertical_9_16) {
+            width = 45;
+            height = 80;
+        } else if (pic_aspect_ratio == Pic_aspect_ratio.aspect_horizontal_16_9) {
+            width = 80;
+            height = 45;
+        } else if (pic_aspect_ratio == Pic_aspect_ratio.aspect_square_1_1) {
+            width = 45;
+            height = 45;
+        }
         try {
             BufferedImage thumbnail = Thumbnails.of(bufferedImage)
-                    .size(45, 80)
+                    .size(width, height)
                     .asBufferedImage();
             this.thumbnail_vertical = buffer_image_to_image(thumbnail);
         } catch (IOException e) {
@@ -173,5 +188,16 @@ public class Verse_class_final {
             return Base64_image.getInstance().square_place_holder;
         }
         return Base64_image.getInstance().vertical_place_holder;
+    }
+
+    private void copy_the_image(String directory){
+        String format = "bmp";
+        try {
+            Path target_file_path = Paths.get("temp","images", directory, verse_number + "." + format);
+            Path source_file_path = Paths.get("temp", "default_image", "default_image.bmp");
+            Files.copy(source_file_path,target_file_path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

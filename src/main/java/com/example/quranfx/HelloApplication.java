@@ -40,6 +40,7 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 import java.io.*;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
@@ -87,6 +88,7 @@ public class HelloApplication extends Application {
     private Long[] durations;
     private Long[] end_of_the_picture_durations;
     private int number_of_audio_channels = 2;
+    private boolean did_this_play_already = false;
 
 
     @Override
@@ -181,6 +183,8 @@ public class HelloApplication extends Application {
         listen_to_set_image_to_all(helloController);
         make_temp_dir();
         clear_temp_directory();
+        listen_to_slider_value_updated(helloController);
+        create_bmp_file_in_the_back_ground(helloController);
     }
 
     public static void main(String[] args) {
@@ -423,7 +427,6 @@ public class HelloApplication extends Application {
         if (helloController.generate_chat_gpt_images.isSelected()) {
 
         }
-        //run_every_second(helloController);
     }
 
     private void add_all_of_the_verses_to_the_list_after(HelloController helloController, String ayat, String verses_string, int page) {
@@ -988,9 +991,9 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent event) {
                 if (helloController.play_sound.getText().equals("Play")) {
-                    /*if (mediaPlayer.getCurrentTime().toMillis() >= get_duration()) {
+                    if (mediaPlayer.getCurrentTime().toMillis() >= get_duration()) {
                         mediaPlayer.seek(Duration.ZERO);
-                    }*/
+                    }
                     helloController.play_sound.setText("Pause");
                     mediaPlayer.play();
                 } else if (helloController.play_sound.getText().equals("Pause")) {
@@ -1027,6 +1030,10 @@ public class HelloApplication extends Application {
                 helloController.sound_slider_fourth_screen.setMax(get_duration());
                 chatgpt_responses.get(chatgpt_responses.size() - 1).setTime_in_milliseconds((long) get_duration());
                 set_the_time_total_time(helloController, get_duration());
+                if (!did_this_play_already) {
+                    start_and_unstart_the_media_player();
+                }
+                did_this_play_already = true;
             }
         });
     }
@@ -1035,9 +1042,7 @@ public class HelloApplication extends Application {
         mediaPlayer.setOnEndOfMedia(new Runnable() {
             @Override
             public void run() {
-                mediaPlayer.pause();
                 helloController.play_sound.setText("Play");
-                System.out.println(mediaPlayer.getStatus().toString());
             }
         });
     }
@@ -1225,8 +1230,8 @@ public class HelloApplication extends Application {
                             Image image = new Image(new FileInputStream(files.get(i)));
                             BufferedImage bufferedImage = image_to_buffered_image(image);
                             int orientation = getExifOrientation(files.get(i));
-                            if(orientation == 3||orientation == 6|| orientation==8){
-                                bufferedImage = return_the_rotated_image(bufferedImage,orientation);
+                            if (orientation == 3 || orientation == 6 || orientation == 8) {
+                                bufferedImage = return_the_rotated_image(bufferedImage, orientation);
                             }
                             if ((helloController.size_of_image.getValue().equals("1:1") && image.getWidth() == image.getHeight()) || (helloController.size_of_image.getValue().equals("9:16") && image.getWidth() * 16D == image.getHeight() * 9D) || (helloController.size_of_image.getValue().equals("16:9") && image.getWidth() * 9D == image.getHeight() * 16D)) {
                                 chatgpt_responses.get(selected_verse + i).setBase_64_image(bufferedImage);
@@ -2509,7 +2514,7 @@ public class HelloApplication extends Application {
                     end_of_the_picture_durations[i] = durations[i] + end_of_the_picture_durations[i - 1];
                 }
             }
-            File listFile = new File("temp/sound/", "list.txt");
+            File listFile = new File("temp/sound", "list.txt");
             listFile.deleteOnExit();
             try (PrintWriter writer = new PrintWriter(listFile)) {
                 for (int i = 0; i < number_of_ayats; i++) {
@@ -2548,6 +2553,7 @@ public class HelloApplication extends Application {
         File base_images_file = new File("temp/images/base/");
         File edited_images_file = new File("temp/images/edited/");
         File sounds_files = new File("temp/sound/");
+        File default_image = new File("temp/default_image");
         if (base_images_file.exists() && base_images_file.isDirectory()) {
             try {
                 FileUtils.cleanDirectory(base_images_file);
@@ -2565,6 +2571,13 @@ public class HelloApplication extends Application {
         if (sounds_files.exists() && sounds_files.isDirectory()) {
             try {
                 FileUtils.cleanDirectory(sounds_files);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (default_image.exists() && default_image.isDirectory()) {
+            try {
+                FileUtils.cleanDirectory(default_image);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -2627,6 +2640,7 @@ public class HelloApplication extends Application {
         File sound = new File("temp/sound");
         File images_base = new File("temp/images/base");
         File images_edited = new File("temp/images/edited");
+        File default_image = new File("temp/default_image");
         if (!directory.exists()) {
             directory.mkdirs();
         }
@@ -2641,6 +2655,9 @@ public class HelloApplication extends Application {
         }
         if (!images_edited.exists()) {
             images_edited.mkdirs();
+        }
+        if(!default_image.exists()){
+            default_image.mkdirs();
         }
     }
 
@@ -2755,6 +2772,7 @@ public class HelloApplication extends Application {
         }
         return 1; // Default
     }
+
     private BufferedImage return_the_rotated_image(BufferedImage bufferedImage, int orientation) {
         AffineTransform t = new AffineTransform();
         switch (orientation) {
@@ -2784,16 +2802,16 @@ public class HelloApplication extends Application {
                 t.scale(-1.0, 1.0);
                 t.translate(-bufferedImage.getHeight(), 0);
                 t.translate(0, bufferedImage.getWidth());
-                t.rotate(  3 * Math.PI / 2);
+                t.rotate(3 * Math.PI / 2);
                 break;
             case 8: // PI / 2
                 t.translate(0, bufferedImage.getWidth());
-                t.rotate(  3 * Math.PI / 2);
+                t.rotate(3 * Math.PI / 2);
                 break;
         }
         AffineTransformOp op = new AffineTransformOp(t, AffineTransformOp.TYPE_BICUBIC);
 
-        BufferedImage destinationImage = op.createCompatibleDestImage(bufferedImage, (bufferedImage.getType() == BufferedImage.TYPE_BYTE_GRAY) ? bufferedImage.getColorModel() : null );
+        BufferedImage destinationImage = op.createCompatibleDestImage(bufferedImage, (bufferedImage.getType() == BufferedImage.TYPE_BYTE_GRAY) ? bufferedImage.getColorModel() : null);
         Graphics2D g = destinationImage.createGraphics();
         g.setBackground(Color.WHITE);
         g.clearRect(0, 0, destinationImage.getWidth(), destinationImage.getHeight());
@@ -2801,4 +2819,61 @@ public class HelloApplication extends Application {
         return destinationImage;
     }
 
+    private void start_and_unstart_the_media_player() {
+        mediaPlayer.setMute(true);
+        mediaPlayer.play();
+        mediaPlayer.setOnPlaying(new Runnable() {
+            @Override
+            public void run() {
+                mediaPlayer.pause();
+                mediaPlayer.setMute(false);
+                mediaPlayer.seek(Duration.millis(0));
+                mediaPlayer.setOnPlaying(null);
+            }
+        });
+    }
+
+    private void listen_to_slider_value_updated(HelloController helloController) {
+        helloController.sound_slider_fourth_screen.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
+                update_the_duration_time(helloController, newValue.doubleValue());
+            }
+        });
+    }
+
+    private void create_bmp_file_in_the_back_ground(HelloController helloController) {
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        executor.submit(() -> {
+            while (true) {
+                String format = "bmp";
+                try {
+                    Path outputPath = Paths.get("temp", "default_image", "default_image" + "." + format);
+                    File outputFile = outputPath.toFile();
+                    ImageIO.write(get_the_right_basic_image_aspect_ratio(return_the_aspect_ratio_as_an_object(helloController)), format, outputFile);
+                    outputFile.deleteOnExit();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+        });
+        executor.shutdown();
+        /*try {
+            executor.awaitTermination(1, TimeUnit.MINUTES); // Wait for all threads to finish
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }*/
+    }
+
+    private BufferedImage get_the_right_basic_image_aspect_ratio(Pic_aspect_ratio pic_aspect_ratio) {
+        if (pic_aspect_ratio == Pic_aspect_ratio.aspect_vertical_9_16) {
+            return Base64_image.getInstance().vertical_place_holder;
+        } else if (pic_aspect_ratio == Pic_aspect_ratio.aspect_horizontal_16_9) {
+            return Base64_image.getInstance().horizontal_place_holder;
+        } else if (pic_aspect_ratio == Pic_aspect_ratio.aspect_square_1_1) {
+            return Base64_image.getInstance().square_place_holder;
+        }
+        return Base64_image.getInstance().vertical_place_holder;
+    }
 }
