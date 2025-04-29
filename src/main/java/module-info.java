@@ -21,6 +21,7 @@ module com.example.quranfx {
     requires org.apache.commons.lang3;
     requires org.apache.commons.io;
     requires thumbnailator;
+    requires metadata.extractor;
 
     opens com.example.quranfx to javafx.fxml;
     exports com.example.quranfx;

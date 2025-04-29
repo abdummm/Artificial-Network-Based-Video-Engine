@@ -1,5 +1,12 @@
 package com.example.quranfx;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.MetadataException;
+import com.drew.metadata.exif.ExifIFD0Directory;
+import com.drew.metadata.jpeg.JpegDirectory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Application;
@@ -28,6 +35,8 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 import java.io.*;
@@ -432,12 +441,12 @@ public class HelloApplication extends Application {
                     if (!helloController.generate_chat_gpt_images.isSelected() && array_list_with_verses.size() == initial_number_of_ayats) {
                         for (int j = 0; j < array_list_with_verses.size(); j++) {
                             if (durations == null || durations.length == 0) {
-                                chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), Long.MAX_VALUE, new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()),return_the_aspect_ratio_as_an_object(helloController)));
+                                chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), Long.MAX_VALUE, new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), return_the_aspect_ratio_as_an_object(helloController)));
                             } else {
                                 if (j == 0) {
-                                    chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()),return_the_aspect_ratio_as_an_object(helloController)));
+                                    chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), return_the_aspect_ratio_as_an_object(helloController)));
                                 } else {
-                                    chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), end_of_the_picture_durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()),return_the_aspect_ratio_as_an_object(helloController)));
+                                    chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), end_of_the_picture_durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), return_the_aspect_ratio_as_an_object(helloController)));
                                 }
                             }
                         }
@@ -1135,7 +1144,7 @@ public class HelloApplication extends Application {
     }
 
     private void change_the_image_based_on_audio_fourth_screen(HelloController helloController, Double time_of_audio_millis) {
-        if(chatgpt_responses.isEmpty()){// check that array_is_not_empty
+        if (chatgpt_responses.isEmpty()) {// check that array_is_not_empty
             return;
         }
         if (time_of_audio_millis > chatgpt_responses.get(selected_verse).getTime_in_milliseconds() && selected_verse < chatgpt_responses.size() - 1) {
@@ -1214,11 +1223,15 @@ public class HelloApplication extends Application {
                         }
                         try {
                             Image image = new Image(new FileInputStream(files.get(i)));
+                            BufferedImage bufferedImage = image_to_buffered_image(image);
+                            int orientation = getExifOrientation(files.get(i));
+                            if(orientation == 3||orientation == 6|| orientation==8){
+                                bufferedImage = return_the_rotated_image(bufferedImage,orientation);
+                            }
                             if ((helloController.size_of_image.getValue().equals("1:1") && image.getWidth() == image.getHeight()) || (helloController.size_of_image.getValue().equals("9:16") && image.getWidth() * 16D == image.getHeight() * 9D) || (helloController.size_of_image.getValue().equals("16:9") && image.getWidth() * 9D == image.getHeight() * 16D)) {
-                                chatgpt_responses.get(selected_verse + i).setBase_64_image(image_to_buffered_image(image));
+                                chatgpt_responses.get(selected_verse + i).setBase_64_image(bufferedImage);
                             } else {
                                 if (helloController.size_of_image.getValue().equals("9:16")) {
-                                    BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
                                     BufferedImage formattedImage = null;
                                     int targetWidth = bufferedImage.getWidth();
                                     int targetHeight = targetWidth * 16 / 9;  // Calculate the new height for a 9:16 ratio
@@ -1634,7 +1647,7 @@ public class HelloApplication extends Application {
             g.setColor(Color.decode(ayatSettings.getEnglish_color_hex()));
             ArrayList<String> strings_to_be_drawn;
             if (helloController.enable_english_text.isSelected()) {
-                strings_to_be_drawn = wrapText(chatgpt_responses.get(selected_verse).getVerse(), metrics, bufferedImage.getWidth(),10);
+                strings_to_be_drawn = wrapText(chatgpt_responses.get(selected_verse).getVerse(), metrics, bufferedImage.getWidth(), 10);
             } else {
                 strings_to_be_drawn = new ArrayList<>();
                 strings_to_be_drawn.add("");
@@ -1663,7 +1676,7 @@ public class HelloApplication extends Application {
             g.setColor(Color.decode(ayatSettings.getArabic_color_hex()));
             ArrayList<String> strings_to_be_drawn;
             if (helloController.add_arabic_text_fourth_screen.isSelected()) {
-                strings_to_be_drawn = wrapText(remove_qoutes_from_arabic_text(chatgpt_responses.get(selected_verse).getArabic_verse()), metrics, bufferedImage.getWidth(),10);
+                strings_to_be_drawn = wrapText(remove_qoutes_from_arabic_text(chatgpt_responses.get(selected_verse).getArabic_verse()), metrics, bufferedImage.getWidth(), 10);
             } else {
                 strings_to_be_drawn = new ArrayList<>();
                 strings_to_be_drawn.add("");
@@ -1692,7 +1705,7 @@ public class HelloApplication extends Application {
             g.setColor(Color.decode(ayatSettings.getSurat_color_hex()));
             ArrayList<String> strings_to_be_drawn;
             if (helloController.add_surat_name_in_video.isSelected()) {
-                strings_to_be_drawn = wrapText(remove_qoutes_from_arabic_text(surat_name_selected), metrics, bufferedImage.getWidth(),10);
+                strings_to_be_drawn = wrapText(remove_qoutes_from_arabic_text(surat_name_selected), metrics, bufferedImage.getWidth(), 10);
             } else {
                 strings_to_be_drawn = new ArrayList<>();
                 strings_to_be_drawn.add("");
@@ -1718,7 +1731,7 @@ public class HelloApplication extends Application {
         bufferedImage.flush();
     }
 
-    public ArrayList<String> wrapText(String text, FontMetrics metrics, int maxWidth,int margin_left_and_right) {
+    public ArrayList<String> wrapText(String text, FontMetrics metrics, int maxWidth, int margin_left_and_right) {
         double max_width_double = maxWidth;
         max_width_double /= 100;
         max_width_double *= margin_left_and_right;
@@ -2413,7 +2426,7 @@ public class HelloApplication extends Application {
             BlockingQueue<String> verseQueue = new LinkedBlockingQueue<>();
             durations = new Long[number_of_ayats];
             end_of_the_picture_durations = new Long[number_of_ayats];
-            HashMap<String,Integer> tie_verses_to_indexes = new HashMap<>();
+            HashMap<String, Integer> tie_verses_to_indexes = new HashMap<>();
             String base_url = "";
             if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits().isEmpty()) {
                 base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits();
@@ -2428,12 +2441,12 @@ public class HelloApplication extends Application {
                 String ayat_number = String.format("%03d", i);
                 String full_ayat = base_url.concat(surat_number).concat(ayat_number).concat(".mp3");
                 verseQueue.offer(base_url.concat(surat_number).concat(ayat_number).concat(".mp3"));
-                tie_verses_to_indexes.put(full_ayat,counter);
+                tie_verses_to_indexes.put(full_ayat, counter);
                 counter++;
             }
-            int number_of_threads = Runtime.getRuntime().availableProcessors()*4;
+            int number_of_threads = Runtime.getRuntime().availableProcessors() * 4;
             ExecutorService executor = Executors.newFixedThreadPool(number_of_threads);
-            for(int i = 0;i<number_of_threads;i++){
+            for (int i = 0; i < number_of_threads; i++) {
                 executor.submit(() -> {
                     while (true) {
                         try {
@@ -2485,14 +2498,14 @@ public class HelloApplication extends Application {
             }
             File tempFile = new File("temp/sound", String.format("%03d.mp3", start_ayat));
             int get_the_number_of_audio_channels = getNumberOfChannels(tempFile.getAbsolutePath());
-            if(get_the_number_of_audio_channels == -1){
+            if (get_the_number_of_audio_channels == -1) {
                 number_of_audio_channels = 2;
             } else {
                 number_of_audio_channels = get_the_number_of_audio_channels;
             }
-            if(number_of_ayats>0){
+            if (number_of_ayats > 0) {
                 end_of_the_picture_durations[0] = durations[0];
-                for(int i = 1;i<number_of_ayats;i++){
+                for (int i = 1; i < number_of_ayats; i++) {
                     end_of_the_picture_durations[i] = durations[i] + end_of_the_picture_durations[i - 1];
                 }
             }
@@ -2690,7 +2703,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    private Pic_aspect_ratio return_the_aspect_ratio_as_an_object(HelloController helloController){
+    private Pic_aspect_ratio return_the_aspect_ratio_as_an_object(HelloController helloController) {
         if (helloController.size_of_image.getValue().equals("9:16")) {
             return Pic_aspect_ratio.aspect_vertical_9_16;
         } else if (helloController.size_of_image.getValue().equals("16:9")) {
@@ -2713,7 +2726,6 @@ public class HelloApplication extends Application {
             );
             pb.redirectErrorStream(true);
             Process process = pb.start();
-
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line = reader.readLine();
             process.waitFor();
@@ -2726,4 +2738,67 @@ public class HelloApplication extends Application {
         }
         return -1; // Return -1 if error
     }
+
+    private int getExifOrientation(File file) {
+        try {
+            Metadata metadata = ImageMetadataReader.readMetadata(file);
+            ExifIFD0Directory directory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+            if (directory != null && directory.containsTag(ExifIFD0Directory.TAG_ORIENTATION)) {
+                return directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
+            }
+        } catch (ImageProcessingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (MetadataException e) {
+            throw new RuntimeException(e);
+        }
+        return 1; // Default
+    }
+    private BufferedImage return_the_rotated_image(BufferedImage bufferedImage, int orientation) {
+        AffineTransform t = new AffineTransform();
+        switch (orientation) {
+            case 1:
+                break;
+            case 2: // Flip X
+                t.scale(-1.0, 1.0);
+                t.translate(-bufferedImage.getWidth(), 0);
+                break;
+            case 3: // PI rotation
+                t.translate(bufferedImage.getWidth(), bufferedImage.getHeight());
+                t.rotate(Math.PI);
+                break;
+            case 4: // Flip Y
+                t.scale(1.0, -1.0);
+                t.translate(0, -bufferedImage.getHeight());
+                break;
+            case 5: // - PI/2 and Flip X
+                t.rotate(-Math.PI / 2);
+                t.scale(-1.0, 1.0);
+                break;
+            case 6: // -PI/2 and -width
+                t.translate(bufferedImage.getHeight(), 0);
+                t.rotate(Math.PI / 2);
+                break;
+            case 7: // PI/2 and Flip
+                t.scale(-1.0, 1.0);
+                t.translate(-bufferedImage.getHeight(), 0);
+                t.translate(0, bufferedImage.getWidth());
+                t.rotate(  3 * Math.PI / 2);
+                break;
+            case 8: // PI / 2
+                t.translate(0, bufferedImage.getWidth());
+                t.rotate(  3 * Math.PI / 2);
+                break;
+        }
+        AffineTransformOp op = new AffineTransformOp(t, AffineTransformOp.TYPE_BICUBIC);
+
+        BufferedImage destinationImage = op.createCompatibleDestImage(bufferedImage, (bufferedImage.getType() == BufferedImage.TYPE_BYTE_GRAY) ? bufferedImage.getColorModel() : null );
+        Graphics2D g = destinationImage.createGraphics();
+        g.setBackground(Color.WHITE);
+        g.clearRect(0, 0, destinationImage.getWidth(), destinationImage.getHeight());
+        destinationImage = op.filter(bufferedImage, destinationImage);
+        return destinationImage;
+    }
+
 }
