@@ -41,8 +41,8 @@ public class Verse_class_final {
         this.image_edited = false;
         //save_image_to_disk(get_the_right_basic_image_aspect_ratio(pic_aspect_ratio), verse_number, "base");
         //save_image_to_disk(get_the_right_basic_image_aspect_ratio(pic_aspect_ratio), verse_number, "edited");
-        copy_the_image("based");
-        copy_the_image("edited");
+        //copy_the_image("base");
+        //copy_the_image("edited");
         set_the_thumbnail(get_the_right_basic_image_aspect_ratio(pic_aspect_ratio));
     }
 

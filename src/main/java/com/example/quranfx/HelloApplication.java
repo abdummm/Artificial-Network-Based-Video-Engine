@@ -2,11 +2,9 @@ package com.example.quranfx;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
-import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
-import com.drew.metadata.jpeg.JpegDirectory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Application;
@@ -45,6 +43,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.UnaryOperator;
 
 import javafx.util.Duration;
@@ -709,7 +708,14 @@ public class HelloApplication extends Application {
                 if (result.equals("ok") && (!sound_path.isEmpty() || !helloController.list_view_with_the_recitors.getSelectionModel().isEmpty())) {
                     helloController.generating_screen.setVisible(true);
                     helloController.choose_ayat_screen.setVisible(false);
+                    long start_time = System.nanoTime();
+                    copy_the_images(helloController);
+                    long end_time = System.nanoTime();
+                    System.out.println("Saving image took: " + (end_time - start_time) / 1_000_000.0 + " ms");
+                    start_time = System.nanoTime();
                     get_the_sound_and_concat_them_into_one(helloController);
+                    end_time = System.nanoTime();
+                    System.out.println("Saving sound took: " + (end_time - start_time) / 1_000_000.0 + " ms");
                     set_up_third_screen(helloController, helloController.enter_the_ayats_wanted.getText(), helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
                 } else if (result.equals("incorrect_format")) {
                     show_alert("The format or the number of the ayat you entered is incorrect. Please follow this format: \"15-25\" or \"12\". Verses started at 1");
@@ -2424,11 +2430,15 @@ public class HelloApplication extends Application {
                     .connectTimeout(10, TimeUnit.SECONDS)
                     .readTimeout(90, TimeUnit.SECONDS)
                     .build();
+            /*client.connectionPool().evictAll();
+            client.dispatcher().setMaxRequests(128); // increase concurrency
+            client.dispatcher().setMaxRequestsPerHost(64);*/
             String ayat = helloController.enter_the_ayats_wanted.getText();
             int start_ayat = return_start_ayat(ayat);
             int end_ayat = return_end_ayat(ayat);
             int number_of_ayats = end_ayat - start_ayat + 1;
-            BlockingQueue<String> verseQueue = new LinkedBlockingQueue<>();
+            int number_of_threads = Runtime.getRuntime().availableProcessors() * 4;
+            BlockingQueue<String> verseQueue = new LinkedBlockingQueue<>(number_of_ayats);
             durations = new Long[number_of_ayats];
             end_of_the_picture_durations = new Long[number_of_ayats];
             HashMap<String, Integer> tie_verses_to_indexes = new HashMap<>();
@@ -2449,13 +2459,13 @@ public class HelloApplication extends Application {
                 tie_verses_to_indexes.put(full_ayat, counter);
                 counter++;
             }
-            int number_of_threads = Runtime.getRuntime().availableProcessors() * 4;
             ExecutorService executor = Executors.newFixedThreadPool(number_of_threads);
+            long start_time = System.nanoTime();
             for (int i = 0; i < number_of_threads; i++) {
                 executor.submit(() -> {
                     while (true) {
                         try {
-                            String verse_url = verseQueue.poll(1, TimeUnit.SECONDS);
+                            String verse_url = verseQueue.poll(100, TimeUnit.MILLISECONDS);
                             if (verse_url == null) {
                                 break; // Exit if no more verses to process
                             }
@@ -2471,7 +2481,7 @@ public class HelloApplication extends Application {
                                 }
                                 ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                                 try (InputStream input = response.body().byteStream()) {
-                                    byte[] temp = new byte[4096];
+                                    byte[] temp = new byte[16384];
                                     int bytesRead;
                                     while ((bytesRead = input.read(temp)) != -1) {
                                         buffer.write(temp, 0, bytesRead);
@@ -2483,11 +2493,13 @@ public class HelloApplication extends Application {
                                 try (FileOutputStream fos = new FileOutputStream(tempFile)) {
                                     fos.write(mp3Bytes);
                                 }
+                                //long time_before = System.nanoTime();
                                 durations[verse_number] = getDurationWithFFmpeg(tempFile);
+                                //long time_after = System.nanoTime();
+                                //total_time_calculating_length.addAndGet(time_after - time_before);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                             break;
@@ -2501,6 +2513,8 @@ public class HelloApplication extends Application {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+            long end_time = System.nanoTime();
+            System.out.println("time to download verses "+TimeUnit.NANOSECONDS.toMillis(end_time-start_time));
             File tempFile = new File("temp/sound", String.format("%03d.mp3", start_ayat));
             int get_the_number_of_audio_channels = getNumberOfChannels(tempFile.getAbsolutePath());
             if (get_the_number_of_audio_channels == -1) {
@@ -2859,11 +2873,6 @@ public class HelloApplication extends Application {
             }
         });
         executor.shutdown();
-        /*try {
-            executor.awaitTermination(1, TimeUnit.MINUTES); // Wait for all threads to finish
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }*/
     }
 
     private BufferedImage get_the_right_basic_image_aspect_ratio(Pic_aspect_ratio pic_aspect_ratio) {
@@ -2875,5 +2884,62 @@ public class HelloApplication extends Application {
             return Base64_image.getInstance().square_place_holder;
         }
         return Base64_image.getInstance().vertical_place_holder;
+    }
+
+    private void copy_the_images(HelloController helloController){
+        String format = "bmp";
+        String ayat = helloController.enter_the_ayats_wanted.getText();
+        int start_ayat = return_start_ayat(ayat);
+        int end_ayat = return_end_ayat(ayat);
+        int number_of_ayats = end_ayat - start_ayat + 1;
+        byte[] imageBytes;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(get_the_right_basic_image_aspect_ratio(return_the_aspect_ratio_as_an_object(helloController)), "bmp", baos);
+            baos.flush();
+            imageBytes = baos.toByteArray();
+            baos.close(); // good practice
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        int number_of_threads = Math.min(16,Math.min(Runtime.getRuntime().availableProcessors()*2,number_of_ayats));
+        number_of_threads = 32;
+        BlockingQueue<String[]> blockingQueue = new LinkedBlockingQueue<>(number_of_ayats*2);
+        for(int i = start_ayat;i<=end_ayat;i++){
+            blockingQueue.offer(new String[]{"base",String.valueOf(i)});
+        }
+        for(int i = start_ayat;i<=end_ayat;i++){
+            blockingQueue.offer(new String[]{"edited",String.valueOf(i)});
+        }
+        ExecutorService executor = Executors.newFixedThreadPool(number_of_threads);
+        for (int i = 0; i < number_of_threads; i++) {
+            executor.submit(() -> {
+                while (true) {
+                    try {
+                        String[] item = blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+                        if (item == null) {
+                            break; // Exit if no more verses to process
+                        }
+                        Path targetPath = Paths.get("temp/images",item[0],item[1] + "." + format);
+                        File file = targetPath.toFile();
+                        file.deleteOnExit();
+                        try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(targetPath.toFile()))) {
+                            bos.write(imageBytes);
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+        }
+        executor.shutdown();
+        try {
+            executor.awaitTermination(5, TimeUnit.MINUTES); // Wait for all threads to finish
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
