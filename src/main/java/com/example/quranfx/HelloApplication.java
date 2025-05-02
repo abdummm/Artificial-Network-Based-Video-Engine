@@ -1063,6 +1063,7 @@ public class HelloApplication extends Application {
                 select_the_correct_verse_in_the_list_view(helloController, selected_verse);
                 set_the_duration_to_reflect_end_of_media(helloController);
                 helloController.sound_slider_fourth_screen.setValue(helloController.sound_slider_fourth_screen.getMax());
+                mediaPlayer.pause();
             }
         });
     }
