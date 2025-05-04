@@ -3118,4 +3118,8 @@ public class HelloApplication extends Application {
     private void set_the_duration_to_reflect_end_of_media(HelloController helloController) {
         helloController.duration_of_media.setText(formatTime(get_duration()));
     }
+
+    private void pause_the_media_later(){
+
+    }
 }
