@@ -33,11 +33,13 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.awt.*;
+import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -183,7 +185,7 @@ public class HelloApplication extends Application {
         clear_temp_directory();
         listen_to_slider_value_updated(helloController);
         create_bmp_file_in_the_back_ground(helloController);
-        listen_to_image_click(helloController);
+        //listen_to_image_click(helloController);
     }
 
     public static void main(String[] args) {
@@ -963,12 +965,14 @@ public class HelloApplication extends Application {
                     if (selected_verse > 0) {
                         selected_verse--;
                         the_verse_changed(helloController, selected_verse);
+                        scroll_to_specific_verse_time();
                     }
                     break;
                 case RIGHT:
                     if (selected_verse < chatgpt_responses.size() - 1) {
                         selected_verse++;
                         the_verse_changed(helloController, selected_verse);
+                        scroll_to_specific_verse_time();
                     }
                     break;
                 default:
@@ -1012,7 +1016,7 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void play_or_pause_the_video_after_click(HelloController helloController){
+    private void play_or_pause_the_video_after_click(HelloController helloController) {
         if (helloController.play_sound.getText().equals("Play")) {
             if (mediaPlayer.getCurrentTime().toMillis() >= get_duration()) {
                 mediaPlayer.seek(Duration.ZERO);
@@ -1039,7 +1043,7 @@ public class HelloApplication extends Application {
                     helloController.sound_slider_fourth_screen.setValue(newValue.toMillis());
                 }
                 update_the_duration_time(helloController, newValue.toMillis());
-                change_the_image_based_on_audio_fourth_screen(helloController, newValue.toMillis());
+                change_the_image_based_on_audio_fourth_screen(helloController, newValue.toMillis() + 10);
             }
         });
     }
@@ -3123,7 +3127,7 @@ public class HelloApplication extends Application {
         helloController.duration_of_media.setText(formatTime(get_duration()));
     }
 
-    private void stop_and_start_the_media_again(){
+    private void stop_and_start_the_media_again() {
         mediaPlayer.setOnStopped(new Runnable() {
             @Override
             public void run() {
@@ -3134,7 +3138,7 @@ public class HelloApplication extends Application {
         mediaPlayer.stop();
     }
 
-    private void pause_and_listen_to_it(double set_time){
+    private void pause_and_listen_to_it(double set_time) {
         mediaPlayer.setOnPaused(new Runnable() {
             @Override
             public void run() {
@@ -3146,12 +3150,13 @@ public class HelloApplication extends Application {
         mediaPlayer.pause();
     }
 
-    private void listen_to_image_click(HelloController helloController){
+    /*private void listen_to_image_click(HelloController helloController) {
         helloController.chatgpt_image_view.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 play_or_pause_the_video_after_click(helloController);
             }
         });
-    }
+    }*/
+
 }
