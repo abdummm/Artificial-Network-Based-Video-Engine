@@ -183,6 +183,7 @@ public class HelloApplication extends Application {
         clear_temp_directory();
         listen_to_slider_value_updated(helloController);
         create_bmp_file_in_the_back_ground(helloController);
+        listen_to_image_click(helloController);
     }
 
     public static void main(String[] args) {
@@ -1006,18 +1007,22 @@ public class HelloApplication extends Application {
         helloController.play_sound.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (helloController.play_sound.getText().equals("Play")) {
-                    if (mediaPlayer.getCurrentTime().toMillis() >= get_duration()) {
-                        mediaPlayer.seek(Duration.ZERO);
-                    }
-                    helloController.play_sound.setText("Pause");
-                    mediaPlayer.play();
-                } else if (helloController.play_sound.getText().equals("Pause")) {
-                    helloController.play_sound.setText("Play");
-                    mediaPlayer.pause();
-                }
+                play_or_pause_the_video_after_click(helloController);
             }
         });
+    }
+
+    private void play_or_pause_the_video_after_click(HelloController helloController){
+        if (helloController.play_sound.getText().equals("Play")) {
+            if (mediaPlayer.getCurrentTime().toMillis() >= get_duration()) {
+                mediaPlayer.seek(Duration.ZERO);
+            }
+            helloController.play_sound.setText("Pause");
+            mediaPlayer.play();
+        } else if (helloController.play_sound.getText().equals("Pause")) {
+            helloController.play_sound.setText("Play");
+            mediaPlayer.pause();
+        }
     }
 
     private void set_the_width_of_play_pause_button(HelloController helloController) {
@@ -1047,7 +1052,7 @@ public class HelloApplication extends Application {
                 chatgpt_responses.get(chatgpt_responses.size() - 1).setTime_in_milliseconds((long) get_duration());
                 set_the_time_total_time(helloController, get_duration());
                 if (!did_this_play_already) {
-                    start_and_unstart_the_media_player();
+                    start_and_unstart_the_media_player(0);
                 }
                 did_this_play_already = true;
             }
@@ -1063,7 +1068,7 @@ public class HelloApplication extends Application {
                 select_the_correct_verse_in_the_list_view(helloController, selected_verse);
                 set_the_duration_to_reflect_end_of_media(helloController);
                 helloController.sound_slider_fourth_screen.setValue(helloController.sound_slider_fourth_screen.getMax());
-                mediaPlayer.pause();
+                stop_and_start_the_media_again();
             }
         });
     }
@@ -1236,7 +1241,7 @@ public class HelloApplication extends Application {
                 boolean too_many_images_selected = false;
                 FileChooser fileChooser = new FileChooser();
                 //Set extension filter
-                FileChooser.ExtensionFilter image_filter = new FileChooser.ExtensionFilter("Image Files (*.png, *.jpg, *.jpeg, *.heic)", "*.png", "*.PNG", "*.jpg", "*.JPG", "*.jpeg", "*.JPEG", "*.heic", "*.HEIC");
+                FileChooser.ExtensionFilter image_filter = new FileChooser.ExtensionFilter("Image Files (*.png, *.jpg, *.jpeg)", "*.png", "*.PNG", "*.jpg", "*.JPG", "*.jpeg", "*.JPEG");
                 fileChooser.getExtensionFilters().addAll(image_filter);
                 //Show open file dialog
                 List<File> files = fileChooser.showOpenMultipleDialog(null);
@@ -2324,6 +2329,7 @@ public class HelloApplication extends Application {
                 helloController.show_the_result_screen.setVisible(false);
                 helloController.choose_surat_screen.setVisible(true);
                 reset_all_of_the_advanced_settings(helloController);
+                clear_temp_directory();
             }
         });
     }
@@ -3005,18 +3011,16 @@ public class HelloApplication extends Application {
         return destinationImage;
     }
 
-    private void start_and_unstart_the_media_player() {
-        mediaPlayer.setMute(true);
-        mediaPlayer.play();
+    private void start_and_unstart_the_media_player(double set_time) {
         mediaPlayer.setOnPlaying(new Runnable() {
             @Override
             public void run() {
-                mediaPlayer.pause();
-                mediaPlayer.setMute(false);
-                mediaPlayer.seek(Duration.millis(0));
                 mediaPlayer.setOnPlaying(null);
+                pause_and_listen_to_it(set_time);
             }
         });
+        mediaPlayer.setMute(true);
+        mediaPlayer.play();
     }
 
     private void listen_to_slider_value_updated(HelloController helloController) {
@@ -3119,7 +3123,35 @@ public class HelloApplication extends Application {
         helloController.duration_of_media.setText(formatTime(get_duration()));
     }
 
-    private void pause_the_media_later(){
+    private void stop_and_start_the_media_again(){
+        mediaPlayer.setOnStopped(new Runnable() {
+            @Override
+            public void run() {
+                mediaPlayer.setOnStopped(null);
+                start_and_unstart_the_media_player(get_duration());
+            }
+        });
+        mediaPlayer.stop();
+    }
 
+    private void pause_and_listen_to_it(double set_time){
+        mediaPlayer.setOnPaused(new Runnable() {
+            @Override
+            public void run() {
+                mediaPlayer.setOnPaused(null);
+                mediaPlayer.setMute(false);
+                mediaPlayer.seek(Duration.millis(set_time));
+            }
+        });
+        mediaPlayer.pause();
+    }
+
+    private void listen_to_image_click(HelloController helloController){
+        helloController.chatgpt_image_view.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                play_or_pause_the_video_after_click(helloController);
+            }
+        });
     }
 }
