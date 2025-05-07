@@ -59,6 +59,7 @@ import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
+import org.imgscalr.Scalr;
 import org.jsoup.*;
 
 import javax.imageio.ImageIO;
@@ -184,7 +185,6 @@ public class HelloApplication extends Application {
         make_temp_dir();
         clear_temp_directory();
         listen_to_slider_value_updated(helloController);
-        create_bmp_file_in_the_back_ground(helloController);
         //listen_to_image_click(helloController);
     }
 
@@ -983,7 +983,6 @@ public class HelloApplication extends Application {
     }
 
     private void the_verse_changed(HelloController helloController, int selected_verse) {
-        long startTime = System.nanoTime();
         set_the_visibility_of_the_buttons(helloController, selected_verse);
         //add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
         set_the_image_fourth_screen(helloController, selected_verse);
@@ -1262,7 +1261,15 @@ public class HelloApplication extends Application {
                             if (orientation == 3 || orientation == 6 || orientation == 8) {
                                 bufferedImage = return_the_rotated_image(bufferedImage, orientation);
                             }
-                            if ((helloController.size_of_image.getValue().equals("1:1") && image.getWidth() == image.getHeight()) || (helloController.size_of_image.getValue().equals("9:16") && image.getWidth() * 16D == image.getHeight() * 9D) || (helloController.size_of_image.getValue().equals("16:9") && image.getWidth() * 9D == image.getHeight() * 16D)) {
+                            Pic_aspect_ratio picAspectRatio = Pic_aspect_ratio.aspect_vertical_9_16;
+                            if(helloController.size_of_image.getValue().equals("1:1")){
+                                picAspectRatio = Pic_aspect_ratio.aspect_square_1_1;
+                            } else if(helloController.size_of_image.getValue().equals("9:16")){
+                                picAspectRatio = Pic_aspect_ratio.aspect_vertical_9_16;
+                            } else if(helloController.size_of_image.getValue().equals("16:9")){
+                                picAspectRatio = Pic_aspect_ratio.aspect_horizontal_16_9;
+                            }
+                            if ((picAspectRatio.equals(Pic_aspect_ratio.aspect_square_1_1) && image.getWidth() == image.getHeight()) || (picAspectRatio.equals(Pic_aspect_ratio.aspect_vertical_9_16) && image.getWidth() * 16D == image.getHeight() * 9D) || (picAspectRatio.equals(Pic_aspect_ratio.aspect_horizontal_16_9) && image.getWidth() * 9D == image.getHeight() * 16D)) {
                                 chatgpt_responses.get(selected_verse + i).setBase_64_image(bufferedImage);
                             } else {
                                 if (helloController.size_of_image.getValue().equals("9:16")) {
@@ -1342,13 +1349,16 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent event) {
                 FileChooser fileChooser = new FileChooser();
-                FileChooser.ExtensionFilter extFilterMP3 = new FileChooser.ExtensionFilter("MP3 files (*.mp3)", "*.mp3");
-                FileChooser.ExtensionFilter extFilterWAV = new FileChooser.ExtensionFilter("WAV files (*.wav)", "*.wav");
-                FileChooser.ExtensionFilter extFilterFLAC = new FileChooser.ExtensionFilter("FLAC files (*.flac)", "*.flac");
-                fileChooser.getExtensionFilters().addAll(extFilterMP3, extFilterWAV, extFilterFLAC);
+                FileChooser.ExtensionFilter extFilterAudio = new FileChooser.ExtensionFilter("Audio files (*.mp3, *.wav)", "*.mp3", "*.wav");
+                fileChooser.getExtensionFilters().add(extFilterAudio);
                 File file = fileChooser.showOpenDialog(null);
                 if (file != null) {
-                    sound_path = file.getAbsolutePath();
+                    String check_if_mp3 = file.getAbsolutePath().toLowerCase();
+                    if(check_if_mp3.endsWith(".mp3")){
+                        sound_path = convert_mp3_to_wav(file.getAbsolutePath());
+                    } else {
+                        sound_path = file.getAbsolutePath();
+                    }
                     helloController.choose_sound_third_screen.setText("Change Sound");
                     helloController.list_view_with_the_recitors.getSelectionModel().clearSelection();
                 }
@@ -2739,8 +2749,8 @@ public class HelloApplication extends Application {
     private void clear_temp_directory() {
         File base_images_file = new File("temp/images/base/");
         File edited_images_file = new File("temp/images/edited/");
+        File scaled_images_file = new File("temp/images/scaled/");
         File sounds_files = new File("temp/sound/");
-        File default_image = new File("temp/default_image");
         if (base_images_file.exists() && base_images_file.isDirectory()) {
             try {
                 FileUtils.cleanDirectory(base_images_file);
@@ -2762,9 +2772,9 @@ public class HelloApplication extends Application {
                 throw new RuntimeException(e);
             }
         }
-        if (default_image.exists() && default_image.isDirectory()) {
+        if(scaled_images_file.exists() && scaled_images_file.isDirectory()){
             try {
-                FileUtils.cleanDirectory(default_image);
+                FileUtils.cleanDirectory(scaled_images_file);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -2826,7 +2836,7 @@ public class HelloApplication extends Application {
         File sound = new File("temp/sound");
         File images_base = new File("temp/images/base");
         File images_edited = new File("temp/images/edited");
-        File default_image = new File("temp/default_image");
+        File scaled_images_file = new File("temp/images/scaled");
         if (!directory.exists()) {
             directory.mkdirs();
         }
@@ -2842,8 +2852,8 @@ public class HelloApplication extends Application {
         if (!images_edited.exists()) {
             images_edited.mkdirs();
         }
-        if (!default_image.exists()) {
-            default_image.mkdirs();
+        if(!scaled_images_file.exists()){
+            scaled_images_file.mkdirs();
         }
     }
 
@@ -3036,25 +3046,6 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void create_bmp_file_in_the_back_ground(HelloController helloController) {
-        ExecutorService executor = Executors.newFixedThreadPool(1);
-        executor.submit(() -> {
-            while (true) {
-                String format = "bmp";
-                try {
-                    Path outputPath = Paths.get("temp", "default_image", "default_image" + "." + format);
-                    File outputFile = outputPath.toFile();
-                    ImageIO.write(get_the_right_basic_image_aspect_ratio(return_the_aspect_ratio_as_an_object(helloController)), format, outputFile);
-                    outputFile.deleteOnExit();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                break;
-            }
-        });
-        executor.shutdown();
-    }
-
     private BufferedImage get_the_right_basic_image_aspect_ratio(Pic_aspect_ratio pic_aspect_ratio) {
         if (pic_aspect_ratio == Pic_aspect_ratio.aspect_vertical_9_16) {
             return Base64_image.getInstance().vertical_place_holder;
@@ -3084,12 +3075,15 @@ public class HelloApplication extends Application {
         }
         int number_of_threads = Math.max(16, Math.max(Runtime.getRuntime().availableProcessors() * 2, number_of_ayats));
         //number_of_threads = 32;
-        BlockingQueue<String[]> blockingQueue = new LinkedBlockingQueue<>(number_of_ayats * 2);
+        BlockingQueue<String[]> blockingQueue = new LinkedBlockingQueue<>(number_of_ayats * 3);
         for (int i = start_ayat; i <= end_ayat; i++) {
             blockingQueue.offer(new String[]{"base", String.valueOf(i)});
         }
         for (int i = start_ayat; i <= end_ayat; i++) {
             blockingQueue.offer(new String[]{"edited", String.valueOf(i)});
+        }
+        for (int i = start_ayat; i <= end_ayat; i++) {
+            blockingQueue.offer(new String[]{"scaled", String.valueOf(i)});
         }
         ExecutorService executor = Executors.newFixedThreadPool(number_of_threads);
         for (int i = 0; i < number_of_threads; i++) {
@@ -3159,4 +3153,29 @@ public class HelloApplication extends Application {
         });
     }*/
 
+    private String convert_mp3_to_wav(String file_path){
+        String output_file_path = "temp/sound/converted.wav";
+        number_of_audio_channels = getNumberOfChannels(file_path);
+        ProcessBuilder pb = new ProcessBuilder(
+                "ffmpeg",
+                "-i", file_path,              // <-- the path to the one MP3 file
+                "-c:a", "pcm_s16le",               // WAV encoding
+                "-ar", "44100",                    // 44.1kHz sample rate
+                "-ac", String.valueOf(number_of_audio_channels), // 2 or 1 channels
+                output_file_path                  // example: "temp/sound/combined.wav"
+        );
+        pb.redirectErrorStream(true); // Combine stderr with stdout
+        try {
+            Process process = pb.start();
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                show_alert("Audio encoding failed. FFMPEG. Can't convert from mp3 to wav");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return output_file_path;
+    }
 }

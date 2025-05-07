@@ -7,6 +7,7 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import net.coobird.thumbnailator.Thumbnailator;
 import net.coobird.thumbnailator.Thumbnails;
+import org.imgscalr.Scalr;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -39,10 +40,6 @@ public class Verse_class_final {
         this.arabic_verse = arabic_verse;
         this.pic_aspect_ratio = pic_aspect_ratio;
         this.image_edited = false;
-        //save_image_to_disk(get_the_right_basic_image_aspect_ratio(pic_aspect_ratio), verse_number, "base");
-        //save_image_to_disk(get_the_right_basic_image_aspect_ratio(pic_aspect_ratio), verse_number, "edited");
-        //copy_the_image("base");
-        //copy_the_image("edited");
         set_the_thumbnail(get_the_right_basic_image_aspect_ratio(pic_aspect_ratio));
     }
 
@@ -80,8 +77,18 @@ public class Verse_class_final {
     }
 
     public void setBase_64_image(BufferedImage base_64_image) {
+        BufferedImage resized_image = resize_perfect_image(pic_aspect_ratio,base_64_image);
         save_image_to_disk(base_64_image, this.verse_number, "base");
-        save_image_to_disk(base_64_image, this.verse_number, "edited");
+        save_image_to_disk(resized_image,this.verse_number,"scaled");
+        save_image_to_disk(resized_image, this.verse_number, "edited");
+        set_the_thumbnail(base_64_image);
+        base_64_image.flush();
+    }
+
+    public void setBase_64_image(BufferedImage base_64_image,BufferedImage resized_image) {
+        save_image_to_disk(base_64_image, this.verse_number, "base");
+        save_image_to_disk(resized_image,this.verse_number,"scaled");
+        save_image_to_disk(resized_image, this.verse_number, "edited");
         set_the_thumbnail(base_64_image);
         base_64_image.flush();
     }
@@ -199,5 +206,22 @@ public class Verse_class_final {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private BufferedImage resize_perfect_image(Pic_aspect_ratio picAspectRatio,BufferedImage bufferedImage){
+        if(picAspectRatio.equals(Pic_aspect_ratio.aspect_square_1_1)){
+            if(bufferedImage.getWidth() > 1080 || bufferedImage.getHeight() > 1080){
+                bufferedImage = Scalr.resize(bufferedImage,Scalr.Method.QUALITY,1080,1080);
+            }
+        } else if(picAspectRatio.equals(Pic_aspect_ratio.aspect_vertical_9_16)){
+            if(bufferedImage.getWidth() > 1080 || bufferedImage.getHeight() > 1920){
+                bufferedImage = Scalr.resize(bufferedImage,Scalr.Method.QUALITY,1080,1920);
+            }
+        } else if(picAspectRatio.equals(Pic_aspect_ratio.aspect_horizontal_16_9)){
+            if(bufferedImage.getWidth() > 1920 || bufferedImage.getHeight() > 1080){
+                bufferedImage = Scalr.resize(bufferedImage,Scalr.Method.QUALITY,1920,1080);
+            }
+        }
+        return bufferedImage;
     }
 }
