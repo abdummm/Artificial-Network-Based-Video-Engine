@@ -42,8 +42,6 @@ public class HelloController {
     @FXML
     public Button next_page_second_screen;
 
-    @FXML
-    public TextField enter_the_ayats_wanted;
 
     @FXML
     public StackPane generating_screen;
@@ -236,4 +234,10 @@ public class HelloController {
 
     @FXML
     public Button set_image_to_all;
+
+    @FXML
+    public ComboBox<Integer> spinner_to_choose_starting_ayat;
+
+    @FXML
+    public ComboBox<Integer> spinner_to_choose_last_ayat;
 }

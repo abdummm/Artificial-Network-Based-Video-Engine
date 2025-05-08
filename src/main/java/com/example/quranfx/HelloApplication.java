@@ -33,13 +33,11 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.awt.*;
-import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 import java.io.*;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -59,7 +57,6 @@ import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
-import org.imgscalr.Scalr;
 import org.jsoup.*;
 
 import javax.imageio.ImageIO;
@@ -90,6 +87,7 @@ public class HelloApplication extends Application {
     private Long[] end_of_the_picture_durations;
     private int number_of_audio_channels = 2;
     private boolean did_this_play_already = false;
+    private int audio_frequncy_of_the_sound = 44100;
 
 
     @Override
@@ -313,6 +311,8 @@ public class HelloApplication extends Application {
         set_the_number_of_verses(helloController, verse_count);
         set_the_extra_information(helloController, surat_name, revelation_order, revelation_place, verse_count, number_of_pages);
         surat_name_selected = surat_name;
+        set_up_first_and_last_ayat_combobox(helloController,verse_count);
+        initialize_the_combo_box_start_ayat(helloController);
     }
 
     private void set_the_number_of_verses(HelloController helloController, int number_of_verses) {
@@ -361,7 +361,7 @@ public class HelloApplication extends Application {
         return nameNode;
     }
 
-    private String is_the_ayat_format_correct(String ayat, int id) {
+    /*private String is_the_ayat_format_correct(String ayat, int id) {
         if (ayat.isEmpty()) {
             return "Empty";
         }
@@ -391,7 +391,7 @@ public class HelloApplication extends Application {
         } else {
             return "incorrect_format";
         }
-    }
+    }*/
 
     private void show_alert(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -727,7 +727,7 @@ public class HelloApplication extends Application {
                 if (result.equals("ok") && (!sound_path.isEmpty() || !helloController.list_view_with_the_recitors.getSelectionModel().isEmpty())) {
                     helloController.generating_screen.setVisible(true);
                     helloController.choose_ayat_screen.setVisible(false);
-                    copy_the_images(helloController);
+                    copy_the_images(helloController, get_the_right_basic_image_aspect_ratio(return_the_aspect_ratio_as_an_object(helloController)));
                     get_the_sound_and_concat_them_into_one(helloController);
                     set_up_third_screen(helloController, helloController.enter_the_ayats_wanted.getText(), helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
                 } else if (result.equals("incorrect_format")) {
@@ -1211,7 +1211,7 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void only_allow_digits_and_dash_for_ayat_input(HelloController helloController) {
+    /*private void only_allow_digits_and_dash_for_ayat_input(HelloController helloController) {
         UnaryOperator<TextFormatter.Change> filter = change -> {
             String newText = change.getControlNewText();
             if (newText.matches("[0123456789-]*")) {  // Regex to allow only 1-9, space, and dash
@@ -1222,7 +1222,7 @@ public class HelloApplication extends Application {
 
         TextFormatter<String> formatter = new TextFormatter<>(filter);
         helloController.enter_the_ayats_wanted.setTextFormatter(formatter);
-    }
+    }*/
 
     private void set_up_the_width_and_height_of_the_image_in_fourth_screen(HelloController helloController) {
         if (helloController.size_of_image.getValue().equals("9:16")) {
@@ -1244,7 +1244,13 @@ public class HelloApplication extends Application {
                 boolean too_many_images_selected = false;
                 FileChooser fileChooser = new FileChooser();
                 //Set extension filter
-                FileChooser.ExtensionFilter image_filter = new FileChooser.ExtensionFilter("Image Files (*.png, *.jpg, *.jpeg)", "*.png", "*.PNG", "*.jpg", "*.JPG", "*.jpeg", "*.JPEG");
+                FileChooser.ExtensionFilter image_filter;
+                if (is_this_a_mac_device()) {
+                    image_filter = new FileChooser.ExtensionFilter("Image Files (*.png, *.jpg, *.jpeg, *.heic)", "*.png", "*.PNG", "*.jpg", "*.JPG", "*.jpeg", "*.JPEG", "*.heic", "*.HEIC");
+                } else {
+                    image_filter = new FileChooser.ExtensionFilter("Image Files (*.png, *.jpg, *.jpeg)", "*.png", "*.PNG", "*.jpg", "*.JPG", "*.jpeg", "*.JPEG");
+
+                }
                 fileChooser.getExtensionFilters().addAll(image_filter);
                 //Show open file dialog
                 List<File> files = fileChooser.showOpenMultipleDialog(null);
@@ -1255,18 +1261,28 @@ public class HelloApplication extends Application {
                             break;
                         }
                         try {
-                            Image image = new Image(new FileInputStream(files.get(i)));
+                            File image_file = files.get(i);
+                            String fileName_lower_case = image_file.getName().toLowerCase();
+                            Image image;
+                            if (fileName_lower_case.endsWith("heic")) {
+                                File new_jpg_file = new File("temp/converted images/".concat(UUID.randomUUID().toString()).concat(".png"));
+                                new_jpg_file.deleteOnExit();
+                                convertHeicToJpg(image_file, new_jpg_file);
+                                image = new Image(new FileInputStream(new_jpg_file));
+                            } else {
+                                image = new Image(new FileInputStream(image_file));
+                            }
                             BufferedImage bufferedImage = image_to_buffered_image(image);
                             int orientation = getExifOrientation(files.get(i));
                             if (orientation == 3 || orientation == 6 || orientation == 8) {
                                 bufferedImage = return_the_rotated_image(bufferedImage, orientation);
                             }
                             Pic_aspect_ratio picAspectRatio = Pic_aspect_ratio.aspect_vertical_9_16;
-                            if(helloController.size_of_image.getValue().equals("1:1")){
+                            if (helloController.size_of_image.getValue().equals("1:1")) {
                                 picAspectRatio = Pic_aspect_ratio.aspect_square_1_1;
-                            } else if(helloController.size_of_image.getValue().equals("9:16")){
+                            } else if (helloController.size_of_image.getValue().equals("9:16")) {
                                 picAspectRatio = Pic_aspect_ratio.aspect_vertical_9_16;
-                            } else if(helloController.size_of_image.getValue().equals("16:9")){
+                            } else if (helloController.size_of_image.getValue().equals("16:9")) {
                                 picAspectRatio = Pic_aspect_ratio.aspect_horizontal_16_9;
                             }
                             if ((picAspectRatio.equals(Pic_aspect_ratio.aspect_square_1_1) && image.getWidth() == image.getHeight()) || (picAspectRatio.equals(Pic_aspect_ratio.aspect_vertical_9_16) && image.getWidth() * 16D == image.getHeight() * 9D) || (picAspectRatio.equals(Pic_aspect_ratio.aspect_horizontal_16_9) && image.getWidth() * 9D == image.getHeight() * 16D)) {
@@ -1354,7 +1370,7 @@ public class HelloApplication extends Application {
                 File file = fileChooser.showOpenDialog(null);
                 if (file != null) {
                     String check_if_mp3 = file.getAbsolutePath().toLowerCase();
-                    if(check_if_mp3.endsWith(".mp3")){
+                    if (check_if_mp3.endsWith(".mp3")) {
                         sound_path = convert_mp3_to_wav(file.getAbsolutePath());
                     } else {
                         sound_path = file.getAbsolutePath();
@@ -1396,7 +1412,6 @@ public class HelloApplication extends Application {
         int frameRate = 30;
 
         int audioBitrate = 1024000; // Standard quality
-        int sampleRate = 48000;    // CD quality audio
 
         // Configure the FFmpegFrameRecorder
         FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(videoFileName, captureWidth, captureHeight, number_of_audio_channels);
@@ -1404,7 +1419,7 @@ public class HelloApplication extends Application {
         recorder.setAudioCodec(org.bytedeco.ffmpeg.global.avcodec.AV_CODEC_ID_AAC);
         recorder.setFormat("mp4");
         recorder.setFrameRate(frameRate);
-        recorder.setSampleRate(sampleRate);
+        recorder.setSampleRate(audio_frequncy_of_the_sound);
         recorder.setVideoOption("preset", "veryslow");
         recorder.setVideoOption("crf", "10");
         recorder.setVideoOption("tune", "stillimage");
@@ -2542,12 +2557,9 @@ public class HelloApplication extends Application {
                 throw new RuntimeException(e);
             }
             File tempFile = new File("temp/sound", String.format("%03d.mp3", start_ayat));
-            int get_the_number_of_audio_channels = getNumberOfChannels(tempFile.getAbsolutePath());
-            if (get_the_number_of_audio_channels == -1) {
-                number_of_audio_channels = 2;
-            } else {
-                number_of_audio_channels = get_the_number_of_audio_channels;
-            }
+            audio_frequncy_of_the_sound = get_frequency_of_audio(tempFile.getAbsolutePath());
+            int get_the_number_of_audio_channels_local = set_the_number_of_audio_channels(getNumberOfChannels(tempFile.getAbsolutePath()));
+
             if (number_of_ayats > 0) {
                 end_of_the_picture_durations[0] = durations[0];
                 for (int i = 1; i < number_of_ayats; i++) {
@@ -2569,14 +2581,22 @@ public class HelloApplication extends Application {
                         "ffmpeg", "-f", "concat", "-safe", "0",
                         "-i", "temp/sound/list.txt",
                         "-c:a", "pcm_s16le",  // <-- WAV encoding
-                        "-ar", "44100",       // <-- 44.1kHz sample rate (standard)
-                        "-ac", String.valueOf(number_of_audio_channels),           // <-- 2 channels (stereo); use "1" if you want mono
+                        "-ar", String.valueOf(audio_frequncy_of_the_sound),       // <-- 44.1kHz sample rate (standard)
+                        "-ac", String.valueOf(get_the_number_of_audio_channels_local),           // <-- 2 channels (stereo); use "1" if you want mono
                         "temp/sound/combined.wav"
                 );
                 pb.redirectErrorStream(true); // Combine stderr with stdout
                 Process process = pb.start();
                 int exitCode = process.waitFor();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                StringBuilder output = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    output.append(line).append("\n");
+                }
                 if (exitCode != 0) {
+                    System.err.println("FFmpeg failed with exit code " + exitCode);
+                    System.err.println("FFmpeg output:\n" + output);
                     show_alert("Audio encoding failed. FFMPEG");
                 } else {
                     File out_put_file = new File("temp/sound/combined.wav");
@@ -2589,168 +2609,13 @@ public class HelloApplication extends Application {
         }
     }
 
-    /*private void get_the_sound_and_concat_them_into_one(HelloController helloController) {
-        if (sound_path.isEmpty()) {
-            long totalStart = System.nanoTime();
-
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .connectTimeout(10, TimeUnit.SECONDS)
-                    .readTimeout(90, TimeUnit.SECONDS)
-                    .build();
-            client.dispatcher().setMaxRequests(16);
-            client.dispatcher().setMaxRequestsPerHost(8);
-
-            long parseStart = System.nanoTime();
-            String ayat = helloController.enter_the_ayats_wanted.getText();
-            int start_ayat = return_start_ayat(ayat);
-            int end_ayat = return_end_ayat(ayat);
-            int number_of_ayats = end_ayat - start_ayat + 1;
-            int number_of_threads = Math.max(Math.max(16,Runtime.getRuntime().availableProcessors()), number_of_ayats);
-            BlockingQueue<String> verseQueue = new LinkedBlockingQueue<>(number_of_ayats);
-            durations = new Long[number_of_ayats];
-            end_of_the_picture_durations = new Long[number_of_ayats];
-            HashMap<String, Integer> tie_verses_to_indexes = new HashMap<>();
-            String base_url = "";
-            if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits().isEmpty()) {
-                base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits();
-            } else if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_64_bits().isEmpty()) {
-                base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_64_bits();
-            } else if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_32_bits().isEmpty()) {
-                base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_32_bits();
-            }
-            String surat_number = String.format("%03d", helloController.choose_the_surat.getSelectionModel().getSelectedIndex() + 1);
-            base_url = base_url.concat(surat_number);
-            int counter = 0;
-            for (int i = start_ayat; i <= end_ayat; i++) {
-                String ayat_number = String.format("%03d", i);
-                String full_ayat = base_url.concat(ayat_number).concat(".mp3");
-                verseQueue.offer(full_ayat);
-                tie_verses_to_indexes.put(full_ayat, counter++);
-            }
-            long parseEnd = System.nanoTime();
-            System.out.println("Parsing and queue setup took: " + TimeUnit.NANOSECONDS.toMillis(parseEnd - parseStart) + " ms");
-
-            long downloadStart = System.nanoTime();
-            ExecutorService executor = Executors.newFixedThreadPool(number_of_threads);
-            for (int i = 0; i < number_of_threads; i++) {
-                executor.submit(() -> {
-                    while (true) {
-                        try {
-                            String verse_url = verseQueue.poll(100, TimeUnit.MILLISECONDS);
-                            if (verse_url == null) break;
-
-                            int verse_number = tie_verses_to_indexes.get(verse_url);
-                            Request request = new Request.Builder().url(verse_url).build();
-                            try (Response response = client.newCall(request).execute()) {
-                                if (!response.isSuccessful()) continue;
-
-                                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                                try (InputStream input = response.body().byteStream()) {
-                                    byte[] temp = new byte[16384];
-                                    int bytesRead;
-                                    while ((bytesRead = input.read(temp)) != -1) {
-                                        buffer.write(temp, 0, bytesRead);
-                                    }
-                                }
-                                byte[] mp3Bytes = buffer.toByteArray();
-                                File tempFile = new File("temp/sound", String.format("%03d.mp3", verse_number));
-                                tempFile.deleteOnExit();
-                                long writeStart = System.nanoTime();
-                                try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(tempFile), 64 * 1024)) {
-                                    bos.write(mp3Bytes);
-                                }
-                                long writeEnd = System.nanoTime();
-                                durations[verse_number] = getDurationWithFFmpeg(tempFile);
-                                System.out.println("Saved and got duration for ayat " + verse_number + " in " + TimeUnit.NANOSECONDS.toMillis(writeEnd - writeStart) + " ms");
-
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                            break;
-                        }
-                    }
-                });
-            }
-            executor.shutdown();
-            try {
-                executor.awaitTermination(5, TimeUnit.MINUTES);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            long downloadEnd = System.nanoTime();
-            System.out.println("Downloading and saving all verses took: " + TimeUnit.NANOSECONDS.toMillis(downloadEnd - downloadStart) + " ms");
-
-            long channelsStart = System.nanoTime();
-            File tempFile = new File("temp/sound", String.format("%03d.mp3", start_ayat));
-            int get_the_number_of_audio_channels = getNumberOfChannels(tempFile.getAbsolutePath());
-            number_of_audio_channels = (get_the_number_of_audio_channels == -1) ? 2 : get_the_number_of_audio_channels;
-            long channelsEnd = System.nanoTime();
-            System.out.println("Determining audio channel count took: " + TimeUnit.NANOSECONDS.toMillis(channelsEnd - channelsStart) + " ms");
-
-            long durationsStart = System.nanoTime();
-            if (number_of_ayats > 0) {
-                end_of_the_picture_durations[0] = durations[0];
-                for (int i = 1; i < number_of_ayats; i++) {
-                    end_of_the_picture_durations[i] = durations[i] + end_of_the_picture_durations[i - 1];
-                }
-            }
-            long durationsEnd = System.nanoTime();
-            System.out.println("Calculating cumulative durations took: " + TimeUnit.NANOSECONDS.toMillis(durationsEnd - durationsStart) + " ms");
-
-            long listStart = System.nanoTime();
-            File listFile = new File("temp/sound", "list.txt");
-            listFile.deleteOnExit();
-            try (PrintWriter writer = new PrintWriter(listFile)) {
-                for (int i = 0; i < number_of_ayats; i++) {
-                    String filename = String.format("%03d.mp3", i);
-                    writer.println("file '" + filename + "'");
-                }
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-            long listEnd = System.nanoTime();
-            System.out.println("Creating list.txt took: " + TimeUnit.NANOSECONDS.toMillis(listEnd - listStart) + " ms");
-
-            long ffmpegStart = System.nanoTime();
-            try {
-                ProcessBuilder pb = new ProcessBuilder(
-                        "ffmpeg", "-f", "concat", "-safe", "0",
-                        "-i", "temp/sound/list.txt",
-                        "-c:a", "pcm_s16le",
-                        "-ar", "44100",
-                        "-ac", String.valueOf(number_of_audio_channels),
-                        "-threads", String.valueOf(Runtime.getRuntime().availableProcessors()),
-                        "temp/sound/combined.wav"
-                );
-                pb.redirectErrorStream(true);
-                Process process = pb.start();
-                int exitCode = process.waitFor();
-                if (exitCode != 0) {
-                    show_alert("Audio encoding failed. FFMPEG");
-                } else {
-                    File out_put_file = new File("temp/sound/combined.wav");
-                    out_put_file.deleteOnExit();
-                    sound_path = out_put_file.getAbsolutePath();
-                }
-            } catch (IOException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            long ffmpegEnd = System.nanoTime();
-            System.out.println("FFmpeg concat and WAV creation took: " + TimeUnit.NANOSECONDS.toMillis(ffmpegEnd - ffmpegStart) + " ms");
-
-            long totalEnd = System.nanoTime();
-            System.out.println("TOTAL execution time: " + TimeUnit.NANOSECONDS.toMillis(totalEnd - totalStart) + " ms");
-        }
-    }*/
-
 
     private void clear_temp_directory() {
         File base_images_file = new File("temp/images/base/");
         File edited_images_file = new File("temp/images/edited/");
         File scaled_images_file = new File("temp/images/scaled/");
         File sounds_files = new File("temp/sound/");
+        File converted_images_file = new File("temp/converted images/");
         if (base_images_file.exists() && base_images_file.isDirectory()) {
             try {
                 FileUtils.cleanDirectory(base_images_file);
@@ -2772,9 +2637,17 @@ public class HelloApplication extends Application {
                 throw new RuntimeException(e);
             }
         }
-        if(scaled_images_file.exists() && scaled_images_file.isDirectory()){
+        if (scaled_images_file.exists() && scaled_images_file.isDirectory()) {
             try {
                 FileUtils.cleanDirectory(scaled_images_file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        if (converted_images_file.exists() && converted_images_file.isDirectory()) {
+            try {
+                FileUtils.cleanDirectory(converted_images_file);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -2837,6 +2710,7 @@ public class HelloApplication extends Application {
         File images_base = new File("temp/images/base");
         File images_edited = new File("temp/images/edited");
         File scaled_images_file = new File("temp/images/scaled");
+        File converted_images_file = new File("temp/converted images");
         if (!directory.exists()) {
             directory.mkdirs();
         }
@@ -2852,8 +2726,11 @@ public class HelloApplication extends Application {
         if (!images_edited.exists()) {
             images_edited.mkdirs();
         }
-        if(!scaled_images_file.exists()){
+        if (!scaled_images_file.exists()) {
             scaled_images_file.mkdirs();
+        }
+        if (!converted_images_file.exists()) {
+            converted_images_file.mkdirs();
         }
     }
 
@@ -2952,16 +2829,6 @@ public class HelloApplication extends Application {
         return -1; // Return -1 if error
     }
 
-    /*private int getNumberOfChannels(String audioFilePath){
-        try (AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(audioFilePath))) {
-            AudioFormat format = audioInputStream.getFormat();
-            return format.getChannels();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1;
-        }
-    }*/
-
     private int getExifOrientation(File file) {
         try {
             Metadata metadata = ImageMetadataReader.readMetadata(file);
@@ -3057,7 +2924,7 @@ public class HelloApplication extends Application {
         return Base64_image.getInstance().vertical_place_holder;
     }
 
-    private void copy_the_images(HelloController helloController) {
+    private void copy_the_images(HelloController helloController, BufferedImage image_to_write) {
         String format = "bmp";
         String ayat = helloController.enter_the_ayats_wanted.getText();
         int start_ayat = return_start_ayat(ayat);
@@ -3066,7 +2933,7 @@ public class HelloApplication extends Application {
         byte[] imageBytes;
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(get_the_right_basic_image_aspect_ratio(return_the_aspect_ratio_as_an_object(helloController)), "bmp", baos);
+            ImageIO.write(image_to_write, "bmp", baos);
             baos.flush();
             imageBytes = baos.toByteArray();
             baos.close(); // good practice
@@ -3153,15 +3020,16 @@ public class HelloApplication extends Application {
         });
     }*/
 
-    private String convert_mp3_to_wav(String file_path){
+    private String convert_mp3_to_wav(String file_path) {
         String output_file_path = "temp/sound/converted.wav";
-        number_of_audio_channels = getNumberOfChannels(file_path);
+        audio_frequncy_of_the_sound = get_frequency_of_audio(file_path);
+        int number_of_audio_channels_local = set_the_number_of_audio_channels(getNumberOfChannels(output_file_path));
         ProcessBuilder pb = new ProcessBuilder(
                 "ffmpeg",
                 "-i", file_path,              // <-- the path to the one MP3 file
                 "-c:a", "pcm_s16le",               // WAV encoding
-                "-ar", "44100",                    // 44.1kHz sample rate
-                "-ac", String.valueOf(number_of_audio_channels), // 2 or 1 channels
+                "-ar", String.valueOf(audio_frequncy_of_the_sound),                    // 44.1kHz sample rate
+                "-ac", String.valueOf(number_of_audio_channels_local), // 2 or 1 channels
                 output_file_path                  // example: "temp/sound/combined.wav"
         );
         pb.redirectErrorStream(true); // Combine stderr with stdout
@@ -3177,5 +3045,95 @@ public class HelloApplication extends Application {
             throw new RuntimeException(e);
         }
         return output_file_path;
+    }
+
+    private int set_the_number_of_audio_channels(int get_the_number_of_audio_channels) {
+        if (get_the_number_of_audio_channels == -1) {
+            number_of_audio_channels = 2;
+        } else {
+            number_of_audio_channels = get_the_number_of_audio_channels;
+        }
+        return number_of_audio_channels;
+    }
+
+    private int get_frequency_of_audio(String audioFilePath) {
+        try {
+            ProcessBuilder pb = new ProcessBuilder(
+                    "ffprobe",
+                    "-v", "error",
+                    "-select_streams", "a:0",
+                    "-show_entries", "stream=sample_rate",
+                    "-of", "default=noprint_wrappers=1:nokey=1",
+                    audioFilePath
+            );
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line = reader.readLine();
+            process.waitFor();
+
+            if (line != null) {
+                return Integer.parseInt(line.trim());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1; // Return -1 if error
+    }
+
+    private boolean is_this_a_mac_device() {
+        return System.getProperty("os.name").toLowerCase().contains("mac");
+    }
+
+    private void convertHeicToJpg(File old_file, File new_file) {
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder(
+                    "sips",
+                    "-s", "format", "jpeg",
+                    old_file.getAbsolutePath(),
+                    "--out",
+                    new_file.getAbsolutePath()
+            );
+            processBuilder.redirectErrorStream(true); // Merge error and output
+            Process process = processBuilder.start();
+
+            // Optional: Read output if you want to debug
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+
+            } else {
+                show_alert("HEIC to JPG image conversion failed");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void set_up_first_and_last_ayat_combobox(HelloController helloController, int verse_count) {
+        ObservableList<Integer> items = FXCollections.observableArrayList();
+        for (int i = 1; i <= verse_count; i++) {
+            items.add(i);
+        }
+        helloController.spinner_to_choose_starting_ayat.setItems(items);
+        helloController.spinner_to_choose_last_ayat.setItems(items);
+    }
+
+    private void initialize_the_combo_box_start_ayat(HelloController helloController){
+        helloController.spinner_to_choose_starting_ayat.getSelectionModel().selectFirst();
+        helloController.spinner_to_choose_last_ayat.getSelectionModel().selectFirst();
+    }
+
+    private int return_start_ayat(HelloController helloController){
+
+    }
+
+    private int return_end_ayat(HelloController helloController){
+
     }
 }
