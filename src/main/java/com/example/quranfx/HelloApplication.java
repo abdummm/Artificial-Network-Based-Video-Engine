@@ -7,6 +7,8 @@ import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXRippler;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -20,12 +22,16 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -36,14 +42,19 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.awt.image.RescaleOp;
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.UnaryOperator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javafx.util.Duration;
 import javafx.util.StringConverter;
@@ -52,7 +63,6 @@ import okhttp3.*;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
@@ -88,6 +98,7 @@ public class HelloApplication extends Application {
     private int number_of_audio_channels = 2;
     private boolean did_this_play_already = false;
     private int audio_frequncy_of_the_sound = 44100;
+    private ArrayList<Media_pool> media_pool_array_list = new ArrayList<>();
 
 
     @Override
@@ -133,7 +144,6 @@ public class HelloApplication extends Application {
         listen_to_time_update_of_each_ayat_and_update_it_in_list(helloController);
         listen_to_enter_pressed_time_for_each_ayat(helloController);
         listen_to_genereate_chat_gpt_checkbox(helloController);
-        only_allow_digits_and_dash_for_ayat_input(helloController);
         uplaod_image_button_for_each_ayat_listen(helloController);
         upload_sound_listen(helloController);
         listen_to_create_video_button(helloController);
@@ -183,7 +193,10 @@ public class HelloApplication extends Application {
         make_temp_dir();
         clear_temp_directory();
         listen_to_slider_value_updated(helloController);
-        //listen_to_image_click(helloController);
+        set_the_icons(helloController);
+        listen_to_enter_click_on_select_surat_listview(helloController);
+        listen_to_list_click_list_view(helloController);
+        listen_to_upload_media_button(helloController);
     }
 
     public static void main(String[] args) {
@@ -214,7 +227,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void call_verses_api(HelloController helloController, int id, String ayat, int page) {
+    private void call_verses_api(HelloController helloController, int id, int page) {
         HttpUrl httpurl = new HttpUrl.Builder()
                 .scheme("https")
                 .host("api.quran.com")
@@ -240,7 +253,7 @@ public class HelloApplication extends Application {
         try {
             Response response = client.newCall(request).execute();
             String verses_string = response.body().string();
-            add_all_of_the_verses_to_the_list_after(helloController, ayat, verses_string, page);
+            add_all_of_the_verses_to_the_list_after(helloController, verses_string, page);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -311,7 +324,7 @@ public class HelloApplication extends Application {
         set_the_number_of_verses(helloController, verse_count);
         set_the_extra_information(helloController, surat_name, revelation_order, revelation_place, verse_count, number_of_pages);
         surat_name_selected = surat_name;
-        set_up_first_and_last_ayat_combobox(helloController,verse_count);
+        set_up_first_and_last_ayat_combobox(helloController, verse_count);
         initialize_the_combo_box_start_ayat(helloController);
     }
 
@@ -361,37 +374,15 @@ public class HelloApplication extends Application {
         return nameNode;
     }
 
-    /*private String is_the_ayat_format_correct(String ayat, int id) {
-        if (ayat.isEmpty()) {
-            return "Empty";
-        }
-        JsonNode nameNode = return_name_node(chapters_string);
-        int verse_count = Integer.parseInt(String.valueOf(nameNode.get("chapters").get(id).get("verses_count")));
-        ayat = ayat.replace(" ", "");
-        if (ayat.matches("[1-9]+[0-9]*[-]{1}[1-9]+[0-9]*") || ayat.matches("[1-9]+") || ayat.matches("[1-9][0-9]*")) {
-            if (StringUtils.countMatches(ayat, "-") == 0) {
-                if (Integer.parseInt(ayat) > verse_count) {
-                    return "too_many_verses";
-                } else {
-                    return "ok";
-                }
-            } else if (StringUtils.countMatches(ayat, "-") == 1) {
-                int start_ayat = return_start_ayat(ayat);
-                int end_ayat = return_end_ayat(ayat);
-                if (end_ayat > verse_count) {
-                    return "too_many_verses";
-                } else if (end_ayat < start_ayat) {
-                    return "second_arguemnt_bigger";
-                } else {
-                    return "ok";
-                }
-            } else {
-                return "too_many_dashes";
-            }
+    private boolean is_the_ayat_format_correct(HelloController helloController) {
+        int start_ayat = helloController.combobox_to_choose_starting_ayat.getSelectionModel().getSelectedItem();
+        int end_ayat = helloController.combobox_to_choose_last_ayat.getSelectionModel().getSelectedItem();
+        if (end_ayat >= start_ayat) {
+            return true;
         } else {
-            return "incorrect_format";
+            return false;
         }
-    }*/
+    }
 
     private void show_alert(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -404,24 +395,23 @@ public class HelloApplication extends Application {
         alert.showAndWait();
     }
 
-    private void set_up_third_screen(HelloController helloController, String ayat, int id) {
+    private void set_up_third_screen(HelloController helloController, int id) {
         JsonNode nameNode = return_name_node(chapters_string);
         String surat_name = String.valueOf(nameNode.get("chapters").get(id).get("name_simple"));
         String generating_message;
-        int start_ayat = return_start_ayat(ayat);
-        int end_ayat = return_end_ayat(ayat);
-        if (ayat.contains("-")) {
-            ayat = String.valueOf(start_ayat).concat(" - ").concat(String.valueOf(end_ayat));
-            generating_message = "Generating ayats ".concat(ayat).concat(" for surat ".concat(surat_name).concat("."));
+        int start_ayat = return_start_ayat(helloController);
+        int end_ayat = return_end_ayat(helloController);
+        if (is_it_only_one_ayat_selected(helloController)) {
+            generating_message = "Generating ayat ".concat(String.valueOf(return_start_ayat(helloController))).concat(" for surat ".concat(surat_name).concat("."));
         } else {
-            generating_message = "Generating ayat ".concat(ayat).concat(" for surat ".concat(surat_name).concat("."));
+            generating_message = "Generating ayats ".concat(String.valueOf(return_start_ayat(helloController))).concat(" - ").concat(String.valueOf(return_end_ayat(helloController))).concat(" for surat ".concat(surat_name).concat("."));
         }
         make_the_generating_text(helloController, generating_message);
         initial_number_of_ayats = end_ayat - start_ayat + 1;
         int start_ayat_section = (int) Math.ceil(start_ayat / 50D);
         int end_ayat_section = (int) Math.ceil(end_ayat / 50D);
         for (int i = start_ayat_section; i <= end_ayat_section; i++) {
-            call_verses_api(helloController, id, ayat, i);
+            call_verses_api(helloController, id, i);
         }
         set_number_of_verses_left(helloController, initial_number_of_ayats);
         if (helloController.generate_chat_gpt_images.isSelected()) {
@@ -429,12 +419,12 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void add_all_of_the_verses_to_the_list_after(HelloController helloController, String ayat, String verses_string, int page) {
+    private void add_all_of_the_verses_to_the_list_after(HelloController helloController, String verses_string, int page) {
         JsonNode nameNode = return_name_node(verses_string);
         ArrayNode arrayNode = (ArrayNode) nameNode.get("verses");
-        int start_ayat = return_start_ayat(ayat);
-        int end_ayat = return_end_ayat(ayat);
-        if (ayat.contains("-")) {
+        int start_ayat = return_start_ayat(helloController);
+        int end_ayat = return_end_ayat(helloController);
+        if (!is_it_only_one_ayat_selected(helloController)) {
             for (int i = 0; i < arrayNode.size(); i++) {
                 int ayat_number = Integer.parseInt(String.valueOf(arrayNode.get(i).get("verse_number")));
                 if (ayat_number < start_ayat) {
@@ -488,23 +478,6 @@ public class HelloApplication extends Application {
         }
     }
 
-    private int return_start_ayat(String ayat) {
-        if (ayat.contains("-")) {
-            String[] split_ayat = ayat.replace(" ", "").split("-");
-            return Integer.parseInt(split_ayat[0]);
-        } else {
-            return Integer.parseInt(ayat);
-        }
-    }
-
-    private int return_end_ayat(String ayat) {
-        if (ayat.contains("-")) {
-            String[] split_ayat = ayat.replace(" ", "").split("-");
-            return Integer.parseInt(split_ayat[1]);
-        } else {
-            return Integer.parseInt(ayat);
-        }
-    }
 
     private void add_time_to_array_list(long time) {
         if (array_list_with_times.size() < number_of_prompts_per_minute) {
@@ -646,7 +619,9 @@ public class HelloApplication extends Application {
         helloController.which_chatgpt_to_use.setVisible(false);
         helloController.style_of_image.setManaged(false);
         helloController.style_of_image.setVisible(false);
-        helloController.enter_the_ayats_wanted.setText("");
+        scroll_to_top_of_combo_box(helloController.combobox_to_choose_starting_ayat);
+        scroll_to_top_of_combo_box(helloController.combobox_to_choose_last_ayat);
+
         helloController.choose_sound_third_screen.setText("Upload Sound");
         helloController.list_view_with_the_recitors.scrollTo(0);
         helloController.list_view_with_the_recitors.getSelectionModel().clearSelection();
@@ -723,26 +698,20 @@ public class HelloApplication extends Application {
         helloController.next_page_second_screen.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                String result = is_the_ayat_format_correct(helloController.enter_the_ayats_wanted.getText(), helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
-                if (result.equals("ok") && (!sound_path.isEmpty() || !helloController.list_view_with_the_recitors.getSelectionModel().isEmpty())) {
-                    helloController.generating_screen.setVisible(true);
-                    helloController.choose_ayat_screen.setVisible(false);
-                    copy_the_images(helloController, get_the_right_basic_image_aspect_ratio(return_the_aspect_ratio_as_an_object(helloController)));
-                    get_the_sound_and_concat_them_into_one(helloController);
-                    set_up_third_screen(helloController, helloController.enter_the_ayats_wanted.getText(), helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
-                } else if (result.equals("incorrect_format")) {
-                    show_alert("The format or the number of the ayat you entered is incorrect. Please follow this format: \"15-25\" or \"12\". Verses started at 1");
-                } else if (result.equals("too_many_verses")) {
-                    show_alert("The verse you entered is greater than the max verse of the surat");
-                } else if (result.equals("second_arguemnt_bigger")) {
-                    show_alert("The ending ayat is less than the starting ayat, please be sure to make sure that the ending ayat is bigger than the starting ayat");
-                } else if (result.equals("Empty")) {
-                    show_alert("The ayat section can't be left empty");
-                } else if (result.equals("too_many_dashes")) {
-                    show_alert("There is more than one dash \"-\" in the ayat section, please only include one.");
-                } else if (sound_path.isEmpty() && helloController.list_view_with_the_recitors.getSelectionModel().isEmpty()) {
-                    show_alert("Please select a sound before proceeding. You can do so by uploading a sound or by simply selecting a reciter.");
+                boolean result = is_the_ayat_format_correct(helloController);
+                if (!result) {
+                    show_alert("The starting verse must be less than or equal to the ending verse.");
+                    return;
                 }
+                if (sound_path.isEmpty() && helloController.list_view_with_the_recitors.getSelectionModel().isEmpty()) {
+                    show_alert("Please select a sound before proceeding. You can do so by uploading a sound or by simply selecting a reciter.");
+                    return;
+                }
+                helloController.generating_screen.setVisible(true);
+                helloController.choose_ayat_screen.setVisible(false);
+                copy_the_images(helloController, get_the_right_basic_image_aspect_ratio(return_the_aspect_ratio_as_an_object(helloController)));
+                get_the_sound_and_concat_them_into_one(helloController);
+                set_up_third_screen(helloController, helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
             }
         });
     }
@@ -837,7 +806,6 @@ public class HelloApplication extends Application {
         set_up_the_chatgpt_verses_list_view(helloController);
         helloController.list_view_with_the_verses_preview.getSelectionModel().select(0);
         helloController.list_view_with_the_verses_preview.requestFocus();
-        update_the_information_about_the_ayat(helloController, 0);
         //set_the_english_text_of_the_ayat_in_the_image_view(helloController, 0);
         set_up_the_media(helloController);
         set_the_max_of_the_slider_and_set_time_of_last_ayat(helloController);
@@ -851,14 +819,14 @@ public class HelloApplication extends Application {
 
     private void set_the_visibility_of_the_buttons(HelloController helloController, int position) {
         if (position <= 0) {
-            helloController.previous_photo_chat_gpt_result.setVisible(false);
+            helloController.previous_photo_chat_gpt_result.setDisable(true);
         } else {
-            helloController.previous_photo_chat_gpt_result.setVisible(true);
+            helloController.previous_photo_chat_gpt_result.setDisable(false);
         }
         if (position >= chatgpt_responses.size() - 1) {
-            helloController.next_photo_chat_gpt_result.setVisible(false);
+            helloController.next_photo_chat_gpt_result.setDisable(true);
         } else {
-            helloController.next_photo_chat_gpt_result.setVisible(true);
+            helloController.next_photo_chat_gpt_result.setDisable(false);
         }
     }
 
@@ -988,17 +956,11 @@ public class HelloApplication extends Application {
         set_the_image_fourth_screen(helloController, selected_verse);
         set_selected_verse_text(helloController, selected_verse);
         select_the_correct_verse_in_the_list_view(helloController, selected_verse);
-        update_the_information_about_the_ayat(helloController, selected_verse);
         update_the_text_field_based_on_previous_values(helloController, selected_verse);
         update_the_name_of_the_image_button_fourth_screen(helloController, selected_verse);
         set_the_english_text_of_the_ayat_in_the_image_view(helloController, selected_verse);
         set_the_ayat_settings(helloController, selected_verse);
         hide_and_show_the_time_text_field_editor(helloController, selected_verse);
-    }
-
-    private void update_the_information_about_the_ayat(HelloController helloController, int verse_selected) {
-        String english_text = chatgpt_responses.get(verse_selected).getVerse();
-        helloController.showing_the_engligh_translation_at_the_right.setText(english_text);
     }
 
     private void set_up_the_media(HelloController helloController) {
@@ -2481,9 +2443,8 @@ public class HelloApplication extends Application {
                     .build();
             client.dispatcher().setMaxRequests(16); // increase concurrency
             client.dispatcher().setMaxRequestsPerHost(8);
-            String ayat = helloController.enter_the_ayats_wanted.getText();
-            int start_ayat = return_start_ayat(ayat);
-            int end_ayat = return_end_ayat(ayat);
+            int start_ayat = return_start_ayat(helloController);
+            int end_ayat = return_end_ayat(helloController);
             int number_of_ayats = end_ayat - start_ayat + 1;
             int number_of_threads = Math.max(Runtime.getRuntime().availableProcessors() * 4, number_of_ayats);
             BlockingQueue<String> verseQueue = new LinkedBlockingQueue<>(number_of_ayats);
@@ -2926,9 +2887,8 @@ public class HelloApplication extends Application {
 
     private void copy_the_images(HelloController helloController, BufferedImage image_to_write) {
         String format = "bmp";
-        String ayat = helloController.enter_the_ayats_wanted.getText();
-        int start_ayat = return_start_ayat(ayat);
-        int end_ayat = return_end_ayat(ayat);
+        int start_ayat = return_start_ayat(helloController);
+        int end_ayat = return_end_ayat(helloController);
         int number_of_ayats = end_ayat - start_ayat + 1;
         byte[] imageBytes;
         try {
@@ -3082,6 +3042,9 @@ public class HelloApplication extends Application {
     }
 
     private boolean is_this_a_mac_device() {
+        if (System.getProperty("os.name") == null) {
+            return false;
+        }
         return System.getProperty("os.name").toLowerCase().contains("mac");
     }
 
@@ -3103,11 +3066,8 @@ public class HelloApplication extends Application {
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
             }
-
             int exitCode = process.waitFor();
-            if (exitCode == 0) {
-
-            } else {
+            if (exitCode != 0) {
                 show_alert("HEIC to JPG image conversion failed");
             }
         } catch (Exception e) {
@@ -3120,20 +3080,229 @@ public class HelloApplication extends Application {
         for (int i = 1; i <= verse_count; i++) {
             items.add(i);
         }
-        helloController.spinner_to_choose_starting_ayat.setItems(items);
-        helloController.spinner_to_choose_last_ayat.setItems(items);
+        helloController.combobox_to_choose_starting_ayat.setItems(items);
+        helloController.combobox_to_choose_last_ayat.setItems(items);
     }
 
-    private void initialize_the_combo_box_start_ayat(HelloController helloController){
-        helloController.spinner_to_choose_starting_ayat.getSelectionModel().selectFirst();
-        helloController.spinner_to_choose_last_ayat.getSelectionModel().selectFirst();
+    private void initialize_the_combo_box_start_ayat(HelloController helloController) {
+        helloController.combobox_to_choose_starting_ayat.getSelectionModel().selectFirst();
+        helloController.combobox_to_choose_last_ayat.getSelectionModel().selectFirst();
     }
 
-    private int return_start_ayat(HelloController helloController){
-
+    private int return_start_ayat(HelloController helloController) {
+        return helloController.combobox_to_choose_starting_ayat.getSelectionModel().getSelectedItem();
     }
 
-    private int return_end_ayat(HelloController helloController){
+    private int return_end_ayat(HelloController helloController) {
+        return helloController.combobox_to_choose_last_ayat.getSelectionModel().getSelectedItem();
+    }
 
+    private boolean is_it_only_one_ayat_selected(HelloController helloController) {
+        if (return_start_ayat(helloController) == return_end_ayat(helloController)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void scroll_to_top_of_combo_box(ComboBox<Integer> comboBox) {
+        Skin<?> skin = comboBox.getSkin();
+        if (skin instanceof ComboBoxListViewSkin) {
+            @SuppressWarnings("unchecked")
+            ComboBoxListViewSkin<String> comboBoxListViewSkin = (ComboBoxListViewSkin<String>) skin;
+            ListView<String> listView = (ListView<String>) comboBoxListViewSkin.getPopupContent();
+            if (listView != null) {
+                listView.scrollTo(0);
+            }
+        }
+    }
+
+    private void set_the_icons(HelloController helloController) {
+        helloController.next_photo_chat_gpt_result.setGraphic(return_region_for_svg(get_the_svg_path("arrow_forward_ios"), 25D));
+        helloController.previous_photo_chat_gpt_result.setGraphic(return_region_for_svg(get_the_svg_path("arrow_back_ios"), 25D));
+        helloController.full_screen_button_fourth_screen.setGraphic(return_region_for_svg(get_the_svg_path("fullscreen"), 25D));
+    }
+
+    private String getSvgPathContent(String resourcePath) {
+        String final_resource_path = "/icons/".concat(resourcePath).concat(".svg");
+        try (InputStream inputStream = getClass().getResourceAsStream(final_resource_path)) {
+            if (inputStream == null) {
+                System.err.println("Could not find SVG file: " + resourcePath);
+                return null;
+            }
+            String svgData = new String(inputStream.readAllBytes());
+
+            // Regex to find the d="..." inside <path>
+            Pattern pattern = Pattern.compile("d\\s*=\\s*\"([^\"]+)\"");
+            Matcher matcher = pattern.matcher(svgData);
+
+            if (matcher.find()) {
+                return matcher.group(1); // The actual path data for SVGPath
+            } else {
+                System.err.println("No <path> with d attribute found in SVG.");
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Region return_region_for_svg(SVGPath svgPath, double max_width_height) {
+        double[] width_and_height = return_real_width_and_height_of_svg(svgPath, max_width_height);
+        Region region = new Region();
+        region.setShape(svgPath);
+        region.setPrefSize(width_and_height[0], width_and_height[1]);
+        region.setMaxSize(width_and_height[0], width_and_height[1]);
+        region.setStyle("-fx-background-color: black;");
+        return region;
+    }
+
+    private double[] return_real_width_and_height_of_svg(SVGPath svgPath, double max_width_height) {
+        Bounds bounds = svgPath.getBoundsInLocal();
+        double width = bounds.getWidth();
+        double height = bounds.getHeight();
+        if (width > height) {
+            return new double[]{max_width_height, max_width_height * (height / width)};
+        } else if (width == height) {
+            return new double[]{max_width_height, max_width_height};
+        } else {
+            return new double[]{max_width_height * (width / height), max_width_height};
+        }
+    }
+
+    private SVGPath get_the_svg_path(String file_name) {
+        SVGPath svgPath = new SVGPath();
+        svgPath.setContent(getSvgPathContent(file_name)); // <-- only the path string
+        svgPath.setFill(javafx.scene.paint.Paint.valueOf("#000000"));
+        return svgPath;
+    }
+
+    private void listen_to_enter_click_on_select_surat_listview(HelloController helloController) {
+        helloController.choose_the_surat.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                helloController.choose_surat_screen.setVisible(false);
+                helloController.choose_ayat_screen.setVisible(true);
+                set_up_second_screen(helloController, helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
+            }
+        });
+    }
+
+    private void listen_to_list_click_list_view(HelloController helloController) {
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem item1 = new MenuItem("Upload media");
+        item1.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                upload_media_has_been_clicked(helloController);
+            }
+        });
+        contextMenu.getItems().addAll(item1);
+        helloController.list_view_media_pool.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+                    contextMenu.show(helloController.list_view_media_pool, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+                } else {
+                    contextMenu.hide(); // Optional: hide it on other clicks
+                }
+            }
+        });
+    }
+
+    private void listen_to_upload_media_button(HelloController helloController) {
+        helloController.add_media_button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                upload_media_has_been_clicked(helloController);
+            }
+        });
+    }
+
+    private void upload_media_has_been_clicked(HelloController helloController) {
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter image_filter;
+        if (is_this_a_mac_device()) {
+            image_filter = new FileChooser.ExtensionFilter("Image Files (*.png, *.jpg, *.jpeg, *.heic)", "*.png", "*.PNG", "*.jpg", "*.JPG", "*.jpeg", "*.JPEG", "*.heic", "*.HEIC");
+        } else {
+            image_filter = new FileChooser.ExtensionFilter("Image Files (*.png, *.jpg, *.jpeg)", "*.png", "*.PNG", "*.jpg", "*.JPG", "*.jpeg", "*.JPEG");
+
+        }
+        fileChooser.getExtensionFilters().addAll(image_filter);
+        List<File> files = fileChooser.showOpenMultipleDialog(null);
+        if (files != null && !files.isEmpty()) {
+            for (int i = 0; i < files.size(); i++) {
+                try {
+                    File image_file = files.get(i);
+                    String fileName_lower_case = image_file.getName().toLowerCase();
+                    Image image;
+                    if (fileName_lower_case.endsWith("heic")) {
+                        File new_jpg_file = new File("temp/converted images/".concat(UUID.randomUUID().toString()).concat(".png"));
+                        new_jpg_file.deleteOnExit();
+                        convertHeicToJpg(image_file, new_jpg_file);
+                        image = new Image(new FileInputStream(new_jpg_file));
+                    } else {
+                        image = new Image(new FileInputStream(image_file));
+                    }
+                    BufferedImage bufferedImage = image_to_buffered_image(image);
+                    BufferedImage formattedImage;
+                    int orientation = getExifOrientation(files.get(i));
+                    if (orientation == 3 || orientation == 6 || orientation == 8) {
+                        bufferedImage = return_the_rotated_image(bufferedImage, orientation);
+                    }
+                    Pic_aspect_ratio picAspectRatio = Pic_aspect_ratio.aspect_vertical_9_16;
+                    if (helloController.size_of_image.getValue().equals("1:1")) {
+                        picAspectRatio = Pic_aspect_ratio.aspect_square_1_1;
+                    } else if (helloController.size_of_image.getValue().equals("9:16")) {
+                        picAspectRatio = Pic_aspect_ratio.aspect_vertical_9_16;
+                    } else if (helloController.size_of_image.getValue().equals("16:9")) {
+                        picAspectRatio = Pic_aspect_ratio.aspect_horizontal_16_9;
+                    }
+                    if ((picAspectRatio.equals(Pic_aspect_ratio.aspect_square_1_1) && image.getWidth() == image.getHeight()) || (picAspectRatio.equals(Pic_aspect_ratio.aspect_vertical_9_16) && image.getWidth() * 16D == image.getHeight() * 9D) || (picAspectRatio.equals(Pic_aspect_ratio.aspect_horizontal_16_9) && image.getWidth() * 9D == image.getHeight() * 16D)) {
+
+                    } else {
+                        if (helloController.size_of_image.getValue().equals("9:16")) {
+                            int targetWidth = bufferedImage.getWidth();
+                            int targetHeight = targetWidth * 16 / 9;  // Calculate the new height for a 9:16 ratio
+                            // Create a new black image with a 9:16 ratio
+                            formattedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+                            Graphics g = formattedImage.createGraphics();
+                            g.setColor(java.awt.Color.BLACK);
+                            g.fillRect(0, 0, targetWidth, targetHeight);  // Fill the background with black
+                            int buffer_at_the_top = (targetHeight - bufferedImage.getHeight()) / 2;
+                            g.drawImage(bufferedImage, 0, buffer_at_the_top, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
+                            g.dispose();
+                        } else if (helloController.size_of_image.getValue().equals("16:9")) {
+
+                        } else if (helloController.size_of_image.getValue().equals("1:1")) {
+
+                        }
+
+                    }
+                    add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse + i).getAyatSettings(), selected_verse + i);
+                    helloController.upload_image_button_for_each_ayat.setText("Change Image");
+                    set_the_image_fourth_screen(helloController, selected_verse);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void write_the_raw_file(BufferedImage bufferedImage,String file_path,String name){
+        int[] pixels = ((DataBufferInt) bufferedImage.getRaster().getDataBuffer()).getData();
+
+        try (FileOutputStream fos = new FileOutputStream(file_path.concat("/").concat(name).concat(".raw"))) {
+            ByteBuffer byteBuffer = ByteBuffer.allocate(pixels.length * 4);
+            byteBuffer.order(ByteOrder.BIG_ENDIAN); // or LITTLE_ENDIAN depending on your platform
+            for (int pixel : pixels) {
+                byteBuffer.putInt(pixel);
+            }
+            fos.write(byteBuffer.array());
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

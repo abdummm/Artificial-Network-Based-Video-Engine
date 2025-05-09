@@ -1,0 +1,7 @@
+.jfx-combo-box .input-line {
+    -fx-background-color: black;
+}
+
+.jfx-combo-box .input-focused-line {
+    -fx-background-color: black;
+}

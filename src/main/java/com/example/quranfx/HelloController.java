@@ -1,5 +1,7 @@
 package com.example.quranfx;
 
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -10,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
@@ -37,10 +40,10 @@ public class HelloController {
     public Label show_information_about_surat;
 
     @FXML
-    public Button previous_page_second_screen;
+    public JFXButton previous_page_second_screen;
 
     @FXML
-    public Button next_page_second_screen;
+    public JFXButton next_page_second_screen;
 
 
     @FXML
@@ -74,16 +77,16 @@ public class HelloController {
     public TextArea enter_the_prompt;
 
     @FXML
-    public BorderPane show_the_result_screen;
+    public GridPane show_the_result_screen;
 
     @FXML
     public ImageView chatgpt_image_view;
 
     @FXML
-    public Button next_photo_chat_gpt_result;
+    public JFXButton next_photo_chat_gpt_result;
 
     @FXML
-    public Button previous_photo_chat_gpt_result;
+    public JFXButton previous_photo_chat_gpt_result;
 
     @FXML
     public Label what_verse_is_this;
@@ -91,8 +94,6 @@ public class HelloController {
     @FXML
     public ListView<Verse_class_final> list_view_with_the_verses_preview;
 
-    @FXML
-    public Label showing_the_engligh_translation_at_the_right;
 
     @FXML
     public Button play_sound;
@@ -104,7 +105,7 @@ public class HelloController {
     public Label duration_of_media;
 
     @FXML
-    public Button full_screen_button_fourth_screen;
+    public JFXButton full_screen_button_fourth_screen;
 
     @FXML
     public Button settings_of_video_button_fourth_screen;
@@ -128,7 +129,7 @@ public class HelloController {
     public Button upload_image_button_for_each_ayat;
 
     @FXML
-    public Button choose_sound_third_screen;
+    public JFXButton choose_sound_third_screen;
 
     @FXML
     public Button create_video_final;
@@ -236,8 +237,14 @@ public class HelloController {
     public Button set_image_to_all;
 
     @FXML
-    public ComboBox<Integer> spinner_to_choose_starting_ayat;
+    public JFXComboBox<Integer> combobox_to_choose_starting_ayat;
 
     @FXML
-    public ComboBox<Integer> spinner_to_choose_last_ayat;
+    public JFXComboBox<Integer> combobox_to_choose_last_ayat;
+
+    @FXML
+    public ListView list_view_media_pool;
+
+    @FXML
+    public JFXButton add_media_button;
 }

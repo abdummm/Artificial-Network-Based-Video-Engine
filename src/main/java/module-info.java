@@ -1,5 +1,4 @@
 module com.example.quranfx {
-    requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;
     requires javafx.media;
@@ -23,6 +22,7 @@ module com.example.quranfx {
     requires thumbnailator;
     requires metadata.extractor;
     requires imgscalr.lib;
+    requires com.jfoenix;
 
     opens com.example.quranfx to javafx.fxml;
     exports com.example.quranfx;
