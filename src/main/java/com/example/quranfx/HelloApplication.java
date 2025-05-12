@@ -3052,9 +3052,15 @@ public class HelloApplication extends Application {
 
     private void convertHeicToJpg(File old_file, File new_file) {
         try {
+            String format = "jpg";
+            if(new_file.getName().toLowerCase().endsWith("png")){
+                format = "png";
+            } else if(new_file.getName().toLowerCase().endsWith("jpg")){
+                format = "jpeg";
+            }
             ProcessBuilder processBuilder = new ProcessBuilder(
                     "sips",
-                    "-s", "format", "jpeg",
+                    "-s", "format", format,
                     old_file.getAbsolutePath(),
                     "--out",
                     new_file.getAbsolutePath()
@@ -3394,7 +3400,6 @@ public class HelloApplication extends Application {
                 }
             }
         });
-
         helloController.tile_pane_media_pool.getChildren().add(wrapper);
     }
 }
