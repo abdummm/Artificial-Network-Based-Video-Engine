@@ -11,10 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 public class HelloController {
 
@@ -243,7 +240,7 @@ public class HelloController {
     public JFXComboBox<Integer> combobox_to_choose_last_ayat;
 
     @FXML
-    public ListView list_view_media_pool;
+    public TilePane tile_pane_media_pool;
 
     @FXML
     public JFXButton add_media_button;

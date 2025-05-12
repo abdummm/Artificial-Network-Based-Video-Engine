@@ -29,6 +29,7 @@
 <?import javafx.scene.shape.SVGPath?>
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import java.net.URL?>
+<?import javafx.scene.layout.TilePane?>
 <StackPane prefHeight="365.0" prefWidth="364.0" xmlns="http://javafx.com/javafx/23.0.1"
            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.quranfx.HelloController"
            style="-fx-background-color: #FFFFFF;">
@@ -239,13 +240,13 @@
         <!-- LEFT -->
         <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0">
             <VBox>
-                <VBox alignment="TOP_LEFT" maxWidth="1.7976931348623157E308">
+                <VBox alignment="TOP_CENTER">
                     <StackPane>
                         <VBox.margin>
                             <Insets top="15.0" left="15.0"/>
                         </VBox.margin>
-                        <ListView fx:id="list_view_media_pool" maxHeight="400.0" orientation="HORIZONTAL">
-                        </ListView>
+                        <TilePane fx:id="tile_pane_media_pool" maxHeight="400.0">
+                        </TilePane>
                         <Label fx:id="upload_media_text" text="Media pool" textFill="#B9B9B9">
                             <font>
                                 <Font size="20.0"/>
@@ -257,7 +258,8 @@
                     <VBox.margin>
                         <Insets top="15.0"/>
                     </VBox.margin>
-                    <JFXButton fx:id="add_media_button" text="Upload media"  style="-fx-background-color: #000000; -fx-text-fill: #FFFFFF;"/>
+                    <JFXButton fx:id="add_media_button" text="Upload media"
+                               style="-fx-background-color: #000000; -fx-text-fill: #FFFFFF;"/>
                 </VBox>
             </VBox>
         </StackPane>
