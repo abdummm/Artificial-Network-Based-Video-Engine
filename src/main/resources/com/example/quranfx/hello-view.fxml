@@ -226,7 +226,7 @@
             </Label>
         </VBox>
     </StackPane>
-    <GridPane fx:id="show_the_result_screen" visible="false">
+    <GridPane fx:id="show_the_result_screen" visible="false"  >
         <columnConstraints>
             <ColumnConstraints hgrow="ALWAYS"/>  <!-- Left -->
             <ColumnConstraints hgrow="NEVER"/>   <!-- Center -->
@@ -239,7 +239,7 @@
         </rowConstraints>
 
         <!-- Top -->
-        <VBox fx:id="top_v_box_fourth_screen" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="0" alignment="CENTER_LEFT" >
+        <VBox fx:id="top_v_box_fourth_screen" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="0" alignment="CENTER_LEFT">
             <JFXButton fx:id="cancel_video">
                 <VBox.margin>
                     <Insets top="10" left="10"/>
@@ -287,7 +287,7 @@
                         <HBox.margin>
                             <Insets left="5.0"/>
                         </HBox.margin>
-                        <ImageView fx:id="chatgpt_image_view" fitHeight="300"/>
+                        <ImageView fx:id="chatgpt_image_view"/>
                     </StackPane>
                     <VBox alignment="CENTER">
                         <HBox.margin>

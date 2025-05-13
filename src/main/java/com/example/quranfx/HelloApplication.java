@@ -200,7 +200,7 @@ public class HelloApplication extends Application {
         listen_to_list_click_list_view(helloController);
         listen_to_upload_media_button(helloController);
         set_the_width_of_the_left_and_right(helloController);
-        listen_to_change_in_fourth_screen_layout(helloController);
+        //listen_to_change_in_fourth_screen_layout(helloController);
     }
 
     public static void main(String[] args) {
@@ -3412,20 +3412,30 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void listen_to_change_in_fourth_screen_layout(HelloController helloController) {
+    /*private void listen_to_change_in_fourth_screen_layout(HelloController helloController) {
         helloController.show_the_result_screen.layoutBoundsProperty().addListener(new ChangeListener<Bounds>() {
             @Override
             public void changed(ObservableValue<? extends Bounds> observableValue, Bounds old_bounds, Bounds new_bounds) {
-                if (new_bounds.getHeight() != old_bounds.getHeight()) {
-                    double top_box_height = helloController.top_v_box_fourth_screen.getHeight();
-                    double bottom_box_height = helloController.bottom_vbox_fourth_screen.getHeight();
-                    double total_height = Screen.getPrimary().getVisualBounds().getHeight() - top_box_height - bottom_box_height;
-                    double image_height = total_height - top_box_height - bottom_box_height- Math.max(25, total_height * 0.04);
-                    double image_width = (image_height / 16) * 9;
-                    helloController.chatgpt_image_view.setFitHeight(image_height);
-                    helloController.chatgpt_image_view.setFitWidth(image_width);
-                }
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(new_bounds.getHeight()-old_bounds.getHeight()<=1){
+                            return;
+                        }
+                        if (new_bounds.getHeight() != old_bounds.getHeight()) {
+                            double top_box_height = helloController.top_v_box_fourth_screen.getHeight();
+                            System.out.println(top_box_height);
+                            double bottom_box_height = helloController.bottom_vbox_fourth_screen.getHeight();
+                            double total_height = Screen.getPrimary().getVisualBounds().getHeight() - top_box_height - bottom_box_height;
+                            double image_height = total_height - Math.max(30, total_height * 0.05D);
+                            double image_width = (image_height / 16) * 9;
+                            helloController.chatgpt_image_view.setFitHeight(image_height);
+                            helloController.chatgpt_image_view.setFitWidth(image_width);
+
+                        }
+                    }
+                });
             }
         });
-    }
+    }*/
 }
