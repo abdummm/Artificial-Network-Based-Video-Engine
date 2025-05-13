@@ -8,6 +8,7 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -135,9 +136,6 @@ public class HelloController {
     public CheckBox enable_english_text;
 
     @FXML
-    public Label verse_input_field;
-
-    @FXML
     public ToggleButton position_of_english_text_button_top_center;
 
     @FXML
@@ -222,7 +220,7 @@ public class HelloController {
     public Spinner top_margin_text_arabic_surat;
 
     @FXML
-    public Button cancel_video;
+    public JFXButton cancel_video;
 
     @FXML
     public ListView<Reciters_info> list_view_with_the_recitors;
@@ -244,4 +242,19 @@ public class HelloController {
 
     @FXML
     public JFXButton add_media_button;
+
+    @FXML
+    public StackPane right_stack_pane_in_grid_pane;
+
+    @FXML
+    public StackPane left_stack_pane_in_grid_pane;
+
+    @FXML
+    public StackPane center_group_grid_pane;
+
+    @FXML
+    public VBox top_v_box_fourth_screen;
+
+    @FXML
+    public VBox bottom_vbox_fourth_screen;
 }

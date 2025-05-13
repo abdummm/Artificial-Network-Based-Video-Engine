@@ -233,19 +233,29 @@
             <ColumnConstraints hgrow="ALWAYS"/>  <!-- Right -->
         </columnConstraints>
         <rowConstraints>
+            <RowConstraints vgrow="NEVER"/>
             <RowConstraints vgrow="ALWAYS"/>  <!-- Top main layout -->
             <RowConstraints vgrow="NEVER"/>   <!-- Bottom controls -->
         </rowConstraints>
 
+        <!-- Top -->
+        <VBox fx:id="top_v_box_fourth_screen" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="0" alignment="CENTER_LEFT" >
+            <JFXButton fx:id="cancel_video">
+                <VBox.margin>
+                    <Insets top="10" left="10"/>
+                </VBox.margin>
+            </JFXButton>
+        </VBox>
+
         <!-- LEFT -->
-        <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <StackPane fx:id="left_stack_pane_in_grid_pane" GridPane.columnIndex="0" GridPane.rowIndex="1">
             <VBox>
                 <VBox alignment="TOP_CENTER">
                     <StackPane>
                         <VBox.margin>
                             <Insets top="15.0" left="15.0"/>
                         </VBox.margin>
-                        <TilePane fx:id="tile_pane_media_pool" maxHeight="400.0">
+                        <TilePane fx:id="tile_pane_media_pool" maxHeight="400.0" prefHeight="400">
                         </TilePane>
                         <Label fx:id="upload_media_text" text="Media pool" textFill="#B9B9B9">
                             <font>
@@ -265,21 +275,19 @@
         </StackPane>
 
         <!-- CENTER -->
-        <Group GridPane.columnIndex="1" GridPane.rowIndex="0">
+        <StackPane fx:id="center_group_grid_pane" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.halignment="CENTER" GridPane.vgrow="ALWAYS" GridPane.hgrow="NEVER">
             <VBox alignment="CENTER">
                 <HBox alignment="CENTER">
                     <VBox alignment="CENTER">
                         <JFXButton fx:id="previous_photo_chat_gpt_result" maxHeight="50" maxWidth="50" prefHeight="50"
-                                   prefWidth="50">
+                                   prefWidth="50" minHeight="50" minWidth="50">
                         </JFXButton>
                     </VBox>
                     <StackPane fx:id="stack_pane_of_image_view_and_text">
                         <HBox.margin>
                             <Insets left="5.0"/>
                         </HBox.margin>
-                        <ImageView fx:id="chatgpt_image_view" fitHeight="640" fitWidth="360"/>
-                        <Label fx:id="verse_input_field" alignment="CENTER" maxWidth="360" text="test"
-                               textAlignment="CENTER" textFill="#FFFFFF" visible="false" wrapText="true"/>
+                        <ImageView fx:id="chatgpt_image_view" fitHeight="300"/>
                     </StackPane>
                     <VBox alignment="CENTER">
                         <HBox.margin>
@@ -287,7 +295,7 @@
                         </HBox.margin>
                         <Pane VBox.vgrow="ALWAYS"/>
                         <JFXButton fx:id="next_photo_chat_gpt_result" prefWidth="50" prefHeight="50" maxHeight="50"
-                                   maxWidth="50">
+                                   maxWidth="50" minHeight="50" minWidth="50">
                             <VBox.margin>
                                 <Insets top="26.0"/>
                             </VBox.margin>
@@ -305,10 +313,10 @@
                     </VBox.margin>
                 </Label>
             </VBox>
-        </Group>
+        </StackPane>
 
         <!-- RIGHT -->
-        <StackPane GridPane.columnIndex="2" GridPane.rowIndex="0">
+        <StackPane fx:id="right_stack_pane_in_grid_pane" GridPane.columnIndex="2" GridPane.rowIndex="1">
             <VBox alignment="CENTER">
                 <TextField fx:id="end_time_of_each_image" alignment="CENTER" focusTraversable="false"
                            promptText="End time in milliseconds"/>
@@ -498,7 +506,7 @@
         </StackPane>
 
         <!-- BOTTOM -->
-        <VBox GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="1">
+        <VBox fx:id="bottom_vbox_fourth_screen" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="2">
             <ListView fx:id="list_view_with_the_verses_preview" maxHeight="120" orientation="HORIZONTAL">
                 <VBox.margin>
                     <Insets left="20.0" right="20.0" top="10.0"/>
@@ -513,9 +521,7 @@
                 <Button fx:id="copy_duration_fourth_screen" text="Copy Duration"/>
             </HBox>
 
-            <HBox>
-                <Button fx:id="cancel_video" text="Cancel"/>
-                <Region HBox.hgrow="ALWAYS"/>
+            <HBox alignment="CENTER_RIGHT">
                 <Button fx:id="create_video_final" text="Create video"/>
             </HBox>
         </VBox>

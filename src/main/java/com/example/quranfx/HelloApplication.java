@@ -19,6 +19,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.MenuItem;
@@ -161,7 +162,6 @@ public class HelloApplication extends Application {
         listen_to_update_in_font_choose(helloController);
         set_the_cursor_at_the_end_of_the_margin_spinner(helloController);
         set_the_cursor_at_the_end_of_the_dont_size(helloController);
-        set_the_stroke(helloController);
         select_font_first_time_english(helloController);
         listen_to_apply_to_all_button(helloController);
         apply_changes_button_listen(helloController);
@@ -199,6 +199,8 @@ public class HelloApplication extends Application {
         listen_to_enter_click_on_select_surat_listview(helloController);
         listen_to_list_click_list_view(helloController);
         listen_to_upload_media_button(helloController);
+        set_the_width_of_the_left_and_right(helloController);
+        listen_to_change_in_fourth_screen_layout(helloController);
     }
 
     public static void main(String[] args) {
@@ -305,9 +307,11 @@ public class HelloApplication extends Application {
         helloController.choose_the_surat.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                helloController.choose_surat_screen.setVisible(false);
-                helloController.choose_ayat_screen.setVisible(true);
-                set_up_second_screen(helloController, helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
+                if (helloController.choose_the_surat.getSelectionModel().getSelectedIndex() != -1) {
+                    helloController.choose_surat_screen.setVisible(false);
+                    helloController.choose_ayat_screen.setVisible(true);
+                    set_up_second_screen(helloController, helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
+                }
             }
         });
     }
@@ -1189,7 +1193,7 @@ public class HelloApplication extends Application {
     }*/
 
     private void set_up_the_width_and_height_of_the_image_in_fourth_screen(HelloController helloController) {
-        if (helloController.size_of_image.getValue().equals("9:16")) {
+        /*if (helloController.size_of_image.getValue().equals("9:16")) {
             helloController.chatgpt_image_view.setFitWidth(360);
             helloController.chatgpt_image_view.setFitHeight(640);
         } else if (helloController.size_of_image.getValue().equals("16:9")) {
@@ -1198,7 +1202,7 @@ public class HelloApplication extends Application {
         } else if (helloController.size_of_image.getValue().equals("1:1")) {
             helloController.chatgpt_image_view.setFitWidth(360);
             helloController.chatgpt_image_view.setFitHeight(360);
-        }
+        }*/
     }
 
     private void uplaod_image_button_for_each_ayat_listen(HelloController helloController) {
@@ -1450,7 +1454,6 @@ public class HelloApplication extends Application {
             public void handle(ActionEvent event) {
                 set_all_of_the_english_text_position_buttons_not_selected(helloController);
                 helloController.position_of_english_text_button_top_center.setSelected(true);
-                //StackPane.setAlignment(helloController.verse_input_field, Pos.TOP_CENTER);
             }
         });
         helloController.position_of_english_text_button_center.setOnAction(new EventHandler<ActionEvent>() {
@@ -1458,7 +1461,6 @@ public class HelloApplication extends Application {
             public void handle(ActionEvent event) {
                 set_all_of_the_english_text_position_buttons_not_selected(helloController);
                 helloController.position_of_english_text_button_center.setSelected(true);
-                //StackPane.setAlignment(helloController.verse_input_field, Pos.CENTER);
             }
         });
         helloController.position_of_english_text_button_bottom_center.setOnAction(new EventHandler<ActionEvent>() {
@@ -1466,7 +1468,6 @@ public class HelloApplication extends Application {
             public void handle(ActionEvent event) {
                 set_all_of_the_english_text_position_buttons_not_selected(helloController);
                 helloController.position_of_english_text_button_bottom_center.setSelected(true);
-                //StackPane.setAlignment(helloController.verse_input_field, Pos.BOTTOM_CENTER);
             }
         });
     }
@@ -1633,14 +1634,6 @@ public class HelloApplication extends Application {
                 helloController.font_size_text_field.getEditor().end(); // Move the cursor to the end
             });
         });
-    }
-
-    private void set_the_stroke(HelloController helloController) {
-        Text text = new Text(helloController.verse_input_field.getText());
-        text.setStroke(javafx.scene.paint.Color.BLACK);
-        text.setStrokeWidth(1);
-        text.setFill(javafx.scene.paint.Color.WHITE); // Set text color
-        helloController.verse_input_field.setGraphic(text);
     }
 
     private void add_the_text_to_the_photo(HelloController helloController, Ayat_settings ayatSettings, int selected_verse) {
@@ -3053,9 +3046,9 @@ public class HelloApplication extends Application {
     private void convertHeicToJpg(File old_file, File new_file) {
         try {
             String format = "jpg";
-            if(new_file.getName().toLowerCase().endsWith("png")){
+            if (new_file.getName().toLowerCase().endsWith("png")) {
                 format = "png";
-            } else if(new_file.getName().toLowerCase().endsWith("jpg")){
+            } else if (new_file.getName().toLowerCase().endsWith("jpg")) {
                 format = "jpeg";
             }
             ProcessBuilder processBuilder = new ProcessBuilder(
@@ -3129,6 +3122,7 @@ public class HelloApplication extends Application {
         helloController.next_photo_chat_gpt_result.setGraphic(return_region_for_svg(get_the_svg_path("arrow_forward_ios"), 25D));
         helloController.previous_photo_chat_gpt_result.setGraphic(return_region_for_svg(get_the_svg_path("arrow_back_ios"), 25D));
         helloController.full_screen_button_fourth_screen.setGraphic(return_region_for_svg(get_the_svg_path("fullscreen"), 25D));
+        helloController.cancel_video.setGraphic(return_region_for_svg(get_the_svg_path("arrow_back_with_line"), 27.5));
     }
 
     private String getSvgPathContent(String resourcePath) {
@@ -3297,7 +3291,7 @@ public class HelloApplication extends Application {
                                     write_the_raw_file(return_resized_downscale_buffer_image(bufferedImage, picAspectRatio), "temp/images/scaled", file_id);
                                 }
                             }
-                            Media_pool mediaPool_item = new Media_pool(file_id,create_a_thumbnail(bufferedImage,picAspectRatio));
+                            Media_pool mediaPool_item = new Media_pool(file_id, create_a_thumbnail(bufferedImage, picAspectRatio));
                             media_pool_array_list.add(mediaPool_item);
                             add_image_to_tile_pane(helloController, mediaPool_item);
                         } catch (Exception e) {
@@ -3353,22 +3347,23 @@ public class HelloApplication extends Application {
         return bufferedImage;
     }
 
-    private Image create_a_thumbnail(BufferedImage bufferedImage,Pic_aspect_ratio pic_aspect_ratio) {
-        int width = 45;
-        int height = 80;
+    private Image create_a_thumbnail(BufferedImage bufferedImage, Pic_aspect_ratio pic_aspect_ratio) {
+        int width = 90;
+        int height = 160;
         if (pic_aspect_ratio == Pic_aspect_ratio.aspect_vertical_9_16) {
-            width = 45;
-            height = 80;
+            width = 90;
+            height = 160;
         } else if (pic_aspect_ratio == Pic_aspect_ratio.aspect_horizontal_16_9) {
-            width = 80;
-            height = 45;
+            width = 160;
+            height = 90;
         } else if (pic_aspect_ratio == Pic_aspect_ratio.aspect_square_1_1) {
-            width = 45;
-            height = 45;
+            width = 90;
+            height = 90;
         }
         try {
             BufferedImage thumbnail = Thumbnails.of(bufferedImage)
                     .size(width, height)
+                    .outputQuality(1)
                     .asBufferedImage();
             return buffer_image_to_image(thumbnail);
         } catch (IOException e) {
@@ -3376,24 +3371,21 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void add_image_to_tile_pane(HelloController helloController, Media_pool mediaPool){
+    private void add_image_to_tile_pane(HelloController helloController, Media_pool mediaPool) {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem item1 = new MenuItem("Upload media");
-
         ImageView imageView = new ImageView(mediaPool.getThumbnail());
         imageView.setFitWidth(mediaPool.getThumbnail().getWidth());
         imageView.setFitHeight(mediaPool.getThumbnail().getHeight());
         imageView.setPreserveRatio(true);
-
         StackPane wrapper = new StackPane(imageView);
-        wrapper.setPrefSize(mediaPool.getThumbnail().getWidth()+20, mediaPool.getThumbnail().getHeight()+20);
+        wrapper.setPrefSize(mediaPool.getThumbnail().getWidth() + 20, mediaPool.getThumbnail().getHeight() + 20);
 
-        // Option 1: Set ID as user data for retrieval later
         wrapper.setUserData(mediaPool);
         wrapper.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+                if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                     wrapper.setStyle("-fx-border-color: blue; -fx-border-width: 3;");
                 } else {
 
@@ -3401,5 +3393,39 @@ public class HelloApplication extends Application {
             }
         });
         helloController.tile_pane_media_pool.getChildren().add(wrapper);
+    }
+
+    private void set_the_width_of_the_left_and_right(HelloController helloController) {
+
+        helloController.center_group_grid_pane.layoutBoundsProperty().addListener(new ChangeListener<Bounds>() {
+            @Override
+            public void changed(ObservableValue<? extends Bounds> obs, Bounds oldVal, Bounds newVal) {
+                double width_of_the_screen = Screen.getPrimary().getBounds().getWidth();
+                double width_of_center = newVal.getWidth();
+                double width_of_left_and_right = (width_of_the_screen - width_of_center) / 2;
+                helloController.left_stack_pane_in_grid_pane.setPrefWidth(width_of_left_and_right);
+                helloController.left_stack_pane_in_grid_pane.setMaxWidth(width_of_left_and_right);
+                helloController.right_stack_pane_in_grid_pane.setPrefWidth(width_of_left_and_right);
+                helloController.right_stack_pane_in_grid_pane.setMaxWidth(width_of_left_and_right);
+                helloController.center_group_grid_pane.layoutBoundsProperty().removeListener(this);
+            }
+        });
+    }
+
+    private void listen_to_change_in_fourth_screen_layout(HelloController helloController) {
+        helloController.show_the_result_screen.layoutBoundsProperty().addListener(new ChangeListener<Bounds>() {
+            @Override
+            public void changed(ObservableValue<? extends Bounds> observableValue, Bounds old_bounds, Bounds new_bounds) {
+                if (new_bounds.getHeight() != old_bounds.getHeight()) {
+                    double top_box_height = helloController.top_v_box_fourth_screen.getHeight();
+                    double bottom_box_height = helloController.bottom_vbox_fourth_screen.getHeight();
+                    double total_height = Screen.getPrimary().getVisualBounds().getHeight() - top_box_height - bottom_box_height;
+                    double image_height = total_height - top_box_height - bottom_box_height- Math.max(25, total_height * 0.04);
+                    double image_width = (image_height / 16) * 9;
+                    helloController.chatgpt_image_view.setFitHeight(image_height);
+                    helloController.chatgpt_image_view.setFitWidth(image_width);
+                }
+            }
+        });
     }
 }
