@@ -23,6 +23,7 @@ module com.example.quranfx {
     requires metadata.extractor;
     requires imgscalr.lib;
     requires com.jfoenix;
+    requires org.bytedeco.opencv;
 
     opens com.example.quranfx to javafx.fxml;
     exports com.example.quranfx;

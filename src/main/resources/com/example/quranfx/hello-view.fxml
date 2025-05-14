@@ -30,6 +30,7 @@
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import java.net.URL?>
 <?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.BorderPane?>
 <StackPane prefHeight="365.0" prefWidth="364.0" xmlns="http://javafx.com/javafx/23.0.1"
            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.quranfx.HelloController"
            style="-fx-background-color: #FFFFFF;">
@@ -226,305 +227,322 @@
             </Label>
         </VBox>
     </StackPane>
-    <GridPane fx:id="show_the_result_screen" visible="false"  >
-        <columnConstraints>
-            <ColumnConstraints hgrow="ALWAYS"/>  <!-- Left -->
-            <ColumnConstraints hgrow="NEVER"/>   <!-- Center -->
-            <ColumnConstraints hgrow="ALWAYS"/>  <!-- Right -->
-        </columnConstraints>
-        <rowConstraints>
-            <RowConstraints vgrow="NEVER"/>
-            <RowConstraints vgrow="ALWAYS"/>  <!-- Top main layout -->
-            <RowConstraints vgrow="NEVER"/>   <!-- Bottom controls -->
-        </rowConstraints>
-
+    <BorderPane fx:id="show_the_result_screen" visible="false">
         <!-- Top -->
-        <VBox fx:id="top_v_box_fourth_screen" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="0" alignment="CENTER_LEFT">
-            <JFXButton fx:id="cancel_video">
-                <VBox.margin>
-                    <Insets top="10" left="10"/>
-                </VBox.margin>
-            </JFXButton>
-        </VBox>
+        <top>
+            <StackPane fx:id="top_pane_fourth_screen" alignment="CENTER_LEFT">
+                <JFXButton fx:id="cancel_video">
+                    <StackPane.margin>
+                        <Insets top="10" left="10"/>
+                    </StackPane.margin>
+                </JFXButton>
+            </StackPane>
+        </top>
 
-        <!-- LEFT -->
-        <StackPane fx:id="left_stack_pane_in_grid_pane" GridPane.columnIndex="0" GridPane.rowIndex="1">
-            <VBox>
-                <VBox alignment="TOP_CENTER">
-                    <StackPane>
-                        <VBox.margin>
-                            <Insets top="15.0" left="15.0"/>
-                        </VBox.margin>
-                        <TilePane fx:id="tile_pane_media_pool" maxHeight="400.0" prefHeight="400">
-                        </TilePane>
-                        <Label fx:id="upload_media_text" text="Media pool" textFill="#B9B9B9">
-                            <font>
-                                <Font size="20.0"/>
-                            </font>
-                        </Label>
+        <center>
+            <HBox>
+                <!-- left -->
+                <HBox HBox.hgrow="ALWAYS">
+                    <StackPane fx:id="left_stack_pane_in_grid_pane">
+                        <VBox>
+                            <VBox alignment="TOP_CENTER">
+                                <StackPane>
+                                    <VBox.margin>
+                                        <Insets top="15.0" left="15.0"/>
+                                    </VBox.margin>
+                                    <TilePane fx:id="tile_pane_media_pool" maxHeight="400.0" prefHeight="400">
+                                    </TilePane>
+                                    <Label fx:id="upload_media_text" text="Media pool" textFill="#B9B9B9">
+                                        <font>
+                                            <Font size="20.0"/>
+                                        </font>
+                                    </Label>
+                                </StackPane>
+                            </VBox>
+                            <VBox alignment="CENTER_RIGHT">
+                                <VBox.margin>
+                                    <Insets top="15.0"/>
+                                </VBox.margin>
+                                <JFXButton fx:id="add_media_button" text="Upload media"
+                                           style="-fx-background-color: #000000; -fx-text-fill: #FFFFFF;"/>
+                            </VBox>
+                        </VBox>
                     </StackPane>
-                </VBox>
-                <VBox alignment="CENTER_RIGHT">
-                    <VBox.margin>
-                        <Insets top="15.0"/>
-                    </VBox.margin>
-                    <JFXButton fx:id="add_media_button" text="Upload media"
-                               style="-fx-background-color: #000000; -fx-text-fill: #FFFFFF;"/>
-                </VBox>
-            </VBox>
-        </StackPane>
+                </HBox>
 
-        <!-- CENTER -->
-        <StackPane fx:id="center_group_grid_pane" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.halignment="CENTER" GridPane.vgrow="ALWAYS" GridPane.hgrow="NEVER">
-            <VBox alignment="CENTER">
-                <HBox alignment="CENTER">
-                    <VBox alignment="CENTER">
-                        <JFXButton fx:id="previous_photo_chat_gpt_result" maxHeight="50" maxWidth="50" prefHeight="50"
-                                   prefWidth="50" minHeight="50" minWidth="50">
-                        </JFXButton>
-                    </VBox>
-                    <StackPane fx:id="stack_pane_of_image_view_and_text">
-                        <HBox.margin>
-                            <Insets left="5.0"/>
-                        </HBox.margin>
-                        <ImageView fx:id="chatgpt_image_view"/>
+                <!-- CENTER -->
+                <HBox HBox.hgrow="NEVER">
+                    <StackPane fx:id="center_group_grid_pane">
+                        <VBox alignment="CENTER">
+                            <HBox alignment="CENTER">
+                                <VBox alignment="CENTER">
+                                    <JFXButton fx:id="previous_photo_chat_gpt_result" maxHeight="50" maxWidth="50"
+                                               prefHeight="50"
+                                               prefWidth="50" minHeight="50" minWidth="50">
+                                    </JFXButton>
+                                </VBox>
+                                <StackPane fx:id="stack_pane_of_image_view_and_text"
+                                           style="-fx-border-color: red; -fx-border-width: 2;">
+                                    <HBox.margin>
+                                        <Insets left="5.0"/>
+                                    </HBox.margin>
+                                    <ImageView fx:id="chatgpt_image_view" preserveRatio="true"/>
+                                </StackPane>
+                                <VBox alignment="CENTER">
+                                    <HBox.margin>
+                                        <Insets left="5.0"/>
+                                    </HBox.margin>
+                                    <Pane VBox.vgrow="ALWAYS"/>
+                                    <JFXButton fx:id="next_photo_chat_gpt_result" prefWidth="50" prefHeight="50"
+                                               maxHeight="50"
+                                               maxWidth="50" minHeight="50" minWidth="50">
+                                        <VBox.margin>
+                                            <Insets top="26.0"/>
+                                        </VBox.margin>
+                                    </JFXButton>
+                                    <Pane VBox.vgrow="ALWAYS"/>
+                                    <JFXButton fx:id="full_screen_button_fourth_screen"/>
+                                </VBox>
+                            </HBox>
+                            <Label fx:id="what_verse_is_this" text="Surat Maryam verse 59" visible="true">
+                                <font>
+                                    <Font size="16.0"/>
+                                </font>
+                                <VBox.margin>
+                                    <Insets top="15.0"/>
+                                </VBox.margin>
+                            </Label>
+                        </VBox>
                     </StackPane>
-                    <VBox alignment="CENTER">
-                        <HBox.margin>
-                            <Insets left="5.0"/>
-                        </HBox.margin>
-                        <Pane VBox.vgrow="ALWAYS"/>
-                        <JFXButton fx:id="next_photo_chat_gpt_result" prefWidth="50" prefHeight="50" maxHeight="50"
-                                   maxWidth="50" minHeight="50" minWidth="50">
-                            <VBox.margin>
-                                <Insets top="26.0"/>
-                            </VBox.margin>
-                        </JFXButton>
-                        <Pane VBox.vgrow="ALWAYS"/>
-                        <JFXButton fx:id="full_screen_button_fourth_screen"/>
-                    </VBox>
-                </HBox>
-                <Label fx:id="what_verse_is_this" text="Surat Maryam verse 59" visible="true">
-                    <font>
-                        <Font size="16.0"/>
-                    </font>
-                    <VBox.margin>
-                        <Insets top="15.0"/>
-                    </VBox.margin>
-                </Label>
-            </VBox>
-        </StackPane>
-
-        <!-- RIGHT -->
-        <StackPane fx:id="right_stack_pane_in_grid_pane" GridPane.columnIndex="2" GridPane.rowIndex="1">
-            <VBox alignment="CENTER">
-                <TextField fx:id="end_time_of_each_image" alignment="CENTER" focusTraversable="false"
-                           promptText="End time in milliseconds"/>
-                <CheckBox fx:id="enable_english_text" text="Add translation">
-                    <VBox.margin>
-                        <Insets top="10.0"/>
-                    </VBox.margin>
-                </CheckBox>
-
-                <VBox fx:id="english_translation_settings" alignment="CENTER" managed="false" visible="false">
-                    <Separator orientation="HORIZONTAL">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                    </Separator>
-                    <ComboBox fx:id="spinner_to_choose_font">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                    </ComboBox>
-                    <Spinner fx:id="font_size_text_field" focusTraversable="false" prefWidth="300"
-                             promptText="Font size">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                    </Spinner>
-                    <TextField fx:id="english_text_color_in_ayat" alignment="CENTER" focusTraversable="false"
-                               promptText="Text color" text="#FFFFFF">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                    </TextField>
-
-                    <HBox alignment="CENTER">
-                        <ToggleButton fx:id="position_of_english_text_button_top_center" text="Top"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <ToggleButton fx:id="position_of_english_text_button_center" selected="true" text="Center"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <ToggleButton fx:id="position_of_english_text_button_bottom_center" text="Bottom"/>
-                    </HBox>
-
-                    <Spinner fx:id="top_margin_english_text" focusTraversable="false" prefWidth="300"
-                             promptText="Top margin">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                    </Spinner>
-
-                    <Separator orientation="HORIZONTAL">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                    </Separator>
-                </VBox>
-
-                <CheckBox fx:id="add_arabic_text_fourth_screen" text="Add Arabic Text">
-                    <VBox.margin>
-                        <Insets top="10.0"/>
-                    </VBox.margin>
-                </CheckBox>
-
-                <VBox fx:id="arabic_translation_settings" alignment="CENTER" managed="false" visible="false">
-                    <Separator orientation="HORIZONTAL">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                    </Separator>
-                    <ComboBox fx:id="spinner_to_choose_font_arabic">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                    </ComboBox>
-                    <Spinner fx:id="font_size_text_field_arabic" focusTraversable="false" prefWidth="300"
-                             promptText="Font size">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                    </Spinner>
-                    <TextField fx:id="text_color_in_ayat_arabic" alignment="CENTER" focusTraversable="false"
-                               promptText="Text color" text="#FFFFFF">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                    </TextField>
-
-                    <HBox alignment="CENTER">
-                        <ToggleButton fx:id="position_of_english_text_button_top_center_arabic" text="Top"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <ToggleButton fx:id="position_of_english_text_button_center_arabic" selected="true"
-                                      text="Center"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <ToggleButton fx:id="position_of_english_text_button_bottom_center_arabic" text="Bottom"/>
-                    </HBox>
-
-                    <Spinner fx:id="top_margin_text_arabic" focusTraversable="false" prefWidth="300"
-                             promptText="Top margin">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                    </Spinner>
-
-                    <Separator orientation="HORIZONTAL">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                    </Separator>
-                </VBox>
-
-                <CheckBox fx:id="add_surat_name_in_video" text="Put The name of the surat">
-                    <VBox.margin>
-                        <Insets top="10.0"/>
-                    </VBox.margin>
-                </CheckBox>
-
-                <VBox fx:id="surat_name_settings" alignment="CENTER" managed="false" visible="false">
-                    <Separator orientation="HORIZONTAL">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                    </Separator>
-                    <ComboBox fx:id="spinner_to_choose_font_arabic_surat">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                    </ComboBox>
-                    <Spinner fx:id="font_size_text_field_arabic_surat" focusTraversable="false" prefWidth="300"
-                             promptText="Font size">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                    </Spinner>
-                    <TextField fx:id="text_color_in_ayat_arabic_surat" alignment="CENTER" focusTraversable="false"
-                               promptText="Text color" text="#FFFFFF">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                    </TextField>
-
-                    <HBox alignment="CENTER">
-                        <ToggleButton fx:id="position_of_english_text_button_top_center_arabic_surat" text="Top"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <ToggleButton fx:id="position_of_english_text_button_center_arabic_surat" selected="true"
-                                      text="Center"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <ToggleButton fx:id="position_of_english_text_button_bottom_center_arabic_surat" text="Bottom"/>
-                    </HBox>
-
-                    <Spinner fx:id="top_margin_text_arabic_surat" focusTraversable="false" prefWidth="300"
-                             promptText="Top margin">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                    </Spinner>
-
-                    <Separator orientation="HORIZONTAL">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                    </Separator>
-                </VBox>
-
-                <Spinner fx:id="choose_brightness_of_an_image" focusTraversable="false" prefWidth="300"
-                         promptText="Brightness">
-                    <VBox.margin>
-                        <Insets top="10.0"/>
-                    </VBox.margin>
-                </Spinner>
-
-                <HBox alignment="CENTER">
-                    <Button fx:id="apply_changes_to_current_ayat" text="Apply Changes"/>
-                    <Button fx:id="apply_to_all_english_translation" text="Apply to all">
-                        <HBox.margin>
-                            <Insets left="10.0"/>
-                        </HBox.margin>
-                    </Button>
                 </HBox>
 
-                <HBox alignment="CENTER">
-                    <Button fx:id="upload_image_button_for_each_ayat" text="Upload Image"/>
-                    <Button fx:id="set_image_to_all" text="Set image to all">
-                        <HBox.margin>
-                            <Insets left="10.0"/>
-                        </HBox.margin>
-                    </Button>
+                <!-- RIGHT -->
+                <HBox HBox.hgrow="ALWAYS">
+                    <StackPane fx:id="right_stack_pane_in_grid_pane">
+                        <VBox alignment="CENTER">
+                            <TextField fx:id="end_time_of_each_image" alignment="CENTER" focusTraversable="false"
+                                       promptText="End time in milliseconds"/>
+                            <CheckBox fx:id="enable_english_text" text="Add translation">
+                                <VBox.margin>
+                                    <Insets top="10.0"/>
+                                </VBox.margin>
+                            </CheckBox>
+
+                            <VBox fx:id="english_translation_settings" alignment="CENTER" managed="false"
+                                  visible="false">
+                                <Separator orientation="HORIZONTAL">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </Separator>
+                                <ComboBox fx:id="spinner_to_choose_font">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </ComboBox>
+                                <Spinner fx:id="font_size_text_field" focusTraversable="false" prefWidth="300"
+                                         promptText="Font size">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </Spinner>
+                                <TextField fx:id="english_text_color_in_ayat" alignment="CENTER"
+                                           focusTraversable="false"
+                                           promptText="Text color" text="#FFFFFF">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </TextField>
+
+                                <HBox alignment="CENTER">
+                                    <ToggleButton fx:id="position_of_english_text_button_top_center" text="Top"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <ToggleButton fx:id="position_of_english_text_button_center" selected="true"
+                                                  text="Center"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <ToggleButton fx:id="position_of_english_text_button_bottom_center" text="Bottom"/>
+                                </HBox>
+
+                                <Spinner fx:id="top_margin_english_text" focusTraversable="false" prefWidth="300"
+                                         promptText="Top margin">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </Spinner>
+
+                                <Separator orientation="HORIZONTAL">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </Separator>
+                            </VBox>
+
+                            <CheckBox fx:id="add_arabic_text_fourth_screen" text="Add Arabic Text">
+                                <VBox.margin>
+                                    <Insets top="10.0"/>
+                                </VBox.margin>
+                            </CheckBox>
+
+                            <VBox fx:id="arabic_translation_settings" alignment="CENTER" managed="false"
+                                  visible="false">
+                                <Separator orientation="HORIZONTAL">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </Separator>
+                                <ComboBox fx:id="spinner_to_choose_font_arabic">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </ComboBox>
+                                <Spinner fx:id="font_size_text_field_arabic" focusTraversable="false" prefWidth="300"
+                                         promptText="Font size">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </Spinner>
+                                <TextField fx:id="text_color_in_ayat_arabic" alignment="CENTER" focusTraversable="false"
+                                           promptText="Text color" text="#FFFFFF">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </TextField>
+
+                                <HBox alignment="CENTER">
+                                    <ToggleButton fx:id="position_of_english_text_button_top_center_arabic" text="Top"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <ToggleButton fx:id="position_of_english_text_button_center_arabic" selected="true"
+                                                  text="Center"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <ToggleButton fx:id="position_of_english_text_button_bottom_center_arabic"
+                                                  text="Bottom"/>
+                                </HBox>
+
+                                <Spinner fx:id="top_margin_text_arabic" focusTraversable="false" prefWidth="300"
+                                         promptText="Top margin">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </Spinner>
+
+                                <Separator orientation="HORIZONTAL">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </Separator>
+                            </VBox>
+
+                            <CheckBox fx:id="add_surat_name_in_video" text="Put The name of the surat">
+                                <VBox.margin>
+                                    <Insets top="10.0"/>
+                                </VBox.margin>
+                            </CheckBox>
+
+                            <VBox fx:id="surat_name_settings" alignment="CENTER" managed="false" visible="false">
+                                <Separator orientation="HORIZONTAL">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </Separator>
+                                <ComboBox fx:id="spinner_to_choose_font_arabic_surat">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </ComboBox>
+                                <Spinner fx:id="font_size_text_field_arabic_surat" focusTraversable="false"
+                                         prefWidth="300"
+                                         promptText="Font size">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </Spinner>
+                                <TextField fx:id="text_color_in_ayat_arabic_surat" alignment="CENTER"
+                                           focusTraversable="false"
+                                           promptText="Text color" text="#FFFFFF">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </TextField>
+
+                                <HBox alignment="CENTER">
+                                    <ToggleButton fx:id="position_of_english_text_button_top_center_arabic_surat"
+                                                  text="Top"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <ToggleButton fx:id="position_of_english_text_button_center_arabic_surat"
+                                                  selected="true"
+                                                  text="Center"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <ToggleButton fx:id="position_of_english_text_button_bottom_center_arabic_surat"
+                                                  text="Bottom"/>
+                                </HBox>
+
+                                <Spinner fx:id="top_margin_text_arabic_surat" focusTraversable="false" prefWidth="300"
+                                         promptText="Top margin">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </Spinner>
+
+                                <Separator orientation="HORIZONTAL">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </Separator>
+                            </VBox>
+
+                            <Spinner fx:id="choose_brightness_of_an_image" focusTraversable="false" prefWidth="300"
+                                     promptText="Brightness">
+                                <VBox.margin>
+                                    <Insets top="10.0"/>
+                                </VBox.margin>
+                            </Spinner>
+
+                            <HBox alignment="CENTER">
+                                <Button fx:id="apply_changes_to_current_ayat" text="Apply Changes"/>
+                                <Button fx:id="apply_to_all_english_translation" text="Apply to all">
+                                    <HBox.margin>
+                                        <Insets left="10.0"/>
+                                    </HBox.margin>
+                                </Button>
+                            </HBox>
+
+                            <HBox alignment="CENTER">
+                                <Button fx:id="upload_image_button_for_each_ayat" text="Upload Image"/>
+                                <Button fx:id="set_image_to_all" text="Set image to all">
+                                    <HBox.margin>
+                                        <Insets left="10.0"/>
+                                    </HBox.margin>
+                                </Button>
+                            </HBox>
+                        </VBox>
+                    </StackPane>
                 </HBox>
-            </VBox>
-        </StackPane>
+            </HBox>
+        </center>
 
         <!-- BOTTOM -->
-        <VBox fx:id="bottom_vbox_fourth_screen" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="2">
-            <ListView fx:id="list_view_with_the_verses_preview" maxHeight="120" orientation="HORIZONTAL">
-                <VBox.margin>
-                    <Insets left="20.0" right="20.0" top="10.0"/>
-                </VBox.margin>
-            </ListView>
+        <bottom>
+            <StackPane fx:id="bottom_stack_pane_fourth_screen">
+                <VBox fx:id="bottom_vbox_fourth_screen">
+                    <ListView fx:id="list_view_with_the_verses_preview" maxHeight="120" orientation="HORIZONTAL">
+                        <VBox.margin>
+                            <Insets left="20.0" right="20.0" top="10.0"/>
+                        </VBox.margin>
+                    </ListView>
 
-            <HBox alignment="CENTER_LEFT">
-                <Button fx:id="play_sound" text="Play"/>
-                <Label fx:id="duration_of_media" text="00:00"/>
-                <Slider fx:id="sound_slider_fourth_screen" HBox.hgrow="ALWAYS"/>
-                <Label fx:id="total_duration_of_media" text="00:00"/>
-                <Button fx:id="copy_duration_fourth_screen" text="Copy Duration"/>
-            </HBox>
+                    <HBox alignment="CENTER_LEFT">
+                        <Button fx:id="play_sound" text="Play"/>
+                        <Label fx:id="duration_of_media" text="00:00"/>
+                        <Slider fx:id="sound_slider_fourth_screen" HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="total_duration_of_media" text="00:00"/>
+                        <Button fx:id="copy_duration_fourth_screen" text="Copy Duration"/>
+                    </HBox>
 
-            <HBox alignment="CENTER_RIGHT">
-                <Button fx:id="create_video_final" text="Create video"/>
-            </HBox>
-        </VBox>
-
-    </GridPane>
+                    <HBox alignment="CENTER_RIGHT">
+                        <Button fx:id="create_video_final" text="Create video"/>
+                    </HBox>
+                </VBox>
+            </StackPane>
+        </bottom>
+    </BorderPane>
 </StackPane>

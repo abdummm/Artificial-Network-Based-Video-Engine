@@ -19,7 +19,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.MenuItem;
@@ -53,6 +52,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -102,6 +102,8 @@ public class HelloApplication extends Application {
     private boolean did_this_play_already = false;
     private int audio_frequncy_of_the_sound = 44100;
     private ArrayList<Media_pool> media_pool_array_list = new ArrayList<>();
+    private double max_hight_of_top_pane_fourth_screen = 0;
+    private double max_hight_of_bottom_pane_fourth_screen = 0;
 
 
     @Override
@@ -200,7 +202,9 @@ public class HelloApplication extends Application {
         listen_to_list_click_list_view(helloController);
         listen_to_upload_media_button(helloController);
         set_the_width_of_the_left_and_right(helloController);
-        //listen_to_change_in_fourth_screen_layout(helloController);
+        listen_to_top_and_bottom_pane_size_change_fourth_screen(helloController);
+        listen_to_whole_screen_resize(scene, helloController);
+        listen_to_fourth_screen_drawn(helloController);
     }
 
     public static void main(String[] args) {
@@ -3412,30 +3416,63 @@ public class HelloApplication extends Application {
         });
     }
 
-    /*private void listen_to_change_in_fourth_screen_layout(HelloController helloController) {
+    private void listen_to_top_and_bottom_pane_size_change_fourth_screen(HelloController helloController) {
+        final boolean[] only_run_once_top_layout = {true};
+        final boolean[] only_run_once_bottom_layout = {true};
+        helloController.top_pane_fourth_screen.layoutBoundsProperty().addListener(new ChangeListener<Bounds>() {
+            @Override
+            public void changed(ObservableValue<? extends Bounds> observableValue, Bounds old_bounds, Bounds new_bounds) {
+                max_hight_of_top_pane_fourth_screen = Math.max(new_bounds.getHeight(), max_hight_of_top_pane_fourth_screen);
+                if (only_run_once_top_layout[0]) {
+                    only_run_once_top_layout[0] = false;
+                    reseize_the_image_view(helloController, Screen.getPrimary().getBounds().getHeight() / 2);
+                }
+            }
+        });
+        helloController.bottom_stack_pane_fourth_screen.layoutBoundsProperty().addListener(new ChangeListener<Bounds>() {
+            @Override
+            public void changed(ObservableValue<? extends Bounds> observableValue, Bounds old_bounds, Bounds new_bounds) {
+                max_hight_of_bottom_pane_fourth_screen = Math.max(max_hight_of_bottom_pane_fourth_screen, new_bounds.getHeight());
+                if (only_run_once_bottom_layout[0]) {
+                    only_run_once_bottom_layout[0] = false;
+                    reseize_the_image_view(helloController, Screen.getPrimary().getBounds().getHeight() / 2);
+                }
+            }
+        });
+    }
+
+    private void listen_to_whole_screen_resize(Scene scene, HelloController helloController) {
+        scene.heightProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
+                reseize_the_image_view(helloController, new_number.doubleValue());
+            }
+        });
+    }
+
+    private void reseize_the_image_view(HelloController helloController, double main_stage_height) {
+        double height_of_the_screen = main_stage_height - (helloController.what_verse_is_this.getHeight() + 15 + max_hight_of_top_pane_fourth_screen + max_hight_of_bottom_pane_fourth_screen);
+        double width_of_chat_gpt_image_view = (height_of_the_screen / 16) * 9;
+        if (height_of_the_screen < 1 || width_of_chat_gpt_image_view < 1) {
+            return;
+        }
+        System.out.println("Screen " + height_of_the_screen);
+        System.out.println("Top " + max_hight_of_top_pane_fourth_screen);
+        System.out.println("Bottom " + max_hight_of_bottom_pane_fourth_screen);
+        System.out.println("");
+        helloController.chatgpt_image_view.setFitHeight(height_of_the_screen);
+        helloController.chatgpt_image_view.setFitWidth(width_of_chat_gpt_image_view);
+    }
+
+    private void listen_to_fourth_screen_drawn(HelloController helloController) {
         helloController.show_the_result_screen.layoutBoundsProperty().addListener(new ChangeListener<Bounds>() {
             @Override
             public void changed(ObservableValue<? extends Bounds> observableValue, Bounds old_bounds, Bounds new_bounds) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(new_bounds.getHeight()-old_bounds.getHeight()<=1){
-                            return;
-                        }
-                        if (new_bounds.getHeight() != old_bounds.getHeight()) {
-                            double top_box_height = helloController.top_v_box_fourth_screen.getHeight();
-                            System.out.println(top_box_height);
-                            double bottom_box_height = helloController.bottom_vbox_fourth_screen.getHeight();
-                            double total_height = Screen.getPrimary().getVisualBounds().getHeight() - top_box_height - bottom_box_height;
-                            double image_height = total_height - Math.max(30, total_height * 0.05D);
-                            double image_width = (image_height / 16) * 9;
-                            helloController.chatgpt_image_view.setFitHeight(image_height);
-                            helloController.chatgpt_image_view.setFitWidth(image_width);
-
-                        }
-                    }
-                });
+                reseize_the_image_view(helloController, main_stage.getHeight());
+                helloController.show_the_result_screen.layoutBoundsProperty().removeListener(this);
             }
         });
-    }*/
+    }
+
+
 }

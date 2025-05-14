@@ -75,7 +75,7 @@ public class HelloController {
     public TextArea enter_the_prompt;
 
     @FXML
-    public GridPane show_the_result_screen;
+    public BorderPane show_the_result_screen;
 
     @FXML
     public ImageView chatgpt_image_view;
@@ -257,4 +257,10 @@ public class HelloController {
 
     @FXML
     public VBox bottom_vbox_fourth_screen;
+
+    @FXML
+    public StackPane top_pane_fourth_screen;
+
+    @FXML
+    public StackPane bottom_stack_pane_fourth_screen;
 }
