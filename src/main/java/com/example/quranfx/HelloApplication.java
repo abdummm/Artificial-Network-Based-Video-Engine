@@ -245,12 +245,11 @@ public class HelloApplication extends Application {
                 .addPathSegment("by_chapter")
                 .addPathSegment(String.valueOf(id + 1))
                 .addQueryParameter("language", "en")
-                .addQueryParameter("translations", "131")
-                .addQueryParameter("translation_fields", "resource_id,text")
+                .addQueryParameter("translations", "20")
+                .addQueryParameter("translation_fields", "text")
                 .addQueryParameter("per_page", "50")
                 .addQueryParameter("page", String.valueOf(page))
                 .addQueryParameter("fields", "text_uthmani,audio")
-                //.addQueryParameter("audio", )
                 .build();
         OkHttpClient client = new OkHttpClient().newBuilder().build();
         Request request = new Request.Builder()
