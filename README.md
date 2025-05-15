@@ -17,7 +17,7 @@ The **Artificial-Neural-Network-Based-Video-Engine** is a Java application that 
 - **Programming Languages used**: Java, JavaFX and FXML
 - **API Usage**: OpenAI API was used to generate the images based on the text input
 - **Video Processing Library**: FFmpegFrameRecorder for Java to handle video input/output, frame capture, and manipulation
-- **File Formats Supported**: MP3, WAV and FLAC for audio, MP4 for videos and JPG for images
+- **File Formats Supported**: MP3 and WAV for audio, MP4 for videos and JPG for images
 - **Libraries Used**: OkHTTP was used to handle API requests and Jackson was used For JSON processing
 
 ## Future Improvements
