@@ -202,7 +202,7 @@ public class HelloApplication extends Application {
         listen_to_list_click_list_view(helloController);
         listen_to_upload_media_button(helloController);
         set_the_width_of_the_left_and_right(helloController);
-        listen_to_top_and_bottom_pane_size_change_fourth_screen(helloController);
+        listen_to_top_and_bottom_pane_size_change_fourth_screen(helloController, scene);
         listen_to_whole_screen_resize(scene, helloController);
     }
 
@@ -3414,18 +3414,24 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void listen_to_top_and_bottom_pane_size_change_fourth_screen(HelloController helloController) {
+    private void listen_to_top_and_bottom_pane_size_change_fourth_screen(HelloController helloController, Scene scene) {
         final boolean[] only_run_once_top_layout = {true};
         final boolean[] only_run_once_bottom_layout = {true};
+        double screen_height;
+        if (scene.getHeight() > 0) {
+            screen_height = scene.getHeight();
+        } else {
+            screen_height = Screen.getPrimary().getBounds().getHeight() / 2;
+        }
         if (helloController.top_pane_fourth_screen.getHeight() > 0) {
             max_hight_of_top_pane_fourth_screen = Math.max(helloController.top_pane_fourth_screen.getHeight(), max_hight_of_top_pane_fourth_screen);
             only_run_once_top_layout[0] = false;
-            reseize_the_image_view(helloController, Screen.getPrimary().getBounds().getHeight() / 2);
+            reseize_the_image_view(helloController, screen_height);
         }
         if (helloController.bottom_stack_pane_fourth_screen.getHeight() > 0) {
             max_hight_of_bottom_pane_fourth_screen = Math.max(max_hight_of_bottom_pane_fourth_screen, helloController.bottom_stack_pane_fourth_screen.getHeight());
             only_run_once_bottom_layout[0] = false;
-            reseize_the_image_view(helloController, Screen.getPrimary().getBounds().getHeight() / 2);
+            reseize_the_image_view(helloController, screen_height);
         }
         helloController.top_pane_fourth_screen.layoutBoundsProperty().addListener(new ChangeListener<Bounds>() {
             @Override
@@ -3433,7 +3439,11 @@ public class HelloApplication extends Application {
                 max_hight_of_top_pane_fourth_screen = Math.max(new_bounds.getHeight(), max_hight_of_top_pane_fourth_screen);
                 if (only_run_once_top_layout[0]) {
                     only_run_once_top_layout[0] = false;
-                    reseize_the_image_view(helloController, Screen.getPrimary().getBounds().getHeight() / 2);
+                    if (scene.getHeight() == 0) {
+                        reseize_the_image_view(helloController, Screen.getPrimary().getBounds().getHeight() / 2);
+                    } else {
+                        reseize_the_image_view(helloController, scene.getHeight());
+                    }
                 }
             }
         });
@@ -3443,14 +3453,18 @@ public class HelloApplication extends Application {
                 max_hight_of_bottom_pane_fourth_screen = Math.max(max_hight_of_bottom_pane_fourth_screen, new_bounds.getHeight());
                 if (only_run_once_bottom_layout[0]) {
                     only_run_once_bottom_layout[0] = false;
-                    reseize_the_image_view(helloController, Screen.getPrimary().getBounds().getHeight() / 2);
+                    if (scene.getHeight() == 0) {
+                        reseize_the_image_view(helloController, Screen.getPrimary().getBounds().getHeight() / 2);
+                    } else {
+                        reseize_the_image_view(helloController, scene.getHeight());
+                    }
                 }
             }
         });
     }
 
     private void listen_to_whole_screen_resize(Scene scene, HelloController helloController) {
-        if(scene.getHeight()>0){
+        if (scene.getHeight() > 0) {
             reseize_the_image_view(helloController, scene.getHeight());
         }
         scene.heightProperty().addListener(new ChangeListener<Number>() {
