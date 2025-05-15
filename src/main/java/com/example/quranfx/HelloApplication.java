@@ -204,7 +204,6 @@ public class HelloApplication extends Application {
         set_the_width_of_the_left_and_right(helloController);
         listen_to_top_and_bottom_pane_size_change_fourth_screen(helloController);
         listen_to_whole_screen_resize(scene, helloController);
-        listen_to_fourth_screen_drawn(helloController);
     }
 
     public static void main(String[] args) {
@@ -245,7 +244,7 @@ public class HelloApplication extends Application {
                 .addPathSegment("by_chapter")
                 .addPathSegment(String.valueOf(id + 1))
                 .addQueryParameter("language", "en")
-                .addQueryParameter("translations", "20")
+                .addQueryParameter("translations", "85")
                 .addQueryParameter("translation_fields", "text")
                 .addQueryParameter("per_page", "50")
                 .addQueryParameter("page", String.valueOf(page))
@@ -3418,6 +3417,16 @@ public class HelloApplication extends Application {
     private void listen_to_top_and_bottom_pane_size_change_fourth_screen(HelloController helloController) {
         final boolean[] only_run_once_top_layout = {true};
         final boolean[] only_run_once_bottom_layout = {true};
+        if (helloController.top_pane_fourth_screen.getHeight() > 0) {
+            max_hight_of_top_pane_fourth_screen = Math.max(helloController.top_pane_fourth_screen.getHeight(), max_hight_of_top_pane_fourth_screen);
+            only_run_once_top_layout[0] = false;
+            reseize_the_image_view(helloController, Screen.getPrimary().getBounds().getHeight() / 2);
+        }
+        if (helloController.bottom_stack_pane_fourth_screen.getHeight() > 0) {
+            max_hight_of_bottom_pane_fourth_screen = Math.max(max_hight_of_bottom_pane_fourth_screen, helloController.bottom_stack_pane_fourth_screen.getHeight());
+            only_run_once_bottom_layout[0] = false;
+            reseize_the_image_view(helloController, Screen.getPrimary().getBounds().getHeight() / 2);
+        }
         helloController.top_pane_fourth_screen.layoutBoundsProperty().addListener(new ChangeListener<Bounds>() {
             @Override
             public void changed(ObservableValue<? extends Bounds> observableValue, Bounds old_bounds, Bounds new_bounds) {
@@ -3441,6 +3450,9 @@ public class HelloApplication extends Application {
     }
 
     private void listen_to_whole_screen_resize(Scene scene, HelloController helloController) {
+        if(scene.getHeight()>0){
+            reseize_the_image_view(helloController, scene.getHeight());
+        }
         scene.heightProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
@@ -3455,23 +3467,11 @@ public class HelloApplication extends Application {
         if (height_of_the_screen < 1 || width_of_chat_gpt_image_view < 1) {
             return;
         }
-        System.out.println("Screen " + height_of_the_screen);
+        System.out.println("Screen " + main_stage_height);
         System.out.println("Top " + max_hight_of_top_pane_fourth_screen);
         System.out.println("Bottom " + max_hight_of_bottom_pane_fourth_screen);
-        System.out.println("");
+        System.out.println();
         helloController.chatgpt_image_view.setFitHeight(height_of_the_screen);
         helloController.chatgpt_image_view.setFitWidth(width_of_chat_gpt_image_view);
     }
-
-    private void listen_to_fourth_screen_drawn(HelloController helloController) {
-        helloController.show_the_result_screen.layoutBoundsProperty().addListener(new ChangeListener<Bounds>() {
-            @Override
-            public void changed(ObservableValue<? extends Bounds> observableValue, Bounds old_bounds, Bounds new_bounds) {
-                reseize_the_image_view(helloController, main_stage.getHeight());
-                helloController.show_the_result_screen.layoutBoundsProperty().removeListener(this);
-            }
-        });
-    }
-
-
 }
