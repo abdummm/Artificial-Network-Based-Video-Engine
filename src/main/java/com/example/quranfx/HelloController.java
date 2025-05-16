@@ -263,4 +263,7 @@ public class HelloController {
 
     @FXML
     public StackPane bottom_stack_pane_fourth_screen;
+
+    @FXML
+    public Label upload_media_text;
 }

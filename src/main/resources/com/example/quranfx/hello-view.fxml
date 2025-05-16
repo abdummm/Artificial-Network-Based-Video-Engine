@@ -136,7 +136,7 @@
                     <Insets top="20.0"/>
                 </VBox.margin>
             </VBox>
-            <VBox alignment="CENTER">
+            <VBox alignment="CENTER" managed="false">
                 <CheckBox fx:id="show_advanced_settings_second_screen" text="Show advanced settings">
                     <VBox.margin>
                         <Insets top="20.0"/>
@@ -250,7 +250,7 @@
                                     <VBox.margin>
                                         <Insets top="15.0" left="15.0"/>
                                     </VBox.margin>
-                                    <TilePane fx:id="tile_pane_media_pool" maxHeight="400.0" prefHeight="400">
+                                    <TilePane fx:id="tile_pane_media_pool" maxHeight="400.0" prefHeight="400" style="-fx-background-color: #F5F5F5; -fx-border-color: black; -fx-border-width: 2;" >
                                     </TilePane>
                                     <Label fx:id="upload_media_text" text="Media pool" textFill="#B9B9B9">
                                         <font>
@@ -281,8 +281,7 @@
                                                prefWidth="50" minHeight="50" minWidth="50">
                                     </JFXButton>
                                 </VBox>
-                                <StackPane fx:id="stack_pane_of_image_view_and_text"
-                                           style="-fx-border-color: red; -fx-border-width: 2;">
+                                <StackPane fx:id="stack_pane_of_image_view_and_text">
                                     <HBox.margin>
                                         <Insets left="5.0"/>
                                     </HBox.margin>
