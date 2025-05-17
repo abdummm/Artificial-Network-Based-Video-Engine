@@ -3364,22 +3364,21 @@ public class HelloApplication extends Application {
     }
 
     private Image create_a_thumbnail(BufferedImage bufferedImage, Pic_aspect_ratio pic_aspect_ratio) {
-        int width = 90;
-        int height = 160;
+        int width = 1080;
+        int height = 1920;
         if (pic_aspect_ratio == Pic_aspect_ratio.aspect_vertical_9_16) {
-            width = 90;
-            height = 160;
+            width = 1080;
+            height = 1920;
         } else if (pic_aspect_ratio == Pic_aspect_ratio.aspect_horizontal_16_9) {
-            width = 160;
-            height = 90;
+            width = 1920;
+            height = 1080;
         } else if (pic_aspect_ratio == Pic_aspect_ratio.aspect_square_1_1) {
-            width = 90;
-            height = 90;
+            width = 1080;
+            height = 1080;
         }
         try {
             BufferedImage thumbnail = Thumbnails.of(bufferedImage)
                     .size(width, height)
-                    .outputQuality(1)
                     .scalingMode(ScalingMode.PROGRESSIVE_BILINEAR)
                     .asBufferedImage();
             return buffer_image_to_image(thumbnail);
@@ -3390,29 +3389,30 @@ public class HelloApplication extends Application {
 
     private void add_image_to_tile_pane(HelloController helloController, Media_pool mediaPool) {
         ImageView imageView = new ImageView(mediaPool.getThumbnail());
-        imageView.setFitWidth(mediaPool.getThumbnail().getWidth());
-        imageView.setFitHeight(mediaPool.getThumbnail().getHeight());
+        imageView.setFitWidth(90);
+        imageView.setFitHeight(160);
         imageView.setPreserveRatio(true);
-        StackPane wrapper = new StackPane(imageView);
-        wrapper.setPrefSize(mediaPool.getThumbnail().getWidth() + 20, mediaPool.getThumbnail().getHeight() + 20);
-        wrapper.setUserData(mediaPool);
+        StackPane stackPane = new StackPane();
+        stackPane.getChildren().add(imageView);
+        stackPane.setPrefSize(imageView.getFitWidth()+ 20, imageView.getFitHeight() + 20);
+        stackPane.setUserData(mediaPool);
         ContextMenu contextMenu = new ContextMenu();
         MenuItem item1 = new MenuItem("Remove media");
         item1.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                helloController.tile_pane_media_pool.getChildren().remove(wrapper);
+                helloController.tile_pane_media_pool.getChildren().remove(stackPane);
                 hide_or_show_media_pool(helloController);
             }
         });
         contextMenu.getItems().add(item1);
-        wrapper.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        stackPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                    wrapper.setStyle("-fx-border-color: blue; -fx-border-width: 3;");
+                    stackPane.setStyle("-fx-border-color: blue; -fx-border-width: 3;");
                 } else if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
-                    contextMenu.show(wrapper, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+                    contextMenu.show(stackPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
                 }
                 mouseEvent.consume();
                 if(empty_tile_pane_context_menu!=null){
@@ -3420,7 +3420,7 @@ public class HelloApplication extends Application {
                 }
             }
         });
-        helloController.tile_pane_media_pool.getChildren().add(wrapper);
+        helloController.tile_pane_media_pool.getChildren().add(stackPane);
     }
 
     private void set_the_width_of_the_left_and_right(HelloController helloController) {
