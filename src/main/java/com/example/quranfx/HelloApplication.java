@@ -106,6 +106,8 @@ public class HelloApplication extends Application {
     private double max_hight_of_bottom_pane_fourth_screen = 0;
     private ContextMenu empty_tile_pane_context_menu = null;
 
+    private final double play_pause_button_size = 20D;
+
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -141,7 +143,7 @@ public class HelloApplication extends Application {
         listen_to_list_view_item_select(helloController);
         listen_to_list_view_keyboard_select(helloController);
         listen_to_play(helloController);
-        set_the_width_of_play_pause_button(helloController);
+        //set_the_width_of_play_pause_button(helloController);
         listen_to_slide_clicked(helloController);
         listen_to_full_screen_button(helloController);
         set_the_text_field_formatter_of_milliseconds_end(helloController);
@@ -666,7 +668,7 @@ public class HelloApplication extends Application {
         helloController.surat_name_settings.setVisible(false);
         helloController.choose_brightness_of_an_image.getValueFactory().setValue(100);
 
-        helloController.play_sound.setText("Play");
+        set_the_play_pause_button(helloController,"play");
 
         helloController.sound_slider_fourth_screen.setValue(0);
         helloController.list_view_with_the_verses_preview.getSelectionModel().select(0);
@@ -988,23 +990,23 @@ public class HelloApplication extends Application {
     }
 
     private void play_or_pause_the_video_after_click(HelloController helloController) {
-        if (helloController.play_sound.getText().equals("Play")) {
+        if (helloController.play_sound.getProperties().get("type").equals("play")) {
             if (mediaPlayer.getCurrentTime().toMillis() >= get_duration()) {
                 mediaPlayer.seek(Duration.ZERO);
             }
-            helloController.play_sound.setText("Pause");
+            set_the_play_pause_button(helloController,"pause");
             mediaPlayer.play();
-        } else if (helloController.play_sound.getText().equals("Pause")) {
-            helloController.play_sound.setText("Play");
+        } else if (helloController.play_sound.getProperties().get("type").equals("pause")) {
+            set_the_play_pause_button(helloController,"play");
             mediaPlayer.pause();
         }
     }
 
-    private void set_the_width_of_play_pause_button(HelloController helloController) {
+    /*private void set_the_width_of_play_pause_button(HelloController helloController) {
         Text text = new Text("Pause");
         text.setFont(helloController.play_sound.getFont());
         helloController.play_sound.setPrefWidth(text.getLayoutBounds().getWidth() + 20);
-    }
+    }*/
 
     private void set_the_media_player_listener(HelloController helloController) {
         mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
@@ -1039,7 +1041,7 @@ public class HelloApplication extends Application {
             @Override
             public void run() {
                 selected_verse = chatgpt_responses.size() - 1;
-                helloController.play_sound.setText("Play");
+                set_the_play_pause_button(helloController,"play");
                 select_the_correct_verse_in_the_list_view(helloController, selected_verse);
                 set_the_duration_to_reflect_end_of_media(helloController);
                 helloController.sound_slider_fourth_screen.setValue(helloController.sound_slider_fourth_screen.getMax());
@@ -3127,6 +3129,7 @@ public class HelloApplication extends Application {
         helloController.previous_photo_chat_gpt_result.setGraphic(return_region_for_svg(get_the_svg_path("arrow_back_ios"), 25D));
         helloController.full_screen_button_fourth_screen.setGraphic(return_region_for_svg(get_the_svg_path("fullscreen"), 25D));
         helloController.cancel_video.setGraphic(return_region_for_svg(get_the_svg_path("arrow_back_with_line"), 27.5));
+        set_the_play_pause_button(helloController,"play");
     }
 
     private String getSvgPathContent(String resourcePath) {
@@ -3394,7 +3397,7 @@ public class HelloApplication extends Application {
         imageView.setPreserveRatio(true);
         StackPane stackPane = new StackPane();
         stackPane.getChildren().add(imageView);
-        stackPane.setPrefSize(imageView.getFitWidth()+ 20, imageView.getFitHeight() + 20);
+        stackPane.setPrefSize(imageView.getFitWidth() + 20, imageView.getFitHeight() + 20);
         stackPane.setUserData(mediaPool);
         ContextMenu contextMenu = new ContextMenu();
         MenuItem item1 = new MenuItem("Remove media");
@@ -3415,7 +3418,7 @@ public class HelloApplication extends Application {
                     contextMenu.show(stackPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
                 }
                 mouseEvent.consume();
-                if(empty_tile_pane_context_menu!=null){
+                if (empty_tile_pane_context_menu != null) {
                     empty_tile_pane_context_menu.hide();
                 }
             }
@@ -3512,6 +3515,17 @@ public class HelloApplication extends Application {
         } else {
             helloController.upload_media_text.setManaged(false);
             helloController.upload_media_text.setVisible(false);
+        }
+    }
+
+    private void set_the_play_pause_button(HelloController helloController, String type){
+        if(type.equals("play")){
+            helloController.play_sound.setGraphic(return_region_for_svg(get_the_svg_path("play_icon"), play_pause_button_size));
+            helloController.play_sound.getProperties().put("type","play");
+
+        } else if(type.equals("pause")){
+            helloController.play_sound.setGraphic(return_region_for_svg(get_the_svg_path("pause_icon"), play_pause_button_size));
+            helloController.play_sound.getProperties().put("type","pause");
         }
     }
 }

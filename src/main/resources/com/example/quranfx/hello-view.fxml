@@ -136,7 +136,7 @@
                     <Insets top="20.0"/>
                 </VBox.margin>
             </VBox>
-            <VBox alignment="CENTER" managed="false">
+            <VBox alignment="CENTER" managed="false" visible="false">
                 <CheckBox fx:id="show_advanced_settings_second_screen" text="Show advanced settings">
                     <VBox.margin>
                         <Insets top="20.0"/>
@@ -530,7 +530,7 @@
                     </ListView>
 
                     <HBox alignment="CENTER_LEFT">
-                        <Button fx:id="play_sound" text="Play"/>
+                        <JFXButton fx:id="play_sound" />
                         <Label fx:id="duration_of_media" text="00:00"/>
                         <Slider fx:id="sound_slider_fourth_screen" HBox.hgrow="ALWAYS"/>
                         <Label fx:id="total_duration_of_media" text="00:00"/>
