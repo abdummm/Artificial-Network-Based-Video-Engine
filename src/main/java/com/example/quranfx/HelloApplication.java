@@ -3427,7 +3427,6 @@ public class HelloApplication extends Application {
     }
 
     private void set_the_width_of_the_left_and_right(HelloController helloController) {
-
         helloController.center_group_grid_pane.layoutBoundsProperty().addListener(new ChangeListener<Bounds>() {
             @Override
             public void changed(ObservableValue<? extends Bounds> obs, Bounds oldVal, Bounds newVal) {
@@ -3528,4 +3527,6 @@ public class HelloApplication extends Application {
             helloController.play_sound.getProperties().put("type","pause");
         }
     }
+
+
 }
