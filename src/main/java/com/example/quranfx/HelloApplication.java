@@ -3540,4 +3540,23 @@ public class HelloApplication extends Application {
     private void set_the_size_of_the_tile_pane(HelloController helloController){
 
     }
+
+    private int[] return_width_and_height_based_on_ratio(Pic_aspect_ratio pic_aspect_ratio){
+        int[] height_and_width = new int[2];
+        if(pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_vertical_9_16)){
+            height_and_width[0] = 1080;
+            height_and_width[1] = 1920;
+        } else if(pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_horizontal_16_9)){
+            height_and_width[0] = 1920;
+            height_and_width[1] = 1080;
+        } else if(pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_square_1_1)){
+            height_and_width[0] = 1080;
+            height_and_width[1] = 1080;
+        }
+        if(height_and_width[0] == 0 && height_and_width[1] == 0){
+            return new int[]{1080,1920};
+        } else {
+            return height_and_width;
+        }
+    }
 }
