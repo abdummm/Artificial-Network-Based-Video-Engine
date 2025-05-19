@@ -18,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -29,6 +30,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -108,6 +110,8 @@ public class HelloApplication extends Application {
     private ContextMenu empty_tile_pane_context_menu = null;
 
     private final double play_pause_button_size = 20D;
+    private final int image_view_in_tile_pane_width = 90;
+    private final int image_view_in_tile_pane_height = 160;
 
 
     @Override
@@ -669,7 +673,7 @@ public class HelloApplication extends Application {
         helloController.surat_name_settings.setVisible(false);
         helloController.choose_brightness_of_an_image.getValueFactory().setValue(100);
 
-        set_the_play_pause_button(helloController,"play");
+        set_the_play_pause_button(helloController, "play");
 
         helloController.sound_slider_fourth_screen.setValue(0);
         helloController.list_view_with_the_verses_preview.getSelectionModel().select(0);
@@ -995,10 +999,10 @@ public class HelloApplication extends Application {
             if (mediaPlayer.getCurrentTime().toMillis() >= get_duration()) {
                 mediaPlayer.seek(Duration.ZERO);
             }
-            set_the_play_pause_button(helloController,"pause");
+            set_the_play_pause_button(helloController, "pause");
             mediaPlayer.play();
         } else if (helloController.play_sound.getProperties().get("type").equals("pause")) {
-            set_the_play_pause_button(helloController,"play");
+            set_the_play_pause_button(helloController, "play");
             mediaPlayer.pause();
         }
     }
@@ -1042,7 +1046,7 @@ public class HelloApplication extends Application {
             @Override
             public void run() {
                 selected_verse = chatgpt_responses.size() - 1;
-                set_the_play_pause_button(helloController,"play");
+                set_the_play_pause_button(helloController, "play");
                 select_the_correct_verse_in_the_list_view(helloController, selected_verse);
                 set_the_duration_to_reflect_end_of_media(helloController);
                 helloController.sound_slider_fourth_screen.setValue(helloController.sound_slider_fourth_screen.getMax());
@@ -3130,7 +3134,7 @@ public class HelloApplication extends Application {
         helloController.previous_photo_chat_gpt_result.setGraphic(return_region_for_svg(get_the_svg_path("arrow_back_ios"), 25D));
         helloController.full_screen_button_fourth_screen.setGraphic(return_region_for_svg(get_the_svg_path("fullscreen"), 25D));
         helloController.cancel_video.setGraphic(return_region_for_svg(get_the_svg_path("arrow_back_with_line"), 27.5));
-        set_the_play_pause_button(helloController,"play");
+        set_the_play_pause_button(helloController, "play");
     }
 
     private String getSvgPathContent(String resourcePath) {
@@ -3304,7 +3308,7 @@ public class HelloApplication extends Application {
                                 write_the_raw_file(return_resized_downscale_buffer_image(bufferedImage, picAspectRatio), "temp/images/scaled", file_id);
                             }
                         }
-                        Media_pool mediaPool_item = new Media_pool(file_id, create_a_thumbnail(bufferedImage, picAspectRatio),image_file.getName());
+                        Media_pool mediaPool_item = new Media_pool(file_id, create_a_thumbnail(bufferedImage, picAspectRatio), image_file.getName());
                         arrayList_of_media_pool.add(mediaPool_item);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -3359,29 +3363,23 @@ public class HelloApplication extends Application {
     }
 
     private BufferedImage return_resized_downscale_buffer_image(BufferedImage bufferedImage, Pic_aspect_ratio pic_aspect_ratio) {
+        int[] height_and_width = return_width_and_height_based_on_ratio(pic_aspect_ratio);
+        int width = height_and_width[0];
+        int height = height_and_width[1];
         if (pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_vertical_9_16)) {
-            bufferedImage = Scalr.resize(bufferedImage, Scalr.Method.QUALITY, 1080, 1920);
+            bufferedImage = Scalr.resize(bufferedImage, Scalr.Method.QUALITY, width, height);
         } else if (pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_horizontal_16_9)) {
-            bufferedImage = Scalr.resize(bufferedImage, Scalr.Method.QUALITY, 1920, 1080);
+            bufferedImage = Scalr.resize(bufferedImage, Scalr.Method.QUALITY, width, height);
         } else if (pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_square_1_1)) {
-            bufferedImage = Scalr.resize(bufferedImage, Scalr.Method.QUALITY, 1080, 1080);
+            bufferedImage = Scalr.resize(bufferedImage, Scalr.Method.QUALITY, width, height);
         }
         return bufferedImage;
     }
 
     private Image create_a_thumbnail(BufferedImage bufferedImage, Pic_aspect_ratio pic_aspect_ratio) {
-        int width = 1080;
-        int height = 1920;
-        if (pic_aspect_ratio == Pic_aspect_ratio.aspect_vertical_9_16) {
-            width = 1080;
-            height = 1920;
-        } else if (pic_aspect_ratio == Pic_aspect_ratio.aspect_horizontal_16_9) {
-            width = 1920;
-            height = 1080;
-        } else if (pic_aspect_ratio == Pic_aspect_ratio.aspect_square_1_1) {
-            width = 1080;
-            height = 1080;
-        }
+        int[] width_and_height = return_width_and_height_based_on_ratio(pic_aspect_ratio);
+        int width = width_and_height[0]/4;
+        int height = width_and_height[1]/4;
         try {
             BufferedImage thumbnail = Thumbnails.of(bufferedImage)
                     .size(width, height)
@@ -3395,17 +3393,19 @@ public class HelloApplication extends Application {
 
     private void add_image_to_tile_pane(HelloController helloController, Media_pool mediaPool) {
         StackPane stackPane = new StackPane();
+        TilePane.setMargin(stackPane,new Insets(0,5,0,5));
         VBox vBox = new VBox(5);
         vBox.setAlignment(Pos.CENTER);
         ImageView imageView = new ImageView(mediaPool.getThumbnail());
-        imageView.setFitWidth(90);
-        imageView.setFitHeight(160);
+        imageView.setFitWidth(image_view_in_tile_pane_width);
+        imageView.setFitHeight(image_view_in_tile_pane_height);
         imageView.setPreserveRatio(true);
         Label label = new Label(mediaPool.getOriginal_image_name());
+        label.setAlignment(Pos.CENTER);
         label.setMaxWidth(imageView.getFitWidth());
         label.setWrapText(false);
         label.setTextOverrun(OverrunStyle.ELLIPSIS);
-        vBox.getChildren().setAll(imageView,label);
+        vBox.getChildren().setAll(imageView, label);
         stackPane.getChildren().add(vBox);
         stackPane.setUserData(mediaPool);
         ContextMenu contextMenu = new ContextMenu();
@@ -3526,37 +3526,41 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void set_the_play_pause_button(HelloController helloController, String type){
-        if(type.equals("play")){
+    private void set_the_play_pause_button(HelloController helloController, String type) {
+        if (type.equals("play")) {
             helloController.play_sound.setGraphic(return_region_for_svg(get_the_svg_path("play_icon"), play_pause_button_size));
-            helloController.play_sound.getProperties().put("type","play");
+            helloController.play_sound.getProperties().put("type", "play");
 
-        } else if(type.equals("pause")){
+        } else if (type.equals("pause")) {
             helloController.play_sound.setGraphic(return_region_for_svg(get_the_svg_path("pause_icon"), play_pause_button_size));
-            helloController.play_sound.getProperties().put("type","pause");
+            helloController.play_sound.getProperties().put("type", "pause");
         }
     }
 
-    private void set_the_size_of_the_tile_pane(HelloController helloController){
+    private void set_the_size_of_the_tile_pane(HelloController helloController) {
 
     }
 
-    private int[] return_width_and_height_based_on_ratio(Pic_aspect_ratio pic_aspect_ratio){
+    private int[] return_width_and_height_based_on_ratio(Pic_aspect_ratio pic_aspect_ratio) {
         int[] height_and_width = new int[2];
-        if(pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_vertical_9_16)){
+        if (pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_vertical_9_16)) {
             height_and_width[0] = 1080;
             height_and_width[1] = 1920;
-        } else if(pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_horizontal_16_9)){
+        } else if (pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_horizontal_16_9)) {
             height_and_width[0] = 1920;
             height_and_width[1] = 1080;
-        } else if(pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_square_1_1)){
+        } else if (pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_square_1_1)) {
             height_and_width[0] = 1080;
             height_and_width[1] = 1080;
         }
-        if(height_and_width[0] == 0 && height_and_width[1] == 0){
-            return new int[]{1080,1920};
+        if (height_and_width[0] == 0 && height_and_width[1] == 0) {
+            return new int[]{1080, 1920};
         } else {
             return height_and_width;
         }
+    }
+
+    private void set_the_size_of_media_pool(HelloController helloController){
+
     }
 }
