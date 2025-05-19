@@ -21,6 +21,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.image.*;
@@ -3245,6 +3246,7 @@ public class HelloApplication extends Application {
     private void add_the_images_to_the_media_pool_in_the_back_ground(HelloController helloController, List<File> files) {
         ArrayList<Media_pool> arrayList_of_media_pool = new ArrayList<>();
         if (files != null && !files.isEmpty()) {
+            helloController.progress_indicator_media_pool.setVisible(true);
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.submit(() -> {
                 for (int i = 0; i < files.size(); i++) {
@@ -3302,7 +3304,7 @@ public class HelloApplication extends Application {
                                 write_the_raw_file(return_resized_downscale_buffer_image(bufferedImage, picAspectRatio), "temp/images/scaled", file_id);
                             }
                         }
-                        Media_pool mediaPool_item = new Media_pool(file_id, create_a_thumbnail(bufferedImage, picAspectRatio));
+                        Media_pool mediaPool_item = new Media_pool(file_id, create_a_thumbnail(bufferedImage, picAspectRatio),image_file.getName());
                         arrayList_of_media_pool.add(mediaPool_item);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -3315,6 +3317,7 @@ public class HelloApplication extends Application {
                             add_image_to_tile_pane(helloController, arrayList_of_media_pool.get(i));
                         }
                         hide_or_show_media_pool(helloController);
+                        helloController.progress_indicator_media_pool.setVisible(false);
                     }
                 });
             });
@@ -3391,13 +3394,19 @@ public class HelloApplication extends Application {
     }
 
     private void add_image_to_tile_pane(HelloController helloController, Media_pool mediaPool) {
+        StackPane stackPane = new StackPane();
+        VBox vBox = new VBox(5);
+        vBox.setAlignment(Pos.CENTER);
         ImageView imageView = new ImageView(mediaPool.getThumbnail());
         imageView.setFitWidth(90);
         imageView.setFitHeight(160);
         imageView.setPreserveRatio(true);
-        StackPane stackPane = new StackPane();
-        stackPane.getChildren().add(imageView);
-        stackPane.setPrefSize(imageView.getFitWidth() + 20, imageView.getFitHeight() + 20);
+        Label label = new Label(mediaPool.getOriginal_image_name());
+        label.setMaxWidth(imageView.getFitWidth());
+        label.setWrapText(false);
+        label.setTextOverrun(OverrunStyle.ELLIPSIS);
+        vBox.getChildren().setAll(imageView,label);
+        stackPane.getChildren().add(vBox);
         stackPane.setUserData(mediaPool);
         ContextMenu contextMenu = new ContextMenu();
         MenuItem item1 = new MenuItem("Remove media");
@@ -3528,5 +3537,7 @@ public class HelloApplication extends Application {
         }
     }
 
+    private void set_the_size_of_the_tile_pane(HelloController helloController){
 
+    }
 }

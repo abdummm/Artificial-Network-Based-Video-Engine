@@ -266,4 +266,7 @@ public class HelloController {
 
     @FXML
     public Label upload_media_text;
+
+    @FXML
+    public ProgressIndicator progress_indicator_media_pool;
 }
