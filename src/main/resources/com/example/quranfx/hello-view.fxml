@@ -34,6 +34,7 @@
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.ScrollPane?>
 <?import atlantafx.base.controls.RingProgressIndicator?>
+<?import io.github.palexdev.materialfx.controls.MFXProgressSpinner?>
 <StackPane prefHeight="365.0" prefWidth="364.0" xmlns="http://javafx.com/javafx/23.0.1"
            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.quranfx.HelloController"
            style="-fx-background-color: #FFFFFF;">
@@ -249,7 +250,7 @@
                     <StackPane fx:id="left_stack_pane_in_grid_pane">
                         <VBox>
                             <VBox alignment="TOP_CENTER">
-                                <StackPane style="-fx-background-color: #F5F5F5; -fx-border-color: black; -fx-border-width: 2;">
+                                <StackPane fx:id="stack_pane_hosting_the_scroll_pane_and_the_tile_pane" style="-fx-background-color: #F5F5F5; -fx-border-color: black; -fx-border-width: 2;">
                                     <VBox.margin>
                                         <Insets top="15.0" left="15.0"/>
                                     </VBox.margin>
@@ -262,8 +263,8 @@
                                             <Font size="20.0"/>
                                         </font>
                                     </Label>
-                                    <ProgressIndicator fx:id="progress_indicator_media_pool" visible="true" prefWidth="30" prefHeight="30" style="">
-                                    </ProgressIndicator>
+                                    <MFXProgressSpinner fx:id="progress_indicator_media_pool" visible="false" prefWidth="30" prefHeight="30" stylesheets="@mfx_spinner_style.css">
+                                    </MFXProgressSpinner>
                                 </StackPane>
                             </VBox>
                             <VBox alignment="CENTER_RIGHT">

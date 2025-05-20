@@ -3,6 +3,7 @@ package com.example.quranfx;
 import atlantafx.base.controls.RingProgressIndicator;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
+import io.github.palexdev.materialfx.controls.MFXProgressSpinner;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -269,8 +270,11 @@ public class HelloController {
     public Label upload_media_text;
 
     @FXML
-    public ProgressIndicator progress_indicator_media_pool;
+    public MFXProgressSpinner progress_indicator_media_pool;
 
     @FXML
     public ScrollPane scroll_pane_hosting_tile_pane_media_pool;
+
+    @FXML
+    public StackPane stack_pane_hosting_the_scroll_pane_and_the_tile_pane;
 }

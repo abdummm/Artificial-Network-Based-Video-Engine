@@ -3255,6 +3255,8 @@ public class HelloApplication extends Application {
         ArrayList<Media_pool> arrayList_of_media_pool = new ArrayList<>();
         if (files != null && !files.isEmpty()) {
             helloController.progress_indicator_media_pool.setVisible(true);
+            helloController.scroll_pane_hosting_tile_pane_media_pool.setDisable(true);
+            helloController.upload_media_text.setDisable(true);
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.submit(() -> {
                 for (int i = 0; i < files.size(); i++) {
@@ -3324,8 +3326,10 @@ public class HelloApplication extends Application {
                         for (int i = 0; i < arrayList_of_media_pool.size(); i++) {
                             add_image_to_tile_pane(helloController, arrayList_of_media_pool.get(i));
                         }
-                        hide_or_show_media_pool(helloController);
+                        helloController.upload_media_text.setDisable(false);
                         helloController.progress_indicator_media_pool.setVisible(false);
+                        helloController.scroll_pane_hosting_tile_pane_media_pool.setDisable(false);
+                        hide_or_show_media_pool(helloController);
                     }
                 });
             });
@@ -3580,6 +3584,4 @@ public class HelloApplication extends Application {
             }
         });
     }
-
-
 }

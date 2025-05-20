@@ -1,5 +1,4 @@
 module com.example.quranfx {
-    requires javafx.fxml;
     requires javafx.web;
     requires javafx.media;
 
@@ -13,7 +12,6 @@ module com.example.quranfx {
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
     requires org.jsoup;
-    requires java.desktop;
     requires javafx.swing;
     requires org.bytedeco.javacv;
     requires org.bytedeco.ffmpeg;
@@ -25,6 +23,7 @@ module com.example.quranfx {
     requires com.jfoenix;
     requires org.bytedeco.opencv;
     requires atlantafx.base;
+    requires MaterialFX;
 
     opens com.example.quranfx to javafx.fxml;
     exports com.example.quranfx;
