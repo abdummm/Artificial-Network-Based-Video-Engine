@@ -33,6 +33,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.ScrollPane?>
+<?import atlantafx.base.controls.RingProgressIndicator?>
 <StackPane prefHeight="365.0" prefWidth="364.0" xmlns="http://javafx.com/javafx/23.0.1"
            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.quranfx.HelloController"
            style="-fx-background-color: #FFFFFF;">
@@ -252,8 +253,8 @@
                                     <VBox.margin>
                                         <Insets top="15.0" left="15.0"/>
                                     </VBox.margin>
-                                    <ScrollPane fitToWidth="true">
-                                        <TilePane fx:id="tile_pane_media_pool" maxHeight="400.0" prefHeight="400">
+                                    <ScrollPane fx:id="scroll_pane_hosting_tile_pane_media_pool" fitToWidth="true" focusTraversable="false" style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
+                                        <TilePane fx:id="tile_pane_media_pool" maxHeight="400.0" prefHeight="400" focusTraversable="false" style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
                                         </TilePane>
                                     </ScrollPane>
                                     <Label fx:id="upload_media_text" text="Media pool" textFill="#B9B9B9">
@@ -261,7 +262,7 @@
                                             <Font size="20.0"/>
                                         </font>
                                     </Label>
-                                    <ProgressIndicator fx:id="progress_indicator_media_pool" visible="false">
+                                    <ProgressIndicator fx:id="progress_indicator_media_pool" visible="true" prefWidth="30" prefHeight="30" style="">
                                     </ProgressIndicator>
                                 </StackPane>
                             </VBox>

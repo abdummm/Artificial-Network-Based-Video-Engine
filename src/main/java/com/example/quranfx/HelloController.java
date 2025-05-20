@@ -1,5 +1,6 @@
 package com.example.quranfx;
 
+import atlantafx.base.controls.RingProgressIndicator;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import javafx.beans.value.ChangeListener;
@@ -269,4 +270,7 @@ public class HelloController {
 
     @FXML
     public ProgressIndicator progress_indicator_media_pool;
+
+    @FXML
+    public ScrollPane scroll_pane_hosting_tile_pane_media_pool;
 }

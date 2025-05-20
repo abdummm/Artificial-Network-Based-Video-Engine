@@ -24,6 +24,7 @@ module com.example.quranfx {
     requires imgscalr.lib;
     requires com.jfoenix;
     requires org.bytedeco.opencv;
+    requires atlantafx.base;
 
     opens com.example.quranfx to javafx.fxml;
     exports com.example.quranfx;

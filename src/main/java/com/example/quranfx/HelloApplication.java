@@ -1,5 +1,6 @@
 package com.example.quranfx;
 
+import atlantafx.base.theme.PrimerLight;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Metadata;
@@ -109,15 +110,16 @@ public class HelloApplication extends Application {
     private double max_hight_of_bottom_pane_fourth_screen = 0;
     private ContextMenu empty_tile_pane_context_menu = null;
 
-    private final double play_pause_button_size = 20D;
-    private final int image_view_in_tile_pane_width = 90;
-    private final int image_view_in_tile_pane_height = 160;
+    private final static double play_pause_button_size = 20D;
+    private final static int image_view_in_tile_pane_width = 90;
+    private final static int image_view_in_tile_pane_height = 160;
 
 
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), Screen.getPrimary().getBounds().getWidth() / 2, Screen.getPrimary().getBounds().getHeight() / 2);
+        //scene.getStylesheets().add(PrimerLight.class.getResource("primer-light.css").toExternalForm());
         stage.setTitle("السلام عليكم ورحمة الله وبركاته");
         stage.setScene(scene);
         stage.show();
@@ -212,6 +214,8 @@ public class HelloApplication extends Application {
         set_the_width_of_the_left_and_right(helloController);
         listen_to_top_and_bottom_pane_size_change_fourth_screen(helloController, scene);
         listen_to_whole_screen_resize(scene, helloController);
+        //listen_to_tile_pane_resized(helloController);
+        listen_to_tile_pane_size_change(helloController);
     }
 
     public static void main(String[] args) {
@@ -3378,8 +3382,8 @@ public class HelloApplication extends Application {
 
     private Image create_a_thumbnail(BufferedImage bufferedImage, Pic_aspect_ratio pic_aspect_ratio) {
         int[] width_and_height = return_width_and_height_based_on_ratio(pic_aspect_ratio);
-        int width = width_and_height[0]/4;
-        int height = width_and_height[1]/4;
+        int width = width_and_height[0] / 4;
+        int height = width_and_height[1] / 4;
         try {
             BufferedImage thumbnail = Thumbnails.of(bufferedImage)
                     .size(width, height)
@@ -3393,7 +3397,7 @@ public class HelloApplication extends Application {
 
     private void add_image_to_tile_pane(HelloController helloController, Media_pool mediaPool) {
         StackPane stackPane = new StackPane();
-        TilePane.setMargin(stackPane,new Insets(0,5,0,5));
+        stackPane.setStyle("-fx-cursor: OPEN_HAND;");
         VBox vBox = new VBox(5);
         vBox.setAlignment(Pos.CENTER);
         ImageView imageView = new ImageView(mediaPool.getThumbnail());
@@ -3560,7 +3564,22 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void set_the_size_of_media_pool(HelloController helloController){
-
+    private void listen_to_tile_pane_size_change(HelloController helloController) {
+        helloController.tile_pane_media_pool.layoutBoundsProperty().addListener(new ChangeListener<Bounds>() {
+            @Override
+            public void changed(ObservableValue<? extends Bounds> observableValue, Bounds old_bounds, Bounds new_bounds) {
+                System.out.println(new_bounds.getWidth());
+                double width = new_bounds.getWidth();
+                int number_of_items = (int) width / image_view_in_tile_pane_width;
+                if (number_of_items == 0 || number_of_items == 1) {
+                    return;
+                }
+                double space_left = Math.floor(width % image_view_in_tile_pane_width);
+                helloController.tile_pane_media_pool.setPrefColumns(number_of_items);
+                helloController.tile_pane_media_pool.setHgap(Math.floor(space_left / (number_of_items - 1)));
+            }
+        });
     }
+
+
 }
