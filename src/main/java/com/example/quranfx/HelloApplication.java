@@ -21,6 +21,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
@@ -900,15 +901,16 @@ public class HelloApplication extends Application {
                     setText(null);
                     setGraphic(null);
                 } else {
-                    if (helloController.size_of_image.getValue().equals("9:16")) {
+                    Pic_aspect_ratio pic_aspect_ratio = return_the_aspect_ratio_as_an_object(helloController);
+                    if (pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_vertical_9_16)) {
                         imageView.setFitHeight(80);
                         imageView.setFitWidth(45);
                         imageView.setImage(item.getThumbnail_vertical());
-                    } else if (helloController.size_of_image.getValue().equals("16:9")) {
+                    } else if (pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_horizontal_16_9)) {
                         imageView.setFitWidth(80);
                         imageView.setFitHeight(45);
                         imageView.setImage(item.getThumbnail_horizontal());
-                    } else if (helloController.size_of_image.getValue().equals("1:1")) {
+                    } else if (pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_square_1_1)) {
                         imageView.setFitWidth(45);
                         imageView.setFitHeight(45);
                         imageView.setImage(item.getThumbnail_square());
@@ -1258,18 +1260,11 @@ public class HelloApplication extends Application {
                             if (orientation == 3 || orientation == 6 || orientation == 8) {
                                 bufferedImage = return_the_rotated_image(bufferedImage, orientation);
                             }
-                            Pic_aspect_ratio picAspectRatio = Pic_aspect_ratio.aspect_vertical_9_16;
-                            if (helloController.size_of_image.getValue().equals("1:1")) {
-                                picAspectRatio = Pic_aspect_ratio.aspect_square_1_1;
-                            } else if (helloController.size_of_image.getValue().equals("9:16")) {
-                                picAspectRatio = Pic_aspect_ratio.aspect_vertical_9_16;
-                            } else if (helloController.size_of_image.getValue().equals("16:9")) {
-                                picAspectRatio = Pic_aspect_ratio.aspect_horizontal_16_9;
-                            }
+                            Pic_aspect_ratio picAspectRatio = return_the_aspect_ratio_as_an_object(helloController);
                             if ((picAspectRatio.equals(Pic_aspect_ratio.aspect_square_1_1) && image.getWidth() == image.getHeight()) || (picAspectRatio.equals(Pic_aspect_ratio.aspect_vertical_9_16) && image.getWidth() * 16D == image.getHeight() * 9D) || (picAspectRatio.equals(Pic_aspect_ratio.aspect_horizontal_16_9) && image.getWidth() * 9D == image.getHeight() * 16D)) {
                                 chatgpt_responses.get(selected_verse + i).setBase_64_image(bufferedImage);
                             } else {
-                                if (helloController.size_of_image.getValue().equals("9:16")) {
+                                if (picAspectRatio.equals(Pic_aspect_ratio.aspect_vertical_9_16)) {
                                     BufferedImage formattedImage = null;
                                     int targetWidth = bufferedImage.getWidth();
                                     int targetHeight = targetWidth * 16 / 9;  // Calculate the new height for a 9:16 ratio
@@ -1284,9 +1279,9 @@ public class HelloApplication extends Application {
                                     chatgpt_responses.get(selected_verse + i).setBase_64_image(formattedImage);
                                     bufferedImage.flush();
                                     formattedImage.flush();
-                                } else if (helloController.size_of_image.getValue().equals("16:9")) {
+                                } else if (picAspectRatio.equals(Pic_aspect_ratio.aspect_horizontal_16_9)) {
 
-                                } else if (helloController.size_of_image.getValue().equals("1:1")) {
+                                } else if (picAspectRatio.equals(Pic_aspect_ratio.aspect_square_1_1)) {
 
                                 }
                             }
@@ -1380,15 +1375,15 @@ public class HelloApplication extends Application {
         }
         int captureWidth = 0;
         int captureHeight = 0;
-        if (helloController.size_of_image.getValue().equals("9:16")) {
-            captureWidth = 1024;
-            captureHeight = 1820;
-        } else if (helloController.size_of_image.getValue().equals("16:9")) {
-            captureWidth = 1820;
-            captureHeight = 1024;
-        } else if (helloController.size_of_image.getValue().equals("1:1")) {
-            captureWidth = 1024;
-            captureHeight = 1024;
+        if (return_the_aspect_ratio_as_an_object(helloController).equals(Pic_aspect_ratio.aspect_vertical_9_16)) {
+            captureWidth = 1080;
+            captureHeight = 1920;
+        } else if (return_the_aspect_ratio_as_an_object(helloController).equals(Pic_aspect_ratio.aspect_horizontal_16_9)) {
+            captureWidth = 1920;
+            captureHeight = 1080;
+        } else if (return_the_aspect_ratio_as_an_object(helloController).equals(Pic_aspect_ratio.aspect_square_1_1)) {
+            captureWidth = 1080;
+            captureHeight = 1080;
         }
         int frameRate = 30;
 
@@ -2763,13 +2758,6 @@ public class HelloApplication extends Application {
     }
 
     private Pic_aspect_ratio return_the_aspect_ratio_as_an_object(HelloController helloController) {
-        if (helloController.size_of_image.getValue().equals("9:16")) {
-            return Pic_aspect_ratio.aspect_vertical_9_16;
-        } else if (helloController.size_of_image.getValue().equals("16:9")) {
-            return Pic_aspect_ratio.aspect_horizontal_16_9;
-        } else if (helloController.size_of_image.getValue().equals("1:1")) {
-            return Pic_aspect_ratio.aspect_square_1_1;
-        }
         return Pic_aspect_ratio.aspect_vertical_9_16;
     }
 
@@ -3287,34 +3275,30 @@ public class HelloApplication extends Application {
                         }
                         String file_id = UUID.randomUUID().toString();
                         BufferedImage bufferedImage = image_to_buffered_image(image);
-                        BufferedImage formattedImage;
                         int orientation = getExifOrientation(files.get(i));
                         if (orientation == 3 || orientation == 6 || orientation == 8) {
                             bufferedImage = return_the_rotated_image(bufferedImage, orientation);
                         }
-                        Pic_aspect_ratio picAspectRatio = Pic_aspect_ratio.aspect_vertical_9_16;
-                        if (helloController.size_of_image.getValue().equals("1:1")) {
-                            picAspectRatio = Pic_aspect_ratio.aspect_square_1_1;
-                        } else if (helloController.size_of_image.getValue().equals("9:16")) {
-                            picAspectRatio = Pic_aspect_ratio.aspect_vertical_9_16;
-                        } else if (helloController.size_of_image.getValue().equals("16:9")) {
-                            picAspectRatio = Pic_aspect_ratio.aspect_horizontal_16_9;
-                        }
+                        Pic_aspect_ratio picAspectRatio = return_the_aspect_ratio_as_an_object(helloController);
+                        Media_pool mediaPool_item;
+
                         if (is_this_the_correct_ratio(picAspectRatio, bufferedImage)) {
                             write_the_raw_file(bufferedImage, "temp/images/base", file_id);
                             if (do_i_need_to_down_scale(bufferedImage, picAspectRatio)) {
                                 did_the_image_get_down_scaled = true;
                                 write_the_raw_file(return_resized_downscale_buffer_image(bufferedImage, picAspectRatio), "temp/images/scaled", file_id);
                             }
+                            mediaPool_item = new Media_pool(file_id, create_a_thumbnail(bufferedImage, picAspectRatio), image_file.getName(), did_the_image_get_down_scaled);
                         } else {
-                            bufferedImage = fill_the_back_ground_with_black(bufferedImage);
-                            write_the_raw_file(bufferedImage, "temp/images/base", file_id);
-                            if (do_i_need_to_down_scale(bufferedImage, picAspectRatio)) {
+                            BufferedImage filled_with_black = fill_the_back_ground_with_color(bufferedImage,new Color(0,0,0,255));
+                            BufferedImage filled_transparent = fill_the_back_ground_with_color(bufferedImage,new Color(0,0,0,0));
+                            write_the_raw_file(filled_with_black, "temp/images/base", file_id);
+                            if (do_i_need_to_down_scale(filled_with_black, picAspectRatio)) {
                                 did_the_image_get_down_scaled = true;
-                                write_the_raw_file(return_resized_downscale_buffer_image(bufferedImage, picAspectRatio), "temp/images/scaled", file_id);
+                                write_the_raw_file(return_resized_downscale_buffer_image(filled_with_black, picAspectRatio), "temp/images/scaled", file_id);
                             }
+                            mediaPool_item = new Media_pool(file_id, create_a_thumbnail(filled_transparent, picAspectRatio), image_file.getName(), did_the_image_get_down_scaled);
                         }
-                        Media_pool mediaPool_item = new Media_pool(file_id, create_a_thumbnail(bufferedImage, picAspectRatio), image_file.getName(), did_the_image_get_down_scaled);
                         arrayList_of_media_pool.add(mediaPool_item);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -3408,6 +3392,7 @@ public class HelloApplication extends Application {
         imageView.setFitWidth(image_view_in_tile_pane_width);
         imageView.setFitHeight(image_view_in_tile_pane_height);
         imageView.setPreserveRatio(true);
+        imageView.setSmooth(true);
         Label label = new Label(mediaPool.getOriginal_image_name());
         label.setAlignment(Pos.CENTER);
         label.setMaxWidth(imageView.getFitWidth());
@@ -3635,7 +3620,7 @@ public class HelloApplication extends Application {
         }
     }*/
 
-    private BufferedImage fill_the_back_ground_with_black(BufferedImage bufferedImage) {
+    private BufferedImage fill_the_back_ground_with_color(BufferedImage bufferedImage,Color color) {
         double max_width = bufferedImage.getWidth() * 16D;
         double max_height = bufferedImage.getHeight() * 9D;
         BufferedImage return_me;
@@ -3644,7 +3629,7 @@ public class HelloApplication extends Application {
             int targetHeight = targetWidth * 16 / 9;  // Calculate the new height for a 9:16 ratio
             return_me = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
             Graphics g = return_me.createGraphics();
-            g.setColor(new Color(0,0,0,0));
+            g.setColor(color);
             g.fillRect(0, 0, targetWidth, targetHeight);  // Fill the background with black
             int buffer_at_the_top = (targetHeight - bufferedImage.getHeight()) / 2;
             g.drawImage(bufferedImage, 0, buffer_at_the_top, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
@@ -3654,7 +3639,7 @@ public class HelloApplication extends Application {
             int targetHeight = bufferedImage.getHeight();  // Calculate the new height for a 9:16 ratio
             return_me = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
             Graphics g = return_me.createGraphics();
-            g.setColor(new Color(0,0,0,0));
+            g.setColor(color);
             g.fillRect(0, 0, targetWidth, targetHeight);  // Fill the background with black
             int buffer_at_the_left = (targetWidth - bufferedImage.getWidth()) / 2;
             g.drawImage(bufferedImage, buffer_at_the_left, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
@@ -3662,4 +3647,20 @@ public class HelloApplication extends Application {
         }
         return return_me;
     }
+
+    /*private Rectangle2D return_the_rectangle_2d_for_media_pool(Image image) {
+        double max_width = image.getWidth() * 16D;
+        double max_height = image.getHeight() * 9D;
+        Rectangle2D rectangle2D;
+        if (max_width > max_height) {
+            double new_height = image.getWidth() * 16D / 9D;
+            double offset = -((new_height - image.getHeight())/2);
+            rectangle2D = new Rectangle2D(0, offset, image.getWidth(), new_height);
+        } else {
+            double new_width = image.getHeight() * 9D/16D;
+            double offset = -((new_width - image.getWidth())/2);
+            rectangle2D = new Rectangle2D(offset, 0, new_width, image.getHeight());
+        }
+        return rectangle2D;
+    }*/
 }
