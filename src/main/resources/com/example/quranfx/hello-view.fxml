@@ -252,7 +252,7 @@
                             <VBox alignment="TOP_CENTER">
                                 <StackPane fx:id="stack_pane_hosting_the_scroll_pane_and_the_tile_pane" style="-fx-background-color: #F5F5F5; -fx-border-color: black; -fx-border-width: 2;">
                                     <VBox.margin>
-                                        <Insets top="15.0" left="15.0"/>
+                                        <Insets top="15.0" left="15.0" right="15.0"/>
                                     </VBox.margin>
                                     <ScrollPane fx:id="scroll_pane_hosting_tile_pane_media_pool" fitToWidth="true" focusTraversable="false" style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
                                         <TilePane fx:id="tile_pane_media_pool" maxHeight="400.0" prefHeight="400" focusTraversable="false" style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
@@ -269,7 +269,7 @@
                             </VBox>
                             <VBox alignment="CENTER_RIGHT">
                                 <VBox.margin>
-                                    <Insets top="15.0"/>
+                                    <Insets top="15.0" right="15.0"/>
                                 </VBox.margin>
                                 <JFXButton fx:id="add_media_button" text="Upload media"
                                            style="-fx-background-color: #000000; -fx-text-fill: #FFFFFF;"/>

@@ -43,11 +43,9 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-import java.awt.image.RescaleOp;
+import java.awt.image.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -3232,7 +3230,19 @@ public class HelloApplication extends Application {
         helloController.add_media_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                upload_media_has_been_clicked(helloController);
+                ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+                executor.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                upload_media_has_been_clicked(helloController);
+                            }
+                        });
+                    }
+                }, 85, TimeUnit.MILLISECONDS);
+                executor.shutdown();
             }
         });
     }
@@ -3257,10 +3267,13 @@ public class HelloApplication extends Application {
             helloController.progress_indicator_media_pool.setVisible(true);
             helloController.scroll_pane_hosting_tile_pane_media_pool.setDisable(true);
             helloController.upload_media_text.setDisable(true);
+            //int number_of_processors = Runtime.getRuntime().availableProcessors();
+            //int number_of_threads = Math.min(Math.ceilDiv(number_of_processors,2),files.size());
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.submit(() -> {
                 for (int i = 0; i < files.size(); i++) {
                     try {
+                        boolean did_the_image_get_down_scaled = false;
                         File image_file = files.get(i);
                         String fileName_lower_case = image_file.getName().toLowerCase();
                         Image image;
@@ -3287,34 +3300,21 @@ public class HelloApplication extends Application {
                         } else if (helloController.size_of_image.getValue().equals("16:9")) {
                             picAspectRatio = Pic_aspect_ratio.aspect_horizontal_16_9;
                         }
-                        if ((picAspectRatio.equals(Pic_aspect_ratio.aspect_square_1_1) && image.getWidth() == image.getHeight()) || (picAspectRatio.equals(Pic_aspect_ratio.aspect_vertical_9_16) && image.getWidth() * 16D == image.getHeight() * 9D) || (picAspectRatio.equals(Pic_aspect_ratio.aspect_horizontal_16_9) && image.getWidth() * 9D == image.getHeight() * 16D)) {
+                        if (is_this_the_correct_ratio(picAspectRatio, bufferedImage)) {
                             write_the_raw_file(bufferedImage, "temp/images/base", file_id);
                             if (do_i_need_to_down_scale(bufferedImage, picAspectRatio)) {
+                                did_the_image_get_down_scaled = true;
                                 write_the_raw_file(return_resized_downscale_buffer_image(bufferedImage, picAspectRatio), "temp/images/scaled", file_id);
                             }
                         } else {
-                            if (helloController.size_of_image.getValue().equals("9:16")) {
-                                int targetWidth = bufferedImage.getWidth();
-                                int targetHeight = targetWidth * 16 / 9;  // Calculate the new height for a 9:16 ratio
-                                // Create a new black image with a 9:16 ratio
-                                formattedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
-                                Graphics g = formattedImage.createGraphics();
-                                g.setColor(java.awt.Color.BLACK);
-                                g.fillRect(0, 0, targetWidth, targetHeight);  // Fill the background with black
-                                int buffer_at_the_top = (targetHeight - bufferedImage.getHeight()) / 2;
-                                g.drawImage(bufferedImage, 0, buffer_at_the_top, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
-                                g.dispose();
-                            } else if (helloController.size_of_image.getValue().equals("16:9")) {
-
-                            } else if (helloController.size_of_image.getValue().equals("1:1")) {
-
-                            }
+                            bufferedImage = fill_the_back_ground_with_black(bufferedImage);
                             write_the_raw_file(bufferedImage, "temp/images/base", file_id);
                             if (do_i_need_to_down_scale(bufferedImage, picAspectRatio)) {
+                                did_the_image_get_down_scaled = true;
                                 write_the_raw_file(return_resized_downscale_buffer_image(bufferedImage, picAspectRatio), "temp/images/scaled", file_id);
                             }
                         }
-                        Media_pool mediaPool_item = new Media_pool(file_id, create_a_thumbnail(bufferedImage, picAspectRatio), image_file.getName());
+                        Media_pool mediaPool_item = new Media_pool(file_id, create_a_thumbnail(bufferedImage, picAspectRatio), image_file.getName(), did_the_image_get_down_scaled);
                         arrayList_of_media_pool.add(mediaPool_item);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -3430,7 +3430,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                    stackPane.setStyle("-fx-border-color: blue; -fx-border-width: 3;");
+
                 } else if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
                     contextMenu.show(stackPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
                 }
@@ -3572,7 +3572,6 @@ public class HelloApplication extends Application {
         helloController.tile_pane_media_pool.layoutBoundsProperty().addListener(new ChangeListener<Bounds>() {
             @Override
             public void changed(ObservableValue<? extends Bounds> observableValue, Bounds old_bounds, Bounds new_bounds) {
-                System.out.println(new_bounds.getWidth());
                 double width = new_bounds.getWidth();
                 int number_of_items = (int) width / image_view_in_tile_pane_width;
                 if (number_of_items == 0 || number_of_items == 1) {
@@ -3583,5 +3582,84 @@ public class HelloApplication extends Application {
                 helloController.tile_pane_media_pool.setHgap(Math.floor(space_left / (number_of_items - 1)));
             }
         });
+    }
+
+    private boolean is_this_the_correct_ratio(Pic_aspect_ratio pic_aspect_ratio, BufferedImage bufferedImage) {
+        if (pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_vertical_9_16)) {
+            if (bufferedImage.getWidth() * 16D == bufferedImage.getHeight() * 9D) {
+                return true;
+            } else {
+                return false;
+            }
+        } else if (pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_horizontal_16_9)) {
+            if (bufferedImage.getWidth() * 9D == bufferedImage.getHeight() * 16D) {
+                return true;
+            } else {
+                return false;
+            }
+        } else if (pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_square_1_1)) {
+            if (bufferedImage.getHeight() == bufferedImage.getWidth()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    /*private BufferedImage set_the_background_of_the_image_to_black(BufferedImage bufferedImage) {
+        double max_width = bufferedImage.getWidth() * 16D;
+        double max_height = bufferedImage.getHeight() * 9D;
+        double new_image_height;
+        double new_image_width;
+        if (max_width > max_height) {
+            new_image_width = bufferedImage.getWidth();
+            new_image_height = (bufferedImage.getWidth() / 9D) * 16D;
+            int height_difference = (int) (new_image_height - bufferedImage.getHeight());
+            int add_one = 0;
+            if (height_difference % 2 == 1) {
+                add_one = 1;
+            }
+            WritableImage writable_image = new WritableImage((int) new_image_width, (int) new_image_height);
+            PixelWriter pixel_writer = writable_image.getPixelWriter();
+            int[] black_array_area_one = new int[((int) new_image_width * ((height_difference / 2) + add_one))];
+            Arrays.fill(black_array_area_one,0xFF000000);
+            int[] black_array_area_two = new int[((int) new_image_width * (height_difference / 2))];
+            Arrays.fill(black_array_area_two,0xFF000000);
+            pixel_writer.setPixels(0, 0, (int) new_image_width, (height_difference / 2) + add_one, PixelFormat.getIntArgbInstance(), black_array_area_one, 0, 0);
+            int[] originalData = ((DataBufferInt) bufferedImage.getRaster().getDataBuffer()).getData();
+            pixel_writer.setPixels(0, (height_difference / 2) + add_one, (int) new_image_width, bufferedImage.getHeight(), PixelFormat.getIntArgbInstance(),originalData, 0, 0);
+            pixel_writer.setPixels(0, (height_difference / 2) + add_one + bufferedImage.getHeight(),  (int) new_image_width, (height_difference / 2), PixelFormat.getIntArgbInstance(),black_array_area_two, 0, 0);
+        } else {
+
+        }
+    }*/
+
+    private BufferedImage fill_the_back_ground_with_black(BufferedImage bufferedImage) {
+        double max_width = bufferedImage.getWidth() * 16D;
+        double max_height = bufferedImage.getHeight() * 9D;
+        BufferedImage return_me;
+        if (max_width > max_height) {
+            int targetWidth = bufferedImage.getWidth();
+            int targetHeight = targetWidth * 16 / 9;  // Calculate the new height for a 9:16 ratio
+            return_me = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
+            Graphics g = return_me.createGraphics();
+            g.setColor(new Color(0,0,0,0));
+            g.fillRect(0, 0, targetWidth, targetHeight);  // Fill the background with black
+            int buffer_at_the_top = (targetHeight - bufferedImage.getHeight()) / 2;
+            g.drawImage(bufferedImage, 0, buffer_at_the_top, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
+            g.dispose();
+        } else {
+            int targetWidth = bufferedImage.getHeight() * 9 / 16;
+            int targetHeight = bufferedImage.getHeight();  // Calculate the new height for a 9:16 ratio
+            return_me = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
+            Graphics g = return_me.createGraphics();
+            g.setColor(new Color(0,0,0,0));
+            g.fillRect(0, 0, targetWidth, targetHeight);  // Fill the background with black
+            int buffer_at_the_left = (targetWidth - bufferedImage.getWidth()) / 2;
+            g.drawImage(bufferedImage, buffer_at_the_left, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
+            g.dispose();
+        }
+        return return_me;
     }
 }
