@@ -26,16 +26,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -77,6 +76,7 @@ import org.imgscalr.Scalr;
 import org.jsoup.*;
 
 import javax.imageio.ImageIO;
+import java.util.concurrent.CountDownLatch;
 
 
 public class HelloApplication extends Application {
@@ -497,59 +497,6 @@ public class HelloApplication extends Application {
         }
     }
 
-
-    private void add_time_to_array_list(long time) {
-        if (array_list_with_times.size() < number_of_prompts_per_minute) {
-            array_list_with_times.add(time);
-        } else {
-            array_list_with_times.remove(0);
-            array_list_with_times.add(time);
-        }
-    }
-
-    private long get_oldest_chat_gpt_request() {
-        if (array_list_with_times.size() >= number_of_prompts_per_minute) {
-            return array_list_with_times.get(0);
-        } else {
-            return 0;
-        }
-    }
-
-    private void run_every_second(HelloController helloController) {
-        Runnable helloRunnable = new Runnable() {
-            public void run() {
-                if (chat_gpt_processed_ayats == initial_number_of_ayats) {
-                    executor.shutdownNow();
-                    set_up_the_fourth_screen(helloController);
-                } else {
-                    if (helloController.generate_chat_gpt_images.isSelected()) {
-                        if (System.currentTimeMillis() - get_oldest_chat_gpt_request() >= 65000L) {
-
-                        }
-                    } else {
-
-                    }
-                    if (/*System.currentTimeMillis() - get_oldest_chat_gpt_request() >= 65000L*/true) {
-                        chat_gpt_processed_ayats++;
-                        Verse_class verseClass = get_verse(helloController);
-                        if (verseClass != null) {
-                            if (helloController.generate_chat_gpt_images.isSelected()) {
-                                try {
-                                    call_the_chatgpt_api(helloController, verseClass.getVerse(), verseClass.getVerse_number());
-                                    add_time_to_array_list(System.currentTimeMillis());
-                                } catch (JsonProcessingException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            } else {
-                                //chatgpt_responses.add(new Verse_class_final(verseClass.getVerse(), verseClass.getVerse_number(), image_holder, verseClass.getVerse_number() * 1000, new Ayat_settings(),));
-                            }
-                        }
-                    }
-                }
-            }
-        };
-        executor.scheduleAtFixedRate(helloRunnable, 0, 1, TimeUnit.SECONDS);
-    }
 
     private void add_to_array_list_with_verses(String verse, int ayat_number, String arabic_verse) {
         Verse_class verseClass = new Verse_class(surat_name_selected, verse, ayat_number, arabic_verse);
@@ -1041,6 +988,7 @@ public class HelloApplication extends Application {
                     start_and_unstart_the_media_player(0);
                 }
                 did_this_play_already = true;
+                create_the_time_line(helloController);
             }
         });
     }
@@ -2450,7 +2398,7 @@ public class HelloApplication extends Application {
             int end_ayat = return_end_ayat(helloController);
             int number_of_ayats = end_ayat - start_ayat + 1;
             int number_of_threads = Math.max(Runtime.getRuntime().availableProcessors() * 4, number_of_ayats);
-            BlockingQueue<String> verseQueue = new LinkedBlockingQueue<>(number_of_ayats);
+            BlockingQueue<String> verseQueue = new ArrayBlockingQueue<>(number_of_ayats);
             durations = new Long[number_of_ayats];
             end_of_the_picture_durations = new Long[number_of_ayats];
             HashMap<String, Integer> tie_verses_to_indexes = new HashMap<>();
@@ -2898,7 +2846,7 @@ public class HelloApplication extends Application {
         }
         int number_of_threads = Math.max(16, Math.max(Runtime.getRuntime().availableProcessors() * 2, number_of_ayats));
         //number_of_threads = 32;
-        BlockingQueue<String[]> blockingQueue = new LinkedBlockingQueue<>(number_of_ayats * 3);
+        BlockingQueue<String[]> blockingQueue = new ArrayBlockingQueue<>(number_of_ayats * 3);
         for (int i = start_ayat; i <= end_ayat; i++) {
             blockingQueue.offer(new String[]{"base", String.valueOf(i)});
         }
@@ -3249,20 +3197,108 @@ public class HelloApplication extends Application {
         add_the_images_to_the_media_pool_in_the_back_ground(helloController, files);
     }
 
-    private void add_the_images_to_the_media_pool_in_the_back_ground(HelloController helloController, List<File> files) {
-        ArrayList<Media_pool> arrayList_of_media_pool = new ArrayList<>();
+    /*private void add_the_images_to_the_media_pool_in_the_back_ground(HelloController helloController, List<File> files) {
         if (files != null && !files.isEmpty()) {
             helloController.progress_indicator_media_pool.setVisible(true);
             helloController.scroll_pane_hosting_tile_pane_media_pool.setDisable(true);
             helloController.upload_media_text.setDisable(true);
-            //int number_of_processors = Runtime.getRuntime().availableProcessors();
-            //int number_of_threads = Math.min(Math.ceilDiv(number_of_processors,2),files.size());
+            List<Media_pool> arrayList_with_media_pool = Collections.synchronizedList(new ArrayList<>());
+            BlockingQueue<File> file_blocking_queue = new ArrayBlockingQueue<>(files.size());
+            file_blocking_queue.addAll(files);
+            int number_of_processors = Runtime.getRuntime().availableProcessors();
+            int number_of_threads = Math.min(Math.ceilDiv(number_of_processors, 2), files.size());
+            ExecutorService executor = Executors.newFixedThreadPool(number_of_threads);
+            CountDownLatch latch = new CountDownLatch(number_of_threads);
+            for(int i = 0;i<number_of_threads;i++){
+                executor.submit(() -> {
+                    try {
+                        while (true) {
+                            try {
+                                boolean did_the_image_get_down_scaled = false;
+                                File image_file = file_blocking_queue.poll(100, TimeUnit.MILLISECONDS);
+                                if (image_file == null) {
+                                    break;
+                                }
+                                String fileName_lower_case = image_file.getName().toLowerCase();
+                                Image image;
+                                if (fileName_lower_case.endsWith("heic")) {
+                                    File new_jpg_file = new File("temp/converted images/".concat(UUID.randomUUID().toString()).concat(".png"));
+                                    new_jpg_file.deleteOnExit();
+                                    convertHeicToJpg(image_file, new_jpg_file);
+                                    image = new Image(new FileInputStream(new_jpg_file));
+                                } else {
+                                    image = new Image(new FileInputStream(image_file));
+                                }
+                                String file_id = UUID.randomUUID().toString();
+                                BufferedImage bufferedImage = image_to_buffered_image(image);
+                                int orientation = getExifOrientation(image_file);
+                                if (orientation == 3 || orientation == 6 || orientation == 8) {
+                                    bufferedImage = return_the_rotated_image(bufferedImage, orientation);
+                                }
+                                Pic_aspect_ratio picAspectRatio = return_the_aspect_ratio_as_an_object(helloController);
+                                Media_pool mediaPool_item;
+                                if (is_this_the_correct_ratio(picAspectRatio, bufferedImage)) {
+                                    write_the_raw_file(bufferedImage, "temp/images/base", file_id);
+                                    if (do_i_need_to_down_scale(bufferedImage, picAspectRatio)) {
+                                        did_the_image_get_down_scaled = true;
+                                        write_the_raw_file(return_resized_downscale_buffer_image(bufferedImage, picAspectRatio), "temp/images/scaled", file_id);
+                                    }
+                                    mediaPool_item = new Media_pool(file_id, create_a_thumbnail(bufferedImage, picAspectRatio), image_file.getName(), did_the_image_get_down_scaled);
+                                } else {
+                                    BufferedImage filled_with_black = fill_the_back_ground_with_color(bufferedImage, new Color(0, 0, 0, 255));
+                                    BufferedImage filled_transparent = fill_the_back_ground_with_color(bufferedImage, new Color(0, 0, 0, 0));
+                                    write_the_raw_file(filled_with_black, "temp/images/base", file_id);
+                                    if (do_i_need_to_down_scale(filled_with_black, picAspectRatio)) {
+                                        did_the_image_get_down_scaled = true;
+                                        write_the_raw_file(return_resized_downscale_buffer_image(filled_with_black, picAspectRatio), "temp/images/scaled", file_id);
+                                    }
+                                    mediaPool_item = new Media_pool(file_id, create_a_thumbnail(filled_transparent, picAspectRatio), image_file.getName(), did_the_image_get_down_scaled);
+                                }
+                                arrayList_with_media_pool.add(mediaPool_item);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    } finally {
+                        latch.countDown(); // Signal task is done
+                    }
+                });
+            }
+            executor.shutdown();
+            new Thread(() -> {
+                try {
+                    latch.await(); // Wait until all tasks call countDown()
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            for(int i = 0;i<arrayList_with_media_pool.size();i++){
+                                add_image_to_tile_pane(helloController, arrayList_with_media_pool.get(i));
+                            }
+                            helloController.upload_media_text.setDisable(false);
+                            helloController.progress_indicator_media_pool.setVisible(false);
+                            helloController.scroll_pane_hosting_tile_pane_media_pool.setDisable(false);
+                            hide_or_show_media_pool(helloController);
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }).start();
+        }
+    }*/
+
+    private void add_the_images_to_the_media_pool_in_the_back_ground(HelloController helloController, List<File> files) {
+        if (files != null && !files.isEmpty()) {
+            helloController.progress_indicator_media_pool.setVisible(true);
+            helloController.scroll_pane_hosting_tile_pane_media_pool.setDisable(true);
+            helloController.upload_media_text.setDisable(true);
+            List<Media_pool> arrayList_with_media_pool = new ArrayList<>();
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.submit(() -> {
-                for (int i = 0; i < files.size(); i++) {
-                    try {
-                        boolean did_the_image_get_down_scaled = false;
+                try {
+                    for(int i = 0;i<files.size();i++){
                         File image_file = files.get(i);
+                        boolean did_the_image_get_down_scaled = false;
                         String fileName_lower_case = image_file.getName().toLowerCase();
                         Image image;
                         if (fileName_lower_case.endsWith("heic")) {
@@ -3275,13 +3311,12 @@ public class HelloApplication extends Application {
                         }
                         String file_id = UUID.randomUUID().toString();
                         BufferedImage bufferedImage = image_to_buffered_image(image);
-                        int orientation = getExifOrientation(files.get(i));
+                        int orientation = getExifOrientation(image_file);
                         if (orientation == 3 || orientation == 6 || orientation == 8) {
                             bufferedImage = return_the_rotated_image(bufferedImage, orientation);
                         }
                         Pic_aspect_ratio picAspectRatio = return_the_aspect_ratio_as_an_object(helloController);
                         Media_pool mediaPool_item;
-
                         if (is_this_the_correct_ratio(picAspectRatio, bufferedImage)) {
                             write_the_raw_file(bufferedImage, "temp/images/base", file_id);
                             if (do_i_need_to_down_scale(bufferedImage, picAspectRatio)) {
@@ -3290,8 +3325,8 @@ public class HelloApplication extends Application {
                             }
                             mediaPool_item = new Media_pool(file_id, create_a_thumbnail(bufferedImage, picAspectRatio), image_file.getName(), did_the_image_get_down_scaled);
                         } else {
-                            BufferedImage filled_with_black = fill_the_back_ground_with_color(bufferedImage,new Color(0,0,0,255));
-                            BufferedImage filled_transparent = fill_the_back_ground_with_color(bufferedImage,new Color(0,0,0,0));
+                            BufferedImage filled_with_black = fill_the_back_ground_with_color(bufferedImage, new Color(0, 0, 0, 255));
+                            BufferedImage filled_transparent = fill_the_back_ground_with_color(bufferedImage, new Color(0, 0, 0, 0));
                             write_the_raw_file(filled_with_black, "temp/images/base", file_id);
                             if (do_i_need_to_down_scale(filled_with_black, picAspectRatio)) {
                                 did_the_image_get_down_scaled = true;
@@ -3299,23 +3334,23 @@ public class HelloApplication extends Application {
                             }
                             mediaPool_item = new Media_pool(file_id, create_a_thumbnail(filled_transparent, picAspectRatio), image_file.getName(), did_the_image_get_down_scaled);
                         }
-                        arrayList_of_media_pool.add(mediaPool_item);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        arrayList_with_media_pool.add(mediaPool_item);
                     }
-                }
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < arrayList_of_media_pool.size(); i++) {
-                            add_image_to_tile_pane(helloController, arrayList_of_media_pool.get(i));
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (int i = 0; i < arrayList_with_media_pool.size(); i++) {
+                                add_image_to_tile_pane(helloController, arrayList_with_media_pool.get(i));
+                            }
+                            helloController.upload_media_text.setDisable(false);
+                            helloController.progress_indicator_media_pool.setVisible(false);
+                            helloController.scroll_pane_hosting_tile_pane_media_pool.setDisable(false);
+                            hide_or_show_media_pool(helloController);
                         }
-                        helloController.upload_media_text.setDisable(false);
-                        helloController.progress_indicator_media_pool.setVisible(false);
-                        helloController.scroll_pane_hosting_tile_pane_media_pool.setDisable(false);
-                        hide_or_show_media_pool(helloController);
-                    }
-                });
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             });
             executor.shutdown();
         }
@@ -3620,7 +3655,7 @@ public class HelloApplication extends Application {
         }
     }*/
 
-    private BufferedImage fill_the_back_ground_with_color(BufferedImage bufferedImage,Color color) {
+    private BufferedImage fill_the_back_ground_with_color(BufferedImage bufferedImage, Color color) {
         double max_width = bufferedImage.getWidth() * 16D;
         double max_height = bufferedImage.getHeight() * 9D;
         BufferedImage return_me;
@@ -3663,4 +3698,28 @@ public class HelloApplication extends Application {
         }
         return rectangle2D;
     }*/
+
+    private void create_the_time_line(HelloController helloController){
+        Pane main_pane = helloController.time_line_pane;
+        final double pixels_in_between_each_line = 10;
+        final double line_length = 5;
+        final double time_between_every_line = 50;
+        final double long_line_length = 15;
+        final double half_long_line_length = 10;
+        int number_of_dividors = (int) Math.ceil(get_duration()/time_between_every_line);
+
+        for(int i = 0;i<number_of_dividors;i++){
+            Line line_to_separate;
+            if((time_between_every_line*i)%1000 == 0){
+                line_to_separate = new Line(i*pixels_in_between_each_line,0,i*pixels_in_between_each_line,long_line_length);
+            } else if((time_between_every_line*i)%500 == 0) {
+                line_to_separate = new Line(i*pixels_in_between_each_line,0,i*pixels_in_between_each_line,half_long_line_length);
+            } else {
+                line_to_separate = new Line(i*pixels_in_between_each_line,0,i*pixels_in_between_each_line,line_length);
+            }
+            line_to_separate.setStroke(javafx.scene.paint.Color.BLACK);
+            line_to_separate.setStrokeWidth(0.5);
+            main_pane.getChildren().add(line_to_separate);
+        }
+    }
 }

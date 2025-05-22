@@ -250,12 +250,17 @@
                     <StackPane fx:id="left_stack_pane_in_grid_pane">
                         <VBox>
                             <VBox alignment="TOP_CENTER">
-                                <StackPane fx:id="stack_pane_hosting_the_scroll_pane_and_the_tile_pane" style="-fx-background-color: #F5F5F5; -fx-border-color: black; -fx-border-width: 2;">
+                                <StackPane fx:id="stack_pane_hosting_the_scroll_pane_and_the_tile_pane"
+                                           style="-fx-background-color: #F5F5F5; -fx-border-color: black; -fx-border-width: 2;">
                                     <VBox.margin>
                                         <Insets top="15.0" left="15.0" right="15.0"/>
                                     </VBox.margin>
-                                    <ScrollPane fx:id="scroll_pane_hosting_tile_pane_media_pool" fitToWidth="true" focusTraversable="false" style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
-                                        <TilePane fx:id="tile_pane_media_pool" maxHeight="400.0" prefHeight="400" focusTraversable="false" style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
+                                    <ScrollPane fx:id="scroll_pane_hosting_tile_pane_media_pool" fitToWidth="true"
+                                                focusTraversable="false"
+                                                style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
+                                        <TilePane fx:id="tile_pane_media_pool" maxHeight="400.0" prefHeight="400"
+                                                  focusTraversable="false"
+                                                  style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
                                         </TilePane>
                                     </ScrollPane>
                                     <Label fx:id="upload_media_text" text="Media pool" textFill="#B9B9B9">
@@ -263,7 +268,9 @@
                                             <Font size="20.0"/>
                                         </font>
                                     </Label>
-                                    <MFXProgressSpinner fx:id="progress_indicator_media_pool" visible="false" prefWidth="30" prefHeight="30" stylesheets="@mfx_spinner_style.css">
+                                    <MFXProgressSpinner fx:id="progress_indicator_media_pool" visible="false"
+                                                        prefWidth="30" prefHeight="30"
+                                                        stylesheets="@mfx_spinner_style.css">
                                     </MFXProgressSpinner>
                                 </StackPane>
                             </VBox>
@@ -531,7 +538,13 @@
         <bottom>
             <StackPane fx:id="bottom_stack_pane_fourth_screen">
                 <VBox fx:id="bottom_vbox_fourth_screen">
-                    <ListView fx:id="list_view_with_the_verses_preview" maxHeight="120" orientation="HORIZONTAL">
+                    <ScrollPane fitToHeight="true">
+                        <Pane fx:id="time_line_pane" prefHeight="120">
+
+                        </Pane>
+                    </ScrollPane>
+                    <ListView fx:id="list_view_with_the_verses_preview" maxHeight="120" orientation="HORIZONTAL"
+                              visible="false" managed="false">
                         <VBox.margin>
                             <Insets left="20.0" right="20.0" top="10.0"/>
                         </VBox.margin>

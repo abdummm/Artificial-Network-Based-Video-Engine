@@ -277,4 +277,7 @@ public class HelloController {
 
     @FXML
     public StackPane stack_pane_hosting_the_scroll_pane_and_the_tile_pane;
+
+    @FXML
+    public Pane time_line_pane;
 }
