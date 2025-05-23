@@ -48,6 +48,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
@@ -3749,5 +3751,18 @@ public class HelloApplication extends Application {
         line_to_separate.setStroke(color);
         line_to_separate.setStrokeWidth(width);
         return line_to_separate;
+    }
+
+    private void add_the_text_to_time_line(long millisecond,double x,double y,Pane pane){
+        Text time_label = new Text(x,y,convertMillisecondsToTime(millisecond));
+        pane.getChildren().add(time_label);
+    }
+
+    private String convertMillisecondsToTime(long milliseconds) {
+        long seconds = (milliseconds / 1000) % 60;
+        long minutes = (milliseconds / (1000 * 60)) % 60;
+        long hours = (milliseconds / (1000 * 60 * 60)) % 24;
+
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 }
