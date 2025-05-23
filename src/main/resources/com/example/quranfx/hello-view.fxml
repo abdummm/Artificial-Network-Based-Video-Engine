@@ -538,7 +538,10 @@
         <bottom>
             <StackPane fx:id="bottom_stack_pane_fourth_screen">
                 <VBox fx:id="bottom_vbox_fourth_screen">
-                    <ScrollPane fitToHeight="true">
+                    <ScrollPane fitToHeight="true" >
+                        <VBox.margin>
+                            <Insets left="20.0" right="20.0" top="10.0"/>
+                        </VBox.margin>
                         <Pane fx:id="time_line_pane" prefHeight="120">
 
                         </Pane>

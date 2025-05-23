@@ -1,6 +1,5 @@
 package com.example.quranfx;
 
-import atlantafx.base.theme.PrimerLight;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Metadata;
@@ -21,12 +20,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
@@ -35,6 +32,7 @@ import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -43,7 +41,6 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.io.*;
@@ -54,7 +51,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -76,7 +72,6 @@ import org.imgscalr.Scalr;
 import org.jsoup.*;
 
 import javax.imageio.ImageIO;
-import java.util.concurrent.CountDownLatch;
 
 
 public class HelloApplication extends Application {
@@ -3296,7 +3291,7 @@ public class HelloApplication extends Application {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.submit(() -> {
                 try {
-                    for(int i = 0;i<files.size();i++){
+                    for (int i = 0; i < files.size(); i++) {
                         File image_file = files.get(i);
                         boolean did_the_image_get_down_scaled = false;
                         String fileName_lower_case = image_file.getName().toLowerCase();
@@ -3699,27 +3694,60 @@ public class HelloApplication extends Application {
         return rectangle2D;
     }*/
 
-    private void create_the_time_line(HelloController helloController){
+    private void create_the_time_line(HelloController helloController) {
         Pane main_pane = helloController.time_line_pane;
+        main_pane.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.rgb(40,40,46),CornerRadii.EMPTY, Insets.EMPTY)));
         final double pixels_in_between_each_line = 10;
-        final double line_length = 5;
         final double time_between_every_line = 50;
-        final double long_line_length = 15;
-        final double half_long_line_length = 10;
-        int number_of_dividors = (int) Math.ceil(get_duration()/time_between_every_line);
-
-        for(int i = 0;i<number_of_dividors;i++){
-            Line line_to_separate;
-            if((time_between_every_line*i)%1000 == 0){
-                line_to_separate = new Line(i*pixels_in_between_each_line,0,i*pixels_in_between_each_line,long_line_length);
-            } else if((time_between_every_line*i)%500 == 0) {
-                line_to_separate = new Line(i*pixels_in_between_each_line,0,i*pixels_in_between_each_line,half_long_line_length);
+        final double long_line_length = 20;
+        final double half_long_line_length = 13;
+        final double line_length = 7.5;
+        final double line_thickness = 1.3;
+        int number_of_dividors = (int) Math.ceil(get_duration() / time_between_every_line);
+        double base_time_line = pixels_in_between_each_line * 11;
+        draw_the_rectangle_time_line_pane(0,base_time_line,120,main_pane);
+        for (int i = 0; i < 11; i++) {
+            if ((i == 1)) {
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(i * pixels_in_between_each_line,half_long_line_length,javafx.scene.paint.Color.rgb(50,52,56),line_thickness));
             } else {
-                line_to_separate = new Line(i*pixels_in_between_each_line,0,i*pixels_in_between_each_line,line_length);
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(i * pixels_in_between_each_line,line_length,javafx.scene.paint.Color.rgb(41,43,46),line_thickness));
             }
-            line_to_separate.setStroke(javafx.scene.paint.Color.BLACK);
-            line_to_separate.setStrokeWidth(0.5);
-            main_pane.getChildren().add(line_to_separate);
         }
+        for (int i = 0; i < number_of_dividors; i++) {
+            double x_pos = (i * pixels_in_between_each_line) + base_time_line;
+            if ((time_between_every_line * i) % 1000 == 0) {
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,long_line_length, javafx.scene.paint.Color.rgb(100,101,103),line_thickness));
+            } else if ((time_between_every_line * i) % 500 == 0) {
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,half_long_line_length, javafx.scene.paint.Color.rgb(89,95,103),line_thickness));
+            } else {
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,line_length, javafx.scene.paint.Color.rgb(66,71,78),line_thickness));
+            }
+        }
+        draw_the_rectangle_time_line_pane(base_time_line + (number_of_dividors-1)*pixels_in_between_each_line,base_time_line,120,main_pane);
+        double base_line_for_the_end_rectangle = base_time_line + (number_of_dividors)*pixels_in_between_each_line;
+        for (int i = 0; i < 11; i++) {
+            double x_pos = i * pixels_in_between_each_line + base_line_for_the_end_rectangle;
+            if ((time_between_every_line * (i + number_of_dividors)) % 1000 == 0) {
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,long_line_length, javafx.scene.paint.Color.rgb(100,101,103),line_thickness));
+            } else if ((time_between_every_line * (i + number_of_dividors)) % 500 == 0) {
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,half_long_line_length, javafx.scene.paint.Color.rgb(89,95,103),line_thickness));
+            } else {
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,line_length, javafx.scene.paint.Color.rgb(66,71,78),line_thickness));
+            }
+        }
+    }
+
+    private void draw_the_rectangle_time_line_pane(double start_x,double width, double height, Pane pane) {
+        Rectangle rectangle = new Rectangle(start_x, 0, width, height);
+        rectangle.setStrokeWidth(0);
+        rectangle.setFill(javafx.scene.paint.Color.rgb(30,30,34));
+        pane.getChildren().add(rectangle);
+    }
+
+    private Line draw_the_line_on_the_time_line(double x_pos, double line_length, javafx.scene.paint.Color color,double width){
+        Line line_to_separate = new Line(x_pos, 0, x_pos, line_length);
+        line_to_separate.setStroke(color);
+        line_to_separate.setStrokeWidth(width);
+        return line_to_separate;
     }
 }
