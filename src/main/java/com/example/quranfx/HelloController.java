@@ -104,22 +104,10 @@ public class HelloController {
     public JFXButton full_screen_button_fourth_screen;
 
     @FXML
-    public Button settings_of_video_button_fourth_screen;
-
-    @FXML
-    public TextField end_time_of_each_image;
-
-    @FXML
     public Button copy_duration_fourth_screen;
 
     @FXML
     public CheckBox generate_chat_gpt_images;
-
-    @FXML
-    public CheckBox add_arabic_text_fourth_screen;
-
-    @FXML
-    public CheckBox add_surat_name_in_video;
 
     @FXML
     public JFXButton choose_sound_third_screen;
@@ -128,91 +116,7 @@ public class HelloController {
     public Button create_video_final;
 
     @FXML
-    public CheckBox enable_english_text;
-
-    @FXML
-    public ToggleButton position_of_english_text_button_top_center;
-
-    @FXML
-    public ToggleButton position_of_english_text_button_center;
-
-    @FXML
-    public ToggleButton position_of_english_text_button_bottom_center;
-
-    @FXML
-    public VBox english_translation_settings;
-
-    @FXML
-    public Spinner font_size_text_field;
-
-    @FXML
-    public TextField english_text_color_in_ayat;
-
-    @FXML
-    public Spinner top_margin_english_text;
-
-    @FXML
     public StackPane stack_pane_of_image_view_and_text;
-
-    @FXML
-    public ComboBox spinner_to_choose_font;
-
-    @FXML
-    public Button apply_to_all_english_translation;
-
-    @FXML
-    public Button apply_changes_to_current_ayat;
-
-    @FXML
-    public Spinner choose_brightness_of_an_image;
-
-    @FXML
-    public ComboBox spinner_to_choose_font_arabic;
-
-    @FXML
-    public Spinner font_size_text_field_arabic;
-
-    @FXML
-    public TextField text_color_in_ayat_arabic;
-
-    @FXML
-    public ToggleButton position_of_english_text_button_top_center_arabic;
-
-    @FXML
-    public ToggleButton position_of_english_text_button_center_arabic;
-
-    @FXML
-    public ToggleButton position_of_english_text_button_bottom_center_arabic;
-
-    @FXML
-    public Spinner top_margin_text_arabic;
-
-    @FXML
-    public VBox arabic_translation_settings;
-
-    @FXML
-    public VBox surat_name_settings;
-
-    @FXML
-    public ComboBox spinner_to_choose_font_arabic_surat;
-
-    @FXML
-    public Spinner font_size_text_field_arabic_surat;
-
-    @FXML
-    public TextField text_color_in_ayat_arabic_surat;
-
-    @FXML
-    public ToggleButton position_of_english_text_button_top_center_arabic_surat;
-
-    @FXML
-    public ToggleButton position_of_english_text_button_center_arabic_surat;
-
-    @FXML
-    public ToggleButton position_of_english_text_button_bottom_center_arabic_surat;
-
-    @FXML
-    public Spinner top_margin_text_arabic_surat;
 
     @FXML
     public JFXButton cancel_video;
@@ -243,9 +147,6 @@ public class HelloController {
 
     @FXML
     public StackPane center_group_grid_pane;
-
-    @FXML
-    public VBox top_v_box_fourth_screen;
 
     @FXML
     public VBox bottom_vbox_fourth_screen;

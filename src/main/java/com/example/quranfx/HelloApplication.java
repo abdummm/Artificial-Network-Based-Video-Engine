@@ -54,13 +54,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javafx.util.Duration;
-import javafx.util.StringConverter;
-import javafx.util.converter.IntegerStringConverter;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.resizers.configurations.ScalingMode;
 import okhttp3.*;
@@ -148,52 +145,10 @@ public class HelloApplication extends Application {
         //set_the_width_of_play_pause_button(helloController);
         listen_to_slide_clicked(helloController);
         listen_to_full_screen_button(helloController);
-        set_the_text_field_formatter_of_milliseconds_end(helloController);
         listen_to_copy_duration(helloController);
-        listen_to_millisecond_for_each_ayat_focus_change(helloController);
-        listen_to_enter_pressed_time_for_each_ayat(helloController);
         listen_to_genereate_chat_gpt_checkbox(helloController);
-        uplaod_image_button_for_each_ayat_listen(helloController);
         upload_sound_listen(helloController);
         listen_to_create_video_button(helloController);
-        listen_to_enable_english_text(helloController);
-        listen_to_all_of_the_buttons_for_english_text_position(helloController);
-        set_the_text_formatter_for_font_size(helloController);
-        watch_the_font_size_change(helloController);
-        set_the_formatter_for_the_english_text_color(helloController);
-        watch_the_font_color_change(helloController);
-        set_the_text_formatter_for_the_margin_text_filed_english(helloController);
-        watch_top_margin_text_field_change(helloController);
-        Put_all_of_the_fonts_in_a_spinner(helloController);
-        listen_to_update_in_font_choose(helloController);
-        set_the_cursor_at_the_end_of_the_margin_spinner(helloController);
-        set_the_cursor_at_the_end_of_the_dont_size(helloController);
-        select_font_first_time_english(helloController);
-        listen_to_apply_to_all_button(helloController);
-        apply_changes_button_listen(helloController);
-        set_up_the_brightness_spinner(helloController);
-        listen_to_arabic_translation_enabled(helloController);
-        add_the_fonts_to_the_arabic_combox(helloController);
-        set_the_font_of_the_arabic_font(helloController);
-        set_the_arabic_font_size(helloController);
-        watch_the_font_size_change_arabic(helloController);
-        set_the_cursor_at_the_end_of_the_dont_size_arabic(helloController);
-        set_the_formatter_for_the_english_text_color_arabic(helloController);
-        listen_to_all_of_the_buttons_for_english_text_position_arabic_text(helloController);
-        set_up_the_top_margin_for_arabic(helloController);
-        watch_top_margin_text_field_change_arabic(helloController);
-        set_the_cursor_at_the_end_of_the_margin_spinner_arabic(helloController);
-        add_surat_name_checkbox_listen(helloController);
-        set_up_combobox_arabic_surat(helloController);
-        set_first_item_of_the_combobox_surat_font(helloController);
-        set_up_surant_name_font_size_spinner(helloController);
-        set_up_the_top_margin_for_arabic_surat(helloController);
-        watch_top_margin_text_field_change_arabic_surat(helloController);
-        set_the_cursor_at_the_end_of_the_margin_spinner_arabic_surat(helloController);
-        watch_the_font_size_change_arabic_surat(helloController);
-        set_the_cursor_at_the_end_of_the_dont_size_arabic_surat(helloController);
-        set_the_formatter_for_the_english_text_color_arabic_surat(helloController);
-        listen_to_all_of_the_buttons_for_english_text_position_arabic_text_surat(helloController);
         listen_to_cancel_button_third_screen(helloController);
         get_all_of_the_recitors(helloController);
         listen_to_the_recitor_list_view_click(helloController);
@@ -448,14 +403,14 @@ public class HelloApplication extends Application {
                 }
                 String arabic_ayat = String.valueOf(arrayNode.get(i).get("text_uthmani"));
                 ArrayNode translations_array_node = (ArrayNode) arrayNode.get(i).get("translations");
-                add_to_array_list_with_verses(String.valueOf(Jsoup.parse(String.valueOf(translations_array_node.get(0).get("text"))).text()), ayat_number, arabic_ayat);
-                if (!helloController.generate_chat_gpt_images.isSelected() && array_list_with_verses.size() == initial_number_of_ayats) {
+                add_to_array_list_with_verses(Jsoup.parse(String.valueOf(translations_array_node.get(0).get("text"))).text(), ayat_number, arabic_ayat);
+                if (array_list_with_verses.size() == initial_number_of_ayats) {
                     for (int j = 0; j < array_list_with_verses.size(); j++) {
                         if (durations == null || durations.length == 0) {
-                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), ));
+                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()),j* 1000L,1000 ));
                         } else {
                             if (j == 0) {
-                                chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), return_the_aspect_ratio_as_an_object(helloController)));
+                                chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()),0,durations[j]));
                             } else {
                                 chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), end_of_the_picture_durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), return_the_aspect_ratio_as_an_object(helloController)));
                             }
@@ -472,8 +427,8 @@ public class HelloApplication extends Application {
                 }
                 String arabic_ayat = String.valueOf(arrayNode.get(i).get("text_uthmani"));
                 ArrayNode translations_array_node = (ArrayNode) arrayNode.get(i).get("translations");
-                add_to_array_list_with_verses(String.valueOf(Jsoup.parse(String.valueOf(translations_array_node.get(0).get("text"))).text()), ayat_number, arabic_ayat);
-                if (!helloController.generate_chat_gpt_images.isSelected() && array_list_with_verses.size() == initial_number_of_ayats) {
+                add_to_array_list_with_verses(Jsoup.parse(String.valueOf(translations_array_node.get(0).get("text"))).text(), ayat_number, arabic_ayat);
+                if (array_list_with_verses.size() == initial_number_of_ayats) {
                     for (int j = 0; j < array_list_with_verses.size(); j++) {
                         if (durations == null || durations.length == 0) {
                             chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), Long.MAX_VALUE, new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), return_the_aspect_ratio_as_an_object(helloController)));
@@ -496,16 +451,6 @@ public class HelloApplication extends Application {
     private void add_to_array_list_with_verses(String verse, int ayat_number, String arabic_verse) {
         Verse_class verseClass = new Verse_class(surat_name_selected, verse, ayat_number, arabic_verse);
         array_list_with_verses.add(verseClass);
-    }
-
-    private Verse_class get_verse(HelloController helloController) {
-        if (!array_list_with_verses.isEmpty()) {
-            Verse_class verseClass = array_list_with_verses.get(0);
-            array_list_with_verses.remove(0);
-            return verseClass;
-        } else {
-            return null;
-        }
     }
 
     private void set_number_of_verses_left(HelloController helloController, int number_of_verses) {
@@ -587,36 +532,6 @@ public class HelloApplication extends Application {
         helloController.list_view_with_the_recitors.scrollTo(0);
         helloController.list_view_with_the_recitors.getSelectionModel().clearSelection();
 
-        helloController.enable_english_text.setSelected(false);
-        helloController.spinner_to_choose_font.setValue("Arial");
-        helloController.font_size_text_field.getValueFactory().setValue(10D);
-        helloController.english_text_color_in_ayat.setText("#FFFFFF");
-        set_all_of_the_english_text_position_buttons_not_selected(helloController);
-        helloController.position_of_english_text_button_center.setSelected(true);
-        helloController.top_margin_english_text.getValueFactory().setValue(0D);
-        helloController.english_translation_settings.setManaged(false);
-        helloController.english_translation_settings.setVisible(false);
-
-        helloController.add_arabic_text_fourth_screen.setSelected(false);
-        helloController.spinner_to_choose_font_arabic.setValue("Arial");
-        helloController.font_size_text_field_arabic.getValueFactory().setValue(10D);
-        helloController.text_color_in_ayat_arabic.setText("#FFFFFF");
-        set_all_of_the_english_text_position_buttons_not_selected_arabic(helloController);
-        helloController.position_of_english_text_button_center_arabic.setSelected(true);
-        helloController.top_margin_text_arabic.getValueFactory().setValue(0D);
-        helloController.arabic_translation_settings.setManaged(false);
-        helloController.arabic_translation_settings.setVisible(false);
-
-        helloController.add_surat_name_in_video.setSelected(false);
-        helloController.spinner_to_choose_font_arabic_surat.setValue("Arial");
-        helloController.font_size_text_field_arabic_surat.getValueFactory().setValue(10D);
-        helloController.text_color_in_ayat_arabic_surat.setText("#FFFFFF");
-        set_all_of_the_english_text_position_buttons_not_selected_arabic_surat(helloController);
-        helloController.position_of_english_text_button_center_arabic_surat.setSelected(true);
-        helloController.top_margin_text_arabic_surat.getValueFactory().setValue(0D);
-        helloController.surat_name_settings.setManaged(false);
-        helloController.surat_name_settings.setVisible(false);
-        helloController.choose_brightness_of_an_image.getValueFactory().setValue(100);
 
         set_the_play_pause_button(helloController, "play");
 
@@ -765,7 +680,6 @@ public class HelloApplication extends Application {
         set_up_the_media(helloController);
         set_the_max_of_the_slider_and_set_time_of_last_ayat(helloController);
         set_the_media_player_listener(helloController);
-        set_the_first_text_field_of_first_ayat(helloController);
         listen_to_end_of_audio_fourth_screen(helloController);
         listen_to_slider_audio(helloController);
         set_up_the_width_and_height_of_the_image_in_fourth_screen(helloController);
@@ -785,7 +699,7 @@ public class HelloApplication extends Application {
     }
 
     private void set_the_image_fourth_screen(HelloController helloController, int position) {
-        helloController.chatgpt_image_view.setImage(buffer_image_to_image(chatgpt_responses.get(position).getEditied_base_64_image()));
+
     }
 
     private void next_photo_click_listen(HelloController helloController) {
@@ -824,11 +738,6 @@ public class HelloApplication extends Application {
         //add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
         set_the_image_fourth_screen(helloController, selected_verse);
         set_selected_verse_text(helloController, selected_verse);
-        update_the_text_field_based_on_previous_values(helloController, selected_verse);
-        update_the_name_of_the_image_button_fourth_screen(helloController, selected_verse);
-        set_the_english_text_of_the_ayat_in_the_image_view(helloController, selected_verse);
-        set_the_ayat_settings(helloController, selected_verse);
-        hide_and_show_the_time_text_field_editor(helloController, selected_verse);
     }
 
     private void set_up_the_media(HelloController helloController) {
@@ -882,7 +791,6 @@ public class HelloApplication extends Application {
             @Override
             public void run() {
                 helloController.sound_slider_fourth_screen.setMax(get_duration());
-                chatgpt_responses.get(chatgpt_responses.size() - 1).setTime_in_milliseconds((long) get_duration());
                 set_the_time_total_time(helloController, get_duration());
                 if (!did_this_play_already) {
                     start_and_unstart_the_media_player(0);
@@ -937,18 +845,6 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void set_the_text_field_formatter_of_milliseconds_end(HelloController helloController) {
-        UnaryOperator<TextFormatter.Change> filter = change -> {
-            String text = change.getText();
-            if (text.matches("[0-9]*")) {  // Allow only numbers
-                return change;
-            }
-            return null;  // Reject the change
-        };
-        TextFormatter<String> formatter = new TextFormatter<>(filter);
-        helloController.end_time_of_each_image.setTextFormatter(formatter);
-    }
-
     private void listen_to_copy_duration(HelloController helloController) {
         helloController.copy_duration_fourth_screen.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -961,57 +857,8 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void listen_to_millisecond_for_each_ayat_focus_change(HelloController helloController) {
-        helloController.end_time_of_each_image.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue) {
-                    javafx.application.Platform.runLater(() -> {
-                        helloController.end_time_of_each_image.selectAll();
-                    });
-                }
-            }
-        });
-    }
-
-    private void update_the_text_field_based_on_previous_values(HelloController helloController, int selected_verse) {
-        long time_in_milli = chatgpt_responses.get(selected_verse).getTime_in_milliseconds();
-        helloController.end_time_of_each_image.setText(String.valueOf(time_in_milli));
-    }
-
-    private void set_the_first_text_field_of_first_ayat(HelloController helloController) {
-        long time_in_milli = chatgpt_responses.get(0).getTime_in_milliseconds();
-        helloController.end_time_of_each_image.setText(String.valueOf(time_in_milli));
-    }
-
-    private void listen_to_enter_pressed_time_for_each_ayat(HelloController helloController) {
-        helloController.end_time_of_each_image.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                if (event.getCode().equals(KeyCode.ENTER)) {
-                    helloController.list_view_with_the_verses_preview.requestFocus();
-                }
-            }
-        });
-    }
-
     private void change_the_image_based_on_audio_fourth_screen(HelloController helloController, Double time_of_audio_millis) {
-        if (chatgpt_responses.isEmpty()) {// check that array_is_not_empty
-            return;
-        }
-        if (time_of_audio_millis > chatgpt_responses.get(selected_verse).getTime_in_milliseconds() && selected_verse < chatgpt_responses.size() - 1) {
-            selected_verse++;
-            while (time_of_audio_millis > chatgpt_responses.get(selected_verse).getTime_in_milliseconds() && selected_verse < chatgpt_responses.size() - 1) {
-                selected_verse++;
-            }
-            the_verse_changed(helloController, selected_verse);
-        } else if (selected_verse > 0 && time_of_audio_millis < chatgpt_responses.get(selected_verse - 1).getTime_in_milliseconds()) {
-            selected_verse--;
-            while (selected_verse > 0 && time_of_audio_millis < chatgpt_responses.get(selected_verse - 1).getTime_in_milliseconds()) {
-                selected_verse--;
-            }
-            the_verse_changed(helloController, selected_verse);
-        }
+
     }
 
     private void listen_to_genereate_chat_gpt_checkbox(HelloController helloController) {
@@ -1056,120 +903,11 @@ public class HelloApplication extends Application {
         }*/
     }
 
-    private void uplaod_image_button_for_each_ayat_listen(HelloController helloController) {
-        helloController.upload_image_button_for_each_ayat.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                boolean too_many_images_selected = false;
-                FileChooser fileChooser = new FileChooser();
-                //Set extension filter
-                FileChooser.ExtensionFilter image_filter;
-                if (is_this_a_mac_device()) {
-                    image_filter = new FileChooser.ExtensionFilter("Image Files (*.png, *.jpg, *.jpeg, *.heic)", "*.png", "*.PNG", "*.jpg", "*.JPG", "*.jpeg", "*.JPEG", "*.heic", "*.HEIC");
-                } else {
-                    image_filter = new FileChooser.ExtensionFilter("Image Files (*.png, *.jpg, *.jpeg)", "*.png", "*.PNG", "*.jpg", "*.JPG", "*.jpeg", "*.JPEG");
-
-                }
-                fileChooser.getExtensionFilters().addAll(image_filter);
-                //Show open file dialog
-                List<File> files = fileChooser.showOpenMultipleDialog(null);
-                if (files != null && !files.isEmpty()) {
-                    for (int i = 0; i < files.size(); i++) {
-                        if (selected_verse + i >= chatgpt_responses.size()) {
-                            too_many_images_selected = true;
-                            break;
-                        }
-                        try {
-                            File image_file = files.get(i);
-                            String fileName_lower_case = image_file.getName().toLowerCase();
-                            Image image;
-                            if (fileName_lower_case.endsWith("heic")) {
-                                File new_jpg_file = new File("temp/converted images/".concat(UUID.randomUUID().toString()).concat(".png"));
-                                new_jpg_file.deleteOnExit();
-                                convertHeicToJpg(image_file, new_jpg_file);
-                                image = new Image(new FileInputStream(new_jpg_file));
-                            } else {
-                                image = new Image(new FileInputStream(image_file));
-                            }
-                            BufferedImage bufferedImage = image_to_buffered_image(image);
-                            int orientation = getExifOrientation(files.get(i));
-                            if (orientation == 3 || orientation == 6 || orientation == 8) {
-                                bufferedImage = return_the_rotated_image(bufferedImage, orientation);
-                            }
-                            Pic_aspect_ratio picAspectRatio = return_the_aspect_ratio_as_an_object(helloController);
-                            if ((picAspectRatio.equals(Pic_aspect_ratio.aspect_square_1_1) && image.getWidth() == image.getHeight()) || (picAspectRatio.equals(Pic_aspect_ratio.aspect_vertical_9_16) && image.getWidth() * 16D == image.getHeight() * 9D) || (picAspectRatio.equals(Pic_aspect_ratio.aspect_horizontal_16_9) && image.getWidth() * 9D == image.getHeight() * 16D)) {
-                                chatgpt_responses.get(selected_verse + i).setBase_64_image(bufferedImage);
-                            } else {
-                                if (picAspectRatio.equals(Pic_aspect_ratio.aspect_vertical_9_16)) {
-                                    BufferedImage formattedImage = null;
-                                    int targetWidth = bufferedImage.getWidth();
-                                    int targetHeight = targetWidth * 16 / 9;  // Calculate the new height for a 9:16 ratio
-                                    // Create a new black image with a 9:16 ratio
-                                    formattedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
-                                    Graphics g = formattedImage.createGraphics();
-                                    g.setColor(java.awt.Color.BLACK);
-                                    g.fillRect(0, 0, targetWidth, targetHeight);  // Fill the background with black
-                                    int buffer_at_the_top = (targetHeight - bufferedImage.getHeight()) / 2;
-                                    g.drawImage(bufferedImage, 0, buffer_at_the_top, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
-                                    g.dispose();
-                                    chatgpt_responses.get(selected_verse + i).setBase_64_image(formattedImage);
-                                    bufferedImage.flush();
-                                    formattedImage.flush();
-                                } else if (picAspectRatio.equals(Pic_aspect_ratio.aspect_horizontal_16_9)) {
-
-                                } else if (picAspectRatio.equals(Pic_aspect_ratio.aspect_square_1_1)) {
-
-                                }
-                            }
-                            add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse + i).getAyatSettings(), selected_verse + i);
-                            helloController.upload_image_button_for_each_ayat.setText("Change Image");
-                            set_the_image_fourth_screen(helloController, selected_verse);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        chatgpt_responses.get(selected_verse + i).setImage_edited(true);
-                    }
-                    helloController.list_view_with_the_verses_preview.refresh();
-                    if (too_many_images_selected) {
-                        show_alert("Too many images selected. Only the number of images matching the remaining verses will be used.");
-                    }
-                }
-            }
-        });
-    }
-
     private String getFileExtension(File file) {
         String fileName = file.getName();
         if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
             return fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
         else return "";
-    }
-
-    private void update_the_name_of_the_image_button_fourth_screen(HelloController helloController, int selected_verse) {
-        if (chatgpt_responses.get(selected_verse).isImage_edited()) {
-            helloController.upload_image_button_for_each_ayat.setText("Change Image");
-        } else {
-            helloController.upload_image_button_for_each_ayat.setText("Upload Image");
-        }
-        /*if (helloController.size_of_image.getValue().equals("9:16")) {
-            if (chatgpt_responses.get(selected_verse).getBase_64_image().equals(Base64_image.getInstance().vertical_place_holder)) {
-                helloController.upload_image_button_for_each_ayat.setText("Upload Image");
-            } else {
-                helloController.upload_image_button_for_each_ayat.setText("Change Image");
-            }
-        } else if (helloController.size_of_image.getValue().equals("16:9")) {
-            if (chatgpt_responses.get(selected_verse).getBase_64_image().equals(Base64_image.getInstance().horizontal_place_holder)) {
-                helloController.upload_image_button_for_each_ayat.setText("Upload Image");
-            } else {
-                helloController.upload_image_button_for_each_ayat.setText("Change Image");
-            }
-        } else if (helloController.size_of_image.getValue().equals("1:1")) {
-            if (chatgpt_responses.get(selected_verse).getBase_64_image().equals(Base64_image.getInstance().square_place_holder)) {
-                helloController.upload_image_button_for_each_ayat.setText("Upload Image");
-            } else {
-                helloController.upload_image_button_for_each_ayat.setText("Change Image");
-            }
-        }*/
     }
 
     private void upload_sound_listen(HelloController helloController) {
@@ -1204,7 +942,7 @@ public class HelloApplication extends Application {
     }
 
     private void create_video(HelloController helloController) {
-        String videoFileName = "/Users/abdelrahmanabdelkader/Downloads/output.mp4";
+        /*String videoFileName = "/Users/abdelrahmanabdelkader/Downloads/output.mp4";
         File file = new File(videoFileName);
         if (file.exists() && !file.isDirectory()) {
             file.delete();
@@ -1277,222 +1015,22 @@ public class HelloApplication extends Application {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        }*/
     }
 
-    private void listen_to_enable_english_text(HelloController helloController) {
-        helloController.enable_english_text.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                helloController.english_translation_settings.setManaged(newValue);
-                helloController.english_translation_settings.setVisible(newValue);
-                add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
-                helloController.chatgpt_image_view.setImage(buffer_image_to_image(chatgpt_responses.get(selected_verse).getEditied_base_64_image()));
-            }
-        });
-    }
-
-    private void listen_to_all_of_the_buttons_for_english_text_position(HelloController helloController) {
-        helloController.position_of_english_text_button_top_center.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                set_all_of_the_english_text_position_buttons_not_selected(helloController);
-                helloController.position_of_english_text_button_top_center.setSelected(true);
-            }
-        });
-        helloController.position_of_english_text_button_center.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                set_all_of_the_english_text_position_buttons_not_selected(helloController);
-                helloController.position_of_english_text_button_center.setSelected(true);
-            }
-        });
-        helloController.position_of_english_text_button_bottom_center.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                set_all_of_the_english_text_position_buttons_not_selected(helloController);
-                helloController.position_of_english_text_button_bottom_center.setSelected(true);
-            }
-        });
-    }
-
-    private void set_all_of_the_english_text_position_buttons_not_selected(HelloController helloController) {
-        helloController.position_of_english_text_button_top_center.setSelected(false);
-        helloController.position_of_english_text_button_center.setSelected(false);
-        helloController.position_of_english_text_button_bottom_center.setSelected(false);
-    }
-
-    private void set_the_text_formatter_for_font_size(HelloController helloController) {
-        helloController.font_size_text_field.setEditable(true);
-        helloController.font_size_text_field.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 100.0, 10.0, 0.1));
-        helloController.font_size_text_field.getValueFactory().setConverter(new StringConverter<Double>() {
-            @Override
-            public String toString(Double value) {
-                // Format the double to avoid scientific notation
-                return String.format("%.1f", value);
-            }
-
-            @Override
-            public Double fromString(String text) {
-                try {
-                    // Try to parse the user input to a double
-                    return Double.parseDouble(text);
-                } catch (NumberFormatException e) {
-                    // If the input is not valid, return the current value
-                    return Double.parseDouble(String.valueOf(helloController.font_size_text_field.getValue()));
-                }
-            }
-        });
-    }
-
-    private void watch_the_font_size_change(HelloController helloController) {
-        helloController.font_size_text_field.getEditor().textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (!newValue.matches("\\d*(\\.\\d{0,1})?")) {  // Regex to allow only digits or digits followed by one decimal
-                    helloController.font_size_text_field.getEditor().setText(oldValue);
-                }
-            }
-        });
-    }
-
-    private void set_the_formatter_for_the_english_text_color(HelloController helloController) {
-        String pattern = "^#[A-Za-z0-9]{0,6}$";
-        UnaryOperator<TextFormatter.Change> filter = change -> {
-            String newText = change.getControlNewText();
-            if (newText.matches(pattern)) {
-                return change;
-            } else {
-                return null;
-            }
-        };
-        TextFormatter<String> formatter = new TextFormatter<>(filter);
-        helloController.english_text_color_in_ayat.setTextFormatter(formatter);
-    }
-
-    private void watch_the_font_color_change(HelloController helloController) {
-        helloController.english_text_color_in_ayat.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                /*chatgpt_responses.get(selected_verse).getAyatSettings().setEnglish_color_hex(newValue);
-                add_the_text_to_the_photo(helloController,chatgpt_responses.get(selected_verse).getAyatSettings());*/
-            }
-        });
-    }
-
-    private void set_the_text_formatter_for_the_margin_text_filed_english(HelloController helloController) {
-        helloController.top_margin_english_text.setEditable(true);
-
-        // Set up the StringConverter to handle user input
-        helloController.top_margin_english_text.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, Double.MAX_VALUE, 0.0, 1));
-        helloController.top_margin_english_text.getValueFactory().setConverter(new StringConverter<Double>() {
-            @Override
-            public String toString(Double value) {
-                // Format the double to avoid scientific notation
-                return String.format("%.1f", value);
-            }
-
-            @Override
-            public Double fromString(String text) {
-                try {
-                    // Try to parse the user input to a double
-                    return Double.parseDouble(text);
-                } catch (NumberFormatException e) {
-                    // If the input is not valid, return the current value
-                    return Double.parseDouble(String.valueOf(helloController.top_margin_english_text.getValue()));
-                }
-            }
-        });
-    }
-
-    private void watch_top_margin_text_field_change(HelloController helloController) {
-        helloController.top_margin_english_text.getEditor().textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (!newValue.matches("\\d*(\\.\\d{0,1})?")) {  // Regex to allow only digits or digits followed by one decimal
-                    helloController.top_margin_english_text.getEditor().setText(oldValue);
-                }
-            }
-        });
-    }
-
-    private void set_the_english_text_of_the_ayat_in_the_image_view(HelloController helloController, int selected_verse) {
-        if (helloController.enable_english_text.isSelected() && chatgpt_responses.get(selected_verse).getBase_64_image().equals(chatgpt_responses.get(selected_verse).getEditied_base_64_image())) {
-            add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
-            helloController.chatgpt_image_view.setImage(buffer_image_to_image(chatgpt_responses.get(selected_verse).getEditied_base_64_image()));
-        }
-    }
-
-    private void Put_all_of_the_fonts_in_a_spinner(HelloController helloController) {
-        ObservableList<String> items = FXCollections.observableArrayList();
-        items.addAll(Font.getFamilies());
-        helloController.spinner_to_choose_font.setItems(items);
-        helloController.spinner_to_choose_font.setVisibleRowCount(20);
-        helloController.spinner_to_choose_font.setCellFactory(lv -> new ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item == null || empty) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    setFont(new Font(item, 14)); // Set the font to the name of the item
-                }
-            }
-        });
-        helloController.spinner_to_choose_font.setButtonCell(new ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item == null || empty) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    setFont(new Font(item, 14)); // This ensures the selection also shows the font
-                }
-            }
-        });
-    }
-
-    private void listen_to_update_in_font_choose(HelloController helloController) {
-        helloController.spinner_to_choose_font.valueProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                /*chatgpt_responses.get(selected_verse).getAyatSettings().setEnglish_font_name(String.valueOf(newValue));
-                add_the_text_to_the_photo(helloController,chatgpt_responses.get(selected_verse).getAyatSettings());*/
-            }
-        });
-    }
-
-    private void set_the_cursor_at_the_end_of_the_margin_spinner(HelloController helloController) {
-        helloController.top_margin_english_text.valueProperty().addListener((obs, oldValue, newValue) -> {
-            javafx.application.Platform.runLater(() -> {
-                helloController.top_margin_english_text.getEditor().end(); // Move the cursor to the end
-            });
-        });
-    }
-
-    private void set_the_cursor_at_the_end_of_the_dont_size(HelloController helloController) {
-        helloController.font_size_text_field.valueProperty().addListener((obs, oldValue, newValue) -> {
-            javafx.application.Platform.runLater(() -> {
-                helloController.font_size_text_field.getEditor().end(); // Move the cursor to the end
-            });
-        });
-    }
-
-    private void add_the_text_to_the_photo(HelloController helloController, Ayat_settings ayatSettings, int selected_verse) {
+    /*private void add_the_text_to_the_photo(HelloController helloController, Ayat_settings ayatSettings, int selected_verse) {
         BufferedImage bufferedImage = chatgpt_responses.get(selected_verse).getBase_64_image();
         float brightnessFactor = (float) (ayatSettings.getBrightness_of_image() / 100.0);
         RescaleOp rescaleOp = new RescaleOp(brightnessFactor, 0, null);
         rescaleOp.filter(bufferedImage, bufferedImage);
         Graphics2D g = bufferedImage.createGraphics();
-        /*{
+        *//*{
             double difference = 100 - ayatSettings.getBrightness_of_image();
             double real_difference = (difference / 100) * 255;
             Color dimColor = new Color(0, 0, 0, (int) real_difference);
             g.setColor(dimColor);
             g.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
-        }*/
+        }*//*
         {
             double font_size = (ayatSettings.getEnglish_font_size() / 500D) * Math.sqrt(Math.pow(bufferedImage.getHeight(), 2) + Math.pow(bufferedImage.getWidth(), 2));
             java.awt.Font font = new java.awt.Font(ayatSettings.getEnglish_font_name(), java.awt.Font.PLAIN, (int) font_size);
@@ -1589,7 +1127,7 @@ public class HelloApplication extends Application {
         g.dispose();
         chatgpt_responses.get(selected_verse).setEditied_base_64_image(bufferedImage);
         bufferedImage.flush();
-    }
+    }*/
 
     public ArrayList<String> wrapText(String text, FontMetrics metrics, int maxWidth, int margin_left_and_right) {
         double max_width_double = maxWidth;
@@ -1620,146 +1158,6 @@ public class HelloApplication extends Application {
         return verse_text;
     }
 
-    private void select_font_first_time_english(HelloController helloController) {
-        helloController.spinner_to_choose_font.setValue("Arial");
-    }
-
-    private void set_the_ayat_settings(HelloController helloController, int selected_verse) {
-        Ayat_settings ayatSettings = chatgpt_responses.get(selected_verse).getAyatSettings();
-        if (helloController.enable_english_text.isSelected()) {
-            helloController.spinner_to_choose_font.setValue(ayatSettings.getEnglish_font_name());
-            helloController.font_size_text_field.getValueFactory().setValue(ayatSettings.getEnglish_font_size());
-            helloController.english_text_color_in_ayat.setText(ayatSettings.getEnglish_color_hex());
-            set_all_of_the_english_text_position_buttons_not_selected(helloController);
-            if (ayatSettings.getAlignment().equals("Top")) {
-                helloController.position_of_english_text_button_top_center.setSelected(true);
-            } else if (ayatSettings.getAlignment().equals("Center")) {
-                helloController.position_of_english_text_button_center.setSelected(true);
-            } else if (ayatSettings.getAlignment().equals("Bottom")) {
-                helloController.position_of_english_text_button_bottom_center.setSelected(true);
-            }
-            helloController.top_margin_english_text.getValueFactory().setValue(ayatSettings.getEnglish_top_margin());
-        }
-        if (helloController.add_arabic_text_fourth_screen.isSelected()) {
-            helloController.spinner_to_choose_font_arabic.setValue(ayatSettings.getArabic_font_name());
-            helloController.font_size_text_field_arabic.getValueFactory().setValue(ayatSettings.getArabic_font_size());
-            helloController.text_color_in_ayat_arabic.setText(ayatSettings.getArabic_color_hex());
-            set_all_of_the_english_text_position_buttons_not_selected_arabic(helloController);
-            if (ayatSettings.getArabic_alignment().equals("Top")) {
-                helloController.position_of_english_text_button_top_center_arabic.setSelected(true);
-            } else if (ayatSettings.getArabic_alignment().equals("Center")) {
-                helloController.position_of_english_text_button_center_arabic.setSelected(true);
-            } else if (ayatSettings.getArabic_alignment().equals("Bottom")) {
-                helloController.position_of_english_text_button_bottom_center_arabic.setSelected(true);
-            }
-            helloController.top_margin_text_arabic.getValueFactory().setValue(ayatSettings.getArabic_top_margin());
-        }
-        if (helloController.add_surat_name_in_video.isSelected()) {
-            helloController.spinner_to_choose_font_arabic_surat.setValue(ayatSettings.getSurat_font_name());
-            helloController.font_size_text_field_arabic_surat.getValueFactory().setValue(ayatSettings.getSurat_font_size());
-            helloController.text_color_in_ayat_arabic_surat.setText(ayatSettings.getSurat_color_hex());
-            set_all_of_the_english_text_position_buttons_not_selected_arabic_surat(helloController);
-            if (ayatSettings.getSurat_alignment().equals("Top")) {
-                helloController.position_of_english_text_button_top_center_arabic_surat.setSelected(true);
-            } else if (ayatSettings.getSurat_alignment().equals("Center")) {
-                helloController.position_of_english_text_button_center_arabic_surat.setSelected(true);
-            } else if (ayatSettings.getSurat_alignment().equals("Bottom")) {
-                helloController.position_of_english_text_button_bottom_center_arabic_surat.setSelected(true);
-            }
-            helloController.top_margin_text_arabic_surat.getValueFactory().setValue(ayatSettings.getSurat_top_margin());
-        }
-        helloController.choose_brightness_of_an_image.getValueFactory().setValue(ayatSettings.getBrightness_of_image());
-    }
-
-    private void listen_to_apply_to_all_button(HelloController helloController) {
-        helloController.apply_to_all_english_translation.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                update_current_ayat_settings(helloController);
-                add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
-                helloController.chatgpt_image_view.setImage(buffer_image_to_image(chatgpt_responses.get(selected_verse).getEditied_base_64_image()));
-                for (int i = 0; i < chatgpt_responses.size(); i++) {
-                    if (i != selected_verse) {
-                        chatgpt_responses.get(i).getAyatSettings().set_ayat_settings(chatgpt_responses.get(selected_verse).getAyatSettings());
-                        add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), i);
-                    }
-                }
-            }
-        });
-    }
-
-    private void apply_changes_button_listen(HelloController helloController) {
-        helloController.apply_changes_to_current_ayat.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                update_current_ayat_settings(helloController);
-                add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
-                helloController.chatgpt_image_view.setImage(buffer_image_to_image(chatgpt_responses.get(selected_verse).getEditied_base_64_image()));
-                helloController.list_view_with_the_verses_preview.refresh();
-            }
-        });
-    }
-
-    private void update_current_ayat_settings(HelloController helloController) {
-        Ayat_settings ayatSettings = new Ayat_settings();
-
-        ayatSettings.setBrightness_of_image((int) helloController.choose_brightness_of_an_image.getValue());
-
-        //english settings
-        ayatSettings.setEnglish_font_name((String) helloController.spinner_to_choose_font.getValue());
-        ayatSettings.setEnglish_font_size((Double) helloController.font_size_text_field.getValue());
-        ayatSettings.setEnglish_color_hex(helloController.english_text_color_in_ayat.getText());
-        if (helloController.position_of_english_text_button_top_center.isSelected()) {
-            ayatSettings.setAlignment("Top");
-        } else if (helloController.position_of_english_text_button_center.isSelected()) {
-            ayatSettings.setAlignment("Center");
-        } else {
-            ayatSettings.setAlignment("Bottom");
-        }
-        ayatSettings.setEnglish_top_margin((Double) helloController.top_margin_english_text.getValue());
-
-        //arabic settings
-        ayatSettings.setArabic_font_name((String) helloController.spinner_to_choose_font_arabic.getValue());
-        ayatSettings.setArabic_font_size((Double) helloController.font_size_text_field_arabic.getValue());
-        ayatSettings.setArabic_color_hex(helloController.text_color_in_ayat_arabic.getText());
-        if (helloController.position_of_english_text_button_top_center_arabic.isSelected()) {
-            ayatSettings.setArabic_alignment("Top");
-        } else if (helloController.position_of_english_text_button_center_arabic.isSelected()) {
-            ayatSettings.setArabic_alignment("Center");
-        } else {
-            ayatSettings.setArabic_alignment("Bottom");
-        }
-        ayatSettings.setArabic_top_margin((Double) helloController.top_margin_text_arabic.getValue());
-
-        //surat setting
-        ayatSettings.setSurat_font_name((String) helloController.spinner_to_choose_font_arabic_surat.getValue());
-        ayatSettings.setSurat_font_size((Double) helloController.font_size_text_field_arabic_surat.getValue());
-        ayatSettings.setSurat_color_hex(helloController.text_color_in_ayat_arabic_surat.getText());
-        if (helloController.position_of_english_text_button_top_center_arabic_surat.isSelected()) {
-            ayatSettings.setSurat_alignment("Top");
-        } else if (helloController.position_of_english_text_button_center_arabic_surat.isSelected()) {
-            ayatSettings.setSurat_alignment("Center");
-        } else {
-            ayatSettings.setSurat_alignment("Bottom");
-        }
-        ayatSettings.setSurat_top_margin((Double) helloController.top_margin_text_arabic_surat.getValue());
-
-        chatgpt_responses.get(selected_verse).getAyatSettings().set_ayat_settings(ayatSettings);
-    }
-
-    private void set_up_the_brightness_spinner(HelloController helloController) {
-        SpinnerValueFactory.IntegerSpinnerValueFactory valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100, 100, 1);
-        helloController.choose_brightness_of_an_image.setValueFactory(valueFactory);
-        helloController.choose_brightness_of_an_image.setEditable(true);
-        TextFormatter<Integer> formatter = new TextFormatter<>(new IntegerStringConverter(), 100, change -> {
-            String newText = change.getControlNewText();
-            if (newText.matches("([1-9][0-9]{0,1}|100)?")) {
-                return change;
-            }
-            return null;
-        });
-        helloController.choose_brightness_of_an_image.getEditor().setTextFormatter(formatter);
-    }
 
     private BufferedImage convertToBufferedImage(Image image) {
         if (image == null) {
@@ -1776,379 +1174,13 @@ public class HelloApplication extends Application {
         return bufferedImage;
     }
 
-    private void listen_to_arabic_translation_enabled(HelloController helloController) {
-        helloController.add_arabic_text_fourth_screen.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                helloController.arabic_translation_settings.setManaged(newValue);
-                helloController.arabic_translation_settings.setVisible(newValue);
-                update_current_ayat_settings(helloController);
-                add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
-                helloController.chatgpt_image_view.setImage(buffer_image_to_image(chatgpt_responses.get(selected_verse).getEditied_base_64_image()));
-                for (int i = 0; i < chatgpt_responses.size(); i++) {
-                    if (i != selected_verse) {
-                        chatgpt_responses.get(i).getAyatSettings().set_ayat_settings(chatgpt_responses.get(selected_verse).getAyatSettings());
-                        add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), i);
-                    }
-                }
-            }
-        });
-    }
-
-    private void add_the_fonts_to_the_arabic_combox(HelloController helloController) {
-        ObservableList<String> items = FXCollections.observableArrayList();
-        items.addAll(Font.getFamilies());
-        helloController.spinner_to_choose_font_arabic.setItems(items);
-        helloController.spinner_to_choose_font_arabic.setVisibleRowCount(20);
-        helloController.spinner_to_choose_font_arabic.setCellFactory(lv -> new ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item == null || empty) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    setFont(new Font(item, 14)); // Set the font to the name of the item
-                }
-            }
-        });
-        helloController.spinner_to_choose_font_arabic.setButtonCell(new ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item == null || empty) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    setFont(new Font(item, 14)); // This ensures the selection also shows the font
-                }
-            }
-        });
-    }
-
-    private void set_the_font_of_the_arabic_font(HelloController helloController) {
-        helloController.spinner_to_choose_font_arabic.setValue("Arial");
-    }
-
-    private void set_the_arabic_font_size(HelloController helloController) {
-        helloController.font_size_text_field_arabic.setEditable(true);
-        helloController.font_size_text_field_arabic.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 100.0, 10.0, 0.1));
-        helloController.font_size_text_field_arabic.getValueFactory().setConverter(new StringConverter<Double>() {
-            @Override
-            public String toString(Double value) {
-                // Format the double to avoid scientific notation
-                return String.format("%.1f", value);
-            }
-
-            @Override
-            public Double fromString(String text) {
-                try {
-                    // Try to parse the user input to a double
-                    return Double.parseDouble(text);
-                } catch (NumberFormatException e) {
-                    // If the input is not valid, return the current value
-                    return Double.parseDouble(String.valueOf(helloController.font_size_text_field_arabic.getValue()));
-                }
-            }
-        });
-    }
-
-    private void watch_the_font_size_change_arabic(HelloController helloController) {
-        helloController.font_size_text_field_arabic.getEditor().textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (!newValue.matches("\\d*(\\.\\d{0,1})?")) {  // Regex to allow only digits or digits followed by one decimal
-                    helloController.font_size_text_field_arabic.getEditor().setText(oldValue);
-                }
-            }
-        });
-    }
-
-    private void set_the_cursor_at_the_end_of_the_dont_size_arabic(HelloController helloController) {
-        helloController.font_size_text_field_arabic.valueProperty().addListener((obs, oldValue, newValue) -> {
-            javafx.application.Platform.runLater(() -> {
-                helloController.font_size_text_field_arabic.getEditor().end(); // Move the cursor to the end
-            });
-        });
-    }
-
-    private void set_the_formatter_for_the_english_text_color_arabic(HelloController helloController) {
-        String pattern = "^#[A-Za-z0-9]{0,6}$";
-        UnaryOperator<TextFormatter.Change> filter = change -> {
-            String newText = change.getControlNewText();
-            if (newText.matches(pattern)) {
-                return change;
-            } else {
-                return null;
-            }
-        };
-        TextFormatter<String> formatter = new TextFormatter<>(filter);
-        helloController.text_color_in_ayat_arabic.setTextFormatter(formatter);
-    }
-
-    private void listen_to_all_of_the_buttons_for_english_text_position_arabic_text(HelloController helloController) {
-        helloController.position_of_english_text_button_top_center_arabic.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                set_all_of_the_english_text_position_buttons_not_selected_arabic(helloController);
-                helloController.position_of_english_text_button_top_center_arabic.setSelected(true);
-            }
-        });
-        helloController.position_of_english_text_button_center_arabic.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                set_all_of_the_english_text_position_buttons_not_selected_arabic(helloController);
-                helloController.position_of_english_text_button_center_arabic.setSelected(true);
-            }
-        });
-        helloController.position_of_english_text_button_bottom_center_arabic.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                set_all_of_the_english_text_position_buttons_not_selected_arabic(helloController);
-                helloController.position_of_english_text_button_bottom_center_arabic.setSelected(true);
-            }
-        });
-    }
-
-    private void set_all_of_the_english_text_position_buttons_not_selected_arabic(HelloController helloController) {
-        helloController.position_of_english_text_button_top_center_arabic.setSelected(false);
-        helloController.position_of_english_text_button_center_arabic.setSelected(false);
-        helloController.position_of_english_text_button_bottom_center_arabic.setSelected(false);
-    }
-
-    private void set_up_the_top_margin_for_arabic(HelloController helloController) {
-        helloController.top_margin_text_arabic.setEditable(true);
-
-        // Set up the StringConverter to handle user input
-        helloController.top_margin_text_arabic.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, Double.MAX_VALUE, 0.0, 1));
-        helloController.top_margin_text_arabic.getValueFactory().setConverter(new StringConverter<Double>() {
-            @Override
-            public String toString(Double value) {
-                // Format the double to avoid scientific notation
-                return String.format("%.1f", value);
-            }
-
-            @Override
-            public Double fromString(String text) {
-                try {
-                    // Try to parse the user input to a double
-                    return Double.parseDouble(text);
-                } catch (NumberFormatException e) {
-                    // If the input is not valid, return the current value
-                    return Double.parseDouble(String.valueOf(helloController.top_margin_text_arabic.getValue()));
-                }
-            }
-        });
-    }
-
-    private void watch_top_margin_text_field_change_arabic(HelloController helloController) {
-        helloController.top_margin_text_arabic.getEditor().textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (!newValue.matches("\\d*(\\.\\d{0,1})?")) {  // Regex to allow only digits or digits followed by one decimal
-                    helloController.top_margin_text_arabic.getEditor().setText(oldValue);
-                }
-            }
-        });
-    }
-
-    private void set_the_cursor_at_the_end_of_the_margin_spinner_arabic(HelloController helloController) {
-        helloController.top_margin_text_arabic.valueProperty().addListener((obs, oldValue, newValue) -> {
-            javafx.application.Platform.runLater(() -> {
-                helloController.top_margin_text_arabic.getEditor().end(); // Move the cursor to the end
-            });
-        });
-    }
-
-    private void hide_and_show_the_time_text_field_editor(HelloController helloController, int selected_verse) {
-        if (selected_verse == chatgpt_responses.size() - 1) {
-            helloController.end_time_of_each_image.setVisible(false);
-        } else {
-            helloController.end_time_of_each_image.setVisible(true);
-        }
-    }
-
     private String remove_qoutes_from_arabic_text(String arabic_verse) {
         arabic_verse = arabic_verse.replaceAll("\"", "");
         return arabic_verse;
     }
 
-    private void add_surat_name_checkbox_listen(HelloController helloController) {
-        helloController.add_surat_name_in_video.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                helloController.surat_name_settings.setManaged(newValue);
-                helloController.surat_name_settings.setVisible(newValue);
-                add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
-                helloController.chatgpt_image_view.setImage(buffer_image_to_image(chatgpt_responses.get(selected_verse).getEditied_base_64_image()));
-            }
-        });
-    }
 
-    private void set_up_combobox_arabic_surat(HelloController helloController) {
-        ObservableList<String> items = FXCollections.observableArrayList();
-        items.addAll(Font.getFamilies());
-        helloController.spinner_to_choose_font_arabic_surat.setItems(items);
-        helloController.spinner_to_choose_font_arabic_surat.setVisibleRowCount(20);
-        helloController.spinner_to_choose_font_arabic_surat.setCellFactory(lv -> new ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item == null || empty) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    setFont(new Font(item, 14)); // Set the font to the name of the item
-                }
-            }
-        });
-        helloController.spinner_to_choose_font_arabic_surat.setButtonCell(new ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item == null || empty) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    setFont(new Font(item, 14)); // This ensures the selection also shows the font
-                }
-            }
-        });
-    }
 
-    private void set_first_item_of_the_combobox_surat_font(HelloController helloController) {
-        helloController.spinner_to_choose_font_arabic_surat.setValue("Arial");
-    }
-
-    private void set_up_surant_name_font_size_spinner(HelloController helloController) {
-        helloController.font_size_text_field_arabic_surat.setEditable(true);
-        helloController.font_size_text_field_arabic_surat.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 100.0, 10.0, 0.1));
-        helloController.font_size_text_field_arabic_surat.getValueFactory().setConverter(new StringConverter<Double>() {
-            @Override
-            public String toString(Double value) {
-                // Format the double to avoid scientific notation
-                return String.format("%.1f", value);
-            }
-
-            @Override
-            public Double fromString(String text) {
-                try {
-                    // Try to parse the user input to a double
-                    return Double.parseDouble(text);
-                } catch (NumberFormatException e) {
-                    // If the input is not valid, return the current value
-                    return Double.parseDouble(String.valueOf(helloController.font_size_text_field_arabic_surat.getValue()));
-                }
-            }
-        });
-    }
-
-    private void watch_the_font_size_change_arabic_surat(HelloController helloController) {
-        helloController.font_size_text_field_arabic_surat.getEditor().textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (!newValue.matches("\\d*(\\.\\d{0,1})?")) {  // Regex to allow only digits or digits followed by one decimal
-                    helloController.font_size_text_field_arabic_surat.getEditor().setText(oldValue);
-                }
-            }
-        });
-    }
-
-    private void set_the_cursor_at_the_end_of_the_dont_size_arabic_surat(HelloController helloController) {
-        helloController.font_size_text_field_arabic_surat.valueProperty().addListener((obs, oldValue, newValue) -> {
-            javafx.application.Platform.runLater(() -> {
-                helloController.font_size_text_field_arabic_surat.getEditor().end(); // Move the cursor to the end
-            });
-        });
-    }
-
-    private void set_the_formatter_for_the_english_text_color_arabic_surat(HelloController helloController) {
-        String pattern = "^#[A-Za-z0-9]{0,6}$";
-        UnaryOperator<TextFormatter.Change> filter = change -> {
-            String newText = change.getControlNewText();
-            if (newText.matches(pattern)) {
-                return change;
-            } else {
-                return null;
-            }
-        };
-        TextFormatter<String> formatter = new TextFormatter<>(filter);
-        helloController.text_color_in_ayat_arabic_surat.setTextFormatter(formatter);
-    }
-
-    private void listen_to_all_of_the_buttons_for_english_text_position_arabic_text_surat(HelloController helloController) {
-        helloController.position_of_english_text_button_top_center_arabic_surat.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                set_all_of_the_english_text_position_buttons_not_selected_arabic_surat(helloController);
-                helloController.position_of_english_text_button_top_center_arabic_surat.setSelected(true);
-            }
-        });
-        helloController.position_of_english_text_button_center_arabic_surat.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                set_all_of_the_english_text_position_buttons_not_selected_arabic_surat(helloController);
-                helloController.position_of_english_text_button_center_arabic_surat.setSelected(true);
-            }
-        });
-        helloController.position_of_english_text_button_bottom_center_arabic_surat.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                set_all_of_the_english_text_position_buttons_not_selected_arabic_surat(helloController);
-                helloController.position_of_english_text_button_bottom_center_arabic_surat.setSelected(true);
-            }
-        });
-    }
-
-    private void set_all_of_the_english_text_position_buttons_not_selected_arabic_surat(HelloController helloController) {
-        helloController.position_of_english_text_button_top_center_arabic_surat.setSelected(false);
-        helloController.position_of_english_text_button_center_arabic_surat.setSelected(false);
-        helloController.position_of_english_text_button_bottom_center_arabic_surat.setSelected(false);
-    }
-
-    private void set_up_the_top_margin_for_arabic_surat(HelloController helloController) {
-        helloController.top_margin_text_arabic_surat.setEditable(true);
-
-        // Set up the StringConverter to handle user input
-        helloController.top_margin_text_arabic_surat.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, Double.MAX_VALUE, 0.0, 1));
-        helloController.top_margin_text_arabic_surat.getValueFactory().setConverter(new StringConverter<Double>() {
-            @Override
-            public String toString(Double value) {
-                // Format the double to avoid scientific notation
-                return String.format("%.1f", value);
-            }
-
-            @Override
-            public Double fromString(String text) {
-                try {
-                    // Try to parse the user input to a double
-                    return Double.parseDouble(text);
-                } catch (NumberFormatException e) {
-                    // If the input is not valid, return the current value
-                    return Double.parseDouble(String.valueOf(helloController.top_margin_text_arabic_surat.getValue()));
-                }
-            }
-        });
-    }
-
-    private void watch_top_margin_text_field_change_arabic_surat(HelloController helloController) {
-        helloController.top_margin_text_arabic_surat.getEditor().textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (!newValue.matches("\\d*(\\.\\d{0,1})?")) {  // Regex to allow only digits or digits followed by one decimal
-                    helloController.top_margin_text_arabic_surat.getEditor().setText(oldValue);
-                }
-            }
-        });
-    }
-
-    private void set_the_cursor_at_the_end_of_the_margin_spinner_arabic_surat(HelloController helloController) {
-        helloController.top_margin_text_arabic_surat.valueProperty().addListener((obs, oldValue, newValue) -> {
-            javafx.application.Platform.runLater(() -> {
-                helloController.top_margin_text_arabic_surat.getEditor().end(); // Move the cursor to the end
-            });
-        });
-    }
 
     private void listen_to_cancel_button_third_screen(HelloController helloController) {
         helloController.cancel_video.setOnAction(new EventHandler<ActionEvent>() {
@@ -2533,11 +1565,11 @@ public class HelloApplication extends Application {
     }
 
     private void scroll_to_specific_verse_time() {
-        if (selected_verse == 0) {
+        /*if (selected_verse == 0) {
             mediaPlayer.seek(Duration.millis(0));
         } else {
             mediaPlayer.seek(Duration.millis(chatgpt_responses.get(selected_verse - 1).getTime_in_milliseconds()));
-        }
+        }*/
     }
 
     private String formatTime(double timeInMillis) {
@@ -3413,10 +2445,6 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void set_the_size_of_the_tile_pane(HelloController helloController) {
-
-    }
-
     private int[] return_width_and_height_based_on_ratio(Pic_aspect_ratio pic_aspect_ratio) {
         int[] height_and_width = new int[2];
         if (pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_vertical_9_16)) {
@@ -3635,6 +2663,4 @@ public class HelloApplication extends Application {
         helloController.scroll_pane_hosting_tile_pane_media_pool.setCache(true);
         helloController.scroll_pane_hosting_tile_pane_media_pool.setCacheHint(CacheHint.SPEED);
     }
-
-
 }

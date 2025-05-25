@@ -7,12 +7,14 @@ public class Verse_class_final {
     private Integer verse_number;
     private Ayat_settings ayatSettings;
     private long duration;
+    private long start_millisecond;
 
-    public Verse_class_final(String verse, Integer verse_number, String arabic_verse,long duration) {
+    public Verse_class_final(String verse, Integer verse_number, String arabic_verse,long start_millisecond,long duration) {
         this.verse = verse;
         this.verse_number = verse_number;
         this.ayatSettings = new Ayat_settings();
         this.arabic_verse = arabic_verse;
+        this.start_millisecond = start_millisecond;
         this.duration = duration;
     }
 
