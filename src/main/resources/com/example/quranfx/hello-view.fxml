@@ -235,7 +235,7 @@
         <!-- Top -->
         <top>
             <StackPane fx:id="top_pane_fourth_screen" alignment="CENTER_LEFT">
-                <JFXButton fx:id="cancel_video">
+                <JFXButton fx:id="cancel_video" focusTraversable="false">
                     <StackPane.margin>
                         <Insets top="10" left="10"/>
                     </StackPane.margin>
@@ -293,7 +293,7 @@
                                 <VBox alignment="CENTER">
                                     <JFXButton fx:id="previous_photo_chat_gpt_result" maxHeight="50" maxWidth="50"
                                                prefHeight="50"
-                                               prefWidth="50" minHeight="50" minWidth="50">
+                                               prefWidth="50" minHeight="50" minWidth="50" focusTraversable="false">
                                     </JFXButton>
                                 </VBox>
                                 <StackPane fx:id="stack_pane_of_image_view_and_text">
@@ -309,13 +309,13 @@
                                     <Pane VBox.vgrow="ALWAYS"/>
                                     <JFXButton fx:id="next_photo_chat_gpt_result" prefWidth="50" prefHeight="50"
                                                maxHeight="50"
-                                               maxWidth="50" minHeight="50" minWidth="50">
+                                               maxWidth="50" minHeight="50" minWidth="50" focusTraversable="false">
                                         <VBox.margin>
                                             <Insets top="26.0"/>
                                         </VBox.margin>
                                     </JFXButton>
                                     <Pane VBox.vgrow="ALWAYS"/>
-                                    <JFXButton fx:id="full_screen_button_fourth_screen"/>
+                                    <JFXButton fx:id="full_screen_button_fourth_screen" focusTraversable="false"/>
                                 </VBox>
                             </HBox>
                             <Label fx:id="what_verse_is_this" text="Surat Maryam verse 59" visible="true">
@@ -519,15 +519,6 @@
                                     </HBox.margin>
                                 </Button>
                             </HBox>
-
-                            <HBox alignment="CENTER">
-                                <Button fx:id="upload_image_button_for_each_ayat" text="Upload Image"/>
-                                <Button fx:id="set_image_to_all" text="Set image to all">
-                                    <HBox.margin>
-                                        <Insets left="10.0"/>
-                                    </HBox.margin>
-                                </Button>
-                            </HBox>
                         </VBox>
                     </StackPane>
                 </HBox>
@@ -538,20 +529,15 @@
         <bottom>
             <StackPane fx:id="bottom_stack_pane_fourth_screen">
                 <VBox fx:id="bottom_vbox_fourth_screen">
-                    <ScrollPane fitToHeight="true" >
+                    <ScrollPane fitToHeight="true" focusTraversable="false"
+                                style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
                         <VBox.margin>
                             <Insets left="20.0" right="20.0" top="10.0"/>
                         </VBox.margin>
-                        <Pane fx:id="time_line_pane" prefHeight="120">
+                        <Pane fx:id="time_line_pane" prefHeight="180">
 
                         </Pane>
                     </ScrollPane>
-                    <ListView fx:id="list_view_with_the_verses_preview" maxHeight="120" orientation="HORIZONTAL"
-                              visible="false" managed="false">
-                        <VBox.margin>
-                            <Insets left="20.0" right="20.0" top="10.0"/>
-                        </VBox.margin>
-                    </ListView>
 
                     <HBox alignment="CENTER_LEFT">
                         <JFXButton fx:id="play_sound"/>

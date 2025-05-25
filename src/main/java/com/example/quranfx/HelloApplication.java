@@ -20,6 +20,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.CacheHint;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
@@ -143,8 +144,6 @@ public class HelloApplication extends Application {
         set_the_height_of_text_prompt_text_area(helloController);
         next_photo_click_listen(helloController);
         previous_photo_click_listen(helloController);
-        listen_to_list_view_item_select(helloController);
-        listen_to_list_view_keyboard_select(helloController);
         listen_to_play(helloController);
         //set_the_width_of_play_pause_button(helloController);
         listen_to_slide_clicked(helloController);
@@ -152,7 +151,6 @@ public class HelloApplication extends Application {
         set_the_text_field_formatter_of_milliseconds_end(helloController);
         listen_to_copy_duration(helloController);
         listen_to_millisecond_for_each_ayat_focus_change(helloController);
-        listen_to_time_update_of_each_ayat_and_update_it_in_list(helloController);
         listen_to_enter_pressed_time_for_each_ayat(helloController);
         listen_to_genereate_chat_gpt_checkbox(helloController);
         uplaod_image_button_for_each_ayat_listen(helloController);
@@ -199,7 +197,6 @@ public class HelloApplication extends Application {
         listen_to_cancel_button_third_screen(helloController);
         get_all_of_the_recitors(helloController);
         listen_to_the_recitor_list_view_click(helloController);
-        listen_to_set_image_to_all(helloController);
         make_temp_dir();
         clear_temp_directory();
         listen_to_slider_value_updated(helloController);
@@ -212,6 +209,7 @@ public class HelloApplication extends Application {
         listen_to_whole_screen_resize(scene, helloController);
         //listen_to_tile_pane_resized(helloController);
         listen_to_tile_pane_size_change(helloController);
+        set_cache_hints_of_scroll_pane_time_line(helloController);
     }
 
     public static void main(String[] args) {
@@ -454,7 +452,7 @@ public class HelloApplication extends Application {
                 if (!helloController.generate_chat_gpt_images.isSelected() && array_list_with_verses.size() == initial_number_of_ayats) {
                     for (int j = 0; j < array_list_with_verses.size(); j++) {
                         if (durations == null || durations.length == 0) {
-                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), Long.MAX_VALUE, new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), return_the_aspect_ratio_as_an_object(helloController)));
+                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), ));
                         } else {
                             if (j == 0) {
                                 chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), return_the_aspect_ratio_as_an_object(helloController)));
@@ -623,9 +621,6 @@ public class HelloApplication extends Application {
         set_the_play_pause_button(helloController, "play");
 
         helloController.sound_slider_fourth_screen.setValue(0);
-        helloController.list_view_with_the_verses_preview.getSelectionModel().select(0);
-        helloController.list_view_with_the_verses_preview.getFocusModel().focus(0);
-        helloController.list_view_with_the_verses_preview.scrollTo(0);
         if (mediaPlayer != null) {
             mediaPlayer.stop();
         }
@@ -637,7 +632,6 @@ public class HelloApplication extends Application {
         }
         helloController.duration_of_media.setText("00:00");
         helloController.total_duration_of_media.setText("00:00");
-        helloController.upload_image_button_for_each_ayat.setText("Upload Image");
         selected_verse = 0;
         sound_path = "";
         array_list_with_times.clear();
@@ -767,9 +761,6 @@ public class HelloApplication extends Application {
         set_the_image_fourth_screen(helloController, 0);
         set_the_visibility_of_the_buttons(helloController, 0);
         set_selected_verse_text(helloController, 0);
-        set_up_the_chatgpt_verses_list_view(helloController);
-        helloController.list_view_with_the_verses_preview.getSelectionModel().select(0);
-        helloController.list_view_with_the_verses_preview.requestFocus();
         //set_the_english_text_of_the_ayat_in_the_image_view(helloController, 0);
         set_up_the_media(helloController);
         set_the_max_of_the_slider_and_set_time_of_last_ayat(helloController);
@@ -778,7 +769,6 @@ public class HelloApplication extends Application {
         listen_to_end_of_audio_fourth_screen(helloController);
         listen_to_slider_audio(helloController);
         set_up_the_width_and_height_of_the_image_in_fourth_screen(helloController);
-        check_if_scroll_bar_is_visible(helloController);
     }
 
     private void set_the_visibility_of_the_buttons(HelloController helloController, int position) {
@@ -829,98 +819,11 @@ public class HelloApplication extends Application {
         helloController.what_verse_is_this.setText(set_me);
     }
 
-    private void set_up_the_chatgpt_verses_list_view(HelloController helloController) {
-        ObservableList<Verse_class_final> items = FXCollections.observableArrayList();
-        items.addAll(chatgpt_responses);
-        helloController.list_view_with_the_verses_preview.setItems(items);
-        helloController.list_view_with_the_verses_preview.setCellFactory(param -> new ListCell<Verse_class_final>() {
-            private ImageView imageView = new ImageView();
-            private VBox vBox = new VBox(5); // 5 is the spacing between elements
-            private Text text = new Text();
-
-            @Override
-            public void updateItem(Verse_class_final item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    Pic_aspect_ratio pic_aspect_ratio = return_the_aspect_ratio_as_an_object(helloController);
-                    if (pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_vertical_9_16)) {
-                        imageView.setFitHeight(80);
-                        imageView.setFitWidth(45);
-                        imageView.setImage(item.getThumbnail_vertical());
-                    } else if (pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_horizontal_16_9)) {
-                        imageView.setFitWidth(80);
-                        imageView.setFitHeight(45);
-                        imageView.setImage(item.getThumbnail_horizontal());
-                    } else if (pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_square_1_1)) {
-                        imageView.setFitWidth(45);
-                        imageView.setFitHeight(45);
-                        imageView.setImage(item.getThumbnail_square());
-                    }
-                    imageView.setPreserveRatio(true);
-                    imageView.setSmooth(true);
-                    text.setText(String.valueOf(item.getVerse_number()));
-                    vBox.getChildren().setAll(imageView, text); // Stack the image and text vertically
-                    vBox.setAlignment(Pos.CENTER);
-                    setGraphic(vBox);
-                }
-            }
-        });
-    }
-
-    private void select_the_correct_verse_in_the_list_view(HelloController helloController, int position) {
-        helloController.list_view_with_the_verses_preview.getSelectionModel().select(position);
-        //helloController.list_view_with_the_verses_preview.scrollTo(position);
-        helloController.list_view_with_the_verses_preview.requestFocus();
-    }
-
-    private void listen_to_list_view_item_select(HelloController helloController) {
-        helloController.list_view_with_the_verses_preview.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                selected_verse = helloController.list_view_with_the_verses_preview.getSelectionModel().getSelectedIndex();
-                the_verse_changed(helloController, selected_verse);
-                scroll_to_specific_verse_time();
-            }
-        });
-    }
-
-    private void listen_to_list_view_keyboard_select(HelloController helloController) {
-        helloController.list_view_with_the_verses_preview.setOnKeyPressed(event -> {
-            switch (event.getCode()) {
-                case UP:
-                    break;
-                case DOWN:
-                    break;
-                case LEFT:
-                    if (selected_verse > 0) {
-                        selected_verse--;
-                        the_verse_changed(helloController, selected_verse);
-                        scroll_to_specific_verse_time();
-                    }
-                    break;
-                case RIGHT:
-                    if (selected_verse < chatgpt_responses.size() - 1) {
-                        selected_verse++;
-                        the_verse_changed(helloController, selected_verse);
-                        scroll_to_specific_verse_time();
-                    }
-                    break;
-                default:
-                    // Handle other keys or ignore
-                    break;
-            }
-        });
-    }
-
     private void the_verse_changed(HelloController helloController, int selected_verse) {
         set_the_visibility_of_the_buttons(helloController, selected_verse);
         //add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
         set_the_image_fourth_screen(helloController, selected_verse);
         set_selected_verse_text(helloController, selected_verse);
-        select_the_correct_verse_in_the_list_view(helloController, selected_verse);
         update_the_text_field_based_on_previous_values(helloController, selected_verse);
         update_the_name_of_the_image_button_fourth_screen(helloController, selected_verse);
         set_the_english_text_of_the_ayat_in_the_image_view(helloController, selected_verse);
@@ -996,7 +899,6 @@ public class HelloApplication extends Application {
             public void run() {
                 selected_verse = chatgpt_responses.size() - 1;
                 set_the_play_pause_button(helloController, "play");
-                select_the_correct_verse_in_the_list_view(helloController, selected_verse);
                 set_the_duration_to_reflect_end_of_media(helloController);
                 helloController.sound_slider_fourth_screen.setValue(helloController.sound_slider_fourth_screen.getMax());
                 stop_and_start_the_media_again();
@@ -1068,17 +970,6 @@ public class HelloApplication extends Application {
                         helloController.end_time_of_each_image.selectAll();
                     });
                 }
-            }
-        });
-    }
-
-    private void listen_to_time_update_of_each_ayat_and_update_it_in_list(HelloController helloController) {
-        helloController.end_time_of_each_image.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                int selected_index = helloController.list_view_with_the_verses_preview.getSelectionModel().getSelectedIndex();
-                long time_in_milli = Long.parseLong(newValue);
-                chatgpt_responses.get(selected_index).setTime_in_milliseconds(time_in_milli);
             }
         });
     }
@@ -1793,7 +1684,6 @@ public class HelloApplication extends Application {
                         add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), i);
                     }
                 }
-                helloController.list_view_with_the_verses_preview.refresh();
             }
         });
     }
@@ -1901,7 +1791,6 @@ public class HelloApplication extends Application {
                         add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), i);
                     }
                 }
-                helloController.list_view_with_the_verses_preview.refresh();
             }
         });
     }
@@ -2591,27 +2480,6 @@ public class HelloApplication extends Application {
         helloController.total_duration_of_media.setText(formatTime((long) time));
     }
 
-    private void listen_to_set_image_to_all(HelloController helloController) {
-        helloController.set_image_to_all.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                BufferedImage current_image = chatgpt_responses.get(selected_verse).getBase_64_image();
-                for (int i = 0; i < chatgpt_responses.size(); i++) {
-                    chatgpt_responses.get(i).setImage_edited(true);
-                    if (i != selected_verse) {
-                        chatgpt_responses.get(i).setBase_64_image(current_image);
-                    }
-                }
-                for (int i = 0; i < chatgpt_responses.size(); i++) {
-                    if (i != selected_verse) {
-                        add_the_text_to_the_photo(helloController, chatgpt_responses.get(i).getAyatSettings(), i);
-                    }
-                }
-                helloController.list_view_with_the_verses_preview.refresh();
-            }
-        });
-    }
-
     private void make_temp_dir() {
         File directory = new File("temp/");
         File images = new File("temp/images");
@@ -2662,23 +2530,6 @@ public class HelloApplication extends Application {
 
     private BufferedImage image_to_buffered_image(Image image) {
         return SwingFXUtils.fromFXImage(image, null);
-    }
-
-    private void check_if_scroll_bar_is_visible(HelloController helloController) {
-        ChangeListener<Bounds> listener = new ChangeListener<Bounds>() {
-            @Override
-            public void changed(ObservableValue<? extends Bounds> observableValue, Bounds oldBounds, Bounds newBounds) {
-                if (newBounds.getWidth() > 0 && newBounds.getHeight() > 0) {
-                    ScrollBar hBar = (ScrollBar) helloController.list_view_with_the_verses_preview.lookup(".scroll-bar:horizontal");
-                    ScrollBar vBar = (ScrollBar) helloController.list_view_with_the_verses_preview.lookup(".scroll-bar:vertical");
-                    if (hBar != null && hBar.isVisible() && hBar.getMax() > 0 && vBar != null && vBar.isVisible() && vBar.getMax() > 0) {
-                        helloController.list_view_with_the_verses_preview.setMaxHeight(helloController.list_view_with_the_verses_preview.getHeight() + hBar.getHeight());
-                    }
-                    helloController.list_view_with_the_verses_preview.layoutBoundsProperty().removeListener(this);
-                }
-            }
-        };
-        helloController.list_view_with_the_verses_preview.layoutBoundsProperty().addListener(listener);
     }
 
     private void scroll_to_specific_verse_time() {
@@ -3700,41 +3551,45 @@ public class HelloApplication extends Application {
         Pane main_pane = helloController.time_line_pane;
         main_pane.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.rgb(40,40,46),CornerRadii.EMPTY, Insets.EMPTY)));
         final double pixels_in_between_each_line = 10;
-        final double time_between_every_line = 50;
+        final long time_between_every_line = 50;
         final double long_line_length = 20;
         final double half_long_line_length = 13;
         final double line_length = 7.5;
         final double line_thickness = 1.3;
+        final javafx.scene.paint.Color long_line_color = javafx.scene.paint.Color.rgb(100,101,103);
+        final javafx.scene.paint.Color mid_line_color = javafx.scene.paint.Color.rgb(89,95,103);
+        final javafx.scene.paint.Color short_line_color = javafx.scene.paint.Color.rgb(66,71,78);
         int number_of_dividors = (int) Math.ceil(get_duration() / time_between_every_line);
         double base_time_line = pixels_in_between_each_line * 11;
-        draw_the_rectangle_time_line_pane(0,base_time_line,120,main_pane);
+        draw_the_rectangle_time_line_pane(0,base_time_line,main_pane.getPrefHeight(),main_pane);
         for (int i = 0; i < 11; i++) {
             if ((i == 1)) {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(i * pixels_in_between_each_line,half_long_line_length,javafx.scene.paint.Color.rgb(50,52,56),line_thickness));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(i * pixels_in_between_each_line,half_long_line_length,mid_line_color,line_thickness));
             } else {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(i * pixels_in_between_each_line,line_length,javafx.scene.paint.Color.rgb(41,43,46),line_thickness));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(i * pixels_in_between_each_line,line_length,short_line_color,line_thickness));
             }
         }
         for (int i = 0; i < number_of_dividors; i++) {
             double x_pos = (i * pixels_in_between_each_line) + base_time_line;
             if ((time_between_every_line * i) % 1000 == 0) {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,long_line_length, javafx.scene.paint.Color.rgb(100,101,103),line_thickness));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,long_line_length, long_line_color,line_thickness));
+                main_pane.getChildren().add(add_the_text_to_time_line(time_between_every_line * i,x_pos,line_length, javafx.scene.paint.Color.rgb(146,146,146)));
             } else if ((time_between_every_line * i) % 500 == 0) {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,half_long_line_length, javafx.scene.paint.Color.rgb(89,95,103),line_thickness));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,half_long_line_length, mid_line_color,line_thickness));
             } else {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,line_length, javafx.scene.paint.Color.rgb(66,71,78),line_thickness));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,line_length, short_line_color,line_thickness));
             }
         }
-        draw_the_rectangle_time_line_pane(base_time_line + (number_of_dividors-1)*pixels_in_between_each_line,base_time_line,120,main_pane);
+        draw_the_rectangle_time_line_pane(base_time_line + (number_of_dividors-1)*pixels_in_between_each_line,base_time_line,main_pane.getPrefHeight(),main_pane);
         double base_line_for_the_end_rectangle = base_time_line + (number_of_dividors)*pixels_in_between_each_line;
         for (int i = 0; i < 11; i++) {
             double x_pos = i * pixels_in_between_each_line + base_line_for_the_end_rectangle;
             if ((time_between_every_line * (i + number_of_dividors)) % 1000 == 0) {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,long_line_length, javafx.scene.paint.Color.rgb(100,101,103),line_thickness));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,long_line_length, long_line_color,line_thickness));
             } else if ((time_between_every_line * (i + number_of_dividors)) % 500 == 0) {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,half_long_line_length, javafx.scene.paint.Color.rgb(89,95,103),line_thickness));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,half_long_line_length, mid_line_color,line_thickness));
             } else {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,line_length, javafx.scene.paint.Color.rgb(66,71,78),line_thickness));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,line_length, short_line_color,line_thickness));
             }
         }
     }
@@ -3742,7 +3597,7 @@ public class HelloApplication extends Application {
     private void draw_the_rectangle_time_line_pane(double start_x,double width, double height, Pane pane) {
         Rectangle rectangle = new Rectangle(start_x, 0, width, height);
         rectangle.setStrokeWidth(0);
-        rectangle.setFill(javafx.scene.paint.Color.rgb(30,30,34));
+        rectangle.setFill(javafx.scene.paint.Color.rgb(0,0,0,0.25));
         pane.getChildren().add(rectangle);
     }
 
@@ -3750,19 +3605,36 @@ public class HelloApplication extends Application {
         Line line_to_separate = new Line(x_pos, 0, x_pos, line_length);
         line_to_separate.setStroke(color);
         line_to_separate.setStrokeWidth(width);
+        //line_to_separate.setSmooth(false);
         return line_to_separate;
     }
 
-    private void add_the_text_to_time_line(long millisecond,double x,double y,Pane pane){
-        Text time_label = new Text(x,y,convertMillisecondsToTime(millisecond));
-        pane.getChildren().add(time_label);
+    private Text add_the_text_to_time_line(long millisecond, double line_end, double line_length, javafx.scene.paint.Color color){
+        Text time_label = new Text(convertMillisecondsToTime(millisecond));
+        //time_label.setSmooth(false);
+        time_label.setFont(new Font(11));
+        Bounds bounds = time_label.getLayoutBounds();
+        time_label.setX(line_end+5);
+        time_label.setY(line_length - bounds.getMinY() + 2.5);
+        time_label.setFill(color);
+        return time_label;
     }
 
     private String convertMillisecondsToTime(long milliseconds) {
         long seconds = (milliseconds / 1000) % 60;
         long minutes = (milliseconds / (1000 * 60)) % 60;
         long hours = (milliseconds / (1000 * 60 * 60)) % 24;
-
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        if(hours>0){
+            return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        } else {
+            return String.format("%02d:%02d", minutes, seconds);
+        }
     }
+
+    private void set_cache_hints_of_scroll_pane_time_line(HelloController helloController){
+        helloController.scroll_pane_hosting_tile_pane_media_pool.setCache(true);
+        helloController.scroll_pane_hosting_tile_pane_media_pool.setCacheHint(CacheHint.SPEED);
+    }
+
+
 }

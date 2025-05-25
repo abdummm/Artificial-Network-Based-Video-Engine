@@ -92,10 +92,6 @@ public class HelloController {
     public Label what_verse_is_this;
 
     @FXML
-    public ListView<Verse_class_final> list_view_with_the_verses_preview;
-
-
-    @FXML
     public Button play_sound;
 
     @FXML
@@ -124,9 +120,6 @@ public class HelloController {
 
     @FXML
     public CheckBox add_surat_name_in_video;
-
-    @FXML
-    public Button upload_image_button_for_each_ayat;
 
     @FXML
     public JFXButton choose_sound_third_screen;
@@ -229,9 +222,6 @@ public class HelloController {
 
     @FXML
     public Label total_duration_of_media;
-
-    @FXML
-    public Button set_image_to_all;
 
     @FXML
     public JFXComboBox<Integer> combobox_to_choose_starting_ayat;
