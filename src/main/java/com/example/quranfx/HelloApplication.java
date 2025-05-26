@@ -407,10 +407,10 @@ public class HelloApplication extends Application {
                 if (array_list_with_verses.size() == initial_number_of_ayats) {
                     for (int j = 0; j < array_list_with_verses.size(); j++) {
                         if (durations == null || durations.length == 0) {
-                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()),j* 1000L,1000 ));
+                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), j * 1000L, 1000));
                         } else {
                             if (j == 0) {
-                                chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()),0,durations[j]));
+                                chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), 0, durations[j]));
                             } else {
                                 chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), end_of_the_picture_durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), return_the_aspect_ratio_as_an_object(helloController)));
                             }
@@ -428,20 +428,18 @@ public class HelloApplication extends Application {
                 String arabic_ayat = String.valueOf(arrayNode.get(i).get("text_uthmani"));
                 ArrayNode translations_array_node = (ArrayNode) arrayNode.get(i).get("translations");
                 add_to_array_list_with_verses(Jsoup.parse(String.valueOf(translations_array_node.get(0).get("text"))).text(), ayat_number, arabic_ayat);
-                if (array_list_with_verses.size() == initial_number_of_ayats) {
-                    for (int j = 0; j < array_list_with_verses.size(); j++) {
-                        if (durations == null || durations.length == 0) {
-                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), Long.MAX_VALUE, new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), return_the_aspect_ratio_as_an_object(helloController)));
+                for (int j = 0; j < array_list_with_verses.size(); j++) {
+                    if (durations == null || durations.length == 0) {
+                        chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), Long.MAX_VALUE, new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), return_the_aspect_ratio_as_an_object(helloController)));
+                    } else {
+                        if (j == 0) {
+                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), return_the_aspect_ratio_as_an_object(helloController)));
                         } else {
-                            if (j == 0) {
-                                chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), return_the_aspect_ratio_as_an_object(helloController)));
-                            } else {
-                                chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), end_of_the_picture_durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), return_the_aspect_ratio_as_an_object(helloController)));
-                            }
+                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), end_of_the_picture_durations[j], new Ayat_settings(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), return_the_aspect_ratio_as_an_object(helloController)));
                         }
                     }
-                    set_up_the_fourth_screen(helloController);
                 }
+                set_up_the_fourth_screen(helloController);
                 break;
             }
         }
@@ -1178,8 +1176,6 @@ public class HelloApplication extends Application {
         arabic_verse = arabic_verse.replaceAll("\"", "");
         return arabic_verse;
     }
-
-
 
 
     private void listen_to_cancel_button_third_screen(HelloController helloController) {
@@ -2577,59 +2573,59 @@ public class HelloApplication extends Application {
 
     private void create_the_time_line(HelloController helloController) {
         Pane main_pane = helloController.time_line_pane;
-        main_pane.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.rgb(40,40,46),CornerRadii.EMPTY, Insets.EMPTY)));
+        main_pane.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.rgb(40, 40, 46), CornerRadii.EMPTY, Insets.EMPTY)));
         final double pixels_in_between_each_line = 10;
         final long time_between_every_line = 50;
         final double long_line_length = 20;
         final double half_long_line_length = 13;
         final double line_length = 7.5;
         final double line_thickness = 1.3;
-        final javafx.scene.paint.Color long_line_color = javafx.scene.paint.Color.rgb(100,101,103);
-        final javafx.scene.paint.Color mid_line_color = javafx.scene.paint.Color.rgb(89,95,103);
-        final javafx.scene.paint.Color short_line_color = javafx.scene.paint.Color.rgb(66,71,78);
+        final javafx.scene.paint.Color long_line_color = javafx.scene.paint.Color.rgb(100, 101, 103);
+        final javafx.scene.paint.Color mid_line_color = javafx.scene.paint.Color.rgb(89, 95, 103);
+        final javafx.scene.paint.Color short_line_color = javafx.scene.paint.Color.rgb(66, 71, 78);
         int number_of_dividors = (int) Math.ceil(get_duration() / time_between_every_line);
         double base_time_line = pixels_in_between_each_line * 11;
-        draw_the_rectangle_time_line_pane(0,base_time_line,main_pane.getPrefHeight(),main_pane);
+        draw_the_rectangle_time_line_pane(0, base_time_line, main_pane.getPrefHeight(), main_pane);
         for (int i = 0; i < 11; i++) {
             if ((i == 1)) {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(i * pixels_in_between_each_line,half_long_line_length,mid_line_color,line_thickness));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(i * pixels_in_between_each_line, half_long_line_length, mid_line_color, line_thickness));
             } else {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(i * pixels_in_between_each_line,line_length,short_line_color,line_thickness));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(i * pixels_in_between_each_line, line_length, short_line_color, line_thickness));
             }
         }
         for (int i = 0; i < number_of_dividors; i++) {
             double x_pos = (i * pixels_in_between_each_line) + base_time_line;
             if ((time_between_every_line * i) % 1000 == 0) {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,long_line_length, long_line_color,line_thickness));
-                main_pane.getChildren().add(add_the_text_to_time_line(time_between_every_line * i,x_pos,line_length, javafx.scene.paint.Color.rgb(146,146,146)));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, long_line_length, long_line_color, line_thickness));
+                main_pane.getChildren().add(add_the_text_to_time_line(time_between_every_line * i, x_pos, line_length, javafx.scene.paint.Color.rgb(146, 146, 146)));
             } else if ((time_between_every_line * i) % 500 == 0) {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,half_long_line_length, mid_line_color,line_thickness));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, half_long_line_length, mid_line_color, line_thickness));
             } else {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,line_length, short_line_color,line_thickness));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, line_length, short_line_color, line_thickness));
             }
         }
-        draw_the_rectangle_time_line_pane(base_time_line + (number_of_dividors-1)*pixels_in_between_each_line,base_time_line,main_pane.getPrefHeight(),main_pane);
-        double base_line_for_the_end_rectangle = base_time_line + (number_of_dividors)*pixels_in_between_each_line;
+        draw_the_rectangle_time_line_pane(base_time_line + (number_of_dividors - 1) * pixels_in_between_each_line, base_time_line, main_pane.getPrefHeight(), main_pane);
+        double base_line_for_the_end_rectangle = base_time_line + (number_of_dividors) * pixels_in_between_each_line;
         for (int i = 0; i < 11; i++) {
             double x_pos = i * pixels_in_between_each_line + base_line_for_the_end_rectangle;
             if ((time_between_every_line * (i + number_of_dividors)) % 1000 == 0) {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,long_line_length, long_line_color,line_thickness));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, long_line_length, long_line_color, line_thickness));
             } else if ((time_between_every_line * (i + number_of_dividors)) % 500 == 0) {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,half_long_line_length, mid_line_color,line_thickness));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, half_long_line_length, mid_line_color, line_thickness));
             } else {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos,line_length, short_line_color,line_thickness));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, line_length, short_line_color, line_thickness));
             }
         }
     }
 
-    private void draw_the_rectangle_time_line_pane(double start_x,double width, double height, Pane pane) {
+    private void draw_the_rectangle_time_line_pane(double start_x, double width, double height, Pane pane) {
         Rectangle rectangle = new Rectangle(start_x, 0, width, height);
         rectangle.setStrokeWidth(0);
-        rectangle.setFill(javafx.scene.paint.Color.rgb(0,0,0,0.25));
+        rectangle.setFill(javafx.scene.paint.Color.rgb(0, 0, 0, 0.25));
         pane.getChildren().add(rectangle);
     }
 
-    private Line draw_the_line_on_the_time_line(double x_pos, double line_length, javafx.scene.paint.Color color,double width){
+    private Line draw_the_line_on_the_time_line(double x_pos, double line_length, javafx.scene.paint.Color color, double width) {
         Line line_to_separate = new Line(x_pos, 0, x_pos, line_length);
         line_to_separate.setStroke(color);
         line_to_separate.setStrokeWidth(width);
@@ -2637,12 +2633,12 @@ public class HelloApplication extends Application {
         return line_to_separate;
     }
 
-    private Text add_the_text_to_time_line(long millisecond, double line_end, double line_length, javafx.scene.paint.Color color){
+    private Text add_the_text_to_time_line(long millisecond, double line_end, double line_length, javafx.scene.paint.Color color) {
         Text time_label = new Text(convertMillisecondsToTime(millisecond));
         //time_label.setSmooth(false);
         time_label.setFont(new Font(11));
         Bounds bounds = time_label.getLayoutBounds();
-        time_label.setX(line_end+5);
+        time_label.setX(line_end + 5);
         time_label.setY(line_length - bounds.getMinY() + 2.5);
         time_label.setFill(color);
         return time_label;
@@ -2652,14 +2648,14 @@ public class HelloApplication extends Application {
         long seconds = (milliseconds / 1000) % 60;
         long minutes = (milliseconds / (1000 * 60)) % 60;
         long hours = (milliseconds / (1000 * 60 * 60)) % 24;
-        if(hours>0){
+        if (hours > 0) {
             return String.format("%02d:%02d:%02d", hours, minutes, seconds);
         } else {
             return String.format("%02d:%02d", minutes, seconds);
         }
     }
 
-    private void set_cache_hints_of_scroll_pane_time_line(HelloController helloController){
+    private void set_cache_hints_of_scroll_pane_time_line(HelloController helloController) {
         helloController.scroll_pane_hosting_tile_pane_media_pool.setCache(true);
         helloController.scroll_pane_hosting_tile_pane_media_pool.setCacheHint(CacheHint.SPEED);
     }
