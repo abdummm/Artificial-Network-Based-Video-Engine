@@ -64,6 +64,7 @@ import okhttp3.*;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
@@ -95,8 +96,8 @@ public class HelloApplication extends Application {
     private String sound_path = "";
     private Stage main_stage;
 
-    private Long[] durations;
-    private Long[] end_of_the_picture_durations;
+    private Double[] durations;
+    private Double[] end_of_the_picture_durations;
     private int number_of_audio_channels = 2;
     private boolean did_this_play_already = false;
     private int audio_frequncy_of_the_sound = 44100;
@@ -911,7 +912,8 @@ public class HelloApplication extends Application {
                 if (file != null) {
                     String check_if_mp3 = file.getAbsolutePath().toLowerCase();
                     if (check_if_mp3.endsWith(".mp3")) {
-                        sound_path = convert_mp3_to_wav(file.getAbsolutePath());
+                        audio_frequncy_of_the_sound = get_frequency_of_audio(file.getAbsolutePath());
+                        sound_path = convert_mp3_to_wav(file,"converted.wav").getAbsolutePath();
                     } else {
                         sound_path = file.getAbsolutePath();
                     }
@@ -1305,8 +1307,8 @@ public class HelloApplication extends Application {
             int number_of_ayats = end_ayat - start_ayat + 1;
             int number_of_threads = Math.max(Runtime.getRuntime().availableProcessors() * 4, number_of_ayats);
             BlockingQueue<String> verseQueue = new ArrayBlockingQueue<>(number_of_ayats);
-            durations = new Long[number_of_ayats];
-            end_of_the_picture_durations = new Long[number_of_ayats];
+            durations = new Double[number_of_ayats];
+            end_of_the_picture_durations = new Double[number_of_ayats];
             HashMap<String, Integer> tie_verses_to_indexes = new HashMap<>();
             String base_url = "";
             if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits().isEmpty()) {
@@ -1337,10 +1339,6 @@ public class HelloApplication extends Application {
                             Request request = new Request.Builder().url(verse_url).build();
                             try (Response response = client.newCall(request).execute()) {
                                 if (!response.isSuccessful()) {
-                                    /*if (!did_i_ever_fail_a_recitation) {
-                                        show_alert("Failed to parse a recitation.");
-                                        did_i_ever_fail_a_recitation = true;
-                                    }*/
                                     continue;
                                 }
                                 ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -1353,11 +1351,13 @@ public class HelloApplication extends Application {
                                 }
                                 byte[] mp3Bytes = buffer.toByteArray();
                                 File tempFile = new File("temp/sound", String.format("%03d.mp3", verse_number));
-                                tempFile.deleteOnExit();
                                 try (FileOutputStream fos = new FileOutputStream(tempFile)) {
                                     fos.write(mp3Bytes);
                                 }
-                                durations[verse_number - start_ayat] = getDurationWithFFmpeg(tempFile);
+                                File new_wav_file = convert_mp3_to_wav(tempFile,String.format("%03d.wav", verse_number));
+                                new_wav_file.deleteOnExit();
+                                tempFile.delete();
+                                durations[verse_number - start_ayat] = getDurationWithFFmpeg(new_wav_file);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -1374,21 +1374,21 @@ public class HelloApplication extends Application {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            File tempFile = new File("temp/sound", String.format("%03d.mp3", start_ayat));
+            File tempFile = new File("temp/sound", String.format("%03d.wav", start_ayat));
             audio_frequncy_of_the_sound = get_frequency_of_audio(tempFile.getAbsolutePath());
             int get_the_number_of_audio_channels_local = set_the_number_of_audio_channels(getNumberOfChannels(tempFile.getAbsolutePath()));
 
-            if (number_of_ayats > 0) {
-                end_of_the_picture_durations[0] = durations[0];
+            if (number_of_ayats > 1) {
+                end_of_the_picture_durations[0] = 0D;
                 for (int i = 1; i < number_of_ayats; i++) {
-                    end_of_the_picture_durations[i] = durations[i] + end_of_the_picture_durations[i - 1];
+                    end_of_the_picture_durations[i] = durations[i-1] + end_of_the_picture_durations[i - 1];
                 }
             }
             File listFile = new File("temp/sound", "list.txt");
             listFile.deleteOnExit();
             try (PrintWriter writer = new PrintWriter(listFile)) {
                 for (int i = start_ayat; i <= end_ayat; i++) {
-                    String filename = String.format("%03d.mp3", i);
+                    String filename = String.format("%03d.wav", i);
                     writer.println("file '" + filename + "'");
                 }
             } catch (FileNotFoundException e) {
@@ -1472,13 +1472,13 @@ public class HelloApplication extends Application {
         }
     }
 
-    private long getDurationWithFFmpeg(File mp3File) {
+    private double getDurationWithFFmpeg(File wavFile) {
         try {
             ProcessBuilder pb = new ProcessBuilder(
                     "ffprobe", "-v", "error",
-                    "-show_entries", "format=duration",
+                    "-show_entries", "stream=duration",
                     "-of", "default=noprint_wrappers=1:nokey=1",
-                    mp3File.getAbsolutePath()
+                    wavFile.getAbsolutePath()
             );
             pb.redirectErrorStream(true);
             Process process = pb.start();
@@ -1487,7 +1487,7 @@ public class HelloApplication extends Application {
                 process.waitFor();
                 if (line != null) {
                     double seconds = Double.parseDouble(line.trim());
-                    return (long) (seconds * 1000); // convert to milliseconds
+                    return (seconds * 1000); // convert to milliseconds
                 }
             }
         } catch (Exception e) {
@@ -1792,13 +1792,13 @@ public class HelloApplication extends Application {
         });
     }*/
 
-    private String convert_mp3_to_wav(String file_path) {
-        String output_file_path = "temp/sound/converted.wav";
-        audio_frequncy_of_the_sound = get_frequency_of_audio(file_path);
-        int number_of_audio_channels_local = set_the_number_of_audio_channels(getNumberOfChannels(output_file_path));
+    private File convert_mp3_to_wav(File input_file,String output_name) {
+        String output_file_path = "temp/sound/".concat(output_name);
+        int audio_frequncy_of_the_sound = get_frequency_of_audio(input_file.getAbsolutePath());
+        int number_of_audio_channels_local = set_the_number_of_audio_channels(getNumberOfChannels(input_file.getAbsolutePath()));
         ProcessBuilder pb = new ProcessBuilder(
                 "ffmpeg",
-                "-i", file_path,              // <-- the path to the one MP3 file
+                "-i", input_file.getAbsolutePath(),              // <-- the path to the one MP3 file
                 "-c:a", "pcm_s16le",               // WAV encoding
                 "-ar", String.valueOf(audio_frequncy_of_the_sound),                    // 44.1kHz sample rate
                 "-ac", String.valueOf(number_of_audio_channels_local), // 2 or 1 channels
@@ -1816,7 +1816,7 @@ public class HelloApplication extends Application {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        return output_file_path;
+        return new File(output_file_path);
     }
 
     private int set_the_number_of_audio_channels(int get_the_number_of_audio_channels) {
@@ -2575,7 +2575,7 @@ public class HelloApplication extends Application {
         final javafx.scene.paint.Color long_line_color = javafx.scene.paint.Color.rgb(100, 101, 103);
         final javafx.scene.paint.Color mid_line_color = javafx.scene.paint.Color.rgb(89, 95, 103);
         final javafx.scene.paint.Color short_line_color = javafx.scene.paint.Color.rgb(66, 71, 78);
-        int number_of_dividors = (int) Math.ceil(get_duration() / time_between_every_line);
+        int number_of_dividors = (int) Math.ceil(get_duration() / time_between_every_line) + 1;
         double base_time_line = pixels_in_between_each_line * 11;
         draw_the_rectangle_time_line_pane(0, base_time_line, main_pane.getPrefHeight(), main_pane);
         for (int i = 0; i < 11; i++) {
@@ -2596,7 +2596,7 @@ public class HelloApplication extends Application {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, line_length, short_line_color, line_thickness));
             }
         }
-        draw_the_rectangle_time_line_pane(base_time_line + (number_of_dividors - 1) * pixels_in_between_each_line, base_time_line, main_pane.getPrefHeight(), main_pane);
+        draw_the_rectangle_time_line_pane(base_time_line + (number_of_dividors-1) * pixels_in_between_each_line, base_time_line, main_pane.getPrefHeight(), main_pane);
         double base_line_for_the_end_rectangle = base_time_line + (number_of_dividors) * pixels_in_between_each_line;
         for (int i = 0; i < 11; i++) {
             double x_pos = i * pixels_in_between_each_line + base_line_for_the_end_rectangle;
@@ -2608,6 +2608,7 @@ public class HelloApplication extends Application {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, line_length, short_line_color, line_thickness));
             }
         }
+        set_up_the_verses_time_line(helloController, main_pane, base_time_line,pixels_in_between_each_line,time_between_every_line);
     }
 
     private void draw_the_rectangle_time_line_pane(double start_x, double width, double height, Pane pane) {
@@ -2650,5 +2651,17 @@ public class HelloApplication extends Application {
     private void set_cache_hints_of_scroll_pane_time_line(HelloController helloController) {
         helloController.scroll_pane_hosting_tile_pane_media_pool.setCache(true);
         helloController.scroll_pane_hosting_tile_pane_media_pool.setCacheHint(CacheHint.SPEED);
+    }
+
+    private void set_up_the_verses_time_line(HelloController helloController, Pane pane, double base_time_line, double pixels_in_between_each_line, long time_between_every_line) {
+        double adjustor = pixels_in_between_each_line/time_between_every_line;
+        Random rand = new Random();
+        for (int i = 0; i < chatgpt_responses.size(); i++) {
+            double start_x = base_time_line + (chatgpt_responses.get(i).getStart_millisecond() * adjustor);
+            Rectangle rectangle = new Rectangle(start_x, 30, (chatgpt_responses.get(i).getDuration() * adjustor), 20);
+            rectangle.setStrokeWidth(0);
+            rectangle.setFill(javafx.scene.paint.Color.rgb(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)));
+            pane.getChildren().add(rectangle);
+        }
     }
 }
