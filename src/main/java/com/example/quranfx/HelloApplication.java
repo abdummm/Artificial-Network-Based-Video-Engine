@@ -2655,17 +2655,22 @@ public class HelloApplication extends Application {
 
     private void set_up_the_verses_time_line(HelloController helloController, Pane pane, double base_time_line, double pixels_in_between_each_line, long time_between_every_line) {
         double adjustor = pixels_in_between_each_line/time_between_every_line;
-        Random rand = new Random();
-        double total_duration = 0;
-        for(int i = 0;i<durations.length;i++){
-            total_duration+= durations[i];
-        }
         for (int i = 0; i < chatgpt_responses.size(); i++) {
+            Text verse_text = new Text("Verse ".concat(String.valueOf(chatgpt_responses.get(i).getVerse_number())));
             double start_x = base_time_line + (chatgpt_responses.get(i).getStart_millisecond() * adjustor);
-            Rectangle rectangle = new Rectangle(start_x, 30, (chatgpt_responses.get(i).getDuration() * adjustor), 20);
-            rectangle.setStrokeWidth(0);
-            rectangle.setFill(javafx.scene.paint.Color.rgb(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)));
-            pane.getChildren().add(rectangle);
+            StackPane stackPane = new StackPane();
+            stackPane.setPrefWidth((chatgpt_responses.get(i).getDuration() * adjustor));
+            stackPane.setPrefHeight(30);
+            stackPane.setLayoutX(start_x);
+            stackPane.setLayoutY(30);
+            Rectangle rectangle = new Rectangle((chatgpt_responses.get(i).getDuration() * adjustor), 20);
+            rectangle.setStrokeWidth(1);
+            rectangle.setStroke(javafx.scene.paint.Color.BLACK);
+            rectangle.setArcHeight(5);
+            rectangle.setArcWidth(5);
+            rectangle.setFill(javafx.scene.paint.Color.WHITE);
+            stackPane.getChildren().addAll(rectangle,verse_text);
+            pane.getChildren().addAll(stackPane);
         }
     }
 }
