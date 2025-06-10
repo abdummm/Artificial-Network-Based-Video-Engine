@@ -2673,4 +2673,8 @@ public class HelloApplication extends Application {
             pane.getChildren().addAll(stackPane);
         }
     }
+
+    private void set_up_time_line_indicator(){
+
+    }
 }
