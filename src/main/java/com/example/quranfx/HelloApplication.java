@@ -22,6 +22,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.CacheHint;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
@@ -2569,6 +2570,7 @@ public class HelloApplication extends Application {
 
     private void create_the_time_line(HelloController helloController) {
         Pane main_pane = helloController.time_line_pane;
+        Time_line_pane_data time_line_pane_data = new Time_line_pane_data();
         main_pane.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.rgb(40, 40, 46), CornerRadii.EMPTY, Insets.EMPTY)));
         final double pixels_in_between_each_line = 10;
         final long time_between_every_line = 50;
@@ -2576,11 +2578,15 @@ public class HelloApplication extends Application {
         final double half_long_line_length = 13;
         final double line_length = 7.5;
         final double line_thickness = 1.3;
+        time_line_pane_data.setPixels_in_between_each_line(pixels_in_between_each_line);
+        time_line_pane_data.setTime_between_every_line(time_between_every_line);
         final javafx.scene.paint.Color long_line_color = javafx.scene.paint.Color.rgb(100, 101, 103);
         final javafx.scene.paint.Color mid_line_color = javafx.scene.paint.Color.rgb(89, 95, 103);
         final javafx.scene.paint.Color short_line_color = javafx.scene.paint.Color.rgb(66, 71, 78);
         int number_of_dividors = (int) Math.ceil(get_duration() / time_between_every_line) + 1;
         double base_time_line = pixels_in_between_each_line * 11;
+        time_line_pane_data.setTime_line_base_line(base_time_line);
+        main_pane.setUserData(time_line_pane_data);
         draw_the_rectangle_time_line_pane(0, base_time_line, main_pane.getPrefHeight(), main_pane);
         for (int i = 0; i < 11; i++) {
             if ((i == 1)) {
@@ -2613,8 +2619,9 @@ public class HelloApplication extends Application {
             }
         }
         set_up_the_verses_time_line(helloController, main_pane, base_time_line, pixels_in_between_each_line, time_between_every_line);
-        set_up_time_line_indicator(helloController,main_pane,base_time_line);
-        listen_to_time_line_clicked(main_pane,base_time_line);
+        set_up_time_line_indicator(helloController, main_pane, base_time_line);
+        listen_to_time_line_clicked(main_pane, base_time_line);
+        listen_to_mouse_movement_over_time_line(main_pane);
     }
 
     private void draw_the_rectangle_time_line_pane(double start_x, double width, double height, Pane pane) {
@@ -2680,7 +2687,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void set_up_time_line_indicator(HelloController helloController,Pane pane,double start_x) {
+    private void set_up_time_line_indicator(HelloController helloController, Pane pane, double start_x) {
         final double full_length = 12.5D;
         final double partial_length = 7.5D;
         final double rectangle_width = 2.5D;
@@ -2688,6 +2695,7 @@ public class HelloApplication extends Application {
         final double right_side_of_rectangle = ((time_line_indicator_width - rectangle_width) / 2) + rectangle_width;
         final double left_side_of_rectangle = (time_line_indicator_width - rectangle_width) / 2;
         final double full_pane_height = pane.getHeight();
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         javafx.scene.shape.Polygon polygon = new Polygon();
         polygon.setSmooth(true);
         polygon.getPoints().addAll(
@@ -2700,37 +2708,42 @@ public class HelloApplication extends Application {
                 left_side_of_rectangle, full_length,
                 0D, partial_length
         );
-        polygon.setFill(javafx.scene.paint.Color.rgb(206,47,40));
-        polygon.setLayoutX(start_x - (time_line_indicator_width/2));
+        polygon.setFill(javafx.scene.paint.Color.rgb(206, 47, 40));
+        polygon.setLayoutX(start_x - (time_line_indicator_width / 2));
         polygon.setLayoutY(0);
         polygon.setUserData(time_line_indicator_width);
         pane.getChildren().add(polygon);
+        time_line_pane_data.setPolygon(polygon);
+        time_line_pane_data.setPolygon_width(time_line_indicator_width);
     }
 
-    private void update_the_time_line_indicator(Pane pane,long milliseconds, double pixels_in_between_each_line, long time_between_every_line){
+    private void update_the_time_line_indicator(Pane pane, long milliseconds, double pixels_in_between_each_line, long time_between_every_line) {
         double adjustor = pixels_in_between_each_line / time_between_every_line;
         javafx.scene.shape.Polygon polygon = get_time_line_indicator(pane);
-        if(polygon == null){
+        if (polygon == null) {
             show_alert("Time line not rendered correctly. Please restart app.");
             return;
         }
-        double half_polygon = ((double) polygon.getUserData()/2);
-        polygon.setLayoutX((milliseconds*adjustor) - half_polygon);
+        double half_polygon = ((double) polygon.getUserData() / 2);
+        polygon.setLayoutX((milliseconds * adjustor) - half_polygon);
     }
 
-    private void listen_to_time_line_clicked(Pane pane,double base_time_line){
+    private void listen_to_time_line_clicked(Pane pane, double base_time_line) {
+        double y_drag_area = ((Time_line_pane_data) pane.getUserData()).getMouse_drag_y_area();
         pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                time_line_clicked(pane,mouseEvent.getX(),base_time_line);
+                if (mouseEvent.getY() <= y_drag_area) {
+                    time_line_clicked(pane, mouseEvent.getX(), base_time_line);
+                }
             }
         });
     }
 
-    private Polygon get_time_line_indicator(Pane pane){
+    private Polygon get_time_line_indicator(Pane pane) {
         javafx.scene.shape.Polygon polygon = null;
-        for(int i = 0;i<pane.getChildren().size();i++){
-            if(pane.getChildren().get(i) instanceof javafx.scene.shape.Polygon){
+        for (int i = 0; i < pane.getChildren().size(); i++) {
+            if (pane.getChildren().get(i) instanceof javafx.scene.shape.Polygon) {
                 polygon = (Polygon) pane.getChildren().get(i);
                 break;
             }
@@ -2738,13 +2751,33 @@ public class HelloApplication extends Application {
         return polygon;
     }
 
-    private void time_line_clicked(Pane pane, double x_position,double base_time_line){
+    private void time_line_clicked(Pane pane, double x_position, double base_time_line) {
         javafx.scene.shape.Polygon polygon = get_time_line_indicator(pane);
-        if(polygon == null){
+        if (polygon == null) {
             show_alert("Time line not rendered correctly. Please restart app.");
             return;
         }
-        double half_polygon = ((double) polygon.getUserData()/2);
-        polygon.setLayoutX(Math.max(x_position - half_polygon,base_time_line-half_polygon));
+        double half_polygon = ((double) polygon.getUserData() / 2);
+        polygon.setLayoutX(Math.max(x_position - half_polygon, base_time_line - half_polygon));
+    }
+
+    private void listen_to_mouse_movement_over_time_line(Pane pane) {
+        Time_line_pane_data timeLinePaneData = ((Time_line_pane_data) pane.getUserData());
+        Polygon polygon = timeLinePaneData.getPolygon();
+        double y_area = timeLinePaneData.getMouse_drag_y_area();
+        polygon.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if(mouseEvent.getY()<=y_area){
+                    polygon.setCursor(Cursor.OPEN_HAND);
+                }
+            }
+        });
+        polygon.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                polygon.setCursor(Cursor.DEFAULT);
+            }
+        });
     }
 }
