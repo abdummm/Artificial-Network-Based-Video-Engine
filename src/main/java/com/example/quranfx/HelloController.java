@@ -171,4 +171,7 @@ public class HelloController {
 
     @FXML
     public Pane time_line_pane;
+
+    @FXML
+    public ScrollPane scroll_pane_hosting_the_time_line;
 }

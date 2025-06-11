@@ -343,7 +343,7 @@
         <bottom>
             <StackPane fx:id="bottom_stack_pane_fourth_screen">
                 <VBox fx:id="bottom_vbox_fourth_screen">
-                    <ScrollPane fitToHeight="true" focusTraversable="false"
+                    <ScrollPane fx:id="scroll_pane_hosting_the_time_line" fitToHeight="true" focusTraversable="false"
                                 style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
                         <VBox.margin>
                             <Insets left="20.0" right="20.0" top="10.0"/>

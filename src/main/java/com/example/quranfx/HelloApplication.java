@@ -19,12 +19,14 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.CacheHint;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
@@ -33,6 +35,7 @@ import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Font;
@@ -913,7 +916,7 @@ public class HelloApplication extends Application {
                     String check_if_mp3 = file.getAbsolutePath().toLowerCase();
                     if (check_if_mp3.endsWith(".mp3")) {
                         audio_frequncy_of_the_sound = get_frequency_of_audio(file.getAbsolutePath());
-                        sound_path = convert_mp3_to_wav(file,"converted.wav").getAbsolutePath();
+                        sound_path = convert_mp3_to_wav(file, "converted.wav").getAbsolutePath();
                     } else {
                         sound_path = file.getAbsolutePath();
                     }
@@ -1354,7 +1357,7 @@ public class HelloApplication extends Application {
                                 try (FileOutputStream fos = new FileOutputStream(tempFile)) {
                                     fos.write(mp3Bytes);
                                 }
-                                File new_wav_file = convert_mp3_to_wav(tempFile,String.format("%03d.wav", verse_number));
+                                File new_wav_file = convert_mp3_to_wav(tempFile, String.format("%03d.wav", verse_number));
                                 new_wav_file.deleteOnExit();
                                 tempFile.delete();
                                 durations[verse_number - start_ayat] = getDurationWithFFmpeg(new_wav_file);
@@ -1381,7 +1384,7 @@ public class HelloApplication extends Application {
             if (number_of_ayats > 1) {
                 end_of_the_picture_durations[0] = 0D;
                 for (int i = 1; i < number_of_ayats; i++) {
-                    end_of_the_picture_durations[i] = durations[i-1] + end_of_the_picture_durations[i - 1];
+                    end_of_the_picture_durations[i] = durations[i - 1] + end_of_the_picture_durations[i - 1];
                 }
             }
             File listFile = new File("temp/sound", "list.txt");
@@ -1792,7 +1795,7 @@ public class HelloApplication extends Application {
         });
     }*/
 
-    private File convert_mp3_to_wav(File input_file,String output_name) {
+    private File convert_mp3_to_wav(File input_file, String output_name) {
         String output_file_path = "temp/sound/".concat(output_name);
         int audio_frequncy_of_the_sound = get_frequency_of_audio(input_file.getAbsolutePath());
         int number_of_audio_channels_local = set_the_number_of_audio_channels(getNumberOfChannels(input_file.getAbsolutePath()));
@@ -2596,7 +2599,7 @@ public class HelloApplication extends Application {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, line_length, short_line_color, line_thickness));
             }
         }
-        draw_the_rectangle_time_line_pane(base_time_line + (number_of_dividors-1) * pixels_in_between_each_line, base_time_line, main_pane.getPrefHeight(), main_pane);
+        draw_the_rectangle_time_line_pane(base_time_line + (number_of_dividors - 1) * pixels_in_between_each_line, base_time_line, main_pane.getPrefHeight(), main_pane);
         double base_line_for_the_end_rectangle = base_time_line + (number_of_dividors) * pixels_in_between_each_line;
         for (int i = 0; i < 11; i++) {
             double x_pos = i * pixels_in_between_each_line + base_line_for_the_end_rectangle;
@@ -2608,7 +2611,8 @@ public class HelloApplication extends Application {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, line_length, short_line_color, line_thickness));
             }
         }
-        set_up_the_verses_time_line(helloController, main_pane, base_time_line,pixels_in_between_each_line,time_between_every_line);
+        set_up_the_verses_time_line(helloController, main_pane, base_time_line, pixels_in_between_each_line, time_between_every_line);
+        set_up_time_line_indicator(helloController,main_pane);
     }
 
     private void draw_the_rectangle_time_line_pane(double start_x, double width, double height, Pane pane) {
@@ -2654,7 +2658,7 @@ public class HelloApplication extends Application {
     }
 
     private void set_up_the_verses_time_line(HelloController helloController, Pane pane, double base_time_line, double pixels_in_between_each_line, long time_between_every_line) {
-        double adjustor = pixels_in_between_each_line/time_between_every_line;
+        double adjustor = pixels_in_between_each_line / time_between_every_line;
         for (int i = 0; i < chatgpt_responses.size(); i++) {
             Text verse_text = new Text("Verse ".concat(String.valueOf(chatgpt_responses.get(i).getVerse_number())));
             double start_x = base_time_line + (chatgpt_responses.get(i).getStart_millisecond() * adjustor);
@@ -2669,12 +2673,47 @@ public class HelloApplication extends Application {
             rectangle.setArcHeight(5);
             rectangle.setArcWidth(5);
             rectangle.setFill(javafx.scene.paint.Color.WHITE);
-            stackPane.getChildren().addAll(rectangle,verse_text);
-            pane.getChildren().addAll(stackPane);
+            stackPane.getChildren().addAll(rectangle, verse_text);
+            pane.getChildren().add(stackPane);
         }
     }
 
-    private void set_up_time_line_indicator(){
+    private void set_up_time_line_indicator(HelloController helloController,Pane pane) {
+        System.out.println(getVisibleVerticalScrollBarHeight(helloController.scroll_pane_hosting_the_time_line));
+        final double width = 15D;
+        final double full_length = 12.5D;
+        final double partial_length = 7.5D;
+        final double rectangle_width = 2.5D;
+        final double right_side_of_rectangle = ((width - rectangle_width) / 2) + rectangle_width;
+        final double left_side_of_rectangle = (width - rectangle_width) / 2;
+        final double full_pane_height = pane.getHeight() - getVisibleVerticalScrollBarHeight(helloController.scroll_pane_hosting_the_time_line);
+        javafx.scene.shape.Polygon polygon = new Polygon();
+        polygon.setSmooth(true);
+        polygon.getPoints().addAll(
+                0D, 0D,     // Top-left
+                width, 0D,
+                width, partial_length,
+                right_side_of_rectangle, full_length,
+                right_side_of_rectangle, full_pane_height,
+                left_side_of_rectangle, full_pane_height,
+                left_side_of_rectangle, full_length,
+                0D, partial_length
+        );
+        polygon.setFill(javafx.scene.paint.Color.rgb(206,47,40));
+        polygon.setLayoutX(200);
+        polygon.setLayoutY(0);
+        pane.getChildren().add(polygon);
+    }
 
+    private double getVisibleVerticalScrollBarHeight(ScrollPane scrollPane) {
+        for (javafx.scene.Node node : scrollPane.lookupAll(".scroll-bar")) {
+            if (node instanceof ScrollBar) {
+                ScrollBar scrollBar = (ScrollBar) node;
+                if (scrollBar.getOrientation() == Orientation.HORIZONTAL && scrollBar.isVisible()) {
+                    return scrollBar.getHeight();
+                }
+            }
+        }
+        return 0; // or Optional.empty() if you want
     }
 }
