@@ -776,6 +776,7 @@ public class HelloApplication extends Application {
                 }
                 update_the_duration_time(helloController, newValue.toMillis());
                 change_the_image_based_on_audio_fourth_screen(helloController, newValue.toMillis() + 10);
+
             }
         });
     }
@@ -2612,7 +2613,8 @@ public class HelloApplication extends Application {
             }
         }
         set_up_the_verses_time_line(helloController, main_pane, base_time_line, pixels_in_between_each_line, time_between_every_line);
-        set_up_time_line_indicator(helloController,main_pane);
+        set_up_time_line_indicator(helloController,main_pane,base_time_line);
+        listen_to_time_line_clicked(main_pane,base_time_line);
     }
 
     private void draw_the_rectangle_time_line_pane(double start_x, double width, double height, Pane pane) {
@@ -2678,21 +2680,20 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void set_up_time_line_indicator(HelloController helloController,Pane pane) {
-        System.out.println(getVisibleVerticalScrollBarHeight(helloController.scroll_pane_hosting_the_time_line));
-        final double width = 15D;
+    private void set_up_time_line_indicator(HelloController helloController,Pane pane,double start_x) {
         final double full_length = 12.5D;
         final double partial_length = 7.5D;
         final double rectangle_width = 2.5D;
-        final double right_side_of_rectangle = ((width - rectangle_width) / 2) + rectangle_width;
-        final double left_side_of_rectangle = (width - rectangle_width) / 2;
-        final double full_pane_height = pane.getHeight() - getVisibleVerticalScrollBarHeight(helloController.scroll_pane_hosting_the_time_line);
+        final double time_line_indicator_width = 15D;
+        final double right_side_of_rectangle = ((time_line_indicator_width - rectangle_width) / 2) + rectangle_width;
+        final double left_side_of_rectangle = (time_line_indicator_width - rectangle_width) / 2;
+        final double full_pane_height = pane.getHeight();
         javafx.scene.shape.Polygon polygon = new Polygon();
         polygon.setSmooth(true);
         polygon.getPoints().addAll(
                 0D, 0D,     // Top-left
-                width, 0D,
-                width, partial_length,
+                time_line_indicator_width, 0D,
+                time_line_indicator_width, partial_length,
                 right_side_of_rectangle, full_length,
                 right_side_of_rectangle, full_pane_height,
                 left_side_of_rectangle, full_pane_height,
@@ -2700,20 +2701,50 @@ public class HelloApplication extends Application {
                 0D, partial_length
         );
         polygon.setFill(javafx.scene.paint.Color.rgb(206,47,40));
-        polygon.setLayoutX(200);
+        polygon.setLayoutX(start_x - (time_line_indicator_width/2));
         polygon.setLayoutY(0);
+        polygon.setUserData(time_line_indicator_width);
         pane.getChildren().add(polygon);
     }
 
-    private double getVisibleVerticalScrollBarHeight(ScrollPane scrollPane) {
-        for (javafx.scene.Node node : scrollPane.lookupAll(".scroll-bar")) {
-            if (node instanceof ScrollBar) {
-                ScrollBar scrollBar = (ScrollBar) node;
-                if (scrollBar.getOrientation() == Orientation.HORIZONTAL && scrollBar.isVisible()) {
-                    return scrollBar.getHeight();
-                }
+    private void update_the_time_line_indicator(Pane pane,long milliseconds, double pixels_in_between_each_line, long time_between_every_line){
+        double adjustor = pixels_in_between_each_line / time_between_every_line;
+        javafx.scene.shape.Polygon polygon = get_time_line_indicator(pane);
+        if(polygon == null){
+            show_alert("Time line not rendered correctly. Please restart app.");
+            return;
+        }
+        double half_polygon = ((double) polygon.getUserData()/2);
+        polygon.setLayoutX((milliseconds*adjustor) - half_polygon);
+    }
+
+    private void listen_to_time_line_clicked(Pane pane,double base_time_line){
+        pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                time_line_clicked(pane,mouseEvent.getX(),base_time_line);
+            }
+        });
+    }
+
+    private Polygon get_time_line_indicator(Pane pane){
+        javafx.scene.shape.Polygon polygon = null;
+        for(int i = 0;i<pane.getChildren().size();i++){
+            if(pane.getChildren().get(i) instanceof javafx.scene.shape.Polygon){
+                polygon = (Polygon) pane.getChildren().get(i);
+                break;
             }
         }
-        return 0; // or Optional.empty() if you want
+        return polygon;
+    }
+
+    private void time_line_clicked(Pane pane, double x_position,double base_time_line){
+        javafx.scene.shape.Polygon polygon = get_time_line_indicator(pane);
+        if(polygon == null){
+            show_alert("Time line not rendered correctly. Please restart app.");
+            return;
+        }
+        double half_polygon = ((double) polygon.getUserData()/2);
+        polygon.setLayoutX(Math.max(x_position - half_polygon,base_time_line-half_polygon));
     }
 }
