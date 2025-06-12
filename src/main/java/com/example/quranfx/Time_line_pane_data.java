@@ -7,9 +7,9 @@ public class Time_line_pane_data {
     private long time_between_every_line;
     private Polygon polygon;
     private double mouse_drag_y_area = 30D;
-    private double polygon_x_position;
     private double polygon_width;
     private double time_line_base_line;
+    private double time_line_end_base_line;
 
     public Time_line_pane_data() {
 
@@ -47,14 +47,6 @@ public class Time_line_pane_data {
         this.mouse_drag_y_area = mouse_drag_y_area;
     }
 
-    public double getPolygon_x_position() {
-        return polygon_x_position;
-    }
-
-    public void setPolygon_x_position(double polygon_x_position) {
-        this.polygon_x_position = polygon_x_position;
-    }
-
     public double getPolygon_width() {
         return polygon_width;
     }
@@ -69,5 +61,13 @@ public class Time_line_pane_data {
 
     public void setTime_line_base_line(double time_line_base_line) {
         this.time_line_base_line = time_line_base_line;
+    }
+
+    public double getTime_line_end_base_line() {
+        return time_line_end_base_line;
+    }
+
+    public void setTime_line_end_base_line(double time_line_end_base_line) {
+        this.time_line_end_base_line = time_line_end_base_line;
     }
 }

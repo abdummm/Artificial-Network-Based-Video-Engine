@@ -7,6 +7,7 @@ import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -19,7 +20,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.CacheHint;
 import javafx.scene.Cursor;
@@ -27,7 +28,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
@@ -53,8 +53,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
@@ -68,11 +66,6 @@ import okhttp3.*;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.bytedeco.javacv.FFmpegFrameRecorder;
-import org.bytedeco.javacv.FFmpegFrameGrabber;
-import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.Java2DFrameConverter;
 import org.imgscalr.Scalr;
 import org.jsoup.*;
 
@@ -777,7 +770,7 @@ public class HelloApplication extends Application {
                 }
                 update_the_duration_time(helloController, newValue.toMillis());
                 change_the_image_based_on_audio_fourth_screen(helloController, newValue.toMillis() + 10);
-
+                //update_the_time_line_indicator(helloController.time_line_pane,(long) newValue.toMillis());
             }
         });
     }
@@ -2618,10 +2611,12 @@ public class HelloApplication extends Application {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, line_length, short_line_color, line_thickness));
             }
         }
+        time_line_pane_data.setTime_line_end_base_line(base_time_line + (number_of_dividors-1) * pixels_in_between_each_line);
         set_up_the_verses_time_line(helloController, main_pane, base_time_line, pixels_in_between_each_line, time_between_every_line);
         set_up_time_line_indicator(helloController, main_pane, base_time_line);
         listen_to_time_line_clicked(main_pane, base_time_line);
-        listen_to_mouse_movement_over_time_line(main_pane);
+        listen_to_mouse_movement_over_time_line_indicator(main_pane);
+        listen_to_mouse_moving_in_time_line_pane(main_pane);
     }
 
     private void draw_the_rectangle_time_line_pane(double start_x, double width, double height, Pane pane) {
@@ -2711,21 +2706,25 @@ public class HelloApplication extends Application {
         polygon.setFill(javafx.scene.paint.Color.rgb(206, 47, 40));
         polygon.setLayoutX(start_x - (time_line_indicator_width / 2));
         polygon.setLayoutY(0);
-        polygon.setUserData(time_line_indicator_width);
         pane.getChildren().add(polygon);
         time_line_pane_data.setPolygon(polygon);
         time_line_pane_data.setPolygon_width(time_line_indicator_width);
     }
 
-    private void update_the_time_line_indicator(Pane pane, long milliseconds, double pixels_in_between_each_line, long time_between_every_line) {
+    private void update_the_time_line_indicator(Pane pane, long milliseconds) {
+        System.out.println(milliseconds);
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
+        double pixels_in_between_each_line = time_line_pane_data.getPixels_in_between_each_line();
+        long time_between_every_line = time_line_pane_data.getTime_between_every_line();
         double adjustor = pixels_in_between_each_line / time_between_every_line;
+        double time_line_base_line = time_line_pane_data.getTime_line_base_line();
         javafx.scene.shape.Polygon polygon = get_time_line_indicator(pane);
+        double half_polygon = time_line_pane_data.getPolygon_width()/2;
         if (polygon == null) {
             show_alert("Time line not rendered correctly. Please restart app.");
             return;
         }
-        double half_polygon = ((double) polygon.getUserData() / 2);
-        polygon.setLayoutX((milliseconds * adjustor) - half_polygon);
+        polygon.setLayoutX((milliseconds * adjustor) - half_polygon + time_line_base_line);
     }
 
     private void listen_to_time_line_clicked(Pane pane, double base_time_line) {
@@ -2734,7 +2733,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getY() <= y_drag_area) {
-                    time_line_clicked(pane, mouseEvent.getX(), base_time_line);
+                    time_line_clicked(pane, mouseEvent.getX());
                 }
             }
         });
@@ -2751,24 +2750,35 @@ public class HelloApplication extends Application {
         return polygon;
     }
 
-    private void time_line_clicked(Pane pane, double x_position, double base_time_line) {
+    private void time_line_clicked(Pane pane, double x_position) {
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         javafx.scene.shape.Polygon polygon = get_time_line_indicator(pane);
+        double base_time_line = time_line_pane_data.getTime_line_base_line();
+        double half_polygon = time_line_pane_data.getPolygon_width()/2;
+        double end_time_line = time_line_pane_data.getTime_line_end_base_line();
         if (polygon == null) {
             show_alert("Time line not rendered correctly. Please restart app.");
             return;
         }
-        double half_polygon = ((double) polygon.getUserData() / 2);
-        polygon.setLayoutX(Math.max(x_position - half_polygon, base_time_line - half_polygon));
+        if(x_position < base_time_line){
+            polygon.setLayoutX(base_time_line - half_polygon);
+            return;
+        }
+        if(x_position > end_time_line){
+            polygon.setLayoutX(end_time_line - half_polygon);
+            return;
+        }
+        polygon.setLayoutX(x_position - half_polygon);
     }
 
-    private void listen_to_mouse_movement_over_time_line(Pane pane) {
+    private void listen_to_mouse_movement_over_time_line_indicator(Pane pane) {
         Time_line_pane_data timeLinePaneData = ((Time_line_pane_data) pane.getUserData());
         Polygon polygon = timeLinePaneData.getPolygon();
         double y_area = timeLinePaneData.getMouse_drag_y_area();
         polygon.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                if(mouseEvent.getY()<=y_area){
+                if(mouseEvent.getY()<=y_area && (polygon.getCursor() == null||!polygon.getCursor().equals(Cursor.CLOSED_HAND))){
                     polygon.setCursor(Cursor.OPEN_HAND);
                 }
             }
@@ -2776,7 +2786,56 @@ public class HelloApplication extends Application {
         polygon.setOnMouseExited(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                polygon.setCursor(Cursor.DEFAULT);
+                if(polygon.getCursor() == null||!polygon.getCursor().equals(Cursor.CLOSED_HAND)){
+                    polygon.setCursor(Cursor.DEFAULT);
+                }
+            }
+        });
+        polygon.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                polygon.setCursor(Cursor.CLOSED_HAND);
+            }
+        });
+        polygon.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                double mouseX = mouseEvent.getSceneX();
+                double mouseY = mouseEvent.getSceneY();
+                Point2D local = polygon.sceneToLocal(mouseX, mouseY);
+                if(polygon.contains(local) && mouseEvent.getY() <= y_area){
+                    polygon.setCursor(Cursor.OPEN_HAND);
+                } else {
+                    polygon.setCursor(Cursor.DEFAULT);
+                }
+            }
+        });
+        polygon.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                time_line_clicked(pane,pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY()).getX());
+            }
+        });
+    }
+
+    private void listen_to_mouse_moving_in_time_line_pane(Pane pane){
+        Time_line_pane_data time_line_pane_data = ((Time_line_pane_data) pane.getUserData());
+        Polygon polygon = time_line_pane_data.getPolygon();
+        double y_area = time_line_pane_data.getMouse_drag_y_area();
+        double base_time_line = time_line_pane_data.getTime_line_base_line();
+        double end_time_line = time_line_pane_data.getTime_line_end_base_line();
+        pane.setOnMouseMoved(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if(mouseEvent.getY()<=y_area && mouseEvent.getX() >= base_time_line && mouseEvent.getX() <= end_time_line){
+                    if(polygon.getCursor() == null || !polygon.getCursor().equals(Cursor.CLOSED_HAND)){
+                        pane.setCursor(Cursor.HAND);
+                    }
+                } else {
+                    if(polygon.getCursor() == null || !polygon.getCursor().equals(Cursor.CLOSED_HAND)){
+                        pane.setCursor(Cursor.DEFAULT);
+                    }
+                }
             }
         });
     }
