@@ -22,7 +22,7 @@ public class HelloController {
     public ListView<String> choose_the_surat = new ListView<>();
 
     @FXML
-    public StackPane choose_surat_screen;
+    public BorderPane choose_surat_screen;
 
     @FXML
     public StackPane choose_ayat_screen;
@@ -171,4 +171,7 @@ public class HelloController {
 
     @FXML
     public ScrollPane scroll_pane_hosting_the_time_line;
+
+    @FXML
+    public JFXButton give_feedback_button;
 }
