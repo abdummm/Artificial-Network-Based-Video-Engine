@@ -104,9 +104,6 @@ public class HelloController {
     public JFXButton full_screen_button_fourth_screen;
 
     @FXML
-    public Button copy_duration_fourth_screen;
-
-    @FXML
     public CheckBox generate_chat_gpt_images;
 
     @FXML

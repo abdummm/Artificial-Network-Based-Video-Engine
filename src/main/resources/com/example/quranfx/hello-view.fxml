@@ -358,7 +358,6 @@
                         <Label fx:id="duration_of_media" text="00:00"/>
                         <Slider fx:id="sound_slider_fourth_screen" HBox.hgrow="ALWAYS"/>
                         <Label fx:id="total_duration_of_media" text="00:00"/>
-                        <Button fx:id="copy_duration_fourth_screen" text="Copy Duration"/>
                     </HBox>
 
                     <HBox alignment="CENTER_RIGHT">
