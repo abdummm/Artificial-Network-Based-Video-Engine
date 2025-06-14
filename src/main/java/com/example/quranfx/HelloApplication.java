@@ -114,7 +114,7 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), Screen.getPrimary().getBounds().getWidth() / 2, Screen.getPrimary().getBounds().getHeight() / 2);
+        Scene scene = new Scene(fxmlLoader.load(), Screen.getPrimary().getBounds().getWidth()*0.55, Screen.getPrimary().getBounds().getHeight() *0.55);
         //scene.getStylesheets().add(PrimerLight.class.getResource("primer-light.css").toExternalForm());
         stage.setTitle("السلام عليكم ورحمة الله وبركاته");
         stage.setScene(scene);
@@ -2601,7 +2601,7 @@ public class HelloApplication extends Application {
             double x_pos = i * pixels_in_between_each_line + base_line_for_the_end_rectangle;
             if ((time_between_every_line * (i + number_of_dividors)) % 1000 == 0) {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, long_line_length, long_line_color, line_thickness));
-                main_pane.getChildren().add(add_the_text_to_time_line(time_between_every_line * i, x_pos, line_length, time_text_color));
+                main_pane.getChildren().add(add_the_text_to_time_line(time_between_every_line * (number_of_dividors+i), x_pos, line_length, time_text_color));
             } else if ((time_between_every_line * (i + number_of_dividors)) % 500 == 0) {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, half_long_line_length, mid_line_color, line_thickness));
             } else {
@@ -2878,4 +2878,5 @@ public class HelloApplication extends Application {
             }
         });
     }
+
 }

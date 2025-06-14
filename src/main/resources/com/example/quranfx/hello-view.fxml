@@ -39,6 +39,16 @@
            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.quranfx.HelloController"
            style="-fx-background-color: #FFFFFF;">
     <BorderPane fx:id="choose_surat_screen">
+        <top>
+            <VBox alignment="CENTER">
+                <JFXButton fx:id="fake_invisible_button_for_margin" visible="false" text="Give Feedback"
+                           style="-fx-background-color: #000000; -fx-text-fill: #FFFFFF;">
+                    <VBox.margin>
+                        <Insets top="10.0" bottom="10.0"/>
+                    </VBox.margin>
+                </JFXButton>
+            </VBox>
+        </top>
         <center>
             <VBox alignment="CENTER">
                 <padding>
@@ -366,10 +376,21 @@
                     </ScrollPane>
 
                     <HBox alignment="CENTER_LEFT">
-                        <JFXButton fx:id="play_sound"/>
+                        <VBox.margin>
+                            <Insets  top="10.0"/>
+                        </VBox.margin>
+                        <JFXButton fx:id="play_sound">
+                            <HBox.margin>
+                                <Insets left="20.0" />
+                            </HBox.margin>
+                        </JFXButton>
                         <Label fx:id="duration_of_media" text="00:00"/>
                         <Slider fx:id="sound_slider_fourth_screen" HBox.hgrow="ALWAYS"/>
-                        <Label fx:id="total_duration_of_media" text="00:00"/>
+                        <Label fx:id="total_duration_of_media" text="00:00">
+                            <HBox.margin>
+                                <Insets right="20.0" />
+                            </HBox.margin>
+                        </Label>
                     </HBox>
 
                     <HBox alignment="CENTER_RIGHT">
