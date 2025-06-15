@@ -42,9 +42,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.*;
 
 import java.awt.*;
 import java.awt.Button;
@@ -2883,26 +2882,42 @@ public class HelloApplication extends Application {
     }
 
     public void showEmailPopupWithReply() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Feedback");
-        alert.setHeaderText("If you have any feedback, suggestions or bug reports, please send them to the email below. Thank you so much in advance.");
-        alert.setContentText(help_email);
-        alert.show();
-
         Stage feedbackStage = new Stage();
+        feedbackStage.initOwner(main_stage);
+        feedbackStage.initStyle(StageStyle.DECORATED);
+        //feedbackStage.initModality(Modality.WINDOW_MODAL); // optional
         VBox vBox = new VBox(10);
         vBox.setAlignment(Pos.CENTER);
-        Label main_text = new Label("If you have any feedback, suggestions or bug reports, please send them to the email below.\nThank you so much in advance.");
+        Label main_text = new Label("If you have any feedback, suggestions or bug reports, please send them to the email below.");
         Label email_address = new Label(help_email);
         JFXButton copy_button = new JFXButton("Copy email address");
+
         VBox.setMargin(main_text,new Insets(0, 10, 0, 10));
         VBox.setMargin(email_address,new Insets(0, 10, 0, 10));
         VBox.setMargin(copy_button,new Insets(0, 10, 0, 10));
+        main_text.setAlignment(Pos.CENTER);
+        main_text.setTextAlignment(TextAlignment.CENTER); // center each line of text
+        main_text.setWrapText(true);
         copy_button.setStyle("-fx-background-color: #000000; -fx-text-fill: #FFFFFF;");
+        copy_button.setFocusTraversable(false);
+
+        copy_button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                copyToClipboard(help_email);
+            }
+        });
         vBox.getChildren().addAll(main_text,email_address,copy_button);
-        Scene scene = new Scene(vBox, 300, 150);
+        Scene scene = new Scene(vBox, 450, 225);
         feedbackStage.setScene(scene);
         feedbackStage.setTitle("Send Feedback");
         feedbackStage.show();
+    }
+
+    private void copyToClipboard(String text) {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        content.putString(text);
+        clipboard.setContent(content);
     }
 }
