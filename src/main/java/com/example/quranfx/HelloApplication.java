@@ -7,6 +7,7 @@ import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jfoenix.controls.JFXButton;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -46,6 +47,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.awt.*;
+import java.awt.Button;
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.io.*;
@@ -105,6 +107,7 @@ public class HelloApplication extends Application {
     private final static double play_pause_button_size = 20D;
     private final static int image_view_in_tile_pane_width = 90;
     private final static int image_view_in_tile_pane_height = 160;
+    private final static String help_email = "abdomakesappshelp@gmail.com";
 
     private double lastKnownMediaTime = 0;
     private long lastKnownSystemTime = 0;
@@ -356,7 +359,7 @@ public class HelloApplication extends Application {
     }
 
     private void show_alert(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.ERROR);
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
         stage.setAlwaysOnTop(true);
         alert.initOwner(main_stage);
@@ -2874,9 +2877,32 @@ public class HelloApplication extends Application {
         helloController.give_feedback_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-
+                showEmailPopupWithReply();
             }
         });
     }
 
+    public void showEmailPopupWithReply() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Feedback");
+        alert.setHeaderText("If you have any feedback, suggestions or bug reports, please send them to the email below. Thank you so much in advance.");
+        alert.setContentText(help_email);
+        alert.show();
+
+        Stage feedbackStage = new Stage();
+        VBox vBox = new VBox(10);
+        vBox.setAlignment(Pos.CENTER);
+        Label main_text = new Label("If you have any feedback, suggestions or bug reports, please send them to the email below.\nThank you so much in advance.");
+        Label email_address = new Label(help_email);
+        JFXButton copy_button = new JFXButton("Copy email address");
+        VBox.setMargin(main_text,new Insets(0, 10, 0, 10));
+        VBox.setMargin(email_address,new Insets(0, 10, 0, 10));
+        VBox.setMargin(copy_button,new Insets(0, 10, 0, 10));
+        copy_button.setStyle("-fx-background-color: #000000; -fx-text-fill: #FFFFFF;");
+        vBox.getChildren().addAll(main_text,email_address,copy_button);
+        Scene scene = new Scene(vBox, 300, 150);
+        feedbackStage.setScene(scene);
+        feedbackStage.setTitle("Send Feedback");
+        feedbackStage.show();
+    }
 }
