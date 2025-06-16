@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXButton;
 import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -2886,15 +2888,15 @@ public class HelloApplication extends Application {
         feedbackStage.initOwner(main_stage);
         feedbackStage.initStyle(StageStyle.DECORATED);
         //feedbackStage.initModality(Modality.WINDOW_MODAL); // optional
-        VBox vBox = new VBox(10);
+        VBox vBox = new VBox();
         vBox.setAlignment(Pos.CENTER);
         Label main_text = new Label("If you have any feedback, suggestions or bug reports, please send them to the email below.");
         Label email_address = new Label(help_email);
         JFXButton copy_button = new JFXButton("Copy email address");
 
         VBox.setMargin(main_text,new Insets(0, 10, 0, 10));
-        VBox.setMargin(email_address,new Insets(0, 10, 0, 10));
-        VBox.setMargin(copy_button,new Insets(0, 10, 0, 10));
+        VBox.setMargin(email_address,new Insets(10, 10, 0, 10));
+        VBox.setMargin(copy_button,new Insets(25, 10, 0, 10));
         main_text.setAlignment(Pos.CENTER);
         main_text.setTextAlignment(TextAlignment.CENTER); // center each line of text
         main_text.setWrapText(true);
@@ -2905,6 +2907,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 copyToClipboard(help_email);
+                showToast(feedbackStage,"Copied",2500);
             }
         });
         vBox.getChildren().addAll(main_text,email_address,copy_button);
@@ -2919,5 +2922,31 @@ public class HelloApplication extends Application {
         ClipboardContent content = new ClipboardContent();
         content.putString(text);
         clipboard.setContent(content);
+    }
+
+    private void showToast(Stage ownerStage, String message, int durationMillis) {
+        Popup popup = new Popup();
+        Label toastLabel = new Label(message);
+        toastLabel.setStyle(
+                "-fx-background-color: rgba(0, 0, 0, 0.75); " +
+                        "-fx-text-fill: white; " +
+                        "-fx-padding: 5px; " +
+                        "-fx-border-radius: 5px; " +
+                        "-fx-background-radius: 5px;" +
+                        "-fx-font-size: 12px;"
+        );
+        toastLabel.setOpacity(0.9);
+        popup.getContent().add(toastLabel);
+        popup.setAutoHide(true);
+
+        // Centered at bottom of the window
+        popup.show(ownerStage);
+        popup.setX(ownerStage.getX() + ownerStage.getWidth() / 2 - toastLabel.getWidth() / 2);
+        popup.setY(ownerStage.getY() + 0.925*ownerStage.getHeight() - toastLabel.getHeight());
+
+        // Hide after duration
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.millis(durationMillis), ae -> popup.hide()));
+        timeline.play();
     }
 }
