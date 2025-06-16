@@ -49,7 +49,6 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.*;
 
 import java.awt.*;
-import java.awt.Button;
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.io.*;
@@ -416,7 +415,7 @@ public class HelloApplication extends Application {
                         if (durations == null || durations.length == 0) {
                             chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), j * 1000L, 1000));
                         } else {
-                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), end_of_the_picture_durations[j], durations[j]));
+                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), end_of_the_picture_durations[j].longValue(), durations[j].longValue()));
                         }
                     }
                     set_up_the_fourth_screen(helloController);
@@ -435,7 +434,7 @@ public class HelloApplication extends Application {
                     if (durations == null || durations.length == 0) {
                         chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), 0, 1000));
                     } else {
-                        chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), 0, durations[0]));
+                        chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), 0, durations[0].longValue()));
                     }
                 }
                 set_up_the_fourth_screen(helloController);
@@ -706,7 +705,7 @@ public class HelloApplication extends Application {
             public void handle(ActionEvent event) {
                 selected_verse++;
                 the_verse_changed(helloController, selected_verse);
-                scroll_to_specific_verse_time();
+                scroll_to_specific_verse_time(helloController);
             }
         });
     }
@@ -717,7 +716,7 @@ public class HelloApplication extends Application {
             public void handle(ActionEvent event) {
                 selected_verse--;
                 the_verse_changed(helloController, selected_verse);
-                scroll_to_specific_verse_time();
+                scroll_to_specific_verse_time(helloController);
             }
         });
     }
@@ -1116,7 +1115,7 @@ public class HelloApplication extends Application {
         bufferedImage.flush();
     }*/
 
-    public ArrayList<String> wrapText(String text, FontMetrics metrics, int maxWidth, int margin_left_and_right) {
+    private ArrayList<String> wrapText(String text, FontMetrics metrics, int maxWidth, int margin_left_and_right) {
         double max_width_double = maxWidth;
         max_width_double /= 100;
         max_width_double *= margin_left_and_right;
@@ -1546,12 +1545,11 @@ public class HelloApplication extends Application {
         return SwingFXUtils.fromFXImage(image, null);
     }
 
-    private void scroll_to_specific_verse_time() {
-        /*if (selected_verse == 0) {
-            mediaPlayer.seek(Duration.millis(0));
-        } else {
-            mediaPlayer.seek(Duration.millis(chatgpt_responses.get(selected_verse - 1).getTime_in_milliseconds()));
-        }*/
+    private void scroll_to_specific_verse_time(HelloController helloController) {
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
+        long time_in_milliseconds = chatgpt_responses.get(selected_verse).getStart_millisecond();
+        update_the_time_line_indicator(helloController,helloController.time_line_pane,time_in_milliseconds);
+        force_the_time_line_indicator_to_be_at_the_middle(helloController.scroll_pane_hosting_the_time_line,time_line_pane_data.getPolygon().getLayoutX());
     }
 
     private String formatTime(double timeInMillis) {
@@ -2664,13 +2662,13 @@ public class HelloApplication extends Application {
         double adjustor = pixels_in_between_each_line / time_between_every_line;
         for (int i = 0; i < chatgpt_responses.size(); i++) {
             Text verse_text = new Text("Verse ".concat(String.valueOf(chatgpt_responses.get(i).getVerse_number())));
-            double start_x = base_time_line + (chatgpt_responses.get(i).getStart_millisecond() * adjustor);
+            double start_x = base_time_line + (chatgpt_responses.get(i).getStart_millisecond().doubleValue() * adjustor);
             StackPane stackPane = new StackPane();
-            stackPane.setPrefWidth((chatgpt_responses.get(i).getDuration() * adjustor));
+            stackPane.setPrefWidth((chatgpt_responses.get(i).getDuration().doubleValue() * adjustor));
             stackPane.setPrefHeight(30);
             stackPane.setLayoutX(start_x);
             stackPane.setLayoutY(30);
-            Rectangle rectangle = new Rectangle((chatgpt_responses.get(i).getDuration() * adjustor), 20);
+            Rectangle rectangle = new Rectangle((chatgpt_responses.get(i).getDuration().doubleValue() * adjustor), 20);
             rectangle.setStrokeWidth(1);
             rectangle.setStroke(javafx.scene.paint.Color.BLACK);
             rectangle.setArcHeight(5);
@@ -2725,7 +2723,6 @@ public class HelloApplication extends Application {
         }
         double new_x = (milliseconds * adjustor) - half_polygon + time_line_base_line;
         polygon.setLayoutX(new_x);
-        isXOutsideScrollPaneView(helloController.scroll_pane_hosting_the_time_line,pane,new_x);
     }
 
     private void listen_to_time_line_clicked(HelloController helloController,Pane pane) {
@@ -2863,8 +2860,10 @@ public class HelloApplication extends Application {
             @Override
             public void handle(long now) {
                 if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING && lastKnownSystemTime > 0) {
+                    Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
                     double elapsed = (System.currentTimeMillis() - lastKnownSystemTime); // seconds
                     update_the_time_line_indicator(helloController,helloController.time_line_pane, (long) (lastKnownMediaTime + elapsed));
+                    set_the_time_line_indicator_to_the_middle(helloController.scroll_pane_hosting_the_time_line,time_line_pane_data.getPolygon().getLayoutX());
                 }
             }
         };
@@ -2880,7 +2879,7 @@ public class HelloApplication extends Application {
         });
     }
 
-    public void showEmailPopupWithReply() {
+    private void showEmailPopupWithReply() {
         Stage feedbackStage = new Stage();
         feedbackStage.initOwner(main_stage);
         feedbackStage.initStyle(StageStyle.DECORATED);
@@ -2952,7 +2951,7 @@ public class HelloApplication extends Application {
         timeline.play();
     }
 
-    public void isXOutsideScrollPaneView(ScrollPane scrollPane,Pane pane, double x_position) {
+    private void set_the_time_line_indicator_to_the_middle(ScrollPane scrollPane, double x_position) {
         // Viewport width (the visible area)
         double viewportWidth = scrollPane.getViewportBounds().getWidth();
 
@@ -2973,6 +2972,21 @@ public class HelloApplication extends Application {
         //double maxVisibleX = minVisibleX + viewportWidth;
     }
 
+    private void force_the_time_line_indicator_to_be_at_the_middle(ScrollPane scrollPane, double x_position) {
+        double viewportWidth = scrollPane.getViewportBounds().getWidth();
+        double contentWidth = scrollPane.getContent().getBoundsInLocal().getWidth();
+        double contentWidth_for_h_value = contentWidth - viewportWidth;
+        double half_visible_width = viewportWidth/2;
+        double h_value = (x_position-half_visible_width) / (contentWidth_for_h_value);
+        if(h_value<0){
+            h_value = 0;
+        }
+        if(h_value>1){
+            h_value = 1;
+        }
+        scrollPane.setHvalue(h_value);
+    }
+
     private void pause_the_media_player(HelloController helloController){
         set_the_play_pause_button(helloController, "play");
         mediaPlayer.pause();
@@ -2982,4 +2996,6 @@ public class HelloApplication extends Application {
         set_the_play_pause_button(helloController, "pause");
         mediaPlayer.play();
     }
+
+
 }
