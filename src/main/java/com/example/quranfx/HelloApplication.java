@@ -1547,7 +1547,7 @@ public class HelloApplication extends Application {
 
     private void scroll_to_specific_verse_time(HelloController helloController) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
-        long time_in_milliseconds = chatgpt_responses.get(selected_verse).getStart_millisecond();
+        double time_in_milliseconds = chatgpt_responses.get(selected_verse).getStart_millisecond();
         update_the_time_line_indicator(helloController,helloController.time_line_pane,time_in_milliseconds);
         force_the_time_line_indicator_to_be_at_the_middle(helloController.scroll_pane_hosting_the_time_line,time_line_pane_data.getPolygon().getLayoutX());
     }
@@ -2662,13 +2662,13 @@ public class HelloApplication extends Application {
         double adjustor = pixels_in_between_each_line / time_between_every_line;
         for (int i = 0; i < chatgpt_responses.size(); i++) {
             Text verse_text = new Text("Verse ".concat(String.valueOf(chatgpt_responses.get(i).getVerse_number())));
-            double start_x = base_time_line + (chatgpt_responses.get(i).getStart_millisecond().doubleValue() * adjustor);
+            double start_x = base_time_line + (chatgpt_responses.get(i).getStart_millisecond() * adjustor);
             StackPane stackPane = new StackPane();
-            stackPane.setPrefWidth((chatgpt_responses.get(i).getDuration().doubleValue() * adjustor));
+            stackPane.setPrefWidth((chatgpt_responses.get(i).getDuration() * adjustor));
             stackPane.setPrefHeight(30);
             stackPane.setLayoutX(start_x);
             stackPane.setLayoutY(30);
-            Rectangle rectangle = new Rectangle((chatgpt_responses.get(i).getDuration().doubleValue() * adjustor), 20);
+            Rectangle rectangle = new Rectangle((chatgpt_responses.get(i).getDuration() * adjustor), 20);
             rectangle.setStrokeWidth(1);
             rectangle.setStroke(javafx.scene.paint.Color.BLACK);
             rectangle.setArcHeight(5);
@@ -2709,7 +2709,7 @@ public class HelloApplication extends Application {
         time_line_pane_data.setPolygon_width(time_line_indicator_width);
     }
 
-    private void update_the_time_line_indicator(HelloController helloController,Pane pane, long milliseconds) {
+    private void update_the_time_line_indicator(HelloController helloController,Pane pane, double milliseconds) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         double pixels_in_between_each_line = time_line_pane_data.getPixels_in_between_each_line();
         long time_between_every_line = time_line_pane_data.getTime_between_every_line();
@@ -2723,6 +2723,7 @@ public class HelloApplication extends Application {
         }
         double new_x = (milliseconds * adjustor) - half_polygon + time_line_base_line;
         polygon.setLayoutX(new_x);
+        which_verse_am_i_on_milliseconds(helloController,milliseconds);
     }
 
     private void listen_to_time_line_clicked(HelloController helloController,Pane pane) {
@@ -2997,5 +2998,22 @@ public class HelloApplication extends Application {
         mediaPlayer.play();
     }
 
+    private void which_verse_am_i_on_milliseconds(HelloController helloController,double milliseconds){
+        int index = Arrays.binarySearch(end_of_the_picture_durations,milliseconds);
+        if(index>=0){
+            selected_verse = index;
+            the_verse_changed(helloController, selected_verse);
+        } else {
+            selected_verse = (index*-1) - 2;
+            the_verse_changed(helloController, selected_verse);
+        }
+    }
 
+    private void milliseconds_to_pixels(long milliseconds){
+
+    }
+
+    private void pixels_to_milliseconds(long milliseconds){
+
+    }
 }
