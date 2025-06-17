@@ -2660,16 +2660,17 @@ public class HelloApplication extends Application {
     }
 
     private void set_up_the_verses_time_line(HelloController helloController, Pane pane, double base_time_line, double pixels_in_between_each_line, long time_between_every_line) {
-        double adjustor = pixels_in_between_each_line / time_between_every_line;
+        //double adjustor = pixels_in_between_each_line / time_between_every_line;
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         for (int i = 0; i < chatgpt_responses.size(); i++) {
             Text verse_text = new Text("Verse ".concat(String.valueOf(chatgpt_responses.get(i).getVerse_number())));
-            double start_x = base_time_line + (chatgpt_responses.get(i).getStart_millisecond() * adjustor);
+            double start_x = base_time_line + (milliseconds_to_pixels(time_line_pane_data, chatgpt_responses.get(i).getStart_millisecond()));
             StackPane stackPane = new StackPane();
-            stackPane.setPrefWidth((chatgpt_responses.get(i).getDuration() * adjustor));
+            stackPane.setPrefWidth(milliseconds_to_pixels(time_line_pane_data, chatgpt_responses.get(i).getDuration()));
             stackPane.setPrefHeight(30);
             stackPane.setLayoutX(start_x);
             stackPane.setLayoutY(30);
-            Rectangle rectangle = new Rectangle((chatgpt_responses.get(i).getDuration() * adjustor), 20);
+            Rectangle rectangle = new Rectangle(milliseconds_to_pixels(time_line_pane_data, chatgpt_responses.get(i).getDuration()), 20);
             rectangle.setStrokeWidth(1);
             rectangle.setStroke(javafx.scene.paint.Color.BLACK);
             rectangle.setArcHeight(5);
@@ -2736,7 +2737,7 @@ public class HelloApplication extends Application {
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getY() <= y_drag_area && mouseEvent.getX() >= base_time_line && mouseEvent.getX() <= end_time_line) {
                     time_line_clicked(helloController,pane, mouseEvent.getX());
-                    which_verse_am_i_on_milliseconds(helloController,pixels_to_milliseconds(time_line_pane_data,mouseEvent.getX()));
+                    which_verse_am_i_on_milliseconds(helloController,pixels_to_milliseconds(time_line_pane_data,mouseEvent.getX()-time_line_pane_data.getTime_line_base_line()));
                 }
             }
         });
@@ -2812,7 +2813,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 time_line_clicked(helloController,pane, pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY()).getX());
-                which_verse_am_i_on_milliseconds(helloController,pixels_to_milliseconds(time_line_pane_data,mouseEvent.getX()));
+                which_verse_am_i_on_milliseconds(helloController,pixels_to_milliseconds(time_line_pane_data,mouseEvent.getX()-time_line_pane_data.getTime_line_base_line()));
             }
         });
     }
@@ -3020,4 +3021,6 @@ public class HelloApplication extends Application {
             the_verse_changed(helloController, selected_verse);
         }
     }
+
+
 }

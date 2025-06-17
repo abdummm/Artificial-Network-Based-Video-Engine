@@ -6,10 +6,10 @@ public class Verse_class_final {
     private String arabic_verse;
     private Integer verse_number;
     private Ayat_settings ayatSettings;
-    private double duration;
-    private double start_millisecond;
+    private long duration;
+    private long start_millisecond;
 
-    public Verse_class_final(String verse, Integer verse_number, String arabic_verse,double start_millisecond,double duration) {
+    public Verse_class_final(String verse, Integer verse_number, String arabic_verse,long start_millisecond,long duration) {
         this.verse = verse;
         this.verse_number = verse_number;
         this.ayatSettings = new Ayat_settings();
@@ -34,11 +34,11 @@ public class Verse_class_final {
         return ayatSettings;
     }
 
-    public double getDuration() {
+    public long getDuration() {
         return duration;
     }
 
-    public double getStart_millisecond() {
+    public long getStart_millisecond() {
         return start_millisecond;
     }
 }
