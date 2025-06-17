@@ -1550,6 +1550,7 @@ public class HelloApplication extends Application {
         double time_in_milliseconds = chatgpt_responses.get(selected_verse).getStart_millisecond();
         update_the_time_line_indicator(helloController,helloController.time_line_pane,time_in_milliseconds);
         force_the_time_line_indicator_to_be_at_the_middle(helloController.scroll_pane_hosting_the_time_line,time_line_pane_data.getPolygon().getLayoutX());
+        mediaPlayer.seek(Duration.millis(time_in_milliseconds));
     }
 
     private String formatTime(double timeInMillis) {
@@ -2715,7 +2716,7 @@ public class HelloApplication extends Application {
         long time_between_every_line = time_line_pane_data.getTime_between_every_line();
         double adjustor = pixels_in_between_each_line / time_between_every_line;
         double time_line_base_line = time_line_pane_data.getTime_line_base_line();
-        javafx.scene.shape.Polygon polygon = get_time_line_indicator(pane);
+        javafx.scene.shape.Polygon polygon = time_line_pane_data.getPolygon();
         double half_polygon = time_line_pane_data.getPolygon_width() / 2;
         if (polygon == null) {
             show_alert("Time line not rendered correctly. Please restart app.");
@@ -2723,7 +2724,6 @@ public class HelloApplication extends Application {
         }
         double new_x = (milliseconds * adjustor) - half_polygon + time_line_base_line;
         polygon.setLayoutX(new_x);
-        which_verse_am_i_on_milliseconds(helloController,milliseconds);
     }
 
     private void listen_to_time_line_clicked(HelloController helloController,Pane pane) {
@@ -2736,25 +2736,15 @@ public class HelloApplication extends Application {
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getY() <= y_drag_area && mouseEvent.getX() >= base_time_line && mouseEvent.getX() <= end_time_line) {
                     time_line_clicked(helloController,pane, mouseEvent.getX());
+                    which_verse_am_i_on_milliseconds(helloController,pixels_to_milliseconds(time_line_pane_data,mouseEvent.getX()));
                 }
             }
         });
     }
 
-    private Polygon get_time_line_indicator(Pane pane) {
-        javafx.scene.shape.Polygon polygon = null;
-        for (int i = 0; i < pane.getChildren().size(); i++) {
-            if (pane.getChildren().get(i) instanceof javafx.scene.shape.Polygon) {
-                polygon = (Polygon) pane.getChildren().get(i);
-                break;
-            }
-        }
-        return polygon;
-    }
-
     private void time_line_clicked(HelloController helloController, Pane pane, double x_position) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
-        javafx.scene.shape.Polygon polygon = get_time_line_indicator(pane);
+        javafx.scene.shape.Polygon polygon = time_line_pane_data.getPolygon();
         double base_time_line = time_line_pane_data.getTime_line_base_line();
         double half_polygon = time_line_pane_data.getPolygon_width() / 2;
         double end_time_line = time_line_pane_data.getTime_line_end_base_line();
@@ -2780,9 +2770,9 @@ public class HelloApplication extends Application {
     }
 
     private void listen_to_mouse_movement_over_time_line_indicator(HelloController helloController,Pane pane) {
-        Time_line_pane_data timeLinePaneData = ((Time_line_pane_data) pane.getUserData());
-        Polygon polygon = timeLinePaneData.getPolygon();
-        double y_area = timeLinePaneData.getMouse_drag_y_area();
+        Time_line_pane_data time_line_pane_data = ((Time_line_pane_data) pane.getUserData());
+        Polygon polygon = time_line_pane_data.getPolygon();
+        double y_area = time_line_pane_data.getMouse_drag_y_area();
         polygon.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -2822,6 +2812,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 time_line_clicked(helloController,pane, pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY()).getX());
+                which_verse_am_i_on_milliseconds(helloController,pixels_to_milliseconds(time_line_pane_data,mouseEvent.getX()));
             }
         });
     }
@@ -2865,6 +2856,7 @@ public class HelloApplication extends Application {
                     double elapsed = (System.currentTimeMillis() - lastKnownSystemTime); // seconds
                     update_the_time_line_indicator(helloController,helloController.time_line_pane, (long) (lastKnownMediaTime + elapsed));
                     set_the_time_line_indicator_to_the_middle(helloController.scroll_pane_hosting_the_time_line,time_line_pane_data.getPolygon().getLayoutX());
+                    is_it_time_to_change_verses(helloController,(long) (lastKnownMediaTime + elapsed));
                 }
             }
         };
@@ -3009,11 +3001,23 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void milliseconds_to_pixels(long milliseconds){
-
+    private double milliseconds_to_pixels(Time_line_pane_data time_line_pane_data,long milliseconds){
+        double adjustor = time_line_pane_data.getPixels_in_between_each_line() / time_line_pane_data.getTime_between_every_line();
+        return milliseconds * adjustor;
     }
 
-    private void pixels_to_milliseconds(long milliseconds){
+    private long pixels_to_milliseconds(Time_line_pane_data time_line_pane_data,double pixels){
+        double adjustor =  time_line_pane_data.getTime_between_every_line()/ time_line_pane_data.getPixels_in_between_each_line();
+        return (long) (pixels * adjustor);
+    }
 
+    private void is_it_time_to_change_verses(HelloController helloController,double milliseconds){
+        if(chatgpt_responses.size()-1 == selected_verse){
+            return;
+        }
+        if(milliseconds>chatgpt_responses.get(selected_verse+1).getStart_millisecond()){
+            selected_verse++;
+            the_verse_changed(helloController, selected_verse);
+        }
     }
 }
