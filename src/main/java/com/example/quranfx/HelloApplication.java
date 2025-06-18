@@ -775,9 +775,9 @@ public class HelloApplication extends Application {
                 if (!is_the_slider_being_held_right_now) {
                     helloController.sound_slider_fourth_screen.setValue(TimeUnit.MILLISECONDS.toNanos((long) newValue.toMillis()));
                 }
-                update_the_duration_time(helloController, newValue.toMillis());
+                update_the_duration_time(helloController, TimeUnit.MILLISECONDS.toNanos((long) newValue.toMillis()));
                 change_the_image_based_on_audio_fourth_screen(helloController, newValue.toMillis() + 10);
-                lastKnownMediaTime = newValue.toMillis();
+                lastKnownMediaTime = TimeUnit.MILLISECONDS.toNanos((long) newValue.toMillis());
                 lastKnownSystemTime = System.currentTimeMillis();
             }
         });
@@ -831,7 +831,7 @@ public class HelloApplication extends Application {
     }
 
     private void update_the_duration_time(HelloController helloController, double total_millis) {
-        helloController.duration_of_media.setText(formatTime((long) total_millis));
+        helloController.duration_of_media.setText(convertnanosecondsToTime((long) total_millis));
     }
 
     private void listen_to_full_screen_button(HelloController helloController) {
@@ -2857,9 +2857,9 @@ public class HelloApplication extends Application {
                 if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING && lastKnownSystemTime > 0) {
                     Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
                     double elapsed = (System.currentTimeMillis() - lastKnownSystemTime); // seconds
-                    update_the_time_line_indicator(helloController,helloController.time_line_pane, (long) (lastKnownMediaTime + elapsed));
+                    update_the_time_line_indicator(helloController,helloController.time_line_pane, (lastKnownMediaTime + TimeUnit.MILLISECONDS.toNanos((long) elapsed)));
                     set_the_time_line_indicator_to_the_middle(helloController.scroll_pane_hosting_the_time_line,time_line_pane_data.getPolygon().getLayoutX());
-                    is_it_time_to_change_verses(helloController,(long) (lastKnownMediaTime + elapsed));
+                    is_it_time_to_change_verses(helloController,(lastKnownMediaTime + TimeUnit.MILLISECONDS.toNanos((long) elapsed)));
                 }
             }
         };
