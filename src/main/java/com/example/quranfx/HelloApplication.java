@@ -96,8 +96,8 @@ public class HelloApplication extends Application {
     private String sound_path = "";
     private Stage main_stage;
 
-    private Double[] durations;
-    private Double[] end_of_the_picture_durations;
+    private Long[] durations;
+    private Long[] end_of_the_picture_durations;
     private int number_of_audio_channels = 2;
     private boolean did_this_play_already = false;
     private int audio_frequncy_of_the_sound = 44100;
@@ -413,9 +413,9 @@ public class HelloApplication extends Application {
                 if (array_list_with_verses.size() == initial_number_of_ayats) {
                     for (int j = 0; j < array_list_with_verses.size(); j++) {
                         if (durations == null || durations.length == 0) {
-                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), j * 1000L, 1000));
+                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), j * TimeUnit.SECONDS.toNanos(1), TimeUnit.SECONDS.toNanos(1)));
                         } else {
-                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), end_of_the_picture_durations[j].longValue(), durations[j].longValue()));
+                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), end_of_the_picture_durations[j], durations[j]));
                         }
                     }
                     set_up_the_fourth_screen(helloController);
@@ -432,9 +432,9 @@ public class HelloApplication extends Application {
                 add_to_array_list_with_verses(Jsoup.parse(String.valueOf(translations_array_node.get(0).get("text"))).text(), ayat_number, arabic_ayat);
                 for (int j = 0; j < array_list_with_verses.size(); j++) {
                     if (durations == null || durations.length == 0) {
-                        chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), 0, 1000));
+                        chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), 0, TimeUnit.SECONDS.toNanos(1)));
                     } else {
-                        chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), 0, durations[0].longValue()));
+                        chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), 0, durations[0]));
                     }
                 }
                 set_up_the_fourth_screen(helloController);
@@ -773,7 +773,7 @@ public class HelloApplication extends Application {
             @Override
             public void changed(ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue) {
                 if (!is_the_slider_being_held_right_now) {
-                    helloController.sound_slider_fourth_screen.setValue(newValue.toMillis());
+                    helloController.sound_slider_fourth_screen.setValue(TimeUnit.MILLISECONDS.toNanos((long) newValue.toMillis()));
                 }
                 update_the_duration_time(helloController, newValue.toMillis());
                 change_the_image_based_on_audio_fourth_screen(helloController, newValue.toMillis() + 10);
@@ -815,7 +815,7 @@ public class HelloApplication extends Application {
         helloController.sound_slider_fourth_screen.setOnMouseReleased(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                mediaPlayer.seek(Duration.millis(helloController.sound_slider_fourth_screen.getValue()));
+                mediaPlayer.seek(Duration.millis(TimeUnit.NANOSECONDS.toMillis((long) helloController.sound_slider_fourth_screen.getValue())));
                 is_the_slider_being_held_right_now = false;
             }
         });
@@ -1283,8 +1283,8 @@ public class HelloApplication extends Application {
         });
     }
 
-    private double get_duration() {
-        return media.getDuration().toMillis();
+    private long get_duration() {
+        return TimeUnit.MILLISECONDS.toNanos((long) media.getDuration().toMillis());
     }
 
     private void get_the_sound_and_concat_them_into_one(HelloController helloController) {
@@ -1301,8 +1301,8 @@ public class HelloApplication extends Application {
             int number_of_ayats = end_ayat - start_ayat + 1;
             int number_of_threads = Math.max(Runtime.getRuntime().availableProcessors() * 4, number_of_ayats);
             BlockingQueue<String> verseQueue = new ArrayBlockingQueue<>(number_of_ayats);
-            durations = new Double[number_of_ayats];
-            end_of_the_picture_durations = new Double[number_of_ayats];
+            durations = new Long[number_of_ayats];
+            end_of_the_picture_durations = new Long[number_of_ayats];
             HashMap<String, Integer> tie_verses_to_indexes = new HashMap<>();
             String base_url = "";
             if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits().isEmpty()) {
@@ -1371,7 +1371,7 @@ public class HelloApplication extends Application {
             File tempFile = new File("temp/sound", String.format("%03d.wav", start_ayat));
             audio_frequncy_of_the_sound = get_frequency_of_audio(tempFile.getAbsolutePath());
             int get_the_number_of_audio_channels_local = set_the_number_of_audio_channels(getNumberOfChannels(tempFile.getAbsolutePath()));
-            end_of_the_picture_durations[0] = 0D;
+            end_of_the_picture_durations[0] = 0L;
             if (number_of_ayats > 1) {
                 for (int i = 1; i < number_of_ayats; i++) {
                     end_of_the_picture_durations[i] = durations[i - 1] + end_of_the_picture_durations[i - 1];
@@ -1465,7 +1465,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    private double getDurationWithFFmpeg(File wavFile) {
+    private long getDurationWithFFmpeg(File wavFile) {
         try {
             ProcessBuilder pb = new ProcessBuilder(
                     "ffprobe", "-v", "error",
@@ -1480,7 +1480,7 @@ public class HelloApplication extends Application {
                 process.waitFor();
                 if (line != null) {
                     double seconds = Double.parseDouble(line.trim());
-                    return (seconds * 1000); // convert to milliseconds
+                    return (long) (seconds * 1000000000L); // convert to milliseconds
                 }
             }
         } catch (Exception e) {
@@ -1490,7 +1490,7 @@ public class HelloApplication extends Application {
     }
 
     private void set_the_time_total_time(HelloController helloController, double time) {
-        helloController.total_duration_of_media.setText(formatTime((long) time));
+        helloController.total_duration_of_media.setText(convertnanosecondsToTime((long) time));
     }
 
     private void make_temp_dir() {
@@ -1750,7 +1750,7 @@ public class HelloApplication extends Application {
     }
 
     private void set_the_duration_to_reflect_end_of_media(HelloController helloController) {
-        helloController.duration_of_media.setText(formatTime(get_duration()));
+        helloController.duration_of_media.setText(convertnanosecondsToTime( get_duration()));
     }
 
     private void stop_and_start_the_media_again() {
@@ -2561,7 +2561,7 @@ public class HelloApplication extends Application {
         Time_line_pane_data time_line_pane_data = new Time_line_pane_data();
         main_pane.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.rgb(40, 40, 46), CornerRadii.EMPTY, Insets.EMPTY)));
         final double pixels_in_between_each_line = 10;
-        final long time_between_every_line = 50;
+        final long time_between_every_line = TimeUnit.MILLISECONDS.toNanos(50);
         final double long_line_length = 20;
         final double half_long_line_length = 13;
         final double line_length = 7.5;
@@ -2573,7 +2573,7 @@ public class HelloApplication extends Application {
         final javafx.scene.paint.Color short_line_color = javafx.scene.paint.Color.rgb(66, 71, 78);
         final javafx.scene.paint.Color time_text_color = javafx.scene.paint.Color.rgb(146, 146, 146);
         final javafx.scene.paint.Color time_line_indicitor_color = javafx.scene.paint.Color.rgb(206, 47, 40);
-        int number_of_dividors = (int) Math.ceil(get_duration() / time_between_every_line) + 1;
+        int number_of_dividors = (int) Math.ceilDiv(get_duration(), time_between_every_line) + 1;
         double base_time_line = pixels_in_between_each_line * 11;
         time_line_pane_data.setTime_line_base_line(base_time_line);
         main_pane.setUserData(time_line_pane_data);
@@ -2587,10 +2587,11 @@ public class HelloApplication extends Application {
         }
         for (int i = 0; i < number_of_dividors; i++) {
             double x_pos = (i * pixels_in_between_each_line) + base_time_line;
-            if ((time_between_every_line * i) % 1000 == 0) {
+            System.out.println(i * pixels_in_between_each_line);
+            if ((time_between_every_line * i) % TimeUnit.MILLISECONDS.toNanos(1000) == 0) {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, long_line_length, long_line_color, line_thickness));
                 main_pane.getChildren().add(add_the_text_to_time_line(time_between_every_line * i, x_pos, line_length, time_text_color));
-            } else if ((time_between_every_line * i) % 500 == 0) {
+            } else if ((time_between_every_line * i) % TimeUnit.MILLISECONDS.toNanos(500) == 0) {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, half_long_line_length, mid_line_color, line_thickness));
             } else {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, line_length, short_line_color, line_thickness));
@@ -2600,10 +2601,10 @@ public class HelloApplication extends Application {
         double base_line_for_the_end_rectangle = base_time_line + (number_of_dividors) * pixels_in_between_each_line;
         for (int i = 0; i < 11; i++) {
             double x_pos = i * pixels_in_between_each_line + base_line_for_the_end_rectangle;
-            if ((time_between_every_line * (i + number_of_dividors)) % 1000 == 0) {
+            if ((time_between_every_line * (i + number_of_dividors)) % TimeUnit.MILLISECONDS.toNanos(1000) == 0) {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, long_line_length, long_line_color, line_thickness));
                 main_pane.getChildren().add(add_the_text_to_time_line(time_between_every_line * (number_of_dividors+i), x_pos, line_length, time_text_color));
-            } else if ((time_between_every_line * (i + number_of_dividors)) % 500 == 0) {
+            } else if ((time_between_every_line * (i + number_of_dividors)) % TimeUnit.MILLISECONDS.toNanos(500) == 0) {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, half_long_line_length, mid_line_color, line_thickness));
             } else {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, line_length, short_line_color, line_thickness));
@@ -2633,7 +2634,7 @@ public class HelloApplication extends Application {
     }
 
     private Text add_the_text_to_time_line(long millisecond, double line_end, double line_length, javafx.scene.paint.Color color) {
-        Text time_label = new Text(convertMillisecondsToTime(millisecond));
+        Text time_label = new Text(convertnanosecondsToTime(millisecond));
         //time_label.setSmooth(false);
         time_label.setFont(new Font(11));
         Bounds bounds = time_label.getLayoutBounds();
@@ -2643,7 +2644,8 @@ public class HelloApplication extends Application {
         return time_label;
     }
 
-    private String convertMillisecondsToTime(long milliseconds) {
+    private String convertnanosecondsToTime(long nanoseconds) {
+        long milliseconds = nanoseconds / 1_000_000L;
         long seconds = (milliseconds / 1000) % 60;
         long minutes = (milliseconds / (1000 * 60)) % 60;
         long hours = (milliseconds / (1000 * 60 * 60)) % 24;
@@ -2991,7 +2993,7 @@ public class HelloApplication extends Application {
         mediaPlayer.play();
     }
 
-    private void which_verse_am_i_on_milliseconds(HelloController helloController,double milliseconds){
+    private void which_verse_am_i_on_milliseconds(HelloController helloController,long milliseconds){
         int index = Arrays.binarySearch(end_of_the_picture_durations,milliseconds);
         if(index>=0){
             selected_verse = index;
@@ -3021,6 +3023,4 @@ public class HelloApplication extends Application {
             the_verse_changed(helloController, selected_verse);
         }
     }
-
-
 }
