@@ -2587,7 +2587,6 @@ public class HelloApplication extends Application {
         }
         for (int i = 0; i < number_of_dividors; i++) {
             double x_pos = (i * pixels_in_between_each_line) + base_time_line;
-            System.out.println(i * pixels_in_between_each_line);
             if ((time_between_every_line * i) % TimeUnit.MILLISECONDS.toNanos(1000) == 0) {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, long_line_length, long_line_color, line_thickness));
                 main_pane.getChildren().add(add_the_text_to_time_line(time_between_every_line * i, x_pos, line_length, time_text_color));
@@ -2814,8 +2813,11 @@ public class HelloApplication extends Application {
         polygon.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                time_line_clicked(helloController,pane, pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY()).getX());
-                which_verse_am_i_on_milliseconds(helloController,pixels_to_milliseconds(time_line_pane_data,mouseEvent.getX()-time_line_pane_data.getTime_line_base_line()));
+                double x_position = pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY()).getX();
+                time_line_clicked(helloController,pane, x_position);
+                if(x_position - time_line_pane_data.getTime_line_base_line() >=0){
+                    which_verse_am_i_on_milliseconds(helloController,pixels_to_milliseconds(time_line_pane_data,x_position-time_line_pane_data.getTime_line_base_line()));
+                }
             }
         });
     }
@@ -2847,7 +2849,7 @@ public class HelloApplication extends Application {
         double pixels_in_between_each_line = time_line_pane_data.getPixels_in_between_each_line();
         long time_between_every_line = time_line_pane_data.getTime_between_every_line();
         double adjustor = time_between_every_line / pixels_in_between_each_line;
-        mediaPlayer.seek(new Duration(x_position * adjustor));
+        mediaPlayer.seek(new Duration(TimeUnit.NANOSECONDS.toMillis((long) (x_position * adjustor))));
     }
 
     private void animation_timer(HelloController helloController) {
@@ -3000,6 +3002,10 @@ public class HelloApplication extends Application {
             the_verse_changed(helloController, selected_verse);
         } else {
             selected_verse = (index*-1) - 2;
+            if(selected_verse<0){
+                System.out.println(milliseconds);
+                return;
+            }
             the_verse_changed(helloController, selected_verse);
         }
     }
@@ -3014,13 +3020,15 @@ public class HelloApplication extends Application {
         return (long) (pixels * adjustor);
     }
 
-    private void is_it_time_to_change_verses(HelloController helloController,double milliseconds){
-        if(chatgpt_responses.size()-1 == selected_verse){
+    private void is_it_time_to_change_verses(HelloController helloController,double milliseconds) {
+        if (chatgpt_responses.size() - 1 == selected_verse) {
             return;
         }
-        if(milliseconds>chatgpt_responses.get(selected_verse+1).getStart_millisecond()){
+        if (milliseconds > chatgpt_responses.get(selected_verse + 1).getStart_millisecond()) {
             selected_verse++;
             the_verse_changed(helloController, selected_verse);
         }
     }
+
+
 }
