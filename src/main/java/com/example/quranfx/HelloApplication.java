@@ -3005,7 +3005,7 @@ public class HelloApplication extends Application {
             if(selected_verse<0){
                 System.out.println(milliseconds);
                 return;
-            }
+            }// needs debugging
             the_verse_changed(helloController, selected_verse);
         }
     }
