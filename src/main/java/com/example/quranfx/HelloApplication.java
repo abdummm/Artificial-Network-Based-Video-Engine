@@ -3006,6 +3006,8 @@ public class HelloApplication extends Application {
                 System.out.println(milliseconds);
                 return;
             }
+
+
             the_verse_changed(helloController, selected_verse);
         }
     }
