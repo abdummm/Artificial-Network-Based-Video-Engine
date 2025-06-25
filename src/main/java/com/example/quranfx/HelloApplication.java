@@ -3031,5 +3031,4 @@ public class HelloApplication extends Application {
             the_verse_changed(helloController, selected_verse);
         }
     }
-
 }
