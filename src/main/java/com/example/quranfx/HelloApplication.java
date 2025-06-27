@@ -674,7 +674,7 @@ public class HelloApplication extends Application {
         set_selected_verse_text(helloController, 0);
         //set_the_english_text_of_the_ayat_in_the_image_view(helloController, 0);
         set_up_the_media(helloController);
-        set_the_max_of_the_slider_and_set_time_of_last_ayat(helloController);
+        mediaPlayer_status_changed(helloController);
         set_the_media_player_listener(helloController);
         listen_to_end_of_audio_fourth_screen(helloController);
         listen_to_slider_audio(helloController);
@@ -783,19 +783,14 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void set_the_max_of_the_slider_and_set_time_of_last_ayat(HelloController helloController) {
-        mediaPlayer.setOnReady(new Runnable() {
-            @Override
-            public void run() {
-                helloController.sound_slider_fourth_screen.setMax(get_duration());
-                set_the_time_total_time(helloController, get_duration());
-                if (!did_this_play_already) {
-                    start_and_unstart_the_media_player(0);
-                }
-                did_this_play_already = true;
-                create_the_time_line(helloController);
-            }
-        });
+    private void media_is_ready(HelloController helloController){
+        helloController.sound_slider_fourth_screen.setMax(get_duration());
+        set_the_time_total_time(helloController, get_duration());
+        if (!did_this_play_already) {
+            //start_and_unstart_the_media_player(0);
+        }
+        did_this_play_already = true;
+        create_the_time_line(helloController);
     }
 
     private void listen_to_end_of_audio_fourth_screen(HelloController helloController) {
@@ -806,7 +801,7 @@ public class HelloApplication extends Application {
                 set_the_play_pause_button(helloController, "play");
                 set_the_duration_to_reflect_end_of_media(helloController);
                 helloController.sound_slider_fourth_screen.setValue(helloController.sound_slider_fourth_screen.getMax());
-                stop_and_start_the_media_again();
+                //stop_and_start_the_media_again();
             }
         });
     }
@@ -1658,7 +1653,7 @@ public class HelloApplication extends Application {
         return destinationImage;
     }
 
-    private void start_and_unstart_the_media_player(double set_time) {
+    /*private void start_and_unstart_the_media_player(double set_time) {
         mediaPlayer.setOnPlaying(new Runnable() {
             @Override
             public void run() {
@@ -1668,7 +1663,7 @@ public class HelloApplication extends Application {
         });
         mediaPlayer.setMute(true);
         mediaPlayer.play();
-    }
+    }*/
 
     private void listen_to_slider_value_updated(HelloController helloController) {
         helloController.sound_slider_fourth_screen.valueProperty().addListener(new ChangeListener<Number>() {
@@ -1753,7 +1748,7 @@ public class HelloApplication extends Application {
         helloController.duration_of_media.setText(convertnanosecondsToTime( get_duration()));
     }
 
-    private void stop_and_start_the_media_again() {
+    /*private void stop_and_start_the_media_again() {
         mediaPlayer.setOnStopped(new Runnable() {
             @Override
             public void run() {
@@ -1774,7 +1769,7 @@ public class HelloApplication extends Application {
             }
         });
         mediaPlayer.pause();
-    }
+    }*/
 
     /*private void listen_to_image_click(HelloController helloController) {
         helloController.chatgpt_image_view.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -2865,7 +2860,6 @@ public class HelloApplication extends Application {
                 }
             }
         };
-        timer.start();
     }
 
     private void listen_to_give_feed_back_button(HelloController helloController){
@@ -3026,11 +3020,18 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void mediaPlayer_status_changed(){
+    private void mediaPlayer_status_changed(HelloController helloController){
         mediaPlayer.statusProperty().addListener(new ChangeListener<MediaPlayer.Status>() {
             @Override
             public void changed(ObservableValue<? extends MediaPlayer.Status> observableValue, MediaPlayer.Status old_status, MediaPlayer.Status new_status) {
-
+                if(new_status.equals(MediaPlayer.Status.READY)){
+                    media_is_ready(helloController);
+                } else if(new_status.equals(MediaPlayer.Status.PLAYING)){
+                    lastKnownSystemTime = 0;
+                    timer.start();
+                } else if(new_status.equals(MediaPlayer.Status.PAUSED)){
+                    timer.stop();
+                }
             }
         });
     }
