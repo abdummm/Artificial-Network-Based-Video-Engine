@@ -3002,12 +3002,6 @@ public class HelloApplication extends Application {
             the_verse_changed(helloController, selected_verse);
         } else {
             selected_verse = (index*-1) - 2;
-            if(selected_verse<0){
-                System.out.println(milliseconds);
-                return;
-            }
-
-
             the_verse_changed(helloController, selected_verse);
         }
     }
@@ -3030,5 +3024,14 @@ public class HelloApplication extends Application {
             selected_verse++;
             the_verse_changed(helloController, selected_verse);
         }
+    }
+
+    private void mediaPlayer_status_changed(){
+        mediaPlayer.statusProperty().addListener(new ChangeListener<MediaPlayer.Status>() {
+            @Override
+            public void changed(ObservableValue<? extends MediaPlayer.Status> observableValue, MediaPlayer.Status old_status, MediaPlayer.Status new_status) {
+
+            }
+        });
     }
 }
