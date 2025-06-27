@@ -740,6 +740,7 @@ public class HelloApplication extends Application {
     private void set_up_the_media(HelloController helloController) {
         media = new Media(Paths.get(sound_path).toUri().toString());
         mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setCycleCount(1);
     }
 
     private void listen_to_play(HelloController helloController) {
@@ -801,6 +802,8 @@ public class HelloApplication extends Application {
                 set_the_play_pause_button(helloController, "play");
                 set_the_duration_to_reflect_end_of_media(helloController);
                 helloController.sound_slider_fourth_screen.setValue(helloController.sound_slider_fourth_screen.getMax());
+                mediaPlayer.stop();
+                timer.stop();
                 //stop_and_start_the_media_again();
             }
         });
@@ -2980,12 +2983,10 @@ public class HelloApplication extends Application {
     }
 
     private void pause_the_media_player(HelloController helloController){
-        set_the_play_pause_button(helloController, "play");
         mediaPlayer.pause();
     }
 
     private void play_the_media_player(HelloController helloController){
-        set_the_play_pause_button(helloController, "pause");
         mediaPlayer.play();
     }
 
@@ -3029,7 +3030,15 @@ public class HelloApplication extends Application {
                 } else if(new_status.equals(MediaPlayer.Status.PLAYING)){
                     lastKnownSystemTime = 0;
                     timer.start();
+                    set_the_play_pause_button(helloController, "pause");
+                    if(old_status!=null && old_status.equals(MediaPlayer.Status.STOPPED)){
+                        selected_verse = 0;
+                        the_verse_changed(helloController, selected_verse);
+                    }
                 } else if(new_status.equals(MediaPlayer.Status.PAUSED)){
+                    timer.stop();
+                    set_the_play_pause_button(helloController, "play");
+                } else if(new_status.equals(MediaPlayer.Status.STOPPED)){
                     timer.stop();
                 }
             }
