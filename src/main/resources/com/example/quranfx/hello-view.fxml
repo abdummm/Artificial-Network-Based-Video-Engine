@@ -35,9 +35,9 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import atlantafx.base.controls.RingProgressIndicator?>
 <?import io.github.palexdev.materialfx.controls.MFXProgressSpinner?>
-<StackPane prefHeight="365.0" prefWidth="364.0" xmlns="http://javafx.com/javafx/23.0.1"
+<StackPane prefHeight="365.0" prefWidth="366.0" xmlns="http://javafx.com/javafx/23.0.1"
            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.quranfx.HelloController"
-           style="-fx-background-color: #FFFFFF;">
+           style="-fx-background-color: #FFFFFF;" fx:id="parent_stack_pane">
     <BorderPane fx:id="choose_surat_screen">
         <top>
             <VBox alignment="CENTER">

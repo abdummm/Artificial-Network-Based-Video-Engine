@@ -802,8 +802,8 @@ public class HelloApplication extends Application {
                 set_the_play_pause_button(helloController, "play");
                 set_the_duration_to_reflect_end_of_media(helloController);
                 helloController.sound_slider_fourth_screen.setValue(helloController.sound_slider_fourth_screen.getMax());
-                mediaPlayer.stop();
                 timer.stop();
+                update_the_time_line_indicator(helloController.time_line_pane,get_duration());
                 //stop_and_start_the_media_again();
             }
         });
@@ -1546,7 +1546,7 @@ public class HelloApplication extends Application {
     private void scroll_to_specific_verse_time(HelloController helloController) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
         double time_in_milliseconds = chatgpt_responses.get(selected_verse).getStart_millisecond();
-        update_the_time_line_indicator(helloController,helloController.time_line_pane,time_in_milliseconds);
+        update_the_time_line_indicator(helloController.time_line_pane,time_in_milliseconds);
         force_the_time_line_indicator_to_be_at_the_middle(helloController.scroll_pane_hosting_the_time_line,time_line_pane_data.getPolygon().getLayoutX());
         mediaPlayer.seek(Duration.millis(time_in_milliseconds));
     }
@@ -1656,7 +1656,7 @@ public class HelloApplication extends Application {
         return destinationImage;
     }
 
-    /*private void start_and_unstart_the_media_player(double set_time) {
+    private void start_and_unstart_the_media_player(double set_time) {
         mediaPlayer.setOnPlaying(new Runnable() {
             @Override
             public void run() {
@@ -1666,7 +1666,7 @@ public class HelloApplication extends Application {
         });
         mediaPlayer.setMute(true);
         mediaPlayer.play();
-    }*/
+    }
 
     private void listen_to_slider_value_updated(HelloController helloController) {
         helloController.sound_slider_fourth_screen.valueProperty().addListener(new ChangeListener<Number>() {
@@ -1751,7 +1751,7 @@ public class HelloApplication extends Application {
         helloController.duration_of_media.setText(convertnanosecondsToTime( get_duration()));
     }
 
-    /*private void stop_and_start_the_media_again() {
+    private void stop_and_start_the_media_again() {
         mediaPlayer.setOnStopped(new Runnable() {
             @Override
             public void run() {
@@ -1772,7 +1772,7 @@ public class HelloApplication extends Application {
             }
         });
         mediaPlayer.pause();
-    }*/
+    }
 
     /*private void listen_to_image_click(HelloController helloController) {
         helloController.chatgpt_image_view.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -2319,6 +2319,42 @@ public class HelloApplication extends Application {
                 }
             }
         });
+        imageView.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                ImageView ghost = new ImageView(imageView.getImage());
+                ghost.setFitWidth(imageView.getFitWidth());
+                ghost.setFitHeight(imageView.getFitHeight());
+                ghost.setPreserveRatio(true);
+
+                Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(imageView,mouseEvent.getScreenX(),mouseEvent.getSceneY());
+                helloController.parent_stack_pane.getChildren().add(ghost);
+                imageView.setUserData(media_pool_item_dragged);
+            }
+        });
+        imageView.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                ImageView ghost = (ImageView) imageView.getUserData();
+                if (ghost != null) {
+                    if(!helloController.parent_stack_pane.getChildren().contains(ghost)){
+                        helloController.parent_stack_pane.getChildren().add(ghost);
+                        imageView.setCursor(Cursor.MOVE);
+                    }
+                    double x = mouseEvent.getSceneX() - ghost.getFitWidth() / 2;
+                    double y = mouseEvent.getSceneY() - ghost.getFitHeight() / 2;
+                    ghost.setTranslateX(x - helloController.parent_stack_pane.getWidth() / 2);
+                    ghost.setTranslateY(y - helloController.parent_stack_pane.getHeight() / 2);
+                }
+            }
+        });
+        imageView.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                ImageView ghost = (ImageView) imageView.getUserData();
+                helloController.parent_stack_pane.getChildren().remove(ghost);
+            }
+        });
         helloController.tile_pane_media_pool.getChildren().add(stackPane);
     }
 
@@ -2710,7 +2746,7 @@ public class HelloApplication extends Application {
         time_line_pane_data.setPolygon_width(time_line_indicator_width);
     }
 
-    private void update_the_time_line_indicator(HelloController helloController,Pane pane, double milliseconds) {
+    private void update_the_time_line_indicator(Pane pane, double milliseconds) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         double pixels_in_between_each_line = time_line_pane_data.getPixels_in_between_each_line();
         long time_between_every_line = time_line_pane_data.getTime_between_every_line();
@@ -2857,7 +2893,7 @@ public class HelloApplication extends Application {
                 if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING && lastKnownSystemTime > 0) {
                     Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
                     double elapsed = (System.currentTimeMillis() - lastKnownSystemTime); // seconds
-                    update_the_time_line_indicator(helloController,helloController.time_line_pane, (lastKnownMediaTime + TimeUnit.MILLISECONDS.toNanos((long) elapsed)));
+                    update_the_time_line_indicator(helloController.time_line_pane, (lastKnownMediaTime + TimeUnit.MILLISECONDS.toNanos((long) elapsed)));
                     set_the_time_line_indicator_to_the_middle(helloController.scroll_pane_hosting_the_time_line,time_line_pane_data.getPolygon().getLayoutX());
                     is_it_time_to_change_verses(helloController,(lastKnownMediaTime + TimeUnit.MILLISECONDS.toNanos((long) elapsed)));
                 }
@@ -3039,7 +3075,7 @@ public class HelloApplication extends Application {
                     timer.stop();
                     set_the_play_pause_button(helloController, "play");
                 } else if(new_status.equals(MediaPlayer.Status.STOPPED)){
-                    timer.stop();
+                    //timer.stop();
                 }
             }
         });

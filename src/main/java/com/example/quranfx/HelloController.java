@@ -174,4 +174,7 @@ public class HelloController {
 
     @FXML
     public JFXButton give_feedback_button;
+
+    @FXML
+    public StackPane parent_stack_pane;
 }
