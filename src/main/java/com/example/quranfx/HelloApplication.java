@@ -2287,11 +2287,10 @@ public class HelloApplication extends Application {
         VBox vBox = new VBox(5);
         vBox.setAlignment(Pos.CENTER);
         ImageView imageView = new ImageView(mediaPool.getThumbnail());
-        imageView.setFitWidth(image_view_in_tile_pane_width);
-        imageView.setFitHeight(image_view_in_tile_pane_height);
-
+        double[] margin = return_the_width_and_height_of_the_image(imageView);
         imageView.setPreserveRatio(true);
         imageView.setSmooth(true);
+        VBox.setMargin(imageView,new Insets(margin[1],margin[0],margin[1],margin[0]));
         Label label = new Label(mediaPool.getOriginal_image_name());
         label.setAlignment(Pos.CENTER);
         label.setMaxWidth(imageView.getFitWidth());
@@ -2327,34 +2326,38 @@ public class HelloApplication extends Application {
         imageView.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                double real_x_pos = mouseEvent.getScreenX()-mouseEvent.getX();
-                double real_y_pos = mouseEvent.getScreenY()-mouseEvent.getY();
-                ImageView ghost = new ImageView(imageView.getImage());
-                ghost.setFitWidth(imageView.getImage().getWidth());
-                ghost.setFitHeight(imageView.getImage().getHeight());
-                ghost.setLayoutX(real_x_pos);
-                ghost.setLayoutY(real_y_pos);
-                ghost.setOpacity(0.75);
-                ghost.setStyle("-fx-cursor: CLOSED_HAND;");
-                Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(ghost,mouseEvent.getScreenX(),mouseEvent.getScreenY());
-                helloController.pane_holding_the_fourth_screen.getChildren().add(ghost);
-                imageView.setUserData(media_pool_item_dragged);
+                if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+                    double real_x_pos = mouseEvent.getScreenX()-mouseEvent.getX();
+                    double real_y_pos = mouseEvent.getScreenY()-mouseEvent.getY();
+                    ImageView ghost = new ImageView(imageView.getImage());
+                    ghost.setFitWidth(imageView.getFitWidth());
+                    ghost.setFitHeight(imageView.getFitHeight());
+                    ghost.setLayoutX(real_x_pos);
+                    ghost.setLayoutY(real_y_pos);
+                    ghost.setOpacity(0.75);
+                    ghost.setStyle("-fx-cursor: CLOSED_HAND;");
+                    Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(ghost,mouseEvent.getScreenX(),mouseEvent.getScreenY());
+                    helloController.pane_holding_the_fourth_screen.getChildren().add(ghost);
+                    imageView.setUserData(media_pool_item_dragged);
+                }
             }
         });
         imageView.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                Media_pool_item_dragged media_pool_item_dragged = (Media_pool_item_dragged) imageView.getUserData();
-                if (media_pool_item_dragged != null) {
-                    ImageView ghost = media_pool_item_dragged.getImageView();
-                    double old_x_pos = media_pool_item_dragged.getX_pos();
-                    double old_y_pos = media_pool_item_dragged.getY_pos();
-                    if(!helloController.pane_holding_the_fourth_screen.getChildren().contains(ghost)){
-                        helloController.pane_holding_the_fourth_screen.getChildren().add(ghost);
-                        //ghost.setCursor(Cursor.MOVE);
+                if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+                    Media_pool_item_dragged media_pool_item_dragged = (Media_pool_item_dragged) imageView.getUserData();
+                    if (media_pool_item_dragged != null) {
+                        ImageView ghost = media_pool_item_dragged.getImageView();
+                        double old_x_pos = media_pool_item_dragged.getX_pos();
+                        double old_y_pos = media_pool_item_dragged.getY_pos();
+                        if(!helloController.pane_holding_the_fourth_screen.getChildren().contains(ghost)){
+                            helloController.pane_holding_the_fourth_screen.getChildren().add(ghost);
+                            //ghost.setCursor(Cursor.MOVE);
+                        }
+                        ghost.setTranslateX(mouseEvent.getScreenX() - old_x_pos);
+                        ghost.setTranslateY(mouseEvent.getScreenY() - old_y_pos);
                     }
-                    ghost.setTranslateX(mouseEvent.getScreenX() - old_x_pos);
-                    ghost.setTranslateY(mouseEvent.getScreenY() - old_y_pos);
                 }
             }
         });
@@ -2362,8 +2365,10 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 Media_pool_item_dragged media_pool_item_dragged = (Media_pool_item_dragged) imageView.getUserData();
-                ImageView ghost = media_pool_item_dragged.getImageView();
-                helloController.pane_holding_the_fourth_screen.getChildren().remove(ghost);
+                if(media_pool_item_dragged!=null){
+                    ImageView ghost = media_pool_item_dragged.getImageView();
+                    helloController.pane_holding_the_fourth_screen.getChildren().remove(ghost);
+                }
             }
         });
         helloController.tile_pane_media_pool.getChildren().add(stackPane);
@@ -3092,11 +3097,12 @@ public class HelloApplication extends Application {
         });
     }
 
-    private double[] return_the_width_and_height_of_the_image(ImageView imageView, double real_width,double real_hight){
-        double multiplied_width = real_width*16;
-        double multiplied_heigt = real_hight*9;
-        double fake_height = imageView.getImage().getWidth() * 9D/16D;
-        double fake_width = imageView.getImage().getHeight() * 16D/9D;
+    private double[] return_the_width_and_height_of_the_image(ImageView imageView){
+        Image image = imageView.getImage();
+        double multiplied_width = image.getWidth()*16;
+        double multiplied_heigt = image.getHeight()*9;
+        double fake_height = image.getWidth() * 9D/16D;
+        double fake_width = image.getHeight() * 16D/9D;
         if(multiplied_width>multiplied_heigt){
             imageView.setFitWidth(image_view_in_tile_pane_width);
             imageView.setFitHeight(fake_height);
