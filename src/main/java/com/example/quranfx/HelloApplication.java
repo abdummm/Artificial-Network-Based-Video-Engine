@@ -2283,7 +2283,7 @@ public class HelloApplication extends Application {
 
     private void add_image_to_tile_pane(HelloController helloController, Media_pool mediaPool) {
         StackPane stackPane = new StackPane();
-        stackPane.setStyle("-fx-cursor: OPEN_HAND;");
+        //stackPane.setStyle("-fx-cursor: OPEN_HAND;");
         VBox vBox = new VBox(5);
         vBox.setAlignment(Pos.CENTER);
         ImageView imageView = new ImageView(mediaPool.getThumbnail());
@@ -2327,16 +2327,15 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
-                    double real_x_pos = mouseEvent.getScreenX()-mouseEvent.getX();
-                    double real_y_pos = mouseEvent.getScreenY()-mouseEvent.getY();
+                    double real_x_pos = mouseEvent.getSceneX();
+                    double real_y_pos = mouseEvent.getScreenY();
                     ImageView ghost = new ImageView(imageView.getImage());
                     ghost.setFitWidth(imageView.getFitWidth());
                     ghost.setFitHeight(imageView.getFitHeight());
-                    ghost.setLayoutX(real_x_pos);
-                    ghost.setLayoutY(real_y_pos);
+                    ghost.setLayoutX(0);
+                    ghost.setLayoutY(0);
                     ghost.setOpacity(0.75);
-                    ghost.setStyle("-fx-cursor: CLOSED_HAND;");
-                    Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(ghost,mouseEvent.getScreenX(),mouseEvent.getScreenY());
+                    Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(ghost,mouseEvent.getSceneX(),mouseEvent.getSceneY());
                     helloController.pane_holding_the_fourth_screen.getChildren().add(ghost);
                     imageView.setUserData(media_pool_item_dragged);
                 }
@@ -2355,8 +2354,8 @@ public class HelloApplication extends Application {
                             helloController.pane_holding_the_fourth_screen.getChildren().add(ghost);
                             //ghost.setCursor(Cursor.MOVE);
                         }
-                        ghost.setTranslateX(mouseEvent.getScreenX() - old_x_pos);
-                        ghost.setTranslateY(mouseEvent.getScreenY() - old_y_pos);
+                        //ghost.setTranslateX(mouseEvent.getSceneX() - old_x_pos);
+                        //ghost.setTranslateY(mouseEvent.getSceneY() - old_y_pos);
                     }
                 }
             }
@@ -3115,6 +3114,20 @@ public class HelloApplication extends Application {
             imageView.setFitWidth(image_view_in_tile_pane_width);
             imageView.setFitHeight(image_view_in_tile_pane_height);
             return new double[]{0,0};
+        }
+    }
+
+    private double[] return_percentage_buffer(BufferedImage bufferedImage){
+        double max_width = bufferedImage.getWidth() * 16D;
+        double max_height = bufferedImage.getHeight() * 9D;
+        if (max_width > max_height) {
+            double targetHeight = bufferedImage.getWidth() * (16D/9D);  // Calculate the new height for a 9:16 ratio
+            double buffer_at_the_top = (targetHeight - bufferedImage.getHeight()) / 2;
+            return new double[]{0,  buffer_at_the_top/targetHeight};
+        } else {
+            double targetWidth = bufferedImage.getHeight() * (9D / 16D);
+            double buffer_at_the_left = (targetWidth - bufferedImage.getWidth()) / 2;
+            return new double[]{buffer_at_the_left/targetWidth,0};
         }
     }
 }
