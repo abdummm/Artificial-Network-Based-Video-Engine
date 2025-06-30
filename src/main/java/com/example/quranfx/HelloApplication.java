@@ -3092,15 +3092,23 @@ public class HelloApplication extends Application {
         });
     }
 
-    private double[] return_the_width_and_height_of_the_image(double real_width,double real_hight){
+    private double[] return_the_width_and_height_of_the_image(ImageView imageView, double real_width,double real_hight){
         double multiplied_width = real_width*16;
         double multiplied_heigt = real_hight*9;
+        double fake_height = imageView.getImage().getWidth() * 9D/16D;
+        double fake_width = imageView.getImage().getHeight() * 16D/9D;
         if(multiplied_width>multiplied_heigt){
-
+            imageView.setFitWidth(image_view_in_tile_pane_width);
+            imageView.setFitHeight(fake_height);
+            return new double[]{0,(image_view_in_tile_pane_height - fake_height)/2D};
         } else if(multiplied_heigt>multiplied_width){
-
+            imageView.setFitWidth(fake_width);
+            imageView.setFitHeight(image_view_in_tile_pane_height);
+            return new double[]{(image_view_in_tile_pane_width - fake_width)/2D,0};
         } else { // equal
-
+            imageView.setFitWidth(image_view_in_tile_pane_width);
+            imageView.setFitHeight(image_view_in_tile_pane_height);
+            return new double[]{0,0};
         }
     }
 }
