@@ -253,151 +253,161 @@
             </Label>
         </VBox>
     </StackPane>
-    <BorderPane fx:id="show_the_result_screen" visible="false">
-        <!-- Top -->
-        <top>
-            <StackPane fx:id="top_pane_fourth_screen" alignment="CENTER_LEFT">
-                <JFXButton fx:id="cancel_video" focusTraversable="false">
-                    <StackPane.margin>
-                        <Insets top="10" left="10"/>
-                    </StackPane.margin>
-                </JFXButton>
-            </StackPane>
-        </top>
-
-        <center>
-            <HBox>
-                <!-- left -->
-                <HBox HBox.hgrow="ALWAYS">
-                    <StackPane fx:id="left_stack_pane_in_grid_pane">
-                        <VBox>
-                            <VBox alignment="TOP_CENTER">
-                                <StackPane fx:id="stack_pane_hosting_the_scroll_pane_and_the_tile_pane"
-                                           style="-fx-background-color: #F5F5F5; -fx-border-color: black; -fx-border-width: 2;">
-                                    <VBox.margin>
-                                        <Insets top="15.0" left="15.0" right="15.0"/>
-                                    </VBox.margin>
-                                    <ScrollPane fx:id="scroll_pane_hosting_tile_pane_media_pool" fitToWidth="true"
-                                                focusTraversable="false"
-                                                style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
-                                        <TilePane fx:id="tile_pane_media_pool" maxHeight="400.0" prefHeight="400"
-                                                  focusTraversable="false"
-                                                  style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
-                                        </TilePane>
-                                    </ScrollPane>
-                                    <Label fx:id="upload_media_text" text="Media pool" textFill="#B9B9B9">
-                                        <font>
-                                            <Font size="20.0"/>
-                                        </font>
-                                    </Label>
-                                    <MFXProgressSpinner fx:id="progress_indicator_media_pool" visible="false"
-                                                        prefWidth="30" prefHeight="30"
-                                                        stylesheets="@mfx_spinner_style.css">
-                                    </MFXProgressSpinner>
-                                </StackPane>
-                            </VBox>
-                            <VBox alignment="CENTER_RIGHT">
-                                <VBox.margin>
-                                    <Insets top="15.0" right="15.0"/>
-                                </VBox.margin>
-                                <JFXButton fx:id="add_media_button" text="Upload media"
-                                           style="-fx-background-color: #000000; -fx-text-fill: #FFFFFF;"/>
-                            </VBox>
-                        </VBox>
-                    </StackPane>
-                </HBox>
-
-                <!-- CENTER -->
-                <HBox HBox.hgrow="NEVER">
-                    <StackPane fx:id="center_group_grid_pane">
-                        <VBox alignment="CENTER">
-                            <HBox alignment="CENTER">
-                                <VBox alignment="CENTER">
-                                    <JFXButton fx:id="previous_photo_chat_gpt_result" maxHeight="50" maxWidth="50"
-                                               prefHeight="50"
-                                               prefWidth="50" minHeight="50" minWidth="50" focusTraversable="false">
-                                    </JFXButton>
-                                </VBox>
-                                <StackPane fx:id="stack_pane_of_image_view_and_text">
-                                    <HBox.margin>
-                                        <Insets left="5.0"/>
-                                    </HBox.margin>
-                                    <ImageView fx:id="chatgpt_image_view" preserveRatio="true"/>
-                                </StackPane>
-                                <VBox alignment="CENTER">
-                                    <HBox.margin>
-                                        <Insets left="5.0"/>
-                                    </HBox.margin>
-                                    <Pane VBox.vgrow="ALWAYS"/>
-                                    <JFXButton fx:id="next_photo_chat_gpt_result" prefWidth="50" prefHeight="50"
-                                               maxHeight="50"
-                                               maxWidth="50" minHeight="50" minWidth="50" focusTraversable="false">
-                                        <VBox.margin>
-                                            <Insets top="26.0"/>
-                                        </VBox.margin>
-                                    </JFXButton>
-                                    <Pane VBox.vgrow="ALWAYS"/>
-                                    <JFXButton fx:id="full_screen_button_fourth_screen" focusTraversable="false"/>
-                                </VBox>
-                            </HBox>
-                            <Label fx:id="what_verse_is_this" text="Surat Maryam verse 59" visible="true">
-                                <font>
-                                    <Font size="16.0"/>
-                                </font>
-                                <VBox.margin>
-                                    <Insets top="15.0"/>
-                                </VBox.margin>
-                            </Label>
-                        </VBox>
-                    </StackPane>
-                </HBox>
-
-                <!-- RIGHT -->
-                <HBox HBox.hgrow="ALWAYS">
-                    <StackPane fx:id="right_stack_pane_in_grid_pane">
-
-                    </StackPane>
-                </HBox>
-            </HBox>
-        </center>
-
-        <!-- BOTTOM -->
-        <bottom>
-            <StackPane fx:id="bottom_stack_pane_fourth_screen">
-                <VBox fx:id="bottom_vbox_fourth_screen">
-                    <ScrollPane fx:id="scroll_pane_hosting_the_time_line" fitToHeight="true" focusTraversable="false"
-                                style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
-                        <VBox.margin>
-                            <Insets left="20.0" right="20.0" top="10.0"/>
-                        </VBox.margin>
-                        <Pane fx:id="time_line_pane" prefHeight="180">
-
-                        </Pane>
-                    </ScrollPane>
-
-                    <HBox alignment="CENTER_LEFT">
-                        <VBox.margin>
-                            <Insets  top="10.0"/>
-                        </VBox.margin>
-                        <JFXButton fx:id="play_sound">
-                            <HBox.margin>
-                                <Insets left="20.0" />
-                            </HBox.margin>
+    <StackPane fx:id="show_the_result_screen_stack_pane" visible="false">
+            <BorderPane fx:id="show_the_result_screen">
+                <!-- Top -->
+                <top>
+                    <StackPane fx:id="top_pane_fourth_screen" alignment="CENTER_LEFT">
+                        <JFXButton fx:id="cancel_video" focusTraversable="false">
+                            <StackPane.margin>
+                                <Insets top="10" left="10"/>
+                            </StackPane.margin>
                         </JFXButton>
-                        <Label fx:id="duration_of_media" text="00:00"/>
-                        <Slider fx:id="sound_slider_fourth_screen" HBox.hgrow="ALWAYS"/>
-                        <Label fx:id="total_duration_of_media" text="00:00">
-                            <HBox.margin>
-                                <Insets right="20.0" />
-                            </HBox.margin>
-                        </Label>
-                    </HBox>
+                    </StackPane>
+                </top>
 
-                    <HBox alignment="CENTER_RIGHT">
-                        <Button fx:id="create_video_final" text="Create video"/>
+                <center>
+                    <HBox>
+                        <!-- left -->
+                        <HBox HBox.hgrow="ALWAYS">
+                            <StackPane fx:id="left_stack_pane_in_grid_pane">
+                                <VBox>
+                                    <VBox alignment="TOP_CENTER">
+                                        <StackPane fx:id="stack_pane_hosting_the_scroll_pane_and_the_tile_pane"
+                                                   style="-fx-background-color: #F5F5F5; -fx-border-color: black; -fx-border-width: 2;">
+                                            <VBox.margin>
+                                                <Insets top="15.0" left="15.0" right="15.0"/>
+                                            </VBox.margin>
+                                            <ScrollPane fx:id="scroll_pane_hosting_tile_pane_media_pool"
+                                                        fitToWidth="true"
+                                                        focusTraversable="false"
+                                                        style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
+                                                <TilePane fx:id="tile_pane_media_pool" maxHeight="400.0"
+                                                          prefHeight="400"
+                                                          focusTraversable="false"
+                                                          style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
+                                                </TilePane>
+                                            </ScrollPane>
+                                            <Label fx:id="upload_media_text" text="Media pool" textFill="#B9B9B9">
+                                                <font>
+                                                    <Font size="20.0"/>
+                                                </font>
+                                            </Label>
+                                            <MFXProgressSpinner fx:id="progress_indicator_media_pool" visible="false"
+                                                                prefWidth="30" prefHeight="30"
+                                                                stylesheets="@mfx_spinner_style.css">
+                                            </MFXProgressSpinner>
+                                        </StackPane>
+                                    </VBox>
+                                    <VBox alignment="CENTER_RIGHT">
+                                        <VBox.margin>
+                                            <Insets top="15.0" right="15.0"/>
+                                        </VBox.margin>
+                                        <JFXButton fx:id="add_media_button" text="Upload media"
+                                                   style="-fx-background-color: #000000; -fx-text-fill: #FFFFFF;"/>
+                                    </VBox>
+                                </VBox>
+                            </StackPane>
+                        </HBox>
+
+                        <!-- CENTER -->
+                        <HBox HBox.hgrow="NEVER">
+                            <StackPane fx:id="center_group_grid_pane">
+                                <VBox alignment="CENTER">
+                                    <HBox alignment="CENTER">
+                                        <VBox alignment="CENTER">
+                                            <JFXButton fx:id="previous_photo_chat_gpt_result" maxHeight="50"
+                                                       maxWidth="50"
+                                                       prefHeight="50"
+                                                       prefWidth="50" minHeight="50" minWidth="50"
+                                                       focusTraversable="false">
+                                            </JFXButton>
+                                        </VBox>
+                                        <StackPane fx:id="stack_pane_of_image_view_and_text">
+                                            <HBox.margin>
+                                                <Insets left="5.0"/>
+                                            </HBox.margin>
+                                            <ImageView fx:id="chatgpt_image_view" preserveRatio="true"/>
+                                        </StackPane>
+                                        <VBox alignment="CENTER">
+                                            <HBox.margin>
+                                                <Insets left="5.0"/>
+                                            </HBox.margin>
+                                            <Pane VBox.vgrow="ALWAYS"/>
+                                            <JFXButton fx:id="next_photo_chat_gpt_result" prefWidth="50" prefHeight="50"
+                                                       maxHeight="50"
+                                                       maxWidth="50" minHeight="50" minWidth="50"
+                                                       focusTraversable="false">
+                                                <VBox.margin>
+                                                    <Insets top="26.0"/>
+                                                </VBox.margin>
+                                            </JFXButton>
+                                            <Pane VBox.vgrow="ALWAYS"/>
+                                            <JFXButton fx:id="full_screen_button_fourth_screen"
+                                                       focusTraversable="false"/>
+                                        </VBox>
+                                    </HBox>
+                                    <Label fx:id="what_verse_is_this" text="Surat Maryam verse 59" visible="true">
+                                        <font>
+                                            <Font size="16.0"/>
+                                        </font>
+                                        <VBox.margin>
+                                            <Insets top="15.0"/>
+                                        </VBox.margin>
+                                    </Label>
+                                </VBox>
+                            </StackPane>
+                        </HBox>
+
+                        <!-- RIGHT -->
+                        <HBox HBox.hgrow="ALWAYS">
+                            <StackPane fx:id="right_stack_pane_in_grid_pane">
+
+                            </StackPane>
+                        </HBox>
                     </HBox>
-                </VBox>
-            </StackPane>
-        </bottom>
-    </BorderPane>
+                </center>
+
+                <!-- BOTTOM -->
+                <bottom>
+                    <StackPane fx:id="bottom_stack_pane_fourth_screen">
+                        <VBox fx:id="bottom_vbox_fourth_screen">
+                            <ScrollPane fx:id="scroll_pane_hosting_the_time_line" fitToHeight="true"
+                                        focusTraversable="false"
+                                        style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
+                                <VBox.margin>
+                                    <Insets left="20.0" right="20.0" top="10.0"/>
+                                </VBox.margin>
+                                <Pane fx:id="time_line_pane" prefHeight="180">
+
+                                </Pane>
+                            </ScrollPane>
+
+                            <HBox alignment="CENTER_LEFT">
+                                <VBox.margin>
+                                    <Insets top="10.0"/>
+                                </VBox.margin>
+                                <JFXButton fx:id="play_sound">
+                                    <HBox.margin>
+                                        <Insets left="20.0"/>
+                                    </HBox.margin>
+                                </JFXButton>
+                                <Label fx:id="duration_of_media" text="00:00"/>
+                                <Slider fx:id="sound_slider_fourth_screen" HBox.hgrow="ALWAYS"/>
+                                <Label fx:id="total_duration_of_media" text="00:00">
+                                    <HBox.margin>
+                                        <Insets right="20.0"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+
+                            <HBox alignment="CENTER_RIGHT">
+                                <Button fx:id="create_video_final" text="Create video"/>
+                            </HBox>
+                        </VBox>
+                    </StackPane>
+                </bottom>
+            </BorderPane>
+        <Pane fx:id="pane_holding_the_fourth_screen" style="-fx-background-color: transparent;" mouseTransparent="true"/>
+    </StackPane>
 </StackPane>

@@ -668,7 +668,9 @@ public class HelloApplication extends Application {
 
     private void set_up_the_fourth_screen(HelloController helloController) {
         helloController.generating_screen.setVisible(false);
-        helloController.show_the_result_screen.setVisible(true);
+        //helloController.show_the_result_screen.setVisible(true);
+        //helloController.pane_holding_the_fourth_screen.setVisible(true);
+        helloController.show_the_result_screen_stack_pane.setVisible(true);
         set_the_image_fourth_screen(helloController, 0);
         set_the_visibility_of_the_buttons(helloController, 0);
         set_selected_verse_text(helloController, 0);
@@ -1168,7 +1170,9 @@ public class HelloApplication extends Application {
         helloController.cancel_video.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                helloController.show_the_result_screen.setVisible(false);
+                //helloController.show_the_result_screen.setVisible(false);
+                //helloController.pane_holding_the_fourth_screen.setVisible(false);
+                helloController.show_the_result_screen_stack_pane.setVisible(false);
                 helloController.choose_surat_screen.setVisible(true);
                 reset_all_of_the_advanced_settings(helloController);
                 clear_temp_directory();
@@ -2322,37 +2326,47 @@ public class HelloApplication extends Application {
         imageView.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                double real_x_pos = mouseEvent.getScreenX()-mouseEvent.getX();
+                double real_y_pos = mouseEvent.getScreenY()-mouseEvent.getY();
                 ImageView ghost = new ImageView(imageView.getImage());
                 ghost.setFitWidth(imageView.getFitWidth());
                 ghost.setFitHeight(imageView.getFitHeight());
+                ghost.setLayoutX(real_x_pos);
+                ghost.setLayoutY(real_y_pos);
                 ghost.setPreserveRatio(true);
-
-                Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(imageView,mouseEvent.getScreenX(),mouseEvent.getSceneY());
-                helloController.parent_stack_pane.getChildren().add(ghost);
+                ghost.setCursor(Cursor.MOVE);
+                ghost.setOpacity(0.75);
+                ghost.setStyle("-fx-cursor: CLOSED_HAND;");
+                Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(ghost,mouseEvent.getScreenX(),mouseEvent.getScreenY());
+                helloController.pane_holding_the_fourth_screen.getChildren().add(ghost);
                 imageView.setUserData(media_pool_item_dragged);
             }
         });
         imageView.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                ImageView ghost = (ImageView) imageView.getUserData();
+                Media_pool_item_dragged media_pool_item_dragged = (Media_pool_item_dragged) imageView.getUserData();
+                ImageView ghost = media_pool_item_dragged.getImageView();
+                double old_x_pos = media_pool_item_dragged.getX_pos();
+                double old_y_pos = media_pool_item_dragged.getY_pos();
                 if (ghost != null) {
-                    if(!helloController.parent_stack_pane.getChildren().contains(ghost)){
-                        helloController.parent_stack_pane.getChildren().add(ghost);
-                        imageView.setCursor(Cursor.MOVE);
+                    if(!helloController.pane_holding_the_fourth_screen.getChildren().contains(ghost)){
+                        helloController.pane_holding_the_fourth_screen.getChildren().add(ghost);
+                        //ghost.setCursor(Cursor.MOVE);
                     }
-                    double x = mouseEvent.getSceneX() - ghost.getFitWidth() / 2;
-                    double y = mouseEvent.getSceneY() - ghost.getFitHeight() / 2;
-                    ghost.setTranslateX(x - helloController.parent_stack_pane.getWidth() / 2);
-                    ghost.setTranslateY(y - helloController.parent_stack_pane.getHeight() / 2);
+                    ghost.setTranslateX(mouseEvent.getScreenX() - old_x_pos);
+                    ghost.setTranslateY(mouseEvent.getScreenY() - old_y_pos);
+                    //ghost.setTranslateX(mouseEvent.getScreenX() - old_x_pos);
+                    //ghost.setTranslateY(mouseEvent.getScreenY() - old_y_pos);
                 }
             }
         });
         imageView.setOnMouseReleased(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                ImageView ghost = (ImageView) imageView.getUserData();
-                helloController.parent_stack_pane.getChildren().remove(ghost);
+                Media_pool_item_dragged media_pool_item_dragged = (Media_pool_item_dragged) imageView.getUserData();
+                ImageView ghost = media_pool_item_dragged.getImageView();
+                helloController.pane_holding_the_fourth_screen.getChildren().remove(ghost);
             }
         });
         helloController.tile_pane_media_pool.getChildren().add(stackPane);
@@ -2393,7 +2407,7 @@ public class HelloApplication extends Application {
             @Override
             public void changed(ObservableValue<? extends Bounds> observableValue, Bounds old_bounds, Bounds new_bounds) {
                 max_hight_of_top_pane_fourth_screen = Math.max(max_hight_of_top_pane_fourth_screen, new_bounds.getHeight());
-                if (!helloController.show_the_result_screen.isVisible()) {
+                if (!helloController.show_the_result_screen_stack_pane.isVisible()) {
                     if (scene.getHeight() == 0) {
                         reseize_the_image_view(helloController, Screen.getPrimary().getBounds().getHeight() / 2);
                     } else {
@@ -2406,7 +2420,7 @@ public class HelloApplication extends Application {
             @Override
             public void changed(ObservableValue<? extends Bounds> observableValue, Bounds old_bounds, Bounds new_bounds) {
                 max_hight_of_bottom_pane_fourth_screen = Math.max(max_hight_of_bottom_pane_fourth_screen, new_bounds.getHeight());
-                if (!helloController.show_the_result_screen.isVisible()) {
+                if (!helloController.show_the_result_screen_stack_pane.isVisible()) {
                     if (scene.getHeight() == 0) {
                         reseize_the_image_view(helloController, Screen.getPrimary().getBounds().getHeight() / 2);
                     } else {

@@ -176,5 +176,13 @@ public class HelloController {
     public JFXButton give_feedback_button;
 
     @FXML
+    public Pane pane_holding_the_fourth_screen;
+
+    @FXML
     public StackPane parent_stack_pane;
+
+    @FXML
+    public StackPane show_the_result_screen_stack_pane;
+
+
 }
