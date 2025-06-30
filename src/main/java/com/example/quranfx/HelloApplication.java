@@ -2289,6 +2289,7 @@ public class HelloApplication extends Application {
         ImageView imageView = new ImageView(mediaPool.getThumbnail());
         imageView.setFitWidth(image_view_in_tile_pane_width);
         imageView.setFitHeight(image_view_in_tile_pane_height);
+
         imageView.setPreserveRatio(true);
         imageView.setSmooth(true);
         Label label = new Label(mediaPool.getOriginal_image_name());
@@ -2329,12 +2330,10 @@ public class HelloApplication extends Application {
                 double real_x_pos = mouseEvent.getScreenX()-mouseEvent.getX();
                 double real_y_pos = mouseEvent.getScreenY()-mouseEvent.getY();
                 ImageView ghost = new ImageView(imageView.getImage());
-                ghost.setFitWidth(imageView.getFitWidth());
-                ghost.setFitHeight(imageView.getFitHeight());
+                ghost.setFitWidth(imageView.getImage().getWidth());
+                ghost.setFitHeight(imageView.getImage().getHeight());
                 ghost.setLayoutX(real_x_pos);
                 ghost.setLayoutY(real_y_pos);
-                ghost.setPreserveRatio(true);
-                ghost.setCursor(Cursor.MOVE);
                 ghost.setOpacity(0.75);
                 ghost.setStyle("-fx-cursor: CLOSED_HAND;");
                 Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(ghost,mouseEvent.getScreenX(),mouseEvent.getScreenY());
@@ -2346,18 +2345,16 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 Media_pool_item_dragged media_pool_item_dragged = (Media_pool_item_dragged) imageView.getUserData();
-                ImageView ghost = media_pool_item_dragged.getImageView();
-                double old_x_pos = media_pool_item_dragged.getX_pos();
-                double old_y_pos = media_pool_item_dragged.getY_pos();
-                if (ghost != null) {
+                if (media_pool_item_dragged != null) {
+                    ImageView ghost = media_pool_item_dragged.getImageView();
+                    double old_x_pos = media_pool_item_dragged.getX_pos();
+                    double old_y_pos = media_pool_item_dragged.getY_pos();
                     if(!helloController.pane_holding_the_fourth_screen.getChildren().contains(ghost)){
                         helloController.pane_holding_the_fourth_screen.getChildren().add(ghost);
                         //ghost.setCursor(Cursor.MOVE);
                     }
                     ghost.setTranslateX(mouseEvent.getScreenX() - old_x_pos);
                     ghost.setTranslateY(mouseEvent.getScreenY() - old_y_pos);
-                    //ghost.setTranslateX(mouseEvent.getScreenX() - old_x_pos);
-                    //ghost.setTranslateY(mouseEvent.getScreenY() - old_y_pos);
                 }
             }
         });
@@ -3093,5 +3090,17 @@ public class HelloApplication extends Application {
                 }
             }
         });
+    }
+
+    private double[] return_the_width_and_height_of_the_image(double real_width,double real_hight){
+        double multiplied_width = real_width*16;
+        double multiplied_heigt = real_hight*9;
+        if(multiplied_width>multiplied_heigt){
+
+        } else if(multiplied_heigt>multiplied_width){
+
+        } else { // equal
+
+        }
     }
 }
