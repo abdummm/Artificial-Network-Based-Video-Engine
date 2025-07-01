@@ -2060,96 +2060,6 @@ public class HelloApplication extends Application {
         add_the_images_to_the_media_pool_in_the_back_ground(helloController, files);
     }
 
-    /*private void add_the_images_to_the_media_pool_in_the_back_ground(HelloController helloController, List<File> files) {
-        if (files != null && !files.isEmpty()) {
-            helloController.progress_indicator_media_pool.setVisible(true);
-            helloController.scroll_pane_hosting_tile_pane_media_pool.setDisable(true);
-            helloController.upload_media_text.setDisable(true);
-            List<Media_pool> arrayList_with_media_pool = Collections.synchronizedList(new ArrayList<>());
-            BlockingQueue<File> file_blocking_queue = new ArrayBlockingQueue<>(files.size());
-            file_blocking_queue.addAll(files);
-            int number_of_processors = Runtime.getRuntime().availableProcessors();
-            int number_of_threads = Math.min(Math.ceilDiv(number_of_processors, 2), files.size());
-            ExecutorService executor = Executors.newFixedThreadPool(number_of_threads);
-            CountDownLatch latch = new CountDownLatch(number_of_threads);
-            for(int i = 0;i<number_of_threads;i++){
-                executor.submit(() -> {
-                    try {
-                        while (true) {
-                            try {
-                                boolean did_the_image_get_down_scaled = false;
-                                File image_file = file_blocking_queue.poll(100, TimeUnit.MILLISECONDS);
-                                if (image_file == null) {
-                                    break;
-                                }
-                                String fileName_lower_case = image_file.getName().toLowerCase();
-                                Image image;
-                                if (fileName_lower_case.endsWith("heic")) {
-                                    File new_jpg_file = new File("temp/converted images/".concat(UUID.randomUUID().toString()).concat(".png"));
-                                    new_jpg_file.deleteOnExit();
-                                    convertHeicToJpg(image_file, new_jpg_file);
-                                    image = new Image(new FileInputStream(new_jpg_file));
-                                } else {
-                                    image = new Image(new FileInputStream(image_file));
-                                }
-                                String file_id = UUID.randomUUID().toString();
-                                BufferedImage bufferedImage = image_to_buffered_image(image);
-                                int orientation = getExifOrientation(image_file);
-                                if (orientation == 3 || orientation == 6 || orientation == 8) {
-                                    bufferedImage = return_the_rotated_image(bufferedImage, orientation);
-                                }
-                                Pic_aspect_ratio picAspectRatio = return_the_aspect_ratio_as_an_object(helloController);
-                                Media_pool mediaPool_item;
-                                if (is_this_the_correct_ratio(picAspectRatio, bufferedImage)) {
-                                    write_the_raw_file(bufferedImage, "temp/images/base", file_id);
-                                    if (do_i_need_to_down_scale(bufferedImage, picAspectRatio)) {
-                                        did_the_image_get_down_scaled = true;
-                                        write_the_raw_file(return_resized_downscale_buffer_image(bufferedImage, picAspectRatio), "temp/images/scaled", file_id);
-                                    }
-                                    mediaPool_item = new Media_pool(file_id, create_a_thumbnail(bufferedImage, picAspectRatio), image_file.getName(), did_the_image_get_down_scaled);
-                                } else {
-                                    BufferedImage filled_with_black = fill_the_back_ground_with_color(bufferedImage, new Color(0, 0, 0, 255));
-                                    BufferedImage filled_transparent = fill_the_back_ground_with_color(bufferedImage, new Color(0, 0, 0, 0));
-                                    write_the_raw_file(filled_with_black, "temp/images/base", file_id);
-                                    if (do_i_need_to_down_scale(filled_with_black, picAspectRatio)) {
-                                        did_the_image_get_down_scaled = true;
-                                        write_the_raw_file(return_resized_downscale_buffer_image(filled_with_black, picAspectRatio), "temp/images/scaled", file_id);
-                                    }
-                                    mediaPool_item = new Media_pool(file_id, create_a_thumbnail(filled_transparent, picAspectRatio), image_file.getName(), did_the_image_get_down_scaled);
-                                }
-                                arrayList_with_media_pool.add(mediaPool_item);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    } finally {
-                        latch.countDown(); // Signal task is done
-                    }
-                });
-            }
-            executor.shutdown();
-            new Thread(() -> {
-                try {
-                    latch.await(); // Wait until all tasks call countDown()
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            for(int i = 0;i<arrayList_with_media_pool.size();i++){
-                                add_image_to_tile_pane(helloController, arrayList_with_media_pool.get(i));
-                            }
-                            helloController.upload_media_text.setDisable(false);
-                            helloController.progress_indicator_media_pool.setVisible(false);
-                            helloController.scroll_pane_hosting_tile_pane_media_pool.setDisable(false);
-                            hide_or_show_media_pool(helloController);
-                        }
-                    });
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }).start();
-        }
-    }*/
-
     private void add_the_images_to_the_media_pool_in_the_back_ground(HelloController helloController, List<File> files) {
         if (files != null && !files.isEmpty()) {
             helloController.progress_indicator_media_pool.setVisible(true);
@@ -2287,10 +2197,11 @@ public class HelloApplication extends Application {
         VBox vBox = new VBox(5);
         vBox.setAlignment(Pos.CENTER);
         ImageView imageView = new ImageView(mediaPool.getThumbnail());
-        double[] margin = return_the_width_and_height_of_the_image(imageView);
+        imageView.setFitHeight(image_view_in_tile_pane_height);
+        imageView.setFitWidth(image_view_in_tile_pane_width);
         imageView.setPreserveRatio(true);
         imageView.setSmooth(true);
-        VBox.setMargin(imageView,new Insets(margin[1],margin[0],margin[1],margin[0]));
+        imageView.setCursor(Cursor.OPEN_HAND);
         Label label = new Label(mediaPool.getOriginal_image_name());
         label.setAlignment(Pos.CENTER);
         label.setMaxWidth(imageView.getFitWidth());
@@ -2327,14 +2238,15 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
-                    double real_x_pos = mouseEvent.getSceneX();
-                    double real_y_pos = mouseEvent.getScreenY();
+                    imageView.setCursor(Cursor.CLOSED_HAND);
+                    double real_x_pos = mouseEvent.getSceneX() - mouseEvent.getX();
+                    double real_y_pos = mouseEvent.getSceneY() - mouseEvent.getY();
                     ImageView ghost = new ImageView(imageView.getImage());
-                    ghost.setFitWidth(imageView.getFitWidth());
-                    ghost.setFitHeight(imageView.getFitHeight());
-                    ghost.setLayoutX(0);
-                    ghost.setLayoutY(0);
+                    ghost.setFitWidth(image_view_in_tile_pane_width);
+                    ghost.setFitHeight(image_view_in_tile_pane_height);
                     ghost.setOpacity(0.75);
+                    ghost.setLayoutX(real_x_pos);
+                    ghost.setLayoutY(real_y_pos);
                     Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(ghost,mouseEvent.getSceneX(),mouseEvent.getSceneY());
                     helloController.pane_holding_the_fourth_screen.getChildren().add(ghost);
                     imageView.setUserData(media_pool_item_dragged);
@@ -2352,10 +2264,9 @@ public class HelloApplication extends Application {
                         double old_y_pos = media_pool_item_dragged.getY_pos();
                         if(!helloController.pane_holding_the_fourth_screen.getChildren().contains(ghost)){
                             helloController.pane_holding_the_fourth_screen.getChildren().add(ghost);
-                            //ghost.setCursor(Cursor.MOVE);
                         }
-                        //ghost.setTranslateX(mouseEvent.getSceneX() - old_x_pos);
-                        //ghost.setTranslateY(mouseEvent.getSceneY() - old_y_pos);
+                        ghost.setTranslateX(mouseEvent.getSceneX() - old_x_pos);
+                        ghost.setTranslateY(mouseEvent.getSceneY() - old_y_pos);
                     }
                 }
             }
@@ -2363,6 +2274,7 @@ public class HelloApplication extends Application {
         imageView.setOnMouseReleased(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                imageView.setCursor(Cursor.OPEN_HAND);
                 Media_pool_item_dragged media_pool_item_dragged = (Media_pool_item_dragged) imageView.getUserData();
                 if(media_pool_item_dragged!=null){
                     ImageView ghost = media_pool_item_dragged.getImageView();
@@ -3094,40 +3006,5 @@ public class HelloApplication extends Application {
                 }
             }
         });
-    }
-
-    private double[] return_the_width_and_height_of_the_image(ImageView imageView){
-        Image image = imageView.getImage();
-        double multiplied_width = image.getWidth()*16;
-        double multiplied_heigt = image.getHeight()*9;
-        double fake_height = image.getWidth() * 9D/16D;
-        double fake_width = image.getHeight() * 16D/9D;
-        if(multiplied_width>multiplied_heigt){
-            imageView.setFitWidth(image_view_in_tile_pane_width);
-            imageView.setFitHeight(fake_height);
-            return new double[]{0,(image_view_in_tile_pane_height - fake_height)/2D};
-        } else if(multiplied_heigt>multiplied_width){
-            imageView.setFitWidth(fake_width);
-            imageView.setFitHeight(image_view_in_tile_pane_height);
-            return new double[]{(image_view_in_tile_pane_width - fake_width)/2D,0};
-        } else { // equal
-            imageView.setFitWidth(image_view_in_tile_pane_width);
-            imageView.setFitHeight(image_view_in_tile_pane_height);
-            return new double[]{0,0};
-        }
-    }
-
-    private double[] return_percentage_buffer(BufferedImage bufferedImage){
-        double max_width = bufferedImage.getWidth() * 16D;
-        double max_height = bufferedImage.getHeight() * 9D;
-        if (max_width > max_height) {
-            double targetHeight = bufferedImage.getWidth() * (16D/9D);  // Calculate the new height for a 9:16 ratio
-            double buffer_at_the_top = (targetHeight - bufferedImage.getHeight()) / 2;
-            return new double[]{0,  buffer_at_the_top/targetHeight};
-        } else {
-            double targetWidth = bufferedImage.getHeight() * (9D / 16D);
-            double buffer_at_the_left = (targetWidth - bufferedImage.getWidth()) / 2;
-            return new double[]{buffer_at_the_left/targetWidth,0};
-        }
     }
 }
