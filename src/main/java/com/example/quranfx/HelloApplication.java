@@ -2849,7 +2849,7 @@ public class HelloApplication extends Application {
         //feedbackStage.initModality(Modality.WINDOW_MODAL); // optional
         VBox vBox = new VBox();
         vBox.setAlignment(Pos.CENTER);
-        Label main_text = new Label("If you have any feedback, suggestions or bug reports, please send them to the email below.");
+        Label main_text = new Label("If you have any feedback, suggestions or bug reports, please send them to the email below. ");
         Label email_address = new Label(help_email);
         JFXButton copy_button = new JFXButton("Copy email address");
 
@@ -3016,17 +3016,23 @@ public class HelloApplication extends Application {
     private void convert_png_to_jpg(File old_file, File new_file) {
         // Make sure ffmpeg is installed and in your PATH
         ProcessBuilder pb = new ProcessBuilder(
-                "ffmpeg", "-y",
+                "ffmpeg",
                 "-i", old_file.getAbsolutePath(),
-                "-vf", "format=rgb24",
-                "-q:v", "2",
+                "-vf", "format=yuva444p,geq='if(lte(alpha(X,Y),16),255,p(X,Y))':'if(lte(alpha(X,Y),16),128,p(X,Y))':'if(lte(alpha(X,Y),16),128,p(X,Y))'",
                 new_file.getAbsolutePath()
         );
+        pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+        pb.redirectError(ProcessBuilder.Redirect.DISCARD);
         try {
-            Process process = pb.inheritIO().start();
+            Process process = pb.start();
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                show_alert("A problem happened when converting pngs to jpgs. Please restart the program.");
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        show_alert("A problem happened when converting pngs to jpgs. Please restart the program.");
+                    }
+                });
                 throw new RuntimeException("FFmpeg failed to convert image!");
             }
         } catch (IOException | InterruptedException e) {
