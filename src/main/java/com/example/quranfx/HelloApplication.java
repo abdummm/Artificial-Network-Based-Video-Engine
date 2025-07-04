@@ -2272,6 +2272,7 @@ public class HelloApplication extends Application {
                         }
                         ghost.setTranslateX(mouseEvent.getSceneX() - old_x_pos);
                         ghost.setTranslateY(mouseEvent.getSceneY() - old_y_pos);
+
                     }
                 }
             }
@@ -3014,7 +3015,6 @@ public class HelloApplication extends Application {
     }
 
     private void convert_png_to_jpg(File old_file, File new_file) {
-        // Make sure ffmpeg is installed and in your PATH
         ProcessBuilder pb = new ProcessBuilder(
                 "ffmpeg",
                 "-i", old_file.getAbsolutePath(),
@@ -3039,4 +3039,6 @@ public class HelloApplication extends Application {
             throw new RuntimeException(e);
         }
     }
+
+    
 }
