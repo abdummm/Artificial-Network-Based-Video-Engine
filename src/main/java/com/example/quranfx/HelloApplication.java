@@ -3040,5 +3040,15 @@ public class HelloApplication extends Application {
         }
     }
 
-    
+    private boolean am_i_in_time_line_boundries(HelloController helloController, double x_pos, double y_pos){
+        double min_x  = helloController.time_line_pane.getLayoutX();
+        double max_x = min_x + helloController.time_line_pane.getWidth();
+        double min_y = helloController.time_line_pane.getLayoutY();
+        double max_y = min_y + helloController.time_line_pane.getHeight();
+        if(x_pos >= min_x && x_pos<=max_x && y_pos>=min_y && y_pos<=max_y){
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
