@@ -2272,7 +2272,11 @@ public class HelloApplication extends Application {
                         }
                         ghost.setTranslateX(mouseEvent.getSceneX() - old_x_pos);
                         ghost.setTranslateY(mouseEvent.getSceneY() - old_y_pos);
+                        if(am_i_in_time_line_boundries(helloController,mouseEvent.getSceneX(),mouseEvent.getSceneY())){
 
+                        } else {
+
+                        }
                     }
                 }
             }
@@ -3041,9 +3045,10 @@ public class HelloApplication extends Application {
     }
 
     private boolean am_i_in_time_line_boundries(HelloController helloController, double x_pos, double y_pos){
-        double min_x  = helloController.time_line_pane.getLayoutX();
-        double max_x = min_x + helloController.time_line_pane.getWidth();
-        double min_y = helloController.time_line_pane.getLayoutY();
+        Point2D scene_x_and_y = helloController.time_line_pane.localToScene(helloController.time_line_pane.getLayoutX(),helloController.time_line_pane.getLayoutY());
+        double min_x  = scene_x_and_y.getX();
+        double max_x = min_x + helloController.scroll_pane_hosting_the_time_line.getViewportBounds().getWidth();
+        double min_y = scene_x_and_y.getY();
         double max_y = min_y + helloController.time_line_pane.getHeight();
         if(x_pos >= min_x && x_pos<=max_x && y_pos>=min_y && y_pos<=max_y){
             return true;
