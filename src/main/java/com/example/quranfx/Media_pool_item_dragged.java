@@ -3,16 +3,18 @@ package com.example.quranfx;
 import javafx.scene.image.ImageView;
 
 public class Media_pool_item_dragged {
-    public ImageView imageView;
-    public double x_pos;
-    public double y_pos;
-    public boolean has_this_been_dragged;
+    private ImageView imageView;
+    private double x_pos;
+    private double y_pos;
+    private boolean has_this_been_dragged;
+    private String image_key_uuid;
 
-    public Media_pool_item_dragged(ImageView imageView, double x_pos, double y_pos) {
+    public Media_pool_item_dragged(ImageView imageView, double x_pos, double y_pos,String image_key_uuid) {
         this.imageView = imageView;
         this.x_pos = x_pos;
         this.y_pos = y_pos;
         this.has_this_been_dragged = false;
+        this.image_key_uuid = image_key_uuid;
     }
 
     public ImageView getImageView() {
