@@ -39,6 +39,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
@@ -2275,6 +2276,8 @@ public class HelloApplication extends Application {
                         ghost.setTranslateY(mouseEvent.getSceneY() - old_y_pos);
                         if(am_i_in_time_line_boundries(helloController,mouseEvent.getSceneX(),mouseEvent.getSceneY())){
                             add_the_image_to_the_time_line(helloController.time_line_pane,imageView.getImage(),helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(),mouseEvent.getSceneY()).getX(),image_id);
+                        } else {
+                            remove_the_image_from_time_line_hash_map(helloController.time_line_pane,image_id);
                         }
                     }
                 }
@@ -3058,19 +3061,41 @@ public class HelloApplication extends Application {
 
     private void add_the_image_to_the_time_line(Pane pane,Image image,double x_pos,String image_id){
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
+        double width = nanoseconds_to_pixels(time_line_pane_data,TimeUnit.SECONDS.toNanos(1));
+        x_pos -= (width/2);
         x_pos = Math.max(x_pos,time_line_pane_data.getTime_line_base_line());
         Rectangle rectangle;
         if(time_line_pane_data.getHashMap_containing_all_of_the_items().containsKey(image_id)){
             rectangle = (Rectangle) time_line_pane_data.getHashMap_containing_all_of_the_items().get(image_id);
+            set_up_the_image_rectangle(rectangle,image);
         } else {
-            rectangle = new Rectangle(x_pos, 60, TimeUnit.SECONDS.toNanos(1),30);
+            rectangle = new Rectangle(width,30);
             time_line_pane_data.getHashMap_containing_all_of_the_items().put(image_id,rectangle);
+            pane.getChildren().add(pane.getChildren().size()-1,rectangle);
+            set_up_the_image_rectangle(rectangle,image);
         }
+        rectangle.setX(x_pos);
+        rectangle.setY(60);
+    }
+
+    private void remove_the_image_from_time_line_hash_map(Pane pane,String image_id){
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
+        if(time_line_pane_data.getHashMap_containing_all_of_the_items().containsKey(image_id)){
+            pane.getChildren().remove(time_line_pane_data.getHashMap_containing_all_of_the_items().get(image_id));
+            time_line_pane_data.getHashMap_containing_all_of_the_items().remove(image_id);
+        }
+    }
+
+    private void set_up_the_image_rectangle(Rectangle rectangle,Image image){
+        ImagePattern pattern = new ImagePattern(image, 0, 0, 1, 1, false);
         rectangle.setStrokeWidth(1);
         rectangle.setStroke(javafx.scene.paint.Color.BLACK);
         rectangle.setArcHeight(5);
         rectangle.setArcWidth(5);
-        rectangle.setFill(javafx.scene.paint.Color.WHITE);
-        pane.getChildren().add(rectangle);
+        rectangle.setFill(pattern);
+    }
+
+    private Image create_image_for_the_time_line_thumbnail(Image image,double width,double height){
+        double image_ratio = width/height;
     }
 }
