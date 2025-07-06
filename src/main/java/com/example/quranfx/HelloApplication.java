@@ -2254,7 +2254,7 @@ public class HelloApplication extends Application {
                     ghost.setOpacity(0.75);
                     ghost.setLayoutX(real_x_pos);
                     ghost.setLayoutY(real_y_pos);
-                    Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(ghost, mouseEvent.getSceneX(), mouseEvent.getSceneY(),image_id);
+                    Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(ghost, mouseEvent.getSceneX(), mouseEvent.getSceneY(), image_id);
                     helloController.pane_holding_the_fourth_screen.getChildren().add(ghost);
                     imageView.setUserData(media_pool_item_dragged);
                 }
@@ -2274,10 +2274,10 @@ public class HelloApplication extends Application {
                         }
                         ghost.setTranslateX(mouseEvent.getSceneX() - old_x_pos);
                         ghost.setTranslateY(mouseEvent.getSceneY() - old_y_pos);
-                        if(am_i_in_time_line_boundries(helloController,mouseEvent.getSceneX(),mouseEvent.getSceneY())){
-                            add_the_image_to_the_time_line(helloController.time_line_pane,imageView.getImage(),helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(),mouseEvent.getSceneY()).getX(),image_id);
+                        if (am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY())) {
+                            add_the_image_to_the_time_line(helloController.time_line_pane, imageView.getImage(), helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY()).getX(), image_id);
                         } else {
-                            remove_the_image_from_time_line_hash_map(helloController.time_line_pane,image_id);
+                            remove_the_image_from_time_line_hash_map(helloController.time_line_pane, image_id);
                         }
                     }
                 }
@@ -3046,49 +3046,49 @@ public class HelloApplication extends Application {
         }
     }
 
-    private boolean am_i_in_time_line_boundries(HelloController helloController, double x_pos, double y_pos){
-        Point2D scene_x_and_y = helloController.time_line_pane.localToScene(helloController.time_line_pane.getLayoutX(),helloController.time_line_pane.getLayoutY());
-        double min_x  = scene_x_and_y.getX();
+    private boolean am_i_in_time_line_boundries(HelloController helloController, double x_pos, double y_pos) {
+        Point2D scene_x_and_y = helloController.time_line_pane.localToScene(helloController.time_line_pane.getLayoutX(), helloController.time_line_pane.getLayoutY());
+        double min_x = scene_x_and_y.getX();
         double max_x = min_x + helloController.scroll_pane_hosting_the_time_line.getViewportBounds().getWidth();
         double min_y = scene_x_and_y.getY();
         double max_y = min_y + helloController.time_line_pane.getHeight();
-        if(x_pos >= min_x && x_pos<=max_x && y_pos>=min_y && y_pos<=max_y){
+        if (x_pos >= min_x && x_pos <= max_x && y_pos >= min_y && y_pos <= max_y) {
             return true;
         } else {
             return false;
         }
     }
 
-    private void add_the_image_to_the_time_line(Pane pane,Image image,double x_pos,String image_id){
+    private void add_the_image_to_the_time_line(Pane pane, Image image, double x_pos, String image_id) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
-        double width = nanoseconds_to_pixels(time_line_pane_data,TimeUnit.SECONDS.toNanos(1));
+        double width = nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1));
         double height = 60;
-        x_pos -= (width/2);
-        x_pos = Math.max(x_pos,time_line_pane_data.getTime_line_base_line());
+        x_pos -= (width / 2);
+        x_pos = Math.max(x_pos, time_line_pane_data.getTime_line_base_line());
         Rectangle rectangle;
-        if(time_line_pane_data.getHashMap_containing_all_of_the_items().containsKey(image_id)){
+        if (time_line_pane_data.getHashMap_containing_all_of_the_items().containsKey(image_id)) {
             rectangle = (Rectangle) time_line_pane_data.getHashMap_containing_all_of_the_items().get(image_id);
-            set_up_the_image_rectangle(rectangle,image);
+            set_up_the_image_rectangle(rectangle, image);
         } else {
-            rectangle = new Rectangle(width,60);
-            time_line_pane_data.getHashMap_containing_all_of_the_items().put(image_id,rectangle);
-            pane.getChildren().add(pane.getChildren().size()-1,rectangle);
-            set_up_the_image_rectangle(rectangle,image);
+            rectangle = new Rectangle(width, 60);
+            time_line_pane_data.getHashMap_containing_all_of_the_items().put(image_id, rectangle);
+            pane.getChildren().add(pane.getChildren().size() - 1, rectangle);
+            set_up_the_image_rectangle(rectangle, image);
         }
         rectangle.setX(x_pos);
         rectangle.setY(60);
     }
 
-    private void remove_the_image_from_time_line_hash_map(Pane pane,String image_id){
+    private void remove_the_image_from_time_line_hash_map(Pane pane, String image_id) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
-        if(time_line_pane_data.getHashMap_containing_all_of_the_items().containsKey(image_id)){
+        if (time_line_pane_data.getHashMap_containing_all_of_the_items().containsKey(image_id)) {
             pane.getChildren().remove(time_line_pane_data.getHashMap_containing_all_of_the_items().get(image_id));
             time_line_pane_data.getHashMap_containing_all_of_the_items().remove(image_id);
         }
     }
 
-    private void set_up_the_image_rectangle(Rectangle rectangle,Image image){
-        ImagePattern pattern = new ImagePattern(create_image_for_the_time_line_thumbnail(image, rectangle.getWidth(),rectangle.getHeight()), 0, 0, 1, 1, true);
+    private void set_up_the_image_rectangle(Rectangle rectangle, Image image) {
+        ImagePattern pattern = new ImagePattern(create_image_for_the_time_line_thumbnail(remove_transparent_pixels(image), rectangle.getWidth(), rectangle.getHeight()), 0, 0, 1, 1, true);
         rectangle.setStrokeWidth(1);
         rectangle.setStroke(javafx.scene.paint.Color.BLACK);
         rectangle.setArcHeight(5);
@@ -3096,18 +3096,18 @@ public class HelloApplication extends Application {
         rectangle.setFill(pattern);
     }
 
-    private Image create_image_for_the_time_line_thumbnail(Image image,double width,double height){
+    private Image create_image_for_the_time_line_thumbnail(Image image, double width, double height) {
         try {
             BufferedImage thumbnail = Thumbnails.of(image_to_buffered_image(image))
                     .height((int) height)
                     .keepAspectRatio(true)
                     .scalingMode(ScalingMode.PROGRESSIVE_BILINEAR)
                     .asBufferedImage();
-            WritableImage writableImage = new WritableImage((int) width,(int) height);
+            WritableImage writableImage = new WritableImage((int) width, (int) height);
             PixelWriter pixelWriter = writableImage.getPixelWriter();
             PixelReader reader = buffer_image_to_image(thumbnail).getPixelReader();
-            for(int i = 0;i<thumbnail.getHeight();i++){
-                for(int j = 0;j<thumbnail.getWidth();j++){
+            for (int i = 0; i < thumbnail.getHeight(); i++) {
+                for (int j = 0; j < thumbnail.getWidth(); j++) {
                     javafx.scene.paint.Color color = reader.getColor(j, i);
                     pixelWriter.setColor(j, i, color);
                 }
@@ -3119,46 +3119,50 @@ public class HelloApplication extends Application {
 
     }
 
-    private Image remove_transparent_pixels(Image image){
+    private Image remove_transparent_pixels(Image image) {
         PixelReader pixelReader = image.getPixelReader();
         int start_left_to_right = -1;
         int end_left_to_right = -1;
         int start_top_to_bottom = -1;
         int end_top_to_bottom = -1;
-        for(int i = 0;i<image.getHeight();i++){
-            for(int j = 0;j<image.getWidth();j++){
-                if(!pixelReader.getColor(j,i).equals(javafx.scene.paint.Color.TRANSPARENT)){
-                    if(start_left_to_right == -1){
+        for (int i = 0; i < image.getHeight(); i++) {
+            for (int j = 0; j < image.getWidth(); j++) {
+                if (!pixelReader.getColor(j, i).equals(javafx.scene.paint.Color.TRANSPARENT)) {
+                    if (start_left_to_right == -1) {
                         start_left_to_right = j;
                     }
-                    if(j>end_left_to_right){
+                    if (j > end_left_to_right) {
                         end_left_to_right = j;
                     }
-                    if(start_top_to_bottom == -1){
+                    if (start_top_to_bottom == -1) {
                         start_top_to_bottom = i;
                     }
-                    if(i>end_top_to_bottom){
+                    if (i > end_top_to_bottom) {
                         end_top_to_bottom = i;
                     }
                 }
             }
         }
-        if(end_left_to_right - start_left_to_right == 0 || end_top_to_bottom - start_top_to_bottom == 0){
+        if (end_left_to_right - start_left_to_right == 0 || end_top_to_bottom - start_top_to_bottom == 0) {
 
         }
         WritableImage new_image_to_be_returned = new WritableImage(end_left_to_right - start_left_to_right + 1, end_top_to_bottom - start_top_to_bottom + 1);
         PixelWriter pixelWriter = new_image_to_be_returned.getPixelWriter();
         int x_counter = 0;
         int y_counter = 0;
-        for(int i = 0;i<image.getHeight();i++){
-            for(int j = 0;j<image.getWidth();j++){
-                if(!pixelReader.getColor(j,i).equals(javafx.scene.paint.Color.TRANSPARENT)){
-                    pixelWriter.setColor(x_counter,y_counter,pixelReader.getColor(j,i));
+        for (int i = 0; i < image.getHeight(); i++) {
+            boolean found_a_non_transparent_pixel = false;
+            for (int j = 0; j < image.getWidth(); j++) {
+                if (!pixelReader.getColor(j, i).equals(javafx.scene.paint.Color.TRANSPARENT)) {
+                    pixelWriter.setColor(x_counter, y_counter, pixelReader.getColor(j, i));
+                    found_a_non_transparent_pixel = true;
+                    x_counter++;
                 }
-                x_counter++;
             }
             x_counter = 0;
-            y_counter++;
+            if (found_a_non_transparent_pixel) {
+                y_counter++;
+            }
         }
         return new_image_to_be_returned;
     }
