@@ -2254,7 +2254,7 @@ public class HelloApplication extends Application {
                     ghost.setOpacity(0.75);
                     ghost.setLayoutX(real_x_pos);
                     ghost.setLayoutY(real_y_pos);
-                    Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(ghost, mouseEvent.getSceneX(), mouseEvent.getSceneY(), image_id);
+                    Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(ghost, mouseEvent.getSceneX(), mouseEvent.getSceneY(), UUID.randomUUID().toString());
                     helloController.pane_holding_the_fourth_screen.getChildren().add(ghost);
                     imageView.setUserData(media_pool_item_dragged);
                 }
@@ -2275,7 +2275,7 @@ public class HelloApplication extends Application {
                         ghost.setTranslateX(mouseEvent.getSceneX() - old_x_pos);
                         ghost.setTranslateY(mouseEvent.getSceneY() - old_y_pos);
                         if (am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY())) {
-                            add_the_image_to_the_time_line(helloController.time_line_pane, imageView.getImage(), helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY()).getX(), image_id);
+                            add_the_image_to_the_time_line(helloController.time_line_pane, imageView.getImage(), helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY()).getX(), media_pool_item_dragged.getImage_key_uuid());
                         } else {
                             remove_the_image_from_time_line_hash_map(helloController.time_line_pane, image_id);
                         }
@@ -3068,12 +3068,12 @@ public class HelloApplication extends Application {
         Rectangle rectangle;
         if (time_line_pane_data.getHashMap_containing_all_of_the_items().containsKey(image_id)) {
             rectangle = (Rectangle) time_line_pane_data.getHashMap_containing_all_of_the_items().get(image_id);
-            set_up_the_image_rectangle(rectangle, image);
         } else {
-            rectangle = new Rectangle(width, 60);
+            rectangle = new Rectangle(width, height);
             time_line_pane_data.getHashMap_containing_all_of_the_items().put(image_id, rectangle);
             pane.getChildren().add(pane.getChildren().size() - 1, rectangle);
-            set_up_the_image_rectangle(rectangle, image);
+            set_up_the_image_rectangle(rectangle, image, pane);
+            configure_the_image_rectangle(rectangle);
         }
         rectangle.setX(x_pos);
         rectangle.setY(60);
@@ -3087,7 +3087,9 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void set_up_the_image_rectangle(Rectangle rectangle, Image image) {
+    private void set_up_the_image_rectangle(Rectangle rectangle, Image image, Pane pane) {
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
+        //double whole_pane_width_without_start_and_end = (int) Math.ceilDiv(get_duration(), time_line_pane_data.getTime_between_every_line()) * time_line_pane_data.getPixels_in_between_each_line() + ((int) Math.ceilDiv(get_duration(), time_line_pane_data.getTime_between_every_line()) + 1);
         ImagePattern pattern = new ImagePattern(create_image_for_the_time_line_thumbnail(remove_transparent_pixels(image), rectangle.getWidth(), rectangle.getHeight()), 0, 0, 1, 1, true);
         rectangle.setStrokeWidth(1);
         rectangle.setStroke(javafx.scene.paint.Color.BLACK);
@@ -3102,21 +3104,30 @@ public class HelloApplication extends Application {
                     .height((int) height)
                     .keepAspectRatio(true)
                     .scalingMode(ScalingMode.PROGRESSIVE_BILINEAR)
+                    .outputQuality(1)
                     .asBufferedImage();
             WritableImage writableImage = new WritableImage((int) width, (int) height);
             PixelWriter pixelWriter = writableImage.getPixelWriter();
             PixelReader reader = buffer_image_to_image(thumbnail).getPixelReader();
+            int number_of_images = Math.floorDiv((int) width, thumbnail.getWidth());
+            for (int k = 0; k < number_of_images; k++) {
+                for (int i = 0; i < thumbnail.getHeight(); i++) {
+                    for (int j = 0; j < thumbnail.getWidth(); j++) {
+                        javafx.scene.paint.Color color = reader.getColor(j, i);
+                        pixelWriter.setColor(j + k * thumbnail.getWidth(), i, color);
+                    }
+                }
+            }
             for (int i = 0; i < thumbnail.getHeight(); i++) {
-                for (int j = 0; j < thumbnail.getWidth(); j++) {
+                for (int j = 0; j < width % thumbnail.getWidth(); j++) {
                     javafx.scene.paint.Color color = reader.getColor(j, i);
-                    pixelWriter.setColor(j, i, color);
+                    pixelWriter.setColor(j + number_of_images * thumbnail.getWidth(), i, color);
                 }
             }
             return writableImage;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     private Image remove_transparent_pixels(Image image) {
@@ -3165,5 +3176,41 @@ public class HelloApplication extends Application {
             }
         }
         return new_image_to_be_returned;
+    }
+
+    private void configure_the_image_rectangle(Rectangle rectangle){
+        rectangle.setCursor(Cursor.OPEN_HAND);
+        rectangle.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if(mouseEvent.getButton().equals(MouseButton.SECONDARY)){
+
+                }
+            }
+        });
+        rectangle.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+                    rectangle.setCursor(Cursor.CLOSED_HAND);
+                }
+            }
+        });
+        rectangle.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+
+                }
+            }
+        });
+        rectangle.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+                    rectangle.setCursor(Cursor.OPEN_HAND);
+                }
+            }
+        });
     }
 }

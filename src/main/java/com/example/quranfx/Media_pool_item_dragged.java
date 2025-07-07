@@ -48,4 +48,8 @@ public class Media_pool_item_dragged {
     public void setHas_this_been_dragged(boolean has_this_been_dragged) {
         this.has_this_been_dragged = has_this_been_dragged;
     }
+
+    public String getImage_key_uuid() {
+        return image_key_uuid;
+    }
 }
