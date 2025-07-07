@@ -2282,8 +2282,7 @@ public class HelloApplication extends Application {
                         if(am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged)){
                             set_the_opacity_of_the_rectangle_in_time_line_pane((Time_line_pane_data) helloController.time_line_pane.getUserData(),1,media_pool_item_dragged.getImage_key_uuid());
                         } else {
-                            set_the_opacity_of_the_rectangle_in_time_line_pane((Time_line_pane_data) helloController.time_line_pane.getUserData(),0.5D,media_pool_item_dragged.getImage_key_uuid());
-
+                            set_the_opacity_of_the_rectangle_in_time_line_pane((Time_line_pane_data) helloController.time_line_pane.getUserData(),0.4D,media_pool_item_dragged.getImage_key_uuid());
                         }
                     }
                 }
@@ -2297,7 +2296,6 @@ public class HelloApplication extends Application {
                 if (media_pool_item_dragged != null) {
                     ImageView ghost = media_pool_item_dragged.getImageView();
                     helloController.pane_holding_the_fourth_screen.getChildren().remove(ghost);
-                    System.out.println(am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged));
                     if (!am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged)) {
                         remove_the_image_from_time_line_hash_map(helloController.time_line_pane, media_pool_item_dragged.getImage_key_uuid());
 
@@ -3077,24 +3075,32 @@ public class HelloApplication extends Application {
         double height = 60;
         x_pos -= (width / 2);
         x_pos = Math.max(x_pos, time_line_pane_data.getTime_line_base_line());
+        if(x_pos+width >=time_line_pane_data.getTime_line_end_base_line()){
+            x_pos = time_line_pane_data.getTime_line_end_base_line() - width;
+        }
         Rectangle rectangle;
+        Shape_object_time_line shapeObjectTimeLine;
         if (time_line_pane_data.getHashMap_containing_all_of_the_items().containsKey(image_id)) {
-            rectangle = (Rectangle) time_line_pane_data.getHashMap_containing_all_of_the_items().get(image_id);
+            shapeObjectTimeLine = time_line_pane_data.getHashMap_containing_all_of_the_items().get(image_id);
+            rectangle = (Rectangle) shapeObjectTimeLine.getShape();
         } else {
             rectangle = new Rectangle(width, height);
-            time_line_pane_data.getHashMap_containing_all_of_the_items().put(image_id, rectangle);
+            shapeObjectTimeLine = new Shape_object_time_line(x_pos,x_pos+width,rectangle);
+            time_line_pane_data.getHashMap_containing_all_of_the_items().put(image_id, shapeObjectTimeLine);
             pane.getChildren().add(pane.getChildren().size() - 1, rectangle);
             set_up_the_image_rectangle(rectangle, image, pane);
             configure_the_image_rectangle(rectangle);
+            rectangle.setY(60);
         }
         rectangle.setX(x_pos);
-        rectangle.setY(60);
+        shapeObjectTimeLine.setStart(x_pos);
+        shapeObjectTimeLine.setEnd(x_pos + width);
     }
 
     private void remove_the_image_from_time_line_hash_map(Pane pane, String image_id) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         if (time_line_pane_data.getHashMap_containing_all_of_the_items().containsKey(image_id)) {
-            pane.getChildren().remove(time_line_pane_data.getHashMap_containing_all_of_the_items().get(image_id));
+            pane.getChildren().remove(time_line_pane_data.getHashMap_containing_all_of_the_items().get(image_id).getShape());
             time_line_pane_data.getHashMap_containing_all_of_the_items().remove(image_id);
         }
     }
@@ -3227,9 +3233,9 @@ public class HelloApplication extends Application {
     }
 
     private void set_the_opacity_of_the_rectangle_in_time_line_pane(Time_line_pane_data time_line_pane_data, double opacity, String uuid){
-        HashMap<String, Shape> hashMap_with_all_of_the_items = time_line_pane_data.getHashMap_containing_all_of_the_items();
+        HashMap<String, Shape_object_time_line> hashMap_with_all_of_the_items = time_line_pane_data.getHashMap_containing_all_of_the_items();
         if(hashMap_with_all_of_the_items.containsKey(uuid)){
-            Rectangle rectangle = (Rectangle) hashMap_with_all_of_the_items.get(uuid);
+            Rectangle rectangle = (Rectangle) hashMap_with_all_of_the_items.get(uuid).getShape();
             rectangle.setOpacity(opacity);
         }
     }

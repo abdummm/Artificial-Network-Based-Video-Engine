@@ -1,7 +1,6 @@
 package com.example.quranfx;
 
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Shape;
 
 import java.util.HashMap;
 
@@ -13,7 +12,7 @@ public class Time_line_pane_data {
     private double polygon_width;
     private double time_line_base_line;
     private double time_line_end_base_line;
-    private HashMap<String, Shape> hashMap_containing_all_of_the_items;
+    private HashMap<String, Shape_object_time_line> hashMap_containing_all_of_the_items;
 
     public Time_line_pane_data() {
         hashMap_containing_all_of_the_items = new HashMap<>();
@@ -75,7 +74,7 @@ public class Time_line_pane_data {
         this.time_line_end_base_line = time_line_end_base_line;
     }
 
-    public HashMap<String, Shape> getHashMap_containing_all_of_the_items() {
+    public HashMap<String, Shape_object_time_line> getHashMap_containing_all_of_the_items() {
         return hashMap_containing_all_of_the_items;
     }
 }
