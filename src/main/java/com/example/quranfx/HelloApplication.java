@@ -95,7 +95,6 @@ public class HelloApplication extends Application {
     private String surat_name_selected = "Al-Fatiha";
     private Media media;
     private MediaPlayer mediaPlayer;
-    private boolean is_the_slider_being_held_right_now = false;
     private String sound_path = "";
     private Stage main_stage;
 
@@ -152,7 +151,6 @@ public class HelloApplication extends Application {
         previous_photo_click_listen(helloController);
         listen_to_play(helloController);
         //set_the_width_of_play_pause_button(helloController);
-        listen_to_slide_clicked(helloController);
         listen_to_full_screen_button(helloController);
         listen_to_genereate_chat_gpt_checkbox(helloController);
         upload_sound_listen(helloController);
@@ -162,7 +160,6 @@ public class HelloApplication extends Application {
         listen_to_the_recitor_list_view_click(helloController);
         make_temp_dir();
         clear_temp_directory();
-        listen_to_slider_value_updated(helloController);
         set_the_icons(helloController);
         listen_to_enter_click_on_select_surat_listview(helloController);
         listen_to_list_click_list_view(helloController);
@@ -535,7 +532,7 @@ public class HelloApplication extends Application {
 
         set_the_play_pause_button(helloController, "play");
 
-        helloController.sound_slider_fourth_screen.setValue(0);
+        //helloController.sound_slider_fourth_screen.setValue(0);
         if (mediaPlayer != null) {
             mediaPlayer.stop();
         }
@@ -545,8 +542,6 @@ public class HelloApplication extends Application {
         if (end_of_the_picture_durations != null) {
             Arrays.fill(end_of_the_picture_durations, null);
         }
-        helloController.duration_of_media.setText("00:00");
-        helloController.total_duration_of_media.setText("00:00");
         selected_verse = 0;
         sound_path = "";
         array_list_with_times.clear();
@@ -683,7 +678,6 @@ public class HelloApplication extends Application {
         mediaPlayer_status_changed(helloController);
         set_the_media_player_listener(helloController);
         listen_to_end_of_audio_fourth_screen(helloController);
-        listen_to_slider_audio(helloController);
         set_up_the_width_and_height_of_the_image_in_fourth_screen(helloController);
         animation_timer(helloController);
     }
@@ -769,20 +763,10 @@ public class HelloApplication extends Application {
         }
     }
 
-    /*private void set_the_width_of_play_pause_button(HelloController helloController) {
-        Text text = new Text("Pause");
-        text.setFont(helloController.play_sound.getFont());
-        helloController.play_sound.setPrefWidth(text.getLayoutBounds().getWidth() + 20);
-    }*/
-
     private void set_the_media_player_listener(HelloController helloController) {
         mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
             @Override
             public void changed(ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue) {
-                if (!is_the_slider_being_held_right_now) {
-                    helloController.sound_slider_fourth_screen.setValue(TimeUnit.MILLISECONDS.toNanos((long) newValue.toMillis()));
-                }
-                update_the_duration_time(helloController, TimeUnit.MILLISECONDS.toNanos((long) newValue.toMillis()));
                 change_the_image_based_on_audio_fourth_screen(helloController, newValue.toMillis() + 10);
                 lastKnownMediaTime = TimeUnit.MILLISECONDS.toNanos((long) newValue.toMillis());
                 lastKnownSystemTime = System.currentTimeMillis();
@@ -791,8 +775,7 @@ public class HelloApplication extends Application {
     }
 
     private void media_is_ready(HelloController helloController) {
-        helloController.sound_slider_fourth_screen.setMax(get_duration());
-        set_the_time_total_time(helloController, get_duration());
+//        helloController.sound_slider_fourth_screen.setMax(get_duration());
         if (!did_this_play_already) {
             //start_and_unstart_the_media_player(0);
         }
@@ -806,36 +789,12 @@ public class HelloApplication extends Application {
             public void run() {
                 selected_verse = chatgpt_responses.size() - 1;
                 set_the_play_pause_button(helloController, "play");
-                set_the_duration_to_reflect_end_of_media(helloController);
-                helloController.sound_slider_fourth_screen.setValue(helloController.sound_slider_fourth_screen.getMax());
+//                helloController.sound_slider_fourth_screen.setValue(helloController.sound_slider_fourth_screen.getMax());
                 timer.stop();
                 update_the_time_line_indicator(helloController.time_line_pane, get_duration());
                 //stop_and_start_the_media_again();
             }
         });
-    }
-
-    private void listen_to_slider_audio(HelloController helloController) {
-        helloController.sound_slider_fourth_screen.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                mediaPlayer.seek(Duration.millis(TimeUnit.NANOSECONDS.toMillis((long) helloController.sound_slider_fourth_screen.getValue())));
-                is_the_slider_being_held_right_now = false;
-            }
-        });
-    }
-
-    private void listen_to_slide_clicked(HelloController helloController) {
-        helloController.sound_slider_fourth_screen.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                is_the_slider_being_held_right_now = true;
-            }
-        });
-    }
-
-    private void update_the_duration_time(HelloController helloController, double total_millis) {
-        helloController.duration_of_media.setText(convertnanosecondsToTime((long) total_millis));
     }
 
     private void listen_to_full_screen_button(HelloController helloController) {
@@ -1495,10 +1454,6 @@ public class HelloApplication extends Application {
         return 0;
     }
 
-    private void set_the_time_total_time(HelloController helloController, double time) {
-        helloController.total_duration_of_media.setText(convertnanosecondsToTime((long) time));
-    }
-
     private void make_temp_dir() {
         File directory = new File("temp/");
         File images = new File("temp/images");
@@ -1676,15 +1631,6 @@ public class HelloApplication extends Application {
         mediaPlayer.play();
     }
 
-    private void listen_to_slider_value_updated(HelloController helloController) {
-        helloController.sound_slider_fourth_screen.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
-                update_the_duration_time(helloController, newValue.doubleValue());
-            }
-        });
-    }
-
     private BufferedImage get_the_right_basic_image_aspect_ratio(Pic_aspect_ratio pic_aspect_ratio) {
         if (pic_aspect_ratio == Pic_aspect_ratio.aspect_vertical_9_16) {
             return Base64_image.getInstance().vertical_place_holder;
@@ -1753,10 +1699,6 @@ public class HelloApplication extends Application {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void set_the_duration_to_reflect_end_of_media(HelloController helloController) {
-        helloController.duration_of_media.setText(convertnanosecondsToTime(get_duration()));
     }
 
     private void stop_and_start_the_media_again() {
@@ -3224,7 +3166,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                    double mouse_scene_x_translated = helloController.scroll_pane_hosting_the_time_line.sceneToLocal(mouseEvent.getSceneX(),mouseEvent.getSceneY()).getX();
+                    double mouse_scene_x_translated = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(),mouseEvent.getSceneY()).getX();
                     double local_x = mouse_scene_x_translated - shapeObjectTimeLine.getStart();
                     if(is_the_rectangle_in_resize_mode(rectangle,local_x,change_cursor_to_double_arrow_buffer)){
 
@@ -3254,7 +3196,7 @@ public class HelloApplication extends Application {
 
     private void set_the_rectangle_mouse_cursor(HelloController helloController,double scene_x,double scene_y,Shape_object_time_line shapeObjectTimeLine,double change_cursor_to_double_arrow_buffer){
         Rectangle rectangle = (Rectangle) shapeObjectTimeLine.getShape();
-        double mouse_scene_x_translated = helloController.scroll_pane_hosting_the_time_line.sceneToLocal(scene_x,scene_y).getX();
+        double mouse_scene_x_translated = helloController.time_line_pane.sceneToLocal(scene_x,scene_y).getX();
         double local_x = mouse_scene_x_translated - shapeObjectTimeLine.getStart();
         if(is_the_rectangle_in_resize_mode(rectangle,local_x,change_cursor_to_double_arrow_buffer)){
             rectangle.setCursor(Cursor.H_RESIZE);
@@ -3336,4 +3278,5 @@ public class HelloApplication extends Application {
         }
         helloController.chatgpt_image_view.setImage(writableImage);
     }
+
 }

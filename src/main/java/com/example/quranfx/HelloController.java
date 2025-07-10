@@ -95,12 +95,6 @@ public class HelloController {
     public Button play_sound;
 
     @FXML
-    public Slider sound_slider_fourth_screen;
-
-    @FXML
-    public Label duration_of_media;
-
-    @FXML
     public JFXButton full_screen_button_fourth_screen;
 
     @FXML
@@ -122,9 +116,6 @@ public class HelloController {
     public ListView<Reciters_info> list_view_with_the_recitors;
 
     @FXML
-    public Label total_duration_of_media;
-
-    @FXML
     public JFXComboBox<Integer> combobox_to_choose_starting_ayat;
 
     @FXML
@@ -144,9 +135,6 @@ public class HelloController {
 
     @FXML
     public StackPane center_group_grid_pane;
-
-    @FXML
-    public VBox bottom_vbox_fourth_screen;
 
     @FXML
     public StackPane top_pane_fourth_screen;
