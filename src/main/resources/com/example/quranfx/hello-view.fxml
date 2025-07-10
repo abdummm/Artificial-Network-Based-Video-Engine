@@ -259,12 +259,16 @@
         <BorderPane fx:id="show_the_result_screen">
             <!-- Top -->
             <top>
-                <StackPane fx:id="top_pane_fourth_screen" alignment="CENTER_LEFT">
-                    <JFXButton fx:id="cancel_video" focusTraversable="false">
-                        <StackPane.margin>
-                            <Insets top="10" left="10"/>
-                        </StackPane.margin>
-                    </JFXButton>
+                <StackPane fx:id="top_pane_fourth_screen" >
+                    <HBox alignment="CENTER">
+                        <JFXButton fx:id="cancel_video" focusTraversable="false">
+                            <StackPane.margin>
+                                <Insets top="10" left="10"/>
+                            </StackPane.margin>
+                        </JFXButton>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <JFXButton fx:id="create_video_final" text = "test" focusTraversable="false" />
+                    </HBox>
                 </StackPane>
             </top>
 
@@ -373,15 +377,17 @@
             <!-- BOTTOM -->
             <bottom>
                 <StackPane fx:id="bottom_stack_pane_fourth_screen">
-                    <VBox>
-                        <JFXButton fx:id="play_sound">
-                            <HBox.margin>
-                                <Insets left="20.0"/>
-                            </HBox.margin>
-                        </JFXButton>
+                    <VBox alignment="CENTER">
+                        <HBox alignment="CENTER">
+                            <JFXButton fx:id="play_sound">
+                                <HBox.margin>
+                                    <Insets left="20.0"/>
+                                </HBox.margin>
+                            </JFXButton>
+                        </HBox>
                         <HBox alignment="CENTER">
                             <VBox.margin>
-                                <Insets  top="10.0"/>
+                                <Insets  top="10.0" bottom="30.0"/>
                             </VBox.margin>
                             <ScrollPane fx:id="scroll_pane_hosting_the_time_line" fitToHeight="true"
                                         focusTraversable="false"
@@ -391,9 +397,6 @@
                                 </HBox.margin>
                                 <Pane fx:id="time_line_pane" prefHeight="180"/>
                             </ScrollPane>
-                        </HBox>
-                        <HBox alignment="CENTER_RIGHT">
-                            <Button fx:id="create_video_final" text="Create video"/>
                         </HBox>
                     </VBox>
                 </StackPane>
