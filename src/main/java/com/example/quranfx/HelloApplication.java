@@ -3008,11 +3008,11 @@ public class HelloApplication extends Application {
     }
 
     private boolean am_i_in_time_line_boundries(HelloController helloController, double x_pos, double y_pos, Media_pool_item_dragged media_pool_item_dragged) {
-        Point2D scene_x_and_y = helloController.scroll_pane_hosting_the_time_line.localToScene(helloController.scroll_pane_hosting_the_time_line.getLayoutX(), helloController.scroll_pane_hosting_the_time_line.getLayoutY());
+        Point2D scene_x_and_y = helloController.scroll_pane_hosting_the_time_line.localToScene(0,0);
         double min_x = scene_x_and_y.getX();
         double max_x = min_x + helloController.scroll_pane_hosting_the_time_line.getViewportBounds().getWidth();
         double min_y = scene_x_and_y.getY();
-        double max_y = min_y + helloController.scroll_pane_hosting_the_time_line.getHeight();
+        double max_y = min_y + helloController.scroll_pane_hosting_the_time_line.getViewportBounds().getHeight();
         if (x_pos >= min_x && x_pos <= max_x && y_pos >= min_y && y_pos <= max_y) {
             media_pool_item_dragged.setHas_this_been_dragged(true);
             return true;
