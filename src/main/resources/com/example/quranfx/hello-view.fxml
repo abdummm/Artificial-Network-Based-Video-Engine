@@ -378,7 +378,7 @@
                 <StackPane fx:id="bottom_stack_pane_fourth_screen">
                     <VBox alignment="CENTER">
                         <HBox alignment="CENTER">
-                            <JFXButton fx:id="play_sound">
+                            <JFXButton fx:id="play_sound" visible="false" managed="false"> <!--TODO remove this-->
                                 <HBox.margin>
                                     <Insets left="20.0"/>
                                 </HBox.margin>

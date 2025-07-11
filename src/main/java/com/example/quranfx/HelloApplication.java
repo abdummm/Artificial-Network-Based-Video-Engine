@@ -173,6 +173,8 @@ public class HelloApplication extends Application {
         listen_to_give_feed_back_button(helloController);
         black_out_the_image_view_at_the_start(helloController);
         listen_to_chatgpt_image_view_on_mouse_enetered_and_left(helloController);
+        play_the_sound_on_chatgpt_image_clicked(helloController);
+        add_tool_tip_to_create_button(helloController);
     }
 
     public static void main(String[] args) {
@@ -3295,4 +3297,20 @@ public class HelloApplication extends Application {
             }
         });
     }
+
+    private void play_the_sound_on_chatgpt_image_clicked(HelloController helloController){
+        helloController.chatgpt_image_view.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                play_or_pause_the_video_after_click(helloController);
+            }
+        });
+    }
+
+    private void add_tool_tip_to_create_button(HelloController helloController){
+        Tooltip tooltip = new Tooltip("Create video");
+        tooltip.setShowDelay(new Duration(500));
+        Tooltip.install(helloController.create_video_final, tooltip);
+    }
+
 }
