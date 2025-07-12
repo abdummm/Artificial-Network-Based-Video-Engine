@@ -175,6 +175,7 @@ public class HelloApplication extends Application {
         listen_to_chatgpt_image_view_on_mouse_enetered_and_left(helloController);
         play_the_sound_on_chatgpt_image_clicked(helloController);
         add_tool_tip_to_create_button(helloController);
+        add_cancel_video_tool_tip(helloController);
     }
 
     public static void main(String[] args) {
@@ -2226,12 +2227,18 @@ public class HelloApplication extends Application {
                         }
                         ghost.setTranslateX(mouseEvent.getSceneX() - old_x_pos);
                         ghost.setTranslateY(mouseEvent.getSceneY() - old_y_pos);
+                        System.out.println("x pos local: " +  Math.max(time_line_pane_data.getTime_line_base_line(),x_pos_local - image_width_in_time_line / 2));
+                        System.out.println("baseline: " + time_line_pane_data.getTime_line_base_line());
+                        for(String key : time_line_pane_data.getHashMap_containing_all_of_the_items().keySet()){
+                            System.out.println("Hashmap" + time_line_pane_data.getHashMap_containing_all_of_the_items().get(key).getStart());
+                        }
+                        System.out.println();
                         if (media_pool_item_dragged.isHas_this_been_dragged() || am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged)) {
                             add_the_image_to_the_time_line(helloController.time_line_pane, imageView.getImage(), x_pos_local, media_pool_item_dragged.getImage_key_uuid(), image_width_in_time_line,helloController);
                         } else {
                             remove_the_image_from_time_line_hash_map(helloController.time_line_pane, media_pool_item_dragged.getImage_key_uuid());
                         }
-                        if (am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) && !is_there_is_a_collosion(media_pool_item_dragged.getSorted_timing_array(), x_pos_local - image_width_in_time_line / 2, x_pos_local + image_width_in_time_line / 2)) {
+                        if (am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) && !is_there_is_a_collosion(media_pool_item_dragged.getSorted_timing_array(), Math.max(time_line_pane_data.getTime_line_base_line(),x_pos_local - image_width_in_time_line / 2),Math.min(x_pos_local + image_width_in_time_line / 2,time_line_pane_data.getTime_line_end_base_line()))) {
                             set_the_opacity_of_the_rectangle_in_time_line_pane(time_line_pane_data, 1, media_pool_item_dragged.getImage_key_uuid());
                         } else {
                             set_the_opacity_of_the_rectangle_in_time_line_pane(time_line_pane_data, 0.4D, media_pool_item_dragged.getImage_key_uuid());
@@ -2251,7 +2258,7 @@ public class HelloApplication extends Application {
                     helloController.pane_holding_the_fourth_screen.getChildren().remove(ghost);
                     double x_pos_local = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY()).getX();
                     double image_width_in_time_line = nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1));
-                    if (!am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) || is_there_is_a_collosion(media_pool_item_dragged.getSorted_timing_array(), x_pos_local - image_width_in_time_line / 2, x_pos_local + image_width_in_time_line / 2)) {
+                    if (!am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) || is_there_is_a_collosion(media_pool_item_dragged.getSorted_timing_array(), Math.max(time_line_pane_data.getTime_line_base_line(),x_pos_local - image_width_in_time_line / 2),Math.min(x_pos_local + image_width_in_time_line / 2,time_line_pane_data.getTime_line_end_base_line()))) {
                         remove_the_image_from_time_line_hash_map(helloController.time_line_pane, media_pool_item_dragged.getImage_key_uuid());
                     }
                 }
@@ -3313,4 +3320,9 @@ public class HelloApplication extends Application {
         Tooltip.install(helloController.create_video_final, tooltip);
     }
 
+    private void add_cancel_video_tool_tip(HelloController helloController){
+        Tooltip tooltip = new Tooltip("Cancel video");
+        tooltip.setShowDelay(new Duration(500));
+        Tooltip.install(helloController.cancel_video, tooltip);
+    }
 }
