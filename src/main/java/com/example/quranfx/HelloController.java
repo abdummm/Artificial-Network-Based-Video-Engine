@@ -172,5 +172,20 @@ public class HelloController {
     @FXML
     public StackPane show_the_result_screen_stack_pane;
 
+    @FXML
+    public JFXButton fast_rewind_image_view;
+
+    @FXML
+    public JFXButton slow_rewind_image_view;
+
+    @FXML
+    public JFXButton slow_forward_image_view;
+
+    @FXML
+    public JFXButton fast_forward_image_view;
+
+    @FXML
+    public HBox chatgpt_image_view_vid_control;
+
 
 }

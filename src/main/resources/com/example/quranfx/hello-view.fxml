@@ -333,6 +333,13 @@
                                             <Insets left="5.0"/>
                                         </HBox.margin>
                                         <ImageView fx:id="chatgpt_image_view" preserveRatio="true"/>
+                                        <HBox fx:id="chatgpt_image_view_vid_control" StackPane.alignment="BOTTOM_CENTER" alignment="CENTER" style="-fx-background-color: #FFFFFF80;" maxHeight="30" prefHeight="50">
+                                            <JFXButton fx:id="fast_rewind_image_view"/>
+                                            <JFXButton fx:id="slow_rewind_image_view"/>
+                                            <JFXButton fx:id="play_sound"/>
+                                            <JFXButton fx:id="slow_forward_image_view"/>
+                                            <JFXButton fx:id="fast_forward_image_view"/>
+                                        </HBox>
                                     </StackPane>
                                     <VBox alignment="CENTER">
                                         <HBox.margin>
@@ -377,13 +384,6 @@
             <bottom>
                 <StackPane fx:id="bottom_stack_pane_fourth_screen">
                     <VBox alignment="CENTER">
-                        <HBox alignment="CENTER">
-                            <JFXButton fx:id="play_sound" visible="false" managed="false"> <!--TODO remove this-->
-                                <HBox.margin>
-                                    <Insets left="20.0"/>
-                                </HBox.margin>
-                            </JFXButton>
-                        </HBox>
                         <HBox alignment="CENTER">
                             <VBox.margin>
                                 <Insets  top="10.0" bottom="20.0"/>

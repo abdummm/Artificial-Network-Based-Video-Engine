@@ -1886,6 +1886,11 @@ public class HelloApplication extends Application {
         helloController.full_screen_button_fourth_screen.setGraphic(return_region_for_svg(get_the_svg_path("fullscreen"), 25D));
         helloController.cancel_video.setGraphic(return_region_for_svg(get_the_svg_path("arrow_back_with_line"), 25D));
         helloController.create_video_final.setGraphic(return_region_for_svg(get_the_svg_path("rocket_launch"), 25D));
+        helloController.fast_rewind_image_view.setGraphic(return_region_for_svg(get_the_svg_path("rocket_launch"), 25D));
+        helloController.fast_rewind_image_view.setGraphic(return_region_for_svg(get_the_svg_path("fast_rewind"), 25D));
+        helloController.slow_rewind_image_view.setGraphic(return_region_for_svg(get_the_svg_path("slow_rewind"), 25D));
+        helloController.slow_forward_image_view.setGraphic(return_region_for_svg(get_the_svg_path("slow_forward"), 25D));
+        helloController.fast_forward_image_view.setGraphic(return_region_for_svg(get_the_svg_path("fast_forward"), 25D));
         set_the_play_pause_button(helloController, "play");
     }
 
@@ -3316,13 +3321,13 @@ public class HelloApplication extends Application {
         helloController.chatgpt_image_view.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-
+                helloController.chatgpt_image_view_vid_control.setVisible(true);
             }
         });
         helloController.chatgpt_image_view.setOnMouseExited(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-
+                helloController.chatgpt_image_view_vid_control.setVisible(false);
             }
         });
     }
