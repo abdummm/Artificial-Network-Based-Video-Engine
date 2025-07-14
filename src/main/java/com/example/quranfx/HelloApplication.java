@@ -3318,13 +3318,13 @@ public class HelloApplication extends Application {
     }
 
     private void listen_to_chatgpt_image_view_on_mouse_enetered_and_left(HelloController helloController){
-        helloController.chatgpt_image_view.setOnMouseEntered(new EventHandler<MouseEvent>() {
+        helloController.stack_pane_of_image_view_and_text.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 helloController.chatgpt_image_view_vid_control.setVisible(true);
             }
         });
-        helloController.chatgpt_image_view.setOnMouseExited(new EventHandler<MouseEvent>() {
+        helloController.stack_pane_of_image_view_and_text.setOnMouseExited(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 helloController.chatgpt_image_view_vid_control.setVisible(false);

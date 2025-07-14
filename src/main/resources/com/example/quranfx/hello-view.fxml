@@ -333,7 +333,7 @@
                                             <Insets left="5.0"/>
                                         </HBox.margin>
                                         <ImageView fx:id="chatgpt_image_view" preserveRatio="true"/>
-                                        <HBox fx:id="chatgpt_image_view_vid_control" StackPane.alignment="BOTTOM_CENTER" alignment="CENTER" style="-fx-background-color: #FFFFFF80;" maxHeight="30" prefHeight="50">
+                                        <HBox fx:id="chatgpt_image_view_vid_control" StackPane.alignment="BOTTOM_CENTER" alignment="CENTER" style="-fx-background-color: #FFFFFFCC;" maxHeight="45" prefHeight="45" visible="false">
                                             <JFXButton fx:id="fast_rewind_image_view"/>
                                             <JFXButton fx:id="slow_rewind_image_view"/>
                                             <JFXButton fx:id="play_sound"/>
