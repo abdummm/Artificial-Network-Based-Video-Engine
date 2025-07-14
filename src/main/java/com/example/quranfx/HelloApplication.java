@@ -3206,13 +3206,13 @@ public class HelloApplication extends Application {
                     double mouse_scene_x_translated = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(),mouseEvent.getSceneY()).getX();
                     double local_x = mouse_scene_x_translated - shapeObjectTimeLine.getStart();
                     if(get_type_of_movement(rectangle,local_x,change_cursor_to_double_arrow_buffer) == MovementType.START){
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(),MovementType.START);
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(),MovementType.START,shapeObjectTimeLine.getStart(),shapeObjectTimeLine.getEnd(),local_x);
                         rectangle.setUserData(rectangleChangedInfo);
                     } else if(get_type_of_movement(rectangle,local_x,change_cursor_to_double_arrow_buffer) == MovementType.END) {
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(),MovementType.END);
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(),MovementType.END,shapeObjectTimeLine.getStart(),shapeObjectTimeLine.getEnd(),local_x);
                         rectangle.setUserData(rectangleChangedInfo);
                     } else {
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(),MovementType.MIDDLE);
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(),MovementType.MIDDLE,shapeObjectTimeLine.getStart(),shapeObjectTimeLine.getEnd(),local_x);
                         rectangle.setUserData(rectangleChangedInfo);
                         rectangle.setCursor(Cursor.CLOSED_HAND);
                     }
@@ -3222,10 +3222,12 @@ public class HelloApplication extends Application {
         rectangle.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                double mouse_scene_x_translated = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(),mouseEvent.getSceneY()).getX();
-                double local_x = mouse_scene_x_translated - shapeObjectTimeLine.getStart();
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                     Rectangle_changed_info rectangleChangedInfo = (Rectangle_changed_info) rectangle.getUserData();
+                    double mouse_scene_x_translated = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(),mouseEvent.getSceneY()).getX();
+                    double local_x = rectangleChangedInfo.getRelative_x();
+                    System.out.println(mouse_scene_x_translated);
+                    System.out.println(local_x);
                     if(rectangleChangedInfo.getType_of_movement() == MovementType.START){
 
                     } else if(rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE){
