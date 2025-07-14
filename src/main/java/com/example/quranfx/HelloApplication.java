@@ -44,7 +44,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
-import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -73,7 +72,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.io.FileUtils;
 import org.imgscalr.Scalr;
 import org.jsoup.*;
-import org.opencv.core.Rect;
 
 import javax.imageio.ImageIO;
 
@@ -3076,7 +3074,7 @@ public class HelloApplication extends Application {
             time_line_pane_data.getHashMap_containing_all_of_the_items().put(image_id, shapeObjectTimeLine);
             pane.getChildren().add(pane.getChildren().size() - 1, rectangle);
             set_up_the_image_rectangle(rectangle, image, pane);
-            configure_the_image_rectangle(shapeObjectTimeLine,helloController);
+            configure_the_image_rectangle(shapeObjectTimeLine,helloController,pane);
             rectangle.setY(60);
         }
         rectangle.setX(x_pos);
@@ -3183,7 +3181,8 @@ public class HelloApplication extends Application {
         return new_image_to_be_returned;
     }
 
-    private void configure_the_image_rectangle(Shape_object_time_line shapeObjectTimeLine,HelloController helloController) {
+    private void configure_the_image_rectangle(Shape_object_time_line shapeObjectTimeLine,HelloController helloController,Pane pane) {
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         Rectangle rectangle = (Rectangle) shapeObjectTimeLine.getShape();
         double change_cursor_to_double_arrow_buffer = 10;
         rectangle.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -3206,9 +3205,15 @@ public class HelloApplication extends Application {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                     double mouse_scene_x_translated = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(),mouseEvent.getSceneY()).getX();
                     double local_x = mouse_scene_x_translated - shapeObjectTimeLine.getStart();
-                    if(is_the_rectangle_in_resize_mode(rectangle,local_x,change_cursor_to_double_arrow_buffer)){
-
+                    if(get_type_of_movement(rectangle,local_x,change_cursor_to_double_arrow_buffer) == MovementType.START){
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(),MovementType.START);
+                        rectangle.setUserData(rectangleChangedInfo);
+                    } else if(get_type_of_movement(rectangle,local_x,change_cursor_to_double_arrow_buffer) == MovementType.END) {
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(),MovementType.END);
+                        rectangle.setUserData(rectangleChangedInfo);
                     } else {
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(),MovementType.MIDDLE);
+                        rectangle.setUserData(rectangleChangedInfo);
                         rectangle.setCursor(Cursor.CLOSED_HAND);
                     }
                 }
@@ -3217,8 +3222,19 @@ public class HelloApplication extends Application {
         rectangle.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                double mouse_scene_x_translated = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(),mouseEvent.getSceneY()).getX();
+                double local_x = mouse_scene_x_translated - shapeObjectTimeLine.getStart();
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+                    Rectangle_changed_info rectangleChangedInfo = (Rectangle_changed_info) rectangle.getUserData();
+                    if(rectangleChangedInfo.getType_of_movement() == MovementType.START){
 
+                    } else if(rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE){
+                        if(mouse_scene_x_translated-local_x>=time_line_pane_data.getTime_line_base_line()){
+                            rectangle.setTranslateX(mouseEvent.getSceneX()-rectangleChangedInfo.getOriginal_x());
+                        }
+                    }  else if(rectangleChangedInfo.getType_of_movement() == MovementType.END){
+
+                    }
                 }
             }
         });
@@ -3227,6 +3243,9 @@ public class HelloApplication extends Application {
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                     set_the_rectangle_mouse_cursor(helloController,mouseEvent.getSceneX(),mouseEvent.getSceneY(),shapeObjectTimeLine,change_cursor_to_double_arrow_buffer);
+                    shapeObjectTimeLine.setStart(rectangle.getX());
+                    shapeObjectTimeLine.setEnd(rectangle.getX()+rectangle.getWidth());
+
                 }
             }
         });
@@ -3236,18 +3255,20 @@ public class HelloApplication extends Application {
         Rectangle rectangle = (Rectangle) shapeObjectTimeLine.getShape();
         double mouse_scene_x_translated = helloController.time_line_pane.sceneToLocal(scene_x,scene_y).getX();
         double local_x = mouse_scene_x_translated - shapeObjectTimeLine.getStart();
-        if(is_the_rectangle_in_resize_mode(rectangle,local_x,change_cursor_to_double_arrow_buffer)){
+        if(get_type_of_movement(rectangle,local_x,change_cursor_to_double_arrow_buffer) == MovementType.START || get_type_of_movement(rectangle,local_x,change_cursor_to_double_arrow_buffer) == MovementType.END){
             rectangle.setCursor(Cursor.H_RESIZE);
         } else {
             rectangle.setCursor(Cursor.OPEN_HAND);
         }
     }
 
-    private boolean is_the_rectangle_in_resize_mode(Rectangle rectangle, double local_x, double change_cursor_to_double_arrow_buffer ){
-        if(local_x<=change_cursor_to_double_arrow_buffer || rectangle.getWidth() - local_x <= change_cursor_to_double_arrow_buffer){
-           return true;
+    private MovementType get_type_of_movement(Rectangle rectangle, double local_x, double change_cursor_to_double_arrow_buffer ){
+        if(local_x<=change_cursor_to_double_arrow_buffer){
+            return MovementType.START;
+        } else if(rectangle.getWidth() - local_x <= change_cursor_to_double_arrow_buffer){
+            return MovementType.END;
         } else {
-            return false;
+            return MovementType.MIDDLE;
         }
     }
 
