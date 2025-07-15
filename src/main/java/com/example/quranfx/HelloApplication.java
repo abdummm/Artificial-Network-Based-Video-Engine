@@ -3117,14 +3117,14 @@ public class HelloApplication extends Application {
                 for (int i = 0; i < thumbnail.getHeight(); i++) {
                     for (int j = 0; j < thumbnail.getWidth(); j++) {
                         javafx.scene.paint.Color color = reader.getColor(j, i);
-                        pixelWriter.setColor(j + k * thumbnail.getWidth(), i, color);
+                        pixelWriter.setColor(j + (k * thumbnail.getWidth()), i, color);
                     }
                 }
             }
             for (int i = 0; i < thumbnail.getHeight(); i++) {
                 for (int j = 0; j < width % thumbnail.getWidth(); j++) {
                     javafx.scene.paint.Color color = reader.getColor(j, i);
-                    pixelWriter.setColor(j + number_of_images * thumbnail.getWidth(), i, color);
+                    pixelWriter.setColor(j + (number_of_images * thumbnail.getWidth()), i, color);
                 }
             }
             return writableImage;
@@ -3214,14 +3214,17 @@ public class HelloApplication extends Application {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                     double mouse_scene_x_translated = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY()).getX();
                     double local_x = mouse_scene_x_translated - shapeObjectTimeLine.getStart();
+                    HashMap<String, Shape_object_time_line> copy_of_all_items_hash_map = new HashMap<>(time_line_pane_data.getHashMap_containing_all_of_the_items());
+                    copy_of_all_items_hash_map.remove(rectangle_id);
+                    double[][] sorted_array_hashmap = return_all_of_the_image_timings_sorted(copy_of_all_items_hash_map);
                     if (get_type_of_movement(rectangle, local_x, change_cursor_to_double_arrow_buffer) == MovementType.START) {
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.START, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x);
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.START, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, sorted_array_hashmap);
                         rectangle.setUserData(rectangleChangedInfo);
                     } else if (get_type_of_movement(rectangle, local_x, change_cursor_to_double_arrow_buffer) == MovementType.END) {
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.END, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x);
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.END, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, sorted_array_hashmap);
                         rectangle.setUserData(rectangleChangedInfo);
                     } else {
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.MIDDLE, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x);
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.MIDDLE, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, sorted_array_hashmap);
                         rectangle.setUserData(rectangleChangedInfo);
                         rectangle.setCursor(Cursor.CLOSED_HAND);
                     }
@@ -3239,33 +3242,64 @@ public class HelloApplication extends Application {
                         double mouse_difference = rectangleChangedInfo.getOriginal_x() - mouseEvent.getSceneX();
                         double new_start = rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference;
                         double new_width = rectangleChangedInfo.getOriginal_end_rectangle() - new_start;
-                        if(rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference >= time_line_pane_data.getTime_line_base_line() && new_width>=0){
-                            rectangle.setX(rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference);
-                            rectangle.setWidth(new_width);
-                        } else if(rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference < time_line_pane_data.getTime_line_base_line()){
-                            rectangle.setX(time_line_pane_data.getTime_line_base_line());
-                            rectangle.setWidth(rectangleChangedInfo.getOriginal_end_rectangle() - time_line_pane_data.getTime_line_base_line());
-                        } else if(new_width<0){
+                        if (rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference >= time_line_pane_data.getTime_line_base_line() && new_width >= 0) {
+                            double[] collision_result = return_the_collision(rectangleChangedInfo.getSorted_array(), rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference, rectangleChangedInfo.getOriginal_end_rectangle(),CollisionSearchType.Start);
+                            if (collision_result[0] < 0) {
+                                rectangle.setX(rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference);
+                                rectangle.setWidth(new_width);
+                            } else {
+                                rectangle.setX(collision_result[1] + 1);
+                                rectangle.setWidth(rectangleChangedInfo.getOriginal_end_rectangle() - (collision_result[1] + 1));
+                            }
+                        } else if (rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference < time_line_pane_data.getTime_line_base_line()) {
+                            if (!is_there_is_a_collosion(rectangleChangedInfo.getSorted_array(), time_line_pane_data.getTime_line_base_line(), rectangleChangedInfo.getOriginal_end_rectangle())) {
+                                rectangle.setX(time_line_pane_data.getTime_line_base_line());
+                                rectangle.setWidth(rectangleChangedInfo.getOriginal_end_rectangle() - time_line_pane_data.getTime_line_base_line());
+                            }
+                        } else if (new_width < 0) {
                             rectangle.setX(rectangleChangedInfo.getOriginal_end_rectangle());
                             rectangle.setWidth(0);
                         }
                     } else if (rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE) {
                         if (mouse_scene_x_translated - local_x >= time_line_pane_data.getTime_line_base_line() && mouse_scene_x_translated - local_x + rectangle.getWidth() <= time_line_pane_data.getTime_line_end_base_line()) {
-                            rectangle.setX(mouseEvent.getSceneX() - rectangleChangedInfo.getOriginal_x() + rectangleChangedInfo.getOriginal_start_rectangle());
+                            /*double[] collision_result = return_the_collision(rectangleChangedInfo.getSorted_array(),mouse_scene_x_translated - local_x,mouse_scene_x_translated - local_x + rectangle.getWidth());
+                            if (collision_result[0] < 0) {
+                                rectangle.setX(mouseEvent.getSceneX() - rectangleChangedInfo.getOriginal_x() + rectangleChangedInfo.getOriginal_start_rectangle());
+                            } else {
+                                if(mouseEvent.getSceneX() - rectangleChangedInfo.getOriginal_x() + rectangleChangedInfo.getOriginal_start_rectangle() < collision_result[0]){
+                                    rectangle.setX(collision_result[0] - 1 - (rectangleChangedInfo.getOriginal_end_rectangle() - rectangleChangedInfo.getOriginal_start_rectangle()));
+                                } else {
+                                    rectangle.setX(collision_result[1] + 1);
+                                }
+                            }*/
+                            if(!is_there_is_a_collosion(rectangleChangedInfo.getSorted_array(),mouse_scene_x_translated - local_x,mouse_scene_x_translated - local_x + rectangle.getWidth())){
+                                rectangle.setX(mouseEvent.getSceneX() - rectangleChangedInfo.getOriginal_x() + rectangleChangedInfo.getOriginal_start_rectangle());
+                            }
                         } else if (mouse_scene_x_translated - local_x < time_line_pane_data.getTime_line_base_line()) {
-                            rectangle.setX(time_line_pane_data.getTime_line_base_line());
-                        } else if(mouse_scene_x_translated - local_x +rectangle.getWidth()> time_line_pane_data.getTime_line_end_base_line()){
-                            rectangle.setX(time_line_pane_data.getTime_line_end_base_line() - rectangle.getWidth());
+                            if (!is_there_is_a_collosion(rectangleChangedInfo.getSorted_array(), time_line_pane_data.getTime_line_base_line(), time_line_pane_data.getTime_line_base_line() + rectangle.getWidth())) {
+                                rectangle.setX(time_line_pane_data.getTime_line_base_line());
+                            }
+                        } else if (mouse_scene_x_translated - local_x + rectangle.getWidth() > time_line_pane_data.getTime_line_end_base_line()) {
+                            if (!is_there_is_a_collosion(rectangleChangedInfo.getSorted_array(), time_line_pane_data.getTime_line_end_base_line() - rectangle.getWidth(), time_line_pane_data.getTime_line_base_line())) {
+                                rectangle.setX(time_line_pane_data.getTime_line_end_base_line() - rectangle.getWidth());
+                            }
                         }
                     } else if (rectangleChangedInfo.getType_of_movement() == MovementType.END) {
                         double original_width = rectangleChangedInfo.getOriginal_end_rectangle() - rectangleChangedInfo.getOriginal_start_rectangle();
                         double new_width = mouseEvent.getSceneX() - rectangleChangedInfo.getOriginal_x() + original_width;
-                        if(rectangle.getX() + new_width <= time_line_pane_data.getTime_line_end_base_line() &&new_width>=0){
-                            rectangle.setWidth(new_width);
-                        } else if(new_width<0){
+                        double[] collision_result = return_the_collision(rectangleChangedInfo.getSorted_array(), rectangleChangedInfo.getOriginal_start_rectangle(), rectangleChangedInfo.getOriginal_start_rectangle() + new_width,CollisionSearchType.End);
+                        if (rectangle.getX() + new_width <= time_line_pane_data.getTime_line_end_base_line() && new_width >= 0) {
+                            if (collision_result[0] < 0) {
+                                rectangle.setWidth(new_width);
+                            } else {
+                                rectangle.setWidth((collision_result[0] - 1) - rectangleChangedInfo.getOriginal_start_rectangle());
+                            }
+                        } else if (new_width < 0) {
                             rectangle.setWidth(0);
-                        } else if(rectangle.getX() + new_width > time_line_pane_data.getTime_line_end_base_line()){
-                            rectangle.setWidth(time_line_pane_data.getTime_line_end_base_line() - rectangle.getX());
+                        } else if (rectangle.getX() + new_width > time_line_pane_data.getTime_line_end_base_line()) {
+                            if (!is_there_is_a_collosion(rectangleChangedInfo.getSorted_array(), rectangleChangedInfo.getOriginal_start_rectangle(), rectangleChangedInfo.getOriginal_start_rectangle() + time_line_pane_data.getTime_line_end_base_line() - rectangleChangedInfo.getOriginal_start_rectangle())) {
+                                rectangle.setWidth(time_line_pane_data.getTime_line_end_base_line() - rectangleChangedInfo.getOriginal_start_rectangle());
+                            }
                         }
                     }
                 }
@@ -3330,6 +3364,38 @@ public class HelloApplication extends Application {
             }
         }
         return false;
+    }
+
+    private double[] return_the_collision(double[][] sorted_array, double start, double end, CollisionSearchType collisionSearchType) {
+        if(collisionSearchType == CollisionSearchType.End){
+            for (int i = 0; i < sorted_array.length; i++) {
+                double local_start = sorted_array[i][0];
+                double local_end = sorted_array[i][1];
+                if (start > local_end) {
+                    continue;
+                }
+                if (local_start > end) {
+                    return new double[]{-1,-1};
+                } else {
+                    return new double[]{local_start,local_end};
+                }
+            }
+            return new double[]{-1,-1};
+        } else {
+            for (int i = sorted_array.length-1; i >= 0; i--) {
+                double local_start = sorted_array[i][0];
+                double local_end = sorted_array[i][1];
+                if (end < local_start) {
+                    continue;
+                }
+                if (local_end < start) {
+                    return new double[]{-1,-1};
+                } else {
+                    return new double[]{local_start,local_end};
+                }
+            }
+            return new double[]{-1,-1};
+        }
     }
 
     private double[][] return_all_of_the_image_timings_sorted(HashMap<String, Shape_object_time_line> hashMap) {
