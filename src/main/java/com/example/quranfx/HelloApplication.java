@@ -2231,17 +2231,17 @@ public class HelloApplication extends Application {
                         ghost.setTranslateX(mouseEvent.getSceneX() - old_x_pos);
                         ghost.setTranslateY(mouseEvent.getSceneY() - old_y_pos);
                         if (media_pool_item_dragged.isHas_this_been_dragged() || am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged)) {
-                            add_the_image_to_the_time_line(helloController.time_line_pane, imageView.getImage(), x_pos_local, media_pool_item_dragged.getImage_key_uuid(), image_width_in_time_line,helloController);
+                            add_the_image_to_the_time_line(helloController.time_line_pane, imageView.getImage(), x_pos_local, media_pool_item_dragged.getImage_key_uuid(), image_width_in_time_line, helloController);
                         } else {
                             remove_the_image_from_time_line_hash_map(helloController.time_line_pane, media_pool_item_dragged.getImage_key_uuid());
                         }
                         double min_x_pos_local;
                         double max_x_pos_local;
-                        if(x_pos_local - image_width_in_time_line / 2 >= time_line_pane_data.getTime_line_base_line() && x_pos_local + image_width_in_time_line / 2 <=time_line_pane_data.getTime_line_end_base_line()){
+                        if (x_pos_local - image_width_in_time_line / 2 >= time_line_pane_data.getTime_line_base_line() && x_pos_local + image_width_in_time_line / 2 <= time_line_pane_data.getTime_line_end_base_line()) {
                             min_x_pos_local = x_pos_local - image_width_in_time_line / 2;
-                            max_x_pos_local = x_pos_local + image_width_in_time_line/2;
+                            max_x_pos_local = x_pos_local + image_width_in_time_line / 2;
                         } else {
-                            if(x_pos_local - image_width_in_time_line / 2 < time_line_pane_data.getTime_line_base_line()){
+                            if (x_pos_local - image_width_in_time_line / 2 < time_line_pane_data.getTime_line_base_line()) {
                                 min_x_pos_local = time_line_pane_data.getTime_line_base_line();
                                 max_x_pos_local = time_line_pane_data.getTime_line_base_line() + image_width_in_time_line;
                             } else {
@@ -2249,7 +2249,7 @@ public class HelloApplication extends Application {
                                 min_x_pos_local = time_line_pane_data.getTime_line_end_base_line() - image_width_in_time_line;
                             }
                         }
-                        if (am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) && !is_there_is_a_collosion(media_pool_item_dragged.getSorted_timing_array(), min_x_pos_local,max_x_pos_local)) {
+                        if (am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) && !is_there_is_a_collosion(media_pool_item_dragged.getSorted_timing_array(), min_x_pos_local, max_x_pos_local)) {
                             set_the_opacity_of_the_rectangle_in_time_line_pane(time_line_pane_data, 1, media_pool_item_dragged.getImage_key_uuid());
                         } else {
                             set_the_opacity_of_the_rectangle_in_time_line_pane(time_line_pane_data, 0.4D, media_pool_item_dragged.getImage_key_uuid());
@@ -2271,11 +2271,11 @@ public class HelloApplication extends Application {
                     double image_width_in_time_line = nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1));
                     double min_x_pos_local;
                     double max_x_pos_local;
-                    if(x_pos_local - image_width_in_time_line / 2 >= time_line_pane_data.getTime_line_base_line() && x_pos_local + image_width_in_time_line / 2 <=time_line_pane_data.getTime_line_end_base_line()){
+                    if (x_pos_local - image_width_in_time_line / 2 >= time_line_pane_data.getTime_line_base_line() && x_pos_local + image_width_in_time_line / 2 <= time_line_pane_data.getTime_line_end_base_line()) {
                         min_x_pos_local = x_pos_local - image_width_in_time_line / 2;
-                        max_x_pos_local = x_pos_local + image_width_in_time_line/2;
+                        max_x_pos_local = x_pos_local + image_width_in_time_line / 2;
                     } else {
-                        if(x_pos_local - image_width_in_time_line / 2 < time_line_pane_data.getTime_line_base_line()){
+                        if (x_pos_local - image_width_in_time_line / 2 < time_line_pane_data.getTime_line_base_line()) {
                             min_x_pos_local = time_line_pane_data.getTime_line_base_line();
                             max_x_pos_local = time_line_pane_data.getTime_line_base_line() + image_width_in_time_line;
                         } else {
@@ -2283,7 +2283,7 @@ public class HelloApplication extends Application {
                             min_x_pos_local = time_line_pane_data.getTime_line_end_base_line() - image_width_in_time_line;
                         }
                     }
-                    if (!am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) || is_there_is_a_collosion(media_pool_item_dragged.getSorted_timing_array(), min_x_pos_local,max_x_pos_local)) {
+                    if (!am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) || is_there_is_a_collosion(media_pool_item_dragged.getSorted_timing_array(), min_x_pos_local, max_x_pos_local)) {
                         remove_the_image_from_time_line_hash_map(helloController.time_line_pane, media_pool_item_dragged.getImage_key_uuid());
                     }
                 }
@@ -3042,7 +3042,7 @@ public class HelloApplication extends Application {
     }
 
     private boolean am_i_in_time_line_boundries(HelloController helloController, double x_pos, double y_pos, Media_pool_item_dragged media_pool_item_dragged) {
-        Point2D scene_x_and_y = helloController.scroll_pane_hosting_the_time_line.localToScene(0,0);
+        Point2D scene_x_and_y = helloController.scroll_pane_hosting_the_time_line.localToScene(0, 0);
         double min_x = scene_x_and_y.getX();
         double max_x = min_x + helloController.scroll_pane_hosting_the_time_line.getViewportBounds().getWidth();
         double min_y = scene_x_and_y.getY();
@@ -3055,7 +3055,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void add_the_image_to_the_time_line(Pane pane, Image image, double x_pos, String image_id, double width,HelloController helloController) {
+    private void add_the_image_to_the_time_line(Pane pane, Image image, double x_pos, String image_id, double width, HelloController helloController) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         double height = 60;
         x_pos -= (width / 2);
@@ -3074,7 +3074,7 @@ public class HelloApplication extends Application {
             time_line_pane_data.getHashMap_containing_all_of_the_items().put(image_id, shapeObjectTimeLine);
             pane.getChildren().add(pane.getChildren().size() - 1, rectangle);
             set_up_the_image_rectangle(rectangle, image, pane);
-            configure_the_image_rectangle(shapeObjectTimeLine,helloController,pane);
+            configure_the_image_rectangle(shapeObjectTimeLine, helloController, pane, image, image_id);
             rectangle.setY(60);
         }
         rectangle.setX(x_pos);
@@ -3181,7 +3181,16 @@ public class HelloApplication extends Application {
         return new_image_to_be_returned;
     }
 
-    private void configure_the_image_rectangle(Shape_object_time_line shapeObjectTimeLine,HelloController helloController,Pane pane) {
+    private void configure_the_image_rectangle(Shape_object_time_line shapeObjectTimeLine, HelloController helloController, Pane pane, Image image, String rectangle_id) {
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem item1 = new MenuItem("Remove media");
+        contextMenu.getItems().add(item1);
+        item1.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                remove_the_image_from_time_line_hash_map(pane, rectangle_id);
+            }
+        });
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         Rectangle rectangle = (Rectangle) shapeObjectTimeLine.getShape();
         double change_cursor_to_double_arrow_buffer = 10;
@@ -3189,30 +3198,30 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
-
+                    contextMenu.show(rectangle, mouseEvent.getScreenX(), mouseEvent.getScreenY());
                 }
             }
         });
         rectangle.setOnMouseMoved(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                set_the_rectangle_mouse_cursor(helloController,mouseEvent.getSceneX(),mouseEvent.getSceneY(),shapeObjectTimeLine,change_cursor_to_double_arrow_buffer);
+                set_the_rectangle_mouse_cursor(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), shapeObjectTimeLine, change_cursor_to_double_arrow_buffer);
             }
         });
         rectangle.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                    double mouse_scene_x_translated = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(),mouseEvent.getSceneY()).getX();
+                    double mouse_scene_x_translated = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY()).getX();
                     double local_x = mouse_scene_x_translated - shapeObjectTimeLine.getStart();
-                    if(get_type_of_movement(rectangle,local_x,change_cursor_to_double_arrow_buffer) == MovementType.START){
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(),MovementType.START,shapeObjectTimeLine.getStart(),shapeObjectTimeLine.getEnd(),local_x);
+                    if (get_type_of_movement(rectangle, local_x, change_cursor_to_double_arrow_buffer) == MovementType.START) {
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.START, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x);
                         rectangle.setUserData(rectangleChangedInfo);
-                    } else if(get_type_of_movement(rectangle,local_x,change_cursor_to_double_arrow_buffer) == MovementType.END) {
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(),MovementType.END,shapeObjectTimeLine.getStart(),shapeObjectTimeLine.getEnd(),local_x);
+                    } else if (get_type_of_movement(rectangle, local_x, change_cursor_to_double_arrow_buffer) == MovementType.END) {
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.END, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x);
                         rectangle.setUserData(rectangleChangedInfo);
                     } else {
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(),MovementType.MIDDLE,shapeObjectTimeLine.getStart(),shapeObjectTimeLine.getEnd(),local_x);
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.MIDDLE, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x);
                         rectangle.setUserData(rectangleChangedInfo);
                         rectangle.setCursor(Cursor.CLOSED_HAND);
                     }
@@ -3224,18 +3233,40 @@ public class HelloApplication extends Application {
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                     Rectangle_changed_info rectangleChangedInfo = (Rectangle_changed_info) rectangle.getUserData();
-                    double mouse_scene_x_translated = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(),mouseEvent.getSceneY()).getX();
+                    double mouse_scene_x_translated = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY()).getX();
                     double local_x = rectangleChangedInfo.getRelative_x();
-                    System.out.println(mouse_scene_x_translated);
-                    System.out.println(local_x);
-                    if(rectangleChangedInfo.getType_of_movement() == MovementType.START){
-
-                    } else if(rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE){
-                        if(mouse_scene_x_translated-local_x>=time_line_pane_data.getTime_line_base_line()){
-                            rectangle.setTranslateX(mouseEvent.getSceneX()-rectangleChangedInfo.getOriginal_x());
+                    if (rectangleChangedInfo.getType_of_movement() == MovementType.START) {
+                        double mouse_difference = rectangleChangedInfo.getOriginal_x() - mouseEvent.getSceneX();
+                        double new_start = rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference;
+                        double new_width = rectangleChangedInfo.getOriginal_end_rectangle() - new_start;
+                        if(rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference >= time_line_pane_data.getTime_line_base_line() && new_width>=0){
+                            rectangle.setX(rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference);
+                            rectangle.setWidth(new_width);
+                        } else if(rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference < time_line_pane_data.getTime_line_base_line()){
+                            rectangle.setX(time_line_pane_data.getTime_line_base_line());
+                            rectangle.setWidth(rectangleChangedInfo.getOriginal_end_rectangle() - time_line_pane_data.getTime_line_base_line());
+                        } else if(new_width<0){
+                            rectangle.setX(rectangleChangedInfo.getOriginal_end_rectangle());
+                            rectangle.setWidth(0);
                         }
-                    }  else if(rectangleChangedInfo.getType_of_movement() == MovementType.END){
-
+                    } else if (rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE) {
+                        if (mouse_scene_x_translated - local_x >= time_line_pane_data.getTime_line_base_line() && mouse_scene_x_translated - local_x + rectangle.getWidth() <= time_line_pane_data.getTime_line_end_base_line()) {
+                            rectangle.setX(mouseEvent.getSceneX() - rectangleChangedInfo.getOriginal_x() + rectangleChangedInfo.getOriginal_start_rectangle());
+                        } else if (mouse_scene_x_translated - local_x < time_line_pane_data.getTime_line_base_line()) {
+                            rectangle.setX(time_line_pane_data.getTime_line_base_line());
+                        } else if(mouse_scene_x_translated - local_x +rectangle.getWidth()> time_line_pane_data.getTime_line_end_base_line()){
+                            rectangle.setX(time_line_pane_data.getTime_line_end_base_line() - rectangle.getWidth());
+                        }
+                    } else if (rectangleChangedInfo.getType_of_movement() == MovementType.END) {
+                        double original_width = rectangleChangedInfo.getOriginal_end_rectangle() - rectangleChangedInfo.getOriginal_start_rectangle();
+                        double new_width = mouseEvent.getSceneX() - rectangleChangedInfo.getOriginal_x() + original_width;
+                        if(rectangle.getX() + new_width <= time_line_pane_data.getTime_line_end_base_line() &&new_width>=0){
+                            rectangle.setWidth(new_width);
+                        } else if(new_width<0){
+                            rectangle.setWidth(0);
+                        } else if(rectangle.getX() + new_width > time_line_pane_data.getTime_line_end_base_line()){
+                            rectangle.setWidth(time_line_pane_data.getTime_line_end_base_line() - rectangle.getX());
+                        }
                     }
                 }
             }
@@ -3244,30 +3275,33 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                    set_the_rectangle_mouse_cursor(helloController,mouseEvent.getSceneX(),mouseEvent.getSceneY(),shapeObjectTimeLine,change_cursor_to_double_arrow_buffer);
+                    double old_width = shapeObjectTimeLine.getEnd() - shapeObjectTimeLine.getStart();
                     shapeObjectTimeLine.setStart(rectangle.getX());
-                    shapeObjectTimeLine.setEnd(rectangle.getX()+rectangle.getWidth());
-
+                    shapeObjectTimeLine.setEnd(rectangle.getX() + rectangle.getWidth());
+                    set_the_rectangle_mouse_cursor(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), shapeObjectTimeLine, change_cursor_to_double_arrow_buffer);
+                    if (rectangle.getWidth() != old_width) {
+                        set_up_the_image_rectangle(rectangle, image, pane);
+                    }
                 }
             }
         });
     }
 
-    private void set_the_rectangle_mouse_cursor(HelloController helloController,double scene_x,double scene_y,Shape_object_time_line shapeObjectTimeLine,double change_cursor_to_double_arrow_buffer){
+    private void set_the_rectangle_mouse_cursor(HelloController helloController, double scene_x, double scene_y, Shape_object_time_line shapeObjectTimeLine, double change_cursor_to_double_arrow_buffer) {
         Rectangle rectangle = (Rectangle) shapeObjectTimeLine.getShape();
-        double mouse_scene_x_translated = helloController.time_line_pane.sceneToLocal(scene_x,scene_y).getX();
+        double mouse_scene_x_translated = helloController.time_line_pane.sceneToLocal(scene_x, scene_y).getX();
         double local_x = mouse_scene_x_translated - shapeObjectTimeLine.getStart();
-        if(get_type_of_movement(rectangle,local_x,change_cursor_to_double_arrow_buffer) == MovementType.START || get_type_of_movement(rectangle,local_x,change_cursor_to_double_arrow_buffer) == MovementType.END){
+        if (get_type_of_movement(rectangle, local_x, change_cursor_to_double_arrow_buffer) == MovementType.START || get_type_of_movement(rectangle, local_x, change_cursor_to_double_arrow_buffer) == MovementType.END) {
             rectangle.setCursor(Cursor.H_RESIZE);
         } else {
             rectangle.setCursor(Cursor.OPEN_HAND);
         }
     }
 
-    private MovementType get_type_of_movement(Rectangle rectangle, double local_x, double change_cursor_to_double_arrow_buffer ){
-        if(local_x<=change_cursor_to_double_arrow_buffer){
+    private MovementType get_type_of_movement(Rectangle rectangle, double local_x, double change_cursor_to_double_arrow_buffer) {
+        if (local_x <= change_cursor_to_double_arrow_buffer) {
             return MovementType.START;
-        } else if(rectangle.getWidth() - local_x <= change_cursor_to_double_arrow_buffer){
+        } else if (rectangle.getWidth() - local_x <= change_cursor_to_double_arrow_buffer) {
             return MovementType.END;
         } else {
             return MovementType.MIDDLE;
@@ -3327,20 +3361,20 @@ public class HelloApplication extends Application {
         return array_to_be_sorted;
     }
 
-    private void black_out_the_image_view_at_the_start(HelloController helloController){
+    private void black_out_the_image_view_at_the_start(HelloController helloController) {
         int width = 9;
         int hight = 16;
-        WritableImage writableImage = new WritableImage(width,hight);
+        WritableImage writableImage = new WritableImage(width, hight);
         PixelWriter pixelWriter = writableImage.getPixelWriter();
-        for(int i = 0;i<hight;i++){
-            for(int j = 0;j<width;j++){
-                pixelWriter.setColor(j,i, javafx.scene.paint.Color.BLACK);
+        for (int i = 0; i < hight; i++) {
+            for (int j = 0; j < width; j++) {
+                pixelWriter.setColor(j, i, javafx.scene.paint.Color.BLACK);
             }
         }
         helloController.chatgpt_image_view.setImage(writableImage);
     }
 
-    private void listen_to_chatgpt_image_view_on_mouse_enetered_and_left(HelloController helloController){
+    private void listen_to_chatgpt_image_view_on_mouse_enetered_and_left(HelloController helloController) {
         helloController.stack_pane_of_image_view_and_text.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -3355,7 +3389,7 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void play_the_sound_on_chatgpt_image_clicked(HelloController helloController){
+    private void play_the_sound_on_chatgpt_image_clicked(HelloController helloController) {
         helloController.chatgpt_image_view.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -3364,13 +3398,13 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void add_tool_tip_to_create_button(HelloController helloController){
+    private void add_tool_tip_to_create_button(HelloController helloController) {
         Tooltip tooltip = new Tooltip("Create video");
         tooltip.setShowDelay(new Duration(500));
         Tooltip.install(helloController.create_video_final, tooltip);
     }
 
-    private void add_cancel_video_tool_tip(HelloController helloController){
+    private void add_cancel_video_tool_tip(HelloController helloController) {
         Tooltip tooltip = new Tooltip("Cancel video");
         tooltip.setShowDelay(new Duration(500));
         Tooltip.install(helloController.cancel_video, tooltip);
