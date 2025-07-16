@@ -340,6 +340,7 @@
                                             <JFXButton fx:id="slow_forward_image_view"/>
                                             <JFXButton fx:id="fast_forward_image_view"/>
                                         </HBox>
+                                        <Button fx:id="test_button"/>
                                     </StackPane>
                                     <VBox alignment="CENTER">
                                         <HBox.margin>

@@ -174,6 +174,7 @@ public class HelloApplication extends Application {
         play_the_sound_on_chatgpt_image_clicked(helloController);
         add_tool_tip_to_create_button(helloController);
         add_cancel_video_tool_tip(helloController);
+        set_up_glossy_pause_button(helloController);
     }
 
     public static void main(String[] args) {
@@ -3428,7 +3429,7 @@ public class HelloApplication extends Application {
     }
 
     private void black_out_the_image_view_at_the_start(HelloController helloController) {
-        int width = 9;
+        /*int width = 9;
         int hight = 16;
         WritableImage writableImage = new WritableImage(width, hight);
         PixelWriter pixelWriter = writableImage.getPixelWriter();
@@ -3436,8 +3437,10 @@ public class HelloApplication extends Application {
             for (int j = 0; j < width; j++) {
                 pixelWriter.setColor(j, i, javafx.scene.paint.Color.BLACK);
             }
-        }
-        helloController.chatgpt_image_view.setImage(writableImage);
+        }*/
+        File file = new File("/Users/abdelrahmanabdelkader/Downloads/IMG_1632-2_16x9.png");
+        Image image = new Image(file.toURI().toString());
+        helloController.chatgpt_image_view.setImage(image);
     }
 
     private void listen_to_chatgpt_image_view_on_mouse_enetered_and_left(HelloController helloController) {
@@ -3474,5 +3477,20 @@ public class HelloApplication extends Application {
         Tooltip tooltip = new Tooltip("Cancel video");
         tooltip.setShowDelay(new Duration(500));
         Tooltip.install(helloController.cancel_video, tooltip);
+    }
+
+    private void set_up_glossy_pause_button(HelloController helloController){
+        helloController.test_button.setStyle(
+                "-fx-background-color: rgba(255,255,255,0.20);" + // semi-transparent white
+                        "-fx-background-radius: 20;" +
+                        "-fx-border-radius: 20;" +
+                        "-fx-border-color: rgba(255,255,255,0.40);" +
+                        "-fx-border-width: 2;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-font-size: 18px;" +
+                        "-fx-padding: 12 32 12 32;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(255,255,255,0.6), 8, 0.2, 0, 2);" // subtle shadow
+        );
+        helloController.test_button.setText("test");
     }
 }

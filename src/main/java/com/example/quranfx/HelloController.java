@@ -187,5 +187,8 @@ public class HelloController {
     @FXML
     public HBox chatgpt_image_view_vid_control;
 
+    @FXML
+    public Button test_button;
+
 
 }
