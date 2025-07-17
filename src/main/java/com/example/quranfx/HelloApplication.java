@@ -33,6 +33,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
@@ -40,10 +41,9 @@ import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Line;
+import javafx.scene.shape.*;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -109,6 +109,7 @@ public class HelloApplication extends Application {
     private final static int image_view_in_tile_pane_width = 90;
     private final static int image_view_in_tile_pane_height = 160;
     private final static String help_email = "abdomakesappshelp@gmail.com";
+    private final static double blurry_circle_raduis = 30D;
 
     private double lastKnownMediaTime = 0;
     private long lastKnownSystemTime = 0;
@@ -175,6 +176,9 @@ public class HelloApplication extends Application {
         add_tool_tip_to_create_button(helloController);
         add_cancel_video_tool_tip(helloController);
         set_up_glossy_pause_button(helloController);
+        make_the_blurry_chatgpt_image_always_have_the_same_size_as_non_blurry(helloController);
+        listen_to_blurry_image_view_size_change_and_center_the_clip(helloController);
+        make_play_button_circle(helloController);
     }
 
     public static void main(String[] args) {
@@ -1885,11 +1889,6 @@ public class HelloApplication extends Application {
         helloController.full_screen_button_fourth_screen.setGraphic(return_region_for_svg(get_the_svg_path("fullscreen"), 25D));
         helloController.cancel_video.setGraphic(return_region_for_svg(get_the_svg_path("arrow_back_with_line"), 25D));
         helloController.create_video_final.setGraphic(return_region_for_svg(get_the_svg_path("rocket_launch"), 25D));
-        helloController.fast_rewind_image_view.setGraphic(return_region_for_svg(get_the_svg_path("rocket_launch"), 25D));
-        helloController.fast_rewind_image_view.setGraphic(return_region_for_svg(get_the_svg_path("fast_rewind"), 25D));
-        helloController.slow_rewind_image_view.setGraphic(return_region_for_svg(get_the_svg_path("slow_rewind"), 25D));
-        helloController.slow_forward_image_view.setGraphic(return_region_for_svg(get_the_svg_path("slow_forward"), 25D));
-        helloController.fast_forward_image_view.setGraphic(return_region_for_svg(get_the_svg_path("fast_forward"), 25D));
         set_the_play_pause_button(helloController, "play");
     }
 
@@ -3244,7 +3243,7 @@ public class HelloApplication extends Application {
                         double new_start = rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference;
                         double new_width = rectangleChangedInfo.getOriginal_end_rectangle() - new_start;
                         if (rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference >= time_line_pane_data.getTime_line_base_line() && new_width >= 0) {
-                            double[] collision_result = return_the_collision(rectangleChangedInfo.getSorted_array(), rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference, rectangleChangedInfo.getOriginal_end_rectangle(),CollisionSearchType.Start);
+                            double[] collision_result = return_the_collision(rectangleChangedInfo.getSorted_array(), rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference, rectangleChangedInfo.getOriginal_end_rectangle(), CollisionSearchType.Start);
                             if (collision_result[0] < 0) {
                                 rectangle.setX(rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference);
                                 rectangle.setWidth(new_width);
@@ -3273,7 +3272,7 @@ public class HelloApplication extends Application {
                                     rectangle.setX(collision_result[1] + 1);
                                 }
                             }*/
-                            if(!is_there_is_a_collosion(rectangleChangedInfo.getSorted_array(),mouse_scene_x_translated - local_x,mouse_scene_x_translated - local_x + rectangle.getWidth())){
+                            if (!is_there_is_a_collosion(rectangleChangedInfo.getSorted_array(), mouse_scene_x_translated - local_x, mouse_scene_x_translated - local_x + rectangle.getWidth())) {
                                 rectangle.setX(mouseEvent.getSceneX() - rectangleChangedInfo.getOriginal_x() + rectangleChangedInfo.getOriginal_start_rectangle());
                             }
                         } else if (mouse_scene_x_translated - local_x < time_line_pane_data.getTime_line_base_line()) {
@@ -3288,7 +3287,7 @@ public class HelloApplication extends Application {
                     } else if (rectangleChangedInfo.getType_of_movement() == MovementType.END) {
                         double original_width = rectangleChangedInfo.getOriginal_end_rectangle() - rectangleChangedInfo.getOriginal_start_rectangle();
                         double new_width = mouseEvent.getSceneX() - rectangleChangedInfo.getOriginal_x() + original_width;
-                        double[] collision_result = return_the_collision(rectangleChangedInfo.getSorted_array(), rectangleChangedInfo.getOriginal_start_rectangle(), rectangleChangedInfo.getOriginal_start_rectangle() + new_width,CollisionSearchType.End);
+                        double[] collision_result = return_the_collision(rectangleChangedInfo.getSorted_array(), rectangleChangedInfo.getOriginal_start_rectangle(), rectangleChangedInfo.getOriginal_start_rectangle() + new_width, CollisionSearchType.End);
                         if (rectangle.getX() + new_width <= time_line_pane_data.getTime_line_end_base_line() && new_width >= 0) {
                             if (collision_result[0] < 0) {
                                 rectangle.setWidth(new_width);
@@ -3368,7 +3367,7 @@ public class HelloApplication extends Application {
     }
 
     private double[] return_the_collision(double[][] sorted_array, double start, double end, CollisionSearchType collisionSearchType) {
-        if(collisionSearchType == CollisionSearchType.End){
+        if (collisionSearchType == CollisionSearchType.End) {
             for (int i = 0; i < sorted_array.length; i++) {
                 double local_start = sorted_array[i][0];
                 double local_end = sorted_array[i][1];
@@ -3376,26 +3375,26 @@ public class HelloApplication extends Application {
                     continue;
                 }
                 if (local_start > end) {
-                    return new double[]{-1,-1};
+                    return new double[]{-1, -1};
                 } else {
-                    return new double[]{local_start,local_end};
+                    return new double[]{local_start, local_end};
                 }
             }
-            return new double[]{-1,-1};
+            return new double[]{-1, -1};
         } else {
-            for (int i = sorted_array.length-1; i >= 0; i--) {
+            for (int i = sorted_array.length - 1; i >= 0; i--) {
                 double local_start = sorted_array[i][0];
                 double local_end = sorted_array[i][1];
                 if (end < local_start) {
                     continue;
                 }
                 if (local_end < start) {
-                    return new double[]{-1,-1};
+                    return new double[]{-1, -1};
                 } else {
-                    return new double[]{local_start,local_end};
+                    return new double[]{local_start, local_end};
                 }
             }
-            return new double[]{-1,-1};
+            return new double[]{-1, -1};
         }
     }
 
@@ -3440,20 +3439,20 @@ public class HelloApplication extends Application {
         }*/
         File file = new File("/Users/abdelrahmanabdelkader/Downloads/IMG_1632-2_16x9.png");
         Image image = new Image(file.toURI().toString());
-        helloController.chatgpt_image_view.setImage(image);
+        set_the_chatgpt_image_view(helloController,image);
     }
 
     private void listen_to_chatgpt_image_view_on_mouse_enetered_and_left(HelloController helloController) {
         helloController.stack_pane_of_image_view_and_text.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                helloController.chatgpt_image_view_vid_control.setVisible(true);
+
             }
         });
         helloController.stack_pane_of_image_view_and_text.setOnMouseExited(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                helloController.chatgpt_image_view_vid_control.setVisible(false);
+
             }
         });
     }
@@ -3479,18 +3478,47 @@ public class HelloApplication extends Application {
         Tooltip.install(helloController.cancel_video, tooltip);
     }
 
-    private void set_up_glossy_pause_button(HelloController helloController){
-        helloController.test_button.setStyle(
-                "-fx-background-color: rgba(255,255,255,0.20);" + // semi-transparent white
-                        "-fx-background-radius: 20;" +
-                        "-fx-border-radius: 20;" +
-                        "-fx-border-color: rgba(255,255,255,0.40);" +
-                        "-fx-border-width: 2;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-font-size: 18px;" +
-                        "-fx-padding: 12 32 12 32;" +
-                        "-fx-effect: dropshadow(gaussian, rgba(255,255,255,0.6), 8, 0.2, 0, 2);" // subtle shadow
-        );
-        helloController.test_button.setText("test");
+    private void set_up_glossy_pause_button(HelloController helloController) {
+        GaussianBlur blur = new GaussianBlur(40); // Adjust the radius for more/less blur
+        helloController.blurry_chatgpt_image_view.setEffect(blur);
+        Circle circle = new Circle(helloController.blurry_chatgpt_image_view.getFitWidth()/2,helloController.blurry_chatgpt_image_view.getFitHeight()/2,blurry_circle_raduis);
+        helloController.blurry_chatgpt_image_view.setClip(circle);
+    }
+
+    private void make_the_blurry_chatgpt_image_always_have_the_same_size_as_non_blurry(HelloController helloController){
+        helloController.blurry_chatgpt_image_view.fitWidthProperty().bind(helloController.chatgpt_image_view.fitWidthProperty());
+        helloController.blurry_chatgpt_image_view.fitHeightProperty().bind(helloController.chatgpt_image_view.fitHeightProperty());
+    }
+
+    private void set_the_chatgpt_image_view(HelloController helloController,Image image){
+        helloController.chatgpt_image_view.setImage(image);
+        helloController.blurry_chatgpt_image_view.setImage(image);
+    }
+
+    private void listen_to_blurry_image_view_size_change_and_center_the_clip(HelloController helloController){
+        helloController.blurry_chatgpt_image_view.fitWidthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                if(helloController.blurry_chatgpt_image_view.getClip()!=null){
+                    ((Circle) helloController.blurry_chatgpt_image_view.getClip()).setCenterX(t1.doubleValue() / 2);
+                    helloController.play_sound.setLayoutX(t1.doubleValue() / 2 - blurry_circle_raduis);
+                }
+            }
+        });
+        helloController.blurry_chatgpt_image_view.fitHeightProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                if(helloController.blurry_chatgpt_image_view.getClip()!=null) {
+                    ((Circle) helloController.blurry_chatgpt_image_view.getClip()).setCenterY(t1.doubleValue()*0.75D);
+                    helloController.play_sound.setLayoutY(t1.doubleValue()*0.75D - blurry_circle_raduis);
+                }
+            }
+        });
+    }
+
+    private void make_play_button_circle(HelloController helloController){
+        helloController.play_sound.setPrefHeight(blurry_circle_raduis*2);
+        helloController.play_sound.setPrefWidth(blurry_circle_raduis*2);
+        helloController.play_sound.setShape(new Circle(blurry_circle_raduis));
     }
 }

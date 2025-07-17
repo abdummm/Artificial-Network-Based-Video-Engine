@@ -35,6 +35,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import atlantafx.base.controls.RingProgressIndicator?>
 <?import io.github.palexdev.materialfx.controls.MFXProgressSpinner?>
+<?import javafx.scene.shape.Circle?>
 <StackPane prefHeight="365.0" prefWidth="366.0" xmlns="http://javafx.com/javafx/23.0.1"
            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.quranfx.HelloController"
            style="-fx-background-color: #FFFFFF;" fx:id="parent_stack_pane">
@@ -259,14 +260,14 @@
         <BorderPane fx:id="show_the_result_screen">
             <!-- Top -->
             <top>
-                <StackPane fx:id="top_pane_fourth_screen" >
+                <StackPane fx:id="top_pane_fourth_screen">
                     <HBox alignment="CENTER">
                         <StackPane.margin>
-                            <Insets top="17.5" left="10" right = "10"/>
+                            <Insets top="17.5" left="10" right="10"/>
                         </StackPane.margin>
                         <JFXButton fx:id="cancel_video" focusTraversable="false"/>
-                        <Region HBox.hgrow="ALWAYS" />
-                        <JFXButton fx:id="create_video_final" focusTraversable="false" />
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <JFXButton fx:id="create_video_final" focusTraversable="false"/>
                     </HBox>
                 </StackPane>
             </top>
@@ -328,20 +329,14 @@
                                                    focusTraversable="false">
                                         </JFXButton>
                                     </VBox>
-                                    <StackPane fx:id="stack_pane_of_image_view_and_text">
+                                    <Pane fx:id="stack_pane_of_image_view_and_text">
                                         <HBox.margin>
                                             <Insets left="5.0"/>
                                         </HBox.margin>
                                         <ImageView fx:id="chatgpt_image_view" preserveRatio="true"/>
-                                        <HBox fx:id="chatgpt_image_view_vid_control" StackPane.alignment="BOTTOM_CENTER" alignment="CENTER" style="-fx-background-color: #FFFFFFCC;" maxHeight="45" prefHeight="45" visible="false">
-                                            <JFXButton fx:id="fast_rewind_image_view"/>
-                                            <JFXButton fx:id="slow_rewind_image_view"/>
-                                            <JFXButton fx:id="play_sound"/>
-                                            <JFXButton fx:id="slow_forward_image_view"/>
-                                            <JFXButton fx:id="fast_forward_image_view"/>
-                                        </HBox>
-                                        <Button fx:id="test_button"/>
-                                    </StackPane>
+                                        <ImageView fx:id="blurry_chatgpt_image_view" preserveRatio="true"/>
+                                        <JFXButton fx:id="play_sound"/>
+                                    </Pane>
                                     <VBox alignment="CENTER">
                                         <HBox.margin>
                                             <Insets left="5.0"/>
@@ -387,11 +382,12 @@
                     <VBox alignment="CENTER">
                         <HBox alignment="CENTER">
                             <VBox.margin>
-                                <Insets  top="10.0" bottom="20.0"/>
+                                <Insets top="10.0" bottom="20.0"/>
                             </VBox.margin>
                             <ScrollPane fx:id="scroll_pane_hosting_the_time_line" fitToHeight="true"
                                         focusTraversable="false"
-                                        style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;" HBox.hgrow="ALWAYS">
+                                        style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;"
+                                        HBox.hgrow="ALWAYS">
                                 <HBox.margin>
                                     <Insets left="20.0" right="20.0"/>
                                 </HBox.margin>

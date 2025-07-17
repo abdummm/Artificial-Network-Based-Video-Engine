@@ -15,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Circle;
 
 public class HelloController {
 
@@ -92,7 +93,7 @@ public class HelloController {
     public Label what_verse_is_this;
 
     @FXML
-    public Button play_sound;
+    public JFXButton play_sound;
 
     @FXML
     public JFXButton full_screen_button_fourth_screen;
@@ -107,7 +108,7 @@ public class HelloController {
     public Button create_video_final;
 
     @FXML
-    public StackPane stack_pane_of_image_view_and_text;
+    public Pane stack_pane_of_image_view_and_text;
 
     @FXML
     public JFXButton cancel_video;
@@ -173,22 +174,7 @@ public class HelloController {
     public StackPane show_the_result_screen_stack_pane;
 
     @FXML
-    public JFXButton fast_rewind_image_view;
-
-    @FXML
-    public JFXButton slow_rewind_image_view;
-
-    @FXML
-    public JFXButton slow_forward_image_view;
-
-    @FXML
-    public JFXButton fast_forward_image_view;
-
-    @FXML
-    public HBox chatgpt_image_view_vid_control;
-
-    @FXML
-    public Button test_button;
+    public ImageView blurry_chatgpt_image_view;
 
 
 }
