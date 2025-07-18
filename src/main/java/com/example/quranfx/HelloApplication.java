@@ -2371,6 +2371,12 @@ public class HelloApplication extends Application {
         }
         helloController.chatgpt_image_view.setFitHeight(height_of_the_screen);
         helloController.chatgpt_image_view.setFitWidth(width_of_chat_gpt_image_view);
+        helloController.stack_pane_of_image_view_and_text.setPrefHeight(height_of_the_screen);
+        helloController.stack_pane_of_image_view_and_text.setMinHeight(height_of_the_screen);
+        helloController.stack_pane_of_image_view_and_text.setMaxHeight(height_of_the_screen);
+        helloController.stack_pane_of_image_view_and_text.setPrefWidth(width_of_chat_gpt_image_view);
+        helloController.stack_pane_of_image_view_and_text.setMinWidth(width_of_chat_gpt_image_view);
+        helloController.stack_pane_of_image_view_and_text.setMaxWidth(width_of_chat_gpt_image_view);
     }
 
     private void hide_or_show_media_pool(HelloController helloController) {
@@ -3224,7 +3230,11 @@ public class HelloApplication extends Application {
                         Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.END, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, sorted_array_hashmap);
                         rectangle.setUserData(rectangleChangedInfo);
                     } else {
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.MIDDLE, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, sorted_array_hashmap);
+                        Rectangle fake_rectanlge_less_opacity = deepCopyRectangle(rectangle);
+                        fake_rectanlge_less_opacity.setOpacity(0.4D);
+                        fake_rectanlge_less_opacity.setVisible(false);
+                        pane.getChildren().add(fake_rectanlge_less_opacity);
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.MIDDLE, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, sorted_array_hashmap,fake_rectanlge_less_opacity);
                         rectangle.setUserData(rectangleChangedInfo);
                         rectangle.setCursor(Cursor.CLOSED_HAND);
                     }
@@ -3262,26 +3272,30 @@ public class HelloApplication extends Application {
                         }
                     } else if (rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE) {
                         if (mouse_scene_x_translated - local_x >= time_line_pane_data.getTime_line_base_line() && mouse_scene_x_translated - local_x + rectangle.getWidth() <= time_line_pane_data.getTime_line_end_base_line()) {
-                            /*double[] collision_result = return_the_collision(rectangleChangedInfo.getSorted_array(),mouse_scene_x_translated - local_x,mouse_scene_x_translated - local_x + rectangle.getWidth());
+                            double[] collision_result = return_the_collision(rectangleChangedInfo.getSorted_array(), mouse_scene_x_translated - local_x, mouse_scene_x_translated - local_x + rectangle.getWidth(), CollisionSearchType.Start);
+                            double x_pos = mouseEvent.getSceneX() - rectangleChangedInfo.getOriginal_x() + rectangleChangedInfo.getOriginal_start_rectangle();
                             if (collision_result[0] < 0) {
-                                rectangle.setX(mouseEvent.getSceneX() - rectangleChangedInfo.getOriginal_x() + rectangleChangedInfo.getOriginal_start_rectangle());
+                                rectangle.setX(x_pos);
+                                rectangleChangedInfo.getFake_rectangle().setVisible(false);
                             } else {
-                                if(mouseEvent.getSceneX() - rectangleChangedInfo.getOriginal_x() + rectangleChangedInfo.getOriginal_start_rectangle() < collision_result[0]){
-                                    rectangle.setX(collision_result[0] - 1 - (rectangleChangedInfo.getOriginal_end_rectangle() - rectangleChangedInfo.getOriginal_start_rectangle()));
+                                Rectangle fake_rectangle = rectangleChangedInfo.getFake_rectangle();
+                                fake_rectangle.setVisible(true);
+                                fake_rectangle.setX(x_pos);
+                                if(rectangle.getX() < collision_result[0]){
+                                    rectangle.setX(collision_result[0] - 1 - rectangle.getWidth());
                                 } else {
                                     rectangle.setX(collision_result[1] + 1);
                                 }
-                            }*/
-                            if (!is_there_is_a_collosion(rectangleChangedInfo.getSorted_array(), mouse_scene_x_translated - local_x, mouse_scene_x_translated - local_x + rectangle.getWidth())) {
-                                rectangle.setX(mouseEvent.getSceneX() - rectangleChangedInfo.getOriginal_x() + rectangleChangedInfo.getOriginal_start_rectangle());
                             }
                         } else if (mouse_scene_x_translated - local_x < time_line_pane_data.getTime_line_base_line()) {
                             if (!is_there_is_a_collosion(rectangleChangedInfo.getSorted_array(), time_line_pane_data.getTime_line_base_line(), time_line_pane_data.getTime_line_base_line() + rectangle.getWidth())) {
                                 rectangle.setX(time_line_pane_data.getTime_line_base_line());
+                                rectangleChangedInfo.getFake_rectangle().setX(time_line_pane_data.getTime_line_base_line());
                             }
                         } else if (mouse_scene_x_translated - local_x + rectangle.getWidth() > time_line_pane_data.getTime_line_end_base_line()) {
                             if (!is_there_is_a_collosion(rectangleChangedInfo.getSorted_array(), time_line_pane_data.getTime_line_end_base_line() - rectangle.getWidth(), time_line_pane_data.getTime_line_base_line())) {
                                 rectangle.setX(time_line_pane_data.getTime_line_end_base_line() - rectangle.getWidth());
+                                rectangleChangedInfo.getFake_rectangle().setX(time_line_pane_data.getTime_line_end_base_line() - rectangle.getWidth());
                             }
                         }
                     } else if (rectangleChangedInfo.getType_of_movement() == MovementType.END) {
@@ -3309,12 +3323,16 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+                    Rectangle_changed_info rectangleChangedInfo = (Rectangle_changed_info) rectangle.getUserData();
                     double old_width = shapeObjectTimeLine.getEnd() - shapeObjectTimeLine.getStart();
                     shapeObjectTimeLine.setStart(rectangle.getX());
                     shapeObjectTimeLine.setEnd(rectangle.getX() + rectangle.getWidth());
                     set_the_rectangle_mouse_cursor(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), shapeObjectTimeLine, change_cursor_to_double_arrow_buffer);
                     if (rectangle.getWidth() != old_width) {
                         set_up_the_image_rectangle(rectangle, image, pane);
+                    }
+                    if(rectangleChangedInfo.getFake_rectangle()!=null){
+                        pane.getChildren().remove(rectangleChangedInfo.getFake_rectangle());
                     }
                 }
             }
@@ -3446,13 +3464,15 @@ public class HelloApplication extends Application {
         helloController.stack_pane_of_image_view_and_text.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-
+                helloController.blurry_chatgpt_image_view.setVisible(true);
+                helloController.play_sound.setVisible(true);
             }
         });
         helloController.stack_pane_of_image_view_and_text.setOnMouseExited(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-
+                helloController.blurry_chatgpt_image_view.setVisible(false);
+                helloController.play_sound.setVisible(false);
             }
         });
     }
@@ -3509,8 +3529,9 @@ public class HelloApplication extends Application {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
                 if(helloController.blurry_chatgpt_image_view.getClip()!=null) {
-                    ((Circle) helloController.blurry_chatgpt_image_view.getClip()).setCenterY(t1.doubleValue()*0.75D);
-                    helloController.play_sound.setLayoutY(t1.doubleValue()*0.75D - blurry_circle_raduis);
+                    double vertical_bias = 0.875D;
+                    ((Circle) helloController.blurry_chatgpt_image_view.getClip()).setCenterY(t1.doubleValue()*vertical_bias);
+                    helloController.play_sound.setLayoutY(t1.doubleValue()*vertical_bias - blurry_circle_raduis);
                 }
             }
         });
@@ -3520,5 +3541,24 @@ public class HelloApplication extends Application {
         helloController.play_sound.setPrefHeight(blurry_circle_raduis*2);
         helloController.play_sound.setPrefWidth(blurry_circle_raduis*2);
         helloController.play_sound.setShape(new Circle(blurry_circle_raduis));
+    }
+
+    private Rectangle deepCopyRectangle(Rectangle rect) {
+        Rectangle copy = new Rectangle(
+                rect.getX(),
+                rect.getY(),
+                rect.getWidth(),
+                rect.getHeight()
+        );
+        // Copy Paint (may be Color, LinearGradient, etc.)
+        copy.setFill(rect.getFill());
+        copy.setStroke(rect.getStroke());
+        copy.setStrokeWidth(rect.getStrokeWidth());
+        copy.setArcWidth(rect.getArcWidth());
+        copy.setArcHeight(rect.getArcHeight());
+        copy.setOpacity(rect.getOpacity());
+        copy.setRotate(rect.getRotate());
+        copy.setEffect(rect.getEffect());
+        return copy;
     }
 }

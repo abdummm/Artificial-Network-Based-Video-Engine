@@ -334,8 +334,8 @@
                                             <Insets left="5.0"/>
                                         </HBox.margin>
                                         <ImageView fx:id="chatgpt_image_view" preserveRatio="true"/>
-                                        <ImageView fx:id="blurry_chatgpt_image_view" preserveRatio="true"/>
-                                        <JFXButton fx:id="play_sound"/>
+                                        <ImageView fx:id="blurry_chatgpt_image_view" preserveRatio="true" visible="false"/>
+                                        <JFXButton fx:id="play_sound" visible="false"/>
                                     </Pane>
                                     <VBox alignment="CENTER">
                                         <HBox.margin>
