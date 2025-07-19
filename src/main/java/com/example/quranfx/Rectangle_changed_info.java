@@ -10,7 +10,7 @@ public class Rectangle_changed_info {
     private double original_end_rectangle;
     private double relative_x;
     private double[][] sorted_array;
-    private Rectangle fake_rectangle = null;
+    private Rectangle fake_rectangle;
 
     public Rectangle_changed_info(double original_x, MovementType type_of_movement,double original_start_rectangle,double original_end_rectangle,double relative_x,double[][] sorted_array) {
         this.original_x = original_x;
@@ -19,6 +19,7 @@ public class Rectangle_changed_info {
         this.original_end_rectangle = original_end_rectangle;
         this.relative_x = relative_x;
         this.sorted_array = sorted_array;
+        this.fake_rectangle = null;
     }
 
 
