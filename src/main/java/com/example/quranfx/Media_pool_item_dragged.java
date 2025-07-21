@@ -9,14 +9,16 @@ public class Media_pool_item_dragged {
     private boolean has_this_been_dragged;
     private String image_key_uuid;
     private double[][] sorted_timing_array;
+    private String temp_rectangle_id;
 
-    public Media_pool_item_dragged(ImageView imageView, double x_pos, double y_pos,String image_key_uuid,double[][] sorted_timing_array) {
+    public Media_pool_item_dragged(ImageView imageView, double x_pos, double y_pos,String image_key_uuid,double[][] sorted_timing_array,String temp_rectangle_id) {
         this.imageView = imageView;
         this.x_pos = x_pos;
         this.y_pos = y_pos;
         this.has_this_been_dragged = false;
         this.image_key_uuid = image_key_uuid;
         this.sorted_timing_array = sorted_timing_array;
+        this.temp_rectangle_id = temp_rectangle_id;
     }
 
     public ImageView getImageView() {
@@ -57,5 +59,9 @@ public class Media_pool_item_dragged {
 
     public double[][] getSorted_timing_array() {
         return sorted_timing_array;
+    }
+
+    public String getTemp_rectangle_id() {
+        return temp_rectangle_id;
     }
 }

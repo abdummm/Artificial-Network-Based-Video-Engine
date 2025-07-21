@@ -322,19 +322,15 @@
                             <VBox alignment="CENTER">
                                 <HBox alignment="CENTER">
                                     <VBox alignment="CENTER">
-                                        <JFXButton fx:id="previous_photo_chat_gpt_result" maxHeight="50"
-                                                   maxWidth="50"
-                                                   prefHeight="50"
-                                                   prefWidth="50" minHeight="50" minWidth="50"
-                                                   focusTraversable="false">
-                                        </JFXButton>
+                                        <JFXButton fx:id="previous_photo_chat_gpt_result" focusTraversable="false" minWidth="50" prefWidth="50" maxWidth="50" minHeight="50" prefHeight="50" maxHeight="50"/>
                                     </VBox>
                                     <Pane fx:id="stack_pane_of_image_view_and_text">
                                         <HBox.margin>
                                             <Insets left="5.0"/>
                                         </HBox.margin>
                                         <ImageView fx:id="chatgpt_image_view" preserveRatio="true"/>
-                                        <ImageView fx:id="blurry_chatgpt_image_view" preserveRatio="true" visible="false"/>
+                                        <ImageView fx:id="blurry_chatgpt_image_view" preserveRatio="true"
+                                                   visible="false"/>
                                         <JFXButton fx:id="play_sound" visible="false"/>
                                     </Pane>
                                     <VBox alignment="CENTER">

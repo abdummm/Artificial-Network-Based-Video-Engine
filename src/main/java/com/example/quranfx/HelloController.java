@@ -176,5 +176,6 @@ public class HelloController {
     @FXML
     public ImageView blurry_chatgpt_image_view;
 
-
+    @FXML
+    public Circle circle_around_left_button;
 }

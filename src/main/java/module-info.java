@@ -24,6 +24,7 @@ module com.example.quranfx {
     requires org.bytedeco.opencv;
     requires atlantafx.base;
     requires MaterialFX;
+    requires jdk.compiler;
 
     opens com.example.quranfx to javafx.fxml;
     exports com.example.quranfx;

@@ -1,5 +1,6 @@
 package com.example.quranfx;
 
+import com.sun.source.tree.Tree;
 import javafx.scene.shape.Polygon;
 
 import java.util.HashMap;
@@ -17,7 +18,6 @@ public class Time_line_pane_data {
 
     public Time_line_pane_data() {
         hashMap_containing_all_of_the_items = new HashMap<>();
-
     }
 
     public double getPixels_in_between_each_line() {
