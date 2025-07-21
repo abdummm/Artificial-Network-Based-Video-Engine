@@ -2056,6 +2056,9 @@ public class HelloApplication extends Application {
                         }
                         Pic_aspect_ratio picAspectRatio = return_the_aspect_ratio_as_an_object(helloController);
                         Media_pool mediaPool_item;
+                        if(bufferedImage.getType() !=BufferedImage.TYPE_INT_RGB){
+                            bufferedImage = return_rgb_buffered_image(bufferedImage);
+                        }
                         if (is_this_the_correct_ratio(picAspectRatio, bufferedImage)) {
                             write_the_raw_file(bufferedImage, "temp/images/base", file_id);
                             if (do_i_need_to_down_scale(bufferedImage, picAspectRatio)) {
@@ -2098,7 +2101,9 @@ public class HelloApplication extends Application {
 
     private void write_the_raw_file(BufferedImage bufferedImage, String file_path, String name) {
         int[] pixels = ((DataBufferInt) bufferedImage.getRaster().getDataBuffer()).getData();
-        try (FileOutputStream fos = new FileOutputStream(file_path.concat("/").concat(name).concat(".raw"))) {
+        File file = new File(file_path.concat("/").concat(name).concat(".raw"));
+        file.deleteOnExit();
+        try (FileOutputStream fos = new FileOutputStream(file)) {
             ByteBuffer byteBuffer = ByteBuffer.allocate(pixels.length * 4);
             byteBuffer.order(ByteOrder.BIG_ENDIAN); // or LITTLE_ENDIAN depending on your platform
             for (int pixel : pixels) {
@@ -2140,7 +2145,6 @@ public class HelloApplication extends Application {
         } else if (pic_aspect_ratio.equals(Pic_aspect_ratio.aspect_square_1_1)) {
             bufferedImage = Scalr.resize(bufferedImage, Scalr.Method.QUALITY, width, height);
         }
-        System.out.println(bufferedImage.getType());
         return bufferedImage;
     }
 
@@ -2722,6 +2726,7 @@ public class HelloApplication extends Application {
                 if (mouseEvent.getY() <= y_drag_area && mouseEvent.getX() >= base_time_line && mouseEvent.getX() <= end_time_line) {
                     time_line_clicked(helloController, pane, mouseEvent.getX());
                     which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, mouseEvent.getX() - time_line_pane_data.getTime_line_base_line()));
+                    set_the_chatgpt_image_view(helloController,return_the_image_after_a_random_click(mouseEvent.getX(),time_line_pane_data.getHashMap_containing_all_of_the_items()));
                 }
             }
         });
@@ -2783,15 +2788,16 @@ public class HelloApplication extends Application {
         polygon.setOnMouseReleased(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                double mouseX = mouseEvent.getSceneX();
-                double mouseY = mouseEvent.getSceneY();
-                Point2D local = polygon.sceneToLocal(mouseX, mouseY);
+                double scroll_pane_x_pos = mouseEvent.getSceneX();
+                double scroll_pane_y_pos = mouseEvent.getSceneY();
+                Point2D scene_2d_point = helloController.scroll_pane_hosting_the_time_line.localToScene(scroll_pane_x_pos,scroll_pane_y_pos);
+                Point2D local = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(),mouseEvent.getSceneY());
                 if (polygon.contains(local) && mouseEvent.getY() <= y_area) {
                     polygon.setCursor(Cursor.OPEN_HAND);
                 } else {
                     polygon.setCursor(Cursor.DEFAULT);
                 }
-                set_the_chatgpt_image_view(helloController,return_the_image_after_a_random_click(mouseX,time_line_pane_data.getHashMap_containing_all_of_the_items()));
+                set_the_chatgpt_image_view(helloController,return_the_image_after_a_random_click(local.getX(),time_line_pane_data.getHashMap_containing_all_of_the_items()));
             }
         });
         polygon.setOnMouseDragged(new EventHandler<MouseEvent>() {
@@ -3616,9 +3622,6 @@ public class HelloApplication extends Application {
     }
 
     private Image readRawImage(String filePath, int width, int height) {
-        System.out.println(filePath);
-        System.out.println(width);
-        System.out.println(height);
         File file = new File(filePath);
         byte[] bytes = new byte[(int) file.length()];
         try (FileInputStream fis = new FileInputStream(file)) {
@@ -3647,7 +3650,6 @@ public class HelloApplication extends Application {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 int argb = pixels[idx++];
-                // Extract color channels
                 int a = (argb >> 24) & 0xff;
                 int r = (argb >> 16) & 0xff;
                 int g = (argb >> 8) & 0xff;
@@ -3657,4 +3659,14 @@ public class HelloApplication extends Application {
         }
         return image;
     }
+    private BufferedImage return_rgb_buffered_image(BufferedImage bufferedImage){
+        if(bufferedImage.getType() == BufferedImage.TYPE_INT_RGB){
+            return bufferedImage;
+        } else {
+            BufferedImage new_rgb_buffered_image = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+            new_rgb_buffered_image.createGraphics().drawImage(bufferedImage, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
+            return new_rgb_buffered_image;
+        }
+    }
+
 }
