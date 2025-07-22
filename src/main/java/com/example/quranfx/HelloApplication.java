@@ -8,7 +8,6 @@ import com.drew.metadata.exif.ExifIFD0Directory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXButton;
-import com.sun.source.tree.Tree;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -51,13 +50,11 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.*;
 
 import java.awt.*;
-import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
@@ -88,7 +85,6 @@ public class HelloApplication extends Application {
     private ArrayList<Verse_class> array_list_with_verses = new ArrayList<>();
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
     private ArrayList<Verse_class_final> chatgpt_responses = new ArrayList<>();
-    private HashMap<String, Media_pool> hash_map_with_the_media_pool_items = new HashMap<>();
 
     private int initial_number_of_ayats = 0;
     private int chat_gpt_processed_ayats = 0;
@@ -108,15 +104,16 @@ public class HelloApplication extends Application {
     private double max_hight_of_bottom_pane_fourth_screen = 0;
     private ContextMenu empty_tile_pane_context_menu = null;
 
-    private final static double play_pause_button_size = 20D;
     private final static int image_view_in_tile_pane_width = 90;
     private final static int image_view_in_tile_pane_height = 160;
     private final static String help_email = "abdomakesappshelp@gmail.com";
     private final static double blurry_circle_raduis = 30D;
+    private final static double play_pause_button_size = 20D;
+    ;
     //private final static double circle_button_radius = 20D;
     private final static int how_long_does_it_take_for_tool_tip_to_show_up = 500;
 
-    private double lastKnownMediaTime = 0;
+    private long lastKnownMediaTime = 0;
     private long lastKnownSystemTime = 0;
     private AnimationTimer timer = null;
 
@@ -591,7 +588,7 @@ public class HelloApplication extends Application {
                 }
                 helloController.generating_screen.setVisible(true);
                 helloController.choose_ayat_screen.setVisible(false);
-                copy_the_images(helloController, get_the_right_basic_image_aspect_ratio(return_the_aspect_ratio_as_an_object(helloController)));
+                //copy_the_images(helloController, get_the_right_basic_image_aspect_ratio(return_the_aspect_ratio_as_an_object(helloController)));
                 get_the_sound_and_concat_them_into_one(helloController);
                 set_up_third_screen(helloController, helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
             }
@@ -1522,7 +1519,7 @@ public class HelloApplication extends Application {
 
     private void scroll_to_specific_verse_time(HelloController helloController) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
-        double time_in_milliseconds = chatgpt_responses.get(selected_verse).getStart_millisecond();
+        long time_in_milliseconds = chatgpt_responses.get(selected_verse).getStart_millisecond();
         update_the_time_line_indicator(helloController.time_line_pane, time_in_milliseconds);
         force_the_time_line_indicator_to_be_at_the_middle(helloController.scroll_pane_hosting_the_time_line, time_line_pane_data.getPolygon().getLayoutX());
         mediaPlayer.seek(Duration.millis(time_in_milliseconds));
@@ -1645,18 +1642,7 @@ public class HelloApplication extends Application {
         mediaPlayer.play();
     }
 
-    private BufferedImage get_the_right_basic_image_aspect_ratio(Pic_aspect_ratio pic_aspect_ratio) {
-        if (pic_aspect_ratio == Pic_aspect_ratio.aspect_vertical_9_16) {
-            return Base64_image.getInstance().vertical_place_holder;
-        } else if (pic_aspect_ratio == Pic_aspect_ratio.aspect_horizontal_16_9) {
-            return Base64_image.getInstance().horizontal_place_holder;
-        } else if (pic_aspect_ratio == Pic_aspect_ratio.aspect_square_1_1) {
-            return Base64_image.getInstance().square_place_holder;
-        }
-        return Base64_image.getInstance().vertical_place_holder;
-    }
-
-    private void copy_the_images(HelloController helloController, BufferedImage image_to_write) {
+    /*private void copy_the_images(HelloController helloController, BufferedImage image_to_write) {
         String format = "bmp";
         int start_ayat = return_start_ayat(helloController);
         int end_ayat = return_end_ayat(helloController);
@@ -1713,7 +1699,7 @@ public class HelloApplication extends Application {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
+    }*/
 
     private void stop_and_start_the_media_again() {
         mediaPlayer.setOnStopped(new Runnable() {
@@ -1892,11 +1878,28 @@ public class HelloApplication extends Application {
 
     private void set_the_icons(HelloController helloController) {
         helloController.next_photo_chat_gpt_result.setGraphic(return_region_for_svg(get_the_svg_path("arrow_forward_ios"), 25D));
+        helloController.next_photo_chat_gpt_result.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        helloController.next_photo_chat_gpt_result.setAlignment(Pos.CENTER);
+
         helloController.previous_photo_chat_gpt_result.setGraphic(return_region_for_svg(get_the_svg_path("arrow_back_ios"), 25D));
+        helloController.previous_photo_chat_gpt_result.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        helloController.previous_photo_chat_gpt_result.setAlignment(Pos.CENTER);
+
         helloController.full_screen_button_fourth_screen.setGraphic(return_region_for_svg(get_the_svg_path("fullscreen"), 25D));
+        helloController.full_screen_button_fourth_screen.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        helloController.full_screen_button_fourth_screen.setAlignment(Pos.CENTER);
+
         helloController.cancel_video.setGraphic(return_region_for_svg(get_the_svg_path("arrow_back_with_line"), 25D));
+        helloController.cancel_video.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        helloController.cancel_video.setAlignment(Pos.CENTER);
+
         helloController.create_video_final.setGraphic(return_region_for_svg(get_the_svg_path("rocket_launch"), 25D));
+        helloController.create_video_final.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        helloController.create_video_final.setAlignment(Pos.CENTER);
+
         set_the_play_pause_button(helloController, "play");
+        helloController.play_sound.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        helloController.play_sound.setAlignment(Pos.CENTER);
     }
 
     private String getSvgPathContent(String resourcePath) {
@@ -1928,6 +1931,7 @@ public class HelloApplication extends Application {
         double[] width_and_height = return_real_width_and_height_of_svg(svgPath, max_width_height);
         Region region = new Region();
         region.setShape(svgPath);
+        region.setMinSize(width_and_height[0], width_and_height[1]);
         region.setPrefSize(width_and_height[0], width_and_height[1]);
         region.setMaxSize(width_and_height[0], width_and_height[1]);
         region.setStyle("-fx-background-color: black;");
@@ -2048,7 +2052,7 @@ public class HelloApplication extends Application {
                         } else {
                             image = new Image(new FileInputStream(image_file));
                         }
-                        String file_id = UUID.randomUUID().toString();
+                        long image_id = UUID.randomUUID().getLeastSignificantBits() & Long.MAX_VALUE;
                         BufferedImage bufferedImage = image_to_buffered_image(image);
                         int orientation = getExifOrientation(image_file);
                         if (orientation == 3 || orientation == 6 || orientation == 8) {
@@ -2056,25 +2060,25 @@ public class HelloApplication extends Application {
                         }
                         Pic_aspect_ratio picAspectRatio = return_the_aspect_ratio_as_an_object(helloController);
                         Media_pool mediaPool_item;
-                        if(bufferedImage.getType() !=BufferedImage.TYPE_INT_RGB){
-                            bufferedImage = return_rgb_buffered_image(bufferedImage);
-                        }
+                        bufferedImage = return_argb_buffered_image(bufferedImage);
                         if (is_this_the_correct_ratio(picAspectRatio, bufferedImage)) {
-                            write_the_raw_file(bufferedImage, "temp/images/base", file_id);
+                            write_the_raw_file(bufferedImage, "temp/images/base", String.valueOf(image_id));
                             if (do_i_need_to_down_scale(bufferedImage, picAspectRatio)) {
                                 did_the_image_get_down_scaled = true;
-                                write_the_raw_file(return_resized_downscale_buffer_image(bufferedImage, picAspectRatio), "temp/images/scaled", file_id);
+                                BufferedImage down_sized_buffed_image = return_argb_buffered_image(return_resized_downscale_buffer_image(bufferedImage, picAspectRatio));
+                                write_the_raw_file(down_sized_buffed_image, "temp/images/scaled", String.valueOf(image_id));
                             }
-                            mediaPool_item = new Media_pool(file_id, create_a_thumbnail(bufferedImage, picAspectRatio), image_file.getName(), did_the_image_get_down_scaled, bufferedImage.getWidth(),bufferedImage.getHeight());
+                            mediaPool_item = new Media_pool(image_id, create_a_thumbnail(bufferedImage, picAspectRatio), image_file.getName(), did_the_image_get_down_scaled, bufferedImage.getWidth(), bufferedImage.getHeight());
                         } else {
                             BufferedImage filled_with_black = fill_the_back_ground_with_color(bufferedImage, new Color(0, 0, 0, 255));
                             BufferedImage filled_transparent = fill_the_back_ground_with_color(bufferedImage, new Color(0, 0, 0, 0));
-                            write_the_raw_file(filled_with_black, "temp/images/base", file_id);
+                            write_the_raw_file(filled_with_black, "temp/images/base", String.valueOf(image_id));
                             if (do_i_need_to_down_scale(filled_with_black, picAspectRatio)) {
                                 did_the_image_get_down_scaled = true;
-                                write_the_raw_file(return_resized_downscale_buffer_image(filled_with_black, picAspectRatio), "temp/images/scaled", file_id);
+                                BufferedImage down_sized_buffed_image = return_argb_buffered_image(return_resized_downscale_buffer_image(filled_with_black, picAspectRatio));
+                                write_the_raw_file(down_sized_buffed_image, "temp/images/scaled", String.valueOf(image_id));
                             }
-                            mediaPool_item = new Media_pool(file_id, create_a_thumbnail(filled_transparent, picAspectRatio), image_file.getName(), did_the_image_get_down_scaled,filled_with_black.getWidth(),filled_with_black.getHeight());
+                            mediaPool_item = new Media_pool(image_id, create_a_thumbnail(filled_transparent, picAspectRatio), image_file.getName(), did_the_image_get_down_scaled, filled_with_black.getWidth(), filled_with_black.getHeight());
                         }
                         arrayList_with_media_pool.add(mediaPool_item);
                     }
@@ -2083,7 +2087,6 @@ public class HelloApplication extends Application {
                         public void run() {
                             for (int i = 0; i < arrayList_with_media_pool.size(); i++) {
                                 add_image_to_tile_pane(helloController, arrayList_with_media_pool.get(i));
-                                hash_map_with_the_media_pool_items.put(arrayList_with_media_pool.get(i).getId(), arrayList_with_media_pool.get(i));
                             }
                             helloController.upload_media_text.setDisable(false);
                             helloController.progress_indicator_media_pool.setVisible(false);
@@ -2211,6 +2214,11 @@ public class HelloApplication extends Application {
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                     Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
+                    Rectangle created_rectangle = create_and_return_time_line_rectangle(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data,TimeUnit.SECONDS.toNanos(1)));
+                    created_rectangle.setVisible(false);
+                    Shape_object_time_line shapeObjectTimeLine = new Shape_object_time_line(0, nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1)), created_rectangle, mediaPool.getId());
+                    set_up_the_image_rectangle(created_rectangle, mediaPool.getThumbnail(), helloController.time_line_pane);
+                    configure_the_image_rectangle(shapeObjectTimeLine, helloController, helloController.time_line_pane, mediaPool.getThumbnail());
                     imageView.setCursor(Cursor.CLOSED_HAND);
                     double real_x_pos = mouseEvent.getSceneX() - mouseEvent.getX();
                     double real_y_pos = mouseEvent.getSceneY() - mouseEvent.getY();
@@ -2220,7 +2228,7 @@ public class HelloApplication extends Application {
                     ghost.setOpacity(0.75);
                     ghost.setLayoutX(real_x_pos);
                     ghost.setLayoutY(real_y_pos);
-                    Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(ghost, mouseEvent.getSceneX(), mouseEvent.getSceneY(), mediaPool.getId(), return_all_of_the_image_timings_sorted(time_line_pane_data.getHashMap_containing_all_of_the_items()),UUID.randomUUID().toString());
+                    Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(ghost, mouseEvent.getSceneX(), mouseEvent.getSceneY(), mediaPool.getId(), shapeObjectTimeLine,return_all_of_the_image_timings_sorted(time_line_pane_data.getTree_set_containing_all_of_the_items()));
                     helloController.pane_holding_the_fourth_screen.getChildren().add(ghost);
                     imageView.setUserData(media_pool_item_dragged);
                 }
@@ -2238,15 +2246,17 @@ public class HelloApplication extends Application {
                         double old_y_pos = media_pool_item_dragged.getY_pos();
                         double x_pos_local = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY()).getX();
                         double image_width_in_time_line = nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1));
+                        Shape_object_time_line shapeObjectTimeLine = media_pool_item_dragged.getShapeObjectTimeLine();
                         if (!helloController.pane_holding_the_fourth_screen.getChildren().contains(ghost)) {
                             helloController.pane_holding_the_fourth_screen.getChildren().add(ghost);
                         }
                         ghost.setTranslateX(mouseEvent.getSceneX() - old_x_pos);
                         ghost.setTranslateY(mouseEvent.getSceneY() - old_y_pos);
                         if (media_pool_item_dragged.isHas_this_been_dragged() || am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged)) {
-                            add_the_image_to_the_time_line(helloController.time_line_pane, imageView.getImage(), x_pos_local, media_pool_item_dragged.getTemp_rectangle_id(), image_width_in_time_line, helloController,media_pool_item_dragged.getImage_key_uuid());
-                        } else {
-                            remove_the_image_from_time_line_hash_map(helloController.time_line_pane, media_pool_item_dragged.getTemp_rectangle_id());
+                            if (!shapeObjectTimeLine.getShape().isVisible()) {
+                                shapeObjectTimeLine.getShape().setVisible(true);
+                            }
+                            move_the_rectangle(helloController.time_line_pane,(Rectangle) shapeObjectTimeLine.getShape(),x_pos_local);
                         }
                         double min_x_pos_local;
                         double max_x_pos_local;
@@ -2262,10 +2272,10 @@ public class HelloApplication extends Application {
                                 min_x_pos_local = time_line_pane_data.getTime_line_end_base_line() - image_width_in_time_line;
                             }
                         }
-                        if (am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) && !is_there_is_a_collosion(media_pool_item_dragged.getSorted_timing_array(), min_x_pos_local, max_x_pos_local)) {
-                            set_the_opacity_of_the_rectangle_in_time_line_pane(time_line_pane_data, 1, media_pool_item_dragged.getTemp_rectangle_id());
+                        if (am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) && !is_there_is_a_collosion(media_pool_item_dragged.getSorted_array(), min_x_pos_local, max_x_pos_local)) {
+                            set_the_opacity_of_the_rectangle_in_time_line_pane((Rectangle) shapeObjectTimeLine.getShape(), 1);
                         } else {
-                            set_the_opacity_of_the_rectangle_in_time_line_pane(time_line_pane_data, 0.4D, media_pool_item_dragged.getTemp_rectangle_id());
+                            set_the_opacity_of_the_rectangle_in_time_line_pane((Rectangle) shapeObjectTimeLine.getShape(), 0.4D);
                         }
                     }
                 }
@@ -2296,8 +2306,10 @@ public class HelloApplication extends Application {
                             min_x_pos_local = time_line_pane_data.getTime_line_end_base_line() - image_width_in_time_line;
                         }
                     }
-                    if (!am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) || is_there_is_a_collosion(media_pool_item_dragged.getSorted_timing_array(), min_x_pos_local, max_x_pos_local)) {
-                        remove_the_image_from_time_line_hash_map(helloController.time_line_pane, media_pool_item_dragged.getTemp_rectangle_id());
+                    if (am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) || is_there_is_a_collosion(media_pool_item_dragged.getSorted_array(), min_x_pos_local, max_x_pos_local)) {
+                        time_line_pane_data.getTree_set_containing_all_of_the_items().add(media_pool_item_dragged.getShapeObjectTimeLine());
+                    } else {
+                        helloController.time_line_pane.getChildren().remove(media_pool_item_dragged.getShapeObjectTimeLine().getShape());
                     }
                 }
             }
@@ -2408,6 +2420,7 @@ public class HelloApplication extends Application {
             helloController.play_sound.getProperties().put("type", "play");
 
         } else if (type.equals("pause")) {
+            Region region = new Region();
             helloController.play_sound.setGraphic(return_region_for_svg(get_the_svg_path("pause_icon"), play_pause_button_size));
             helloController.play_sound.getProperties().put("type", "pause");
         }
@@ -2699,7 +2712,7 @@ public class HelloApplication extends Application {
         time_line_pane_data.setPolygon_width(time_line_indicator_width);
     }
 
-    private void update_the_time_line_indicator(Pane pane, double milliseconds) {
+    private void update_the_time_line_indicator(Pane pane, long milliseconds) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         double pixels_in_between_each_line = time_line_pane_data.getPixels_in_between_each_line();
         long time_between_every_line = time_line_pane_data.getTime_between_every_line();
@@ -2726,7 +2739,6 @@ public class HelloApplication extends Application {
                 if (mouseEvent.getY() <= y_drag_area && mouseEvent.getX() >= base_time_line && mouseEvent.getX() <= end_time_line) {
                     time_line_clicked(helloController, pane, mouseEvent.getX());
                     which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, mouseEvent.getX() - time_line_pane_data.getTime_line_base_line()));
-                    set_the_chatgpt_image_view(helloController,return_the_image_after_a_random_click(mouseEvent.getX(),time_line_pane_data.getHashMap_containing_all_of_the_items()));
                 }
             }
         });
@@ -2790,14 +2802,13 @@ public class HelloApplication extends Application {
             public void handle(MouseEvent mouseEvent) {
                 double scroll_pane_x_pos = mouseEvent.getSceneX();
                 double scroll_pane_y_pos = mouseEvent.getSceneY();
-                Point2D scene_2d_point = helloController.scroll_pane_hosting_the_time_line.localToScene(scroll_pane_x_pos,scroll_pane_y_pos);
-                Point2D local = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(),mouseEvent.getSceneY());
+                Point2D scene_2d_point = helloController.scroll_pane_hosting_the_time_line.localToScene(scroll_pane_x_pos, scroll_pane_y_pos);
+                Point2D local = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY());
                 if (polygon.contains(local) && mouseEvent.getY() <= y_area) {
                     polygon.setCursor(Cursor.OPEN_HAND);
                 } else {
                     polygon.setCursor(Cursor.DEFAULT);
                 }
-                set_the_chatgpt_image_view(helloController,return_the_image_after_a_random_click(local.getX(),time_line_pane_data.getHashMap_containing_all_of_the_items()));
             }
         });
         polygon.setOnMouseDragged(new EventHandler<MouseEvent>() {
@@ -3077,39 +3088,37 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void add_the_image_to_the_time_line(Pane pane, Image image, double x_pos, String rectangle_id, double width, HelloController helloController,String image_id) {
+    private Rectangle create_and_return_time_line_rectangle(Pane pane, double width) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         double height = 60;
+        double x_pos = time_line_pane_data.getTime_line_base_line();
+        /*x_pos -= (width / 2);
+        x_pos = Math.max(x_pos, time_line_pane_data.getTime_line_base_line());
+        if (x_pos + width >= time_line_pane_data.getTime_line_end_base_line()) {
+            x_pos = time_line_pane_data.getTime_line_end_base_line() - width;
+        }*/
+        Rectangle rectangle;
+        rectangle = new Rectangle(width, height);
+        pane.getChildren().add(pane.getChildren().size() - 1, rectangle);
+        rectangle.setY(60);
+        rectangle.setX(x_pos);
+        return rectangle;
+    }
+
+    private void move_the_rectangle(Pane pane,Rectangle rectangle, double x_pos){
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
+        double width =rectangle.getWidth();
         x_pos -= (width / 2);
         x_pos = Math.max(x_pos, time_line_pane_data.getTime_line_base_line());
         if (x_pos + width >= time_line_pane_data.getTime_line_end_base_line()) {
             x_pos = time_line_pane_data.getTime_line_end_base_line() - width;
         }
-        Rectangle rectangle;
-        Shape_object_time_line shapeObjectTimeLine;
-        if (time_line_pane_data.getHashMap_containing_all_of_the_items().containsKey(rectangle_id)) {
-            shapeObjectTimeLine = time_line_pane_data.getHashMap_containing_all_of_the_items().get(rectangle_id);
-            rectangle = (Rectangle) shapeObjectTimeLine.getShape();
-        } else {
-            rectangle = new Rectangle(width, height);
-            shapeObjectTimeLine = new Shape_object_time_line(x_pos, x_pos + width, rectangle, image_id);
-            time_line_pane_data.getHashMap_containing_all_of_the_items().put(rectangle_id, shapeObjectTimeLine);
-            pane.getChildren().add(pane.getChildren().size() - 1, rectangle);
-            set_up_the_image_rectangle(rectangle, image, pane);
-            configure_the_image_rectangle(shapeObjectTimeLine, helloController, pane, image, rectangle_id);
-            rectangle.setY(60);
-        }
         rectangle.setX(x_pos);
-        shapeObjectTimeLine.setStart(x_pos);
-        shapeObjectTimeLine.setEnd(x_pos + width);
     }
 
-    private void remove_the_image_from_time_line_hash_map(Pane pane, String image_id) {
+    private void remove_the_image_from_time_line_hash_map(Pane pane, Shape_object_time_line shapeObjectTimeLine) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
-        if (time_line_pane_data.getHashMap_containing_all_of_the_items().containsKey(image_id)) {
-            pane.getChildren().remove(time_line_pane_data.getHashMap_containing_all_of_the_items().get(image_id).getShape());
-            time_line_pane_data.getHashMap_containing_all_of_the_items().remove(image_id);
-        }
+        time_line_pane_data.getTree_set_containing_all_of_the_items().remove(shapeObjectTimeLine);
     }
 
     private void set_up_the_image_rectangle(Rectangle rectangle, Image image, Pane pane) {
@@ -3137,7 +3146,7 @@ public class HelloApplication extends Application {
             for (int k = 0; k < number_of_images; k++) {
                 pixelWriter.setPixels(k * thumbnail.getWidth(), 0, thumbnail.getWidth(), thumbnail.getHeight(), pixelReader, 0, 0);
             }
-            if(width%thumbnail.getWidth()!=0){
+            if (width % thumbnail.getWidth() != 0) {
                 pixelWriter.setPixels(number_of_images * thumbnail.getWidth(), 0, width % thumbnail.getWidth(), thumbnail.getHeight(), pixelReader, 0, 0);
             }
             return writableImage;
@@ -3194,14 +3203,14 @@ public class HelloApplication extends Application {
         return new_image_to_be_returned;
     }
 
-    private void configure_the_image_rectangle(Shape_object_time_line shapeObjectTimeLine, HelloController helloController, Pane pane, Image image, String rectangle_id) {
+    private void configure_the_image_rectangle(Shape_object_time_line shapeObjectTimeLine, HelloController helloController, Pane pane, Image image) {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem item1 = new MenuItem("Remove media");
         contextMenu.getItems().add(item1);
         item1.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                remove_the_image_from_time_line_hash_map(pane, rectangle_id);
+                remove_the_image_from_time_line_hash_map(pane, shapeObjectTimeLine);
             }
         });
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
@@ -3227,9 +3236,9 @@ public class HelloApplication extends Application {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                     double mouse_scene_x_translated = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY()).getX();
                     double local_x = mouse_scene_x_translated - shapeObjectTimeLine.getStart();
-                    HashMap<String, Shape_object_time_line> copy_of_all_items_hash_map = new HashMap<>(time_line_pane_data.getHashMap_containing_all_of_the_items());
-                    copy_of_all_items_hash_map.remove(rectangle_id);
-                    double[][] sorted_array_hashmap = return_all_of_the_image_timings_sorted(copy_of_all_items_hash_map);
+                    TreeSet<Shape_object_time_line> copy_of_all_items_tree_set = new TreeSet<>(time_line_pane_data.getTree_set_containing_all_of_the_items());
+                    copy_of_all_items_tree_set.remove(shapeObjectTimeLine);
+                    double[][] sorted_array_hashmap = return_all_of_the_image_timings_sorted(copy_of_all_items_tree_set);
                     if (get_type_of_movement(rectangle, local_x, change_cursor_to_double_arrow_buffer) == MovementType.START) {
                         Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.START, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, sorted_array_hashmap);
                         rectangle.setUserData(rectangleChangedInfo);
@@ -3365,18 +3374,19 @@ public class HelloApplication extends Application {
 
     private void check_if_i_am_in_right_rectangle_for_cursor(HelloController helloController, double scene_x, double scene_y, Shape_object_time_line shapeObjectTimeLine, double change_cursor_to_double_arrow_buffer, Pane pane) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
-        HashMap<String, Shape_object_time_line> hashMap_containing_all_of_the_shapes = time_line_pane_data.getHashMap_containing_all_of_the_items();
         double mouse_scene_x_translated = helloController.time_line_pane.sceneToLocal(scene_x, scene_y).getX();
         if (mouse_scene_x_translated >= shapeObjectTimeLine.getStart() && mouse_scene_x_translated <= shapeObjectTimeLine.getEnd()) {
             set_the_rectangle_mouse_cursor(helloController, scene_x, scene_y, shapeObjectTimeLine, change_cursor_to_double_arrow_buffer);
         } else {
-            for (String key : hashMap_containing_all_of_the_shapes.keySet()) {
-                Shape_object_time_line shapeObjectTimeLine_from_hashmap = hashMap_containing_all_of_the_shapes.get(key);
-                if (mouse_scene_x_translated >= shapeObjectTimeLine_from_hashmap.getStart() && mouse_scene_x_translated <= shapeObjectTimeLine_from_hashmap.getEnd()) {
-                    set_the_rectangle_mouse_cursor(helloController, scene_x, scene_y, shapeObjectTimeLine_from_hashmap, change_cursor_to_double_arrow_buffer);
+            Iterator<Shape_object_time_line> iterator = time_line_pane_data.getTree_set_containing_all_of_the_items().iterator();
+            while(iterator.hasNext()){
+                Shape_object_time_line shapeObjectTimeLine_from_tree_set = iterator.next();
+                if (mouse_scene_x_translated >= shapeObjectTimeLine_from_tree_set.getStart() && mouse_scene_x_translated <= shapeObjectTimeLine_from_tree_set.getEnd()) {
+                    set_the_rectangle_mouse_cursor(helloController, scene_x, scene_y, shapeObjectTimeLine_from_tree_set, change_cursor_to_double_arrow_buffer);
                     break;
                 }
             }
+
         }
     }
 
@@ -3390,12 +3400,13 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void set_the_opacity_of_the_rectangle_in_time_line_pane(Time_line_pane_data time_line_pane_data, double opacity, String uuid) {
-        HashMap<String, Shape_object_time_line> hashMap_with_all_of_the_items = time_line_pane_data.getHashMap_containing_all_of_the_items();
+    private void set_the_opacity_of_the_rectangle_in_time_line_pane(Rectangle rectangle,double opacity) {
+        rectangle.setOpacity(opacity);
+        /*HashMap<String, Shape_object_time_line> hashMap_with_all_of_the_items = time_line_pane_data.getTree_set_containing_all_of_the_items();
         if (hashMap_with_all_of_the_items.containsKey(uuid)) {
             Rectangle rectangle = (Rectangle) hashMap_with_all_of_the_items.get(uuid).getShape();
             rectangle.setOpacity(opacity);
-        }
+        }*/
     }
 
     private boolean is_there_is_a_collosion(double[][] sorted_array, double start, double end) {
@@ -3446,33 +3457,16 @@ public class HelloApplication extends Application {
         }
     }
 
-    private double[][] return_all_of_the_image_timings_sorted(HashMap<String, Shape_object_time_line> hashMap) {
-        double[][] array_to_be_sorted = new double[hashMap.size()][2];
+    private double[][] return_all_of_the_image_timings_sorted(TreeSet<Shape_object_time_line> treeSet) {
+        double[][] sorted_array = new double[treeSet.size()][2];
+        Iterator<Shape_object_time_line> iterator = treeSet.iterator();
         int counter = 0;
-        for (String key : hashMap.keySet()) {
-            Shape_object_time_line item = hashMap.get(key);
-            array_to_be_sorted[counter] = new double[]{item.getStart(), item.getEnd()};
+        while (iterator.hasNext()){
+            Shape_object_time_line shapeObjectTimeLine = iterator.next();
+            sorted_array[counter] = new double[]{shapeObjectTimeLine.getStart(),shapeObjectTimeLine.getEnd()};
             counter++;
         }
-        Arrays.sort(array_to_be_sorted, new Comparator<double[]>() {
-            @Override
-            public int compare(double[] o1, double[] o2) {
-                if (o1[0] < o2[0]) {
-                    return -1;
-                } else if (o1[0] == o2[0]) {
-                    if (o1[1] < o2[1]) {
-                        return -1;
-                    } else if (o1[1] == o2[1]) {
-                        return 0;
-                    } else {
-                        return 1;
-                    }
-                } else {
-                    return 1;
-                }
-            }
-        });
-        return array_to_be_sorted;
+        return sorted_array;
     }
 
     private void black_out_the_image_view_at_the_start(HelloController helloController) {
@@ -3530,7 +3524,7 @@ public class HelloApplication extends Application {
     }
 
     private void set_up_glossy_pause_button(HelloController helloController) {
-        GaussianBlur blur = new GaussianBlur(40); // Adjust the radius for more/less blur
+        GaussianBlur blur = new GaussianBlur(30); // Adjust the radius for more/less blur
         helloController.blurry_chatgpt_image_view.setEffect(blur);
         Circle circle = new Circle(helloController.blurry_chatgpt_image_view.getFitWidth() / 2, helloController.blurry_chatgpt_image_view.getFitHeight() / 2, blurry_circle_raduis);
         helloController.blurry_chatgpt_image_view.setClip(circle);
@@ -3543,7 +3537,7 @@ public class HelloApplication extends Application {
 
     private void set_the_chatgpt_image_view(HelloController helloController, Image image) {
         helloController.chatgpt_image_view.setImage(image);
-        helloController.blurry_chatgpt_image_view.setImage(image);
+        helloController.blurry_chatgpt_image_view.setImage(whiten_the_image(image_to_buffered_image(image), 0.7f, 60f));
     }
 
     private void listen_to_blurry_image_view_size_change_and_center_the_clip(HelloController helloController) {
@@ -3592,30 +3586,13 @@ public class HelloApplication extends Application {
         return copy;
     }
 
-    private Image return_the_image_after_a_random_click(double pixel_position, HashMap<String, Shape_object_time_line> hashMap) {
-        for (String key : hashMap.keySet()) {
-            Shape_object_time_line shapeObjectTimeLine = hashMap.get(key);
-            if (pixel_position >= shapeObjectTimeLine.getStart() && pixel_position <= shapeObjectTimeLine.getEnd()) {
-                Media_pool media_pool_item = hash_map_with_the_media_pool_items.get(shapeObjectTimeLine.getImage_id());
-                if(media_pool_item.isDid_the_image_get_down_scaled()){
-                    Path path = Paths.get("temp/images/scaled", media_pool_item.getId().concat(".raw"));
-                    return readRawImage(path.toString(),1080,1920);
-                } else {
-                    Path path = Paths.get("temp/images/base", media_pool_item.getId().concat(".raw"));
-                    return readRawImage(path.toString(),media_pool_item.getWidth(), media_pool_item.getHeight());
-                }
-            }
-        }
-        return return_16_9_black_image();
-    }
-
-    private Image return_16_9_black_image(){
+    private Image return_16_9_black_image() {
         int width = 9;
         int height = 16;
-        WritableImage writableImage = new WritableImage(width,height);
-        for(int i = 0;i<width;i++){
-            for(int j = 0;j<height;j++){
-                writableImage.getPixelWriter().setColor(i,j, javafx.scene.paint.Color.BLACK);
+        WritableImage writableImage = new WritableImage(width, height);
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                writableImage.getPixelWriter().setColor(i, j, javafx.scene.paint.Color.BLACK);
             }
         }
         return writableImage;
@@ -3650,23 +3627,34 @@ public class HelloApplication extends Application {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 int argb = pixels[idx++];
-                int a = (argb >> 24) & 0xff;
+                //int a = (argb >> 24) & 0xff;
                 int r = (argb >> 16) & 0xff;
                 int g = (argb >> 8) & 0xff;
                 int b = (argb) & 0xff;
-                writer.setColor(x, y, javafx.scene.paint.Color.rgb(r, g, b, a / 255.0));
+                //writer.setColor(x, y, javafx.scene.paint.Color.rgb(r, g, b, a / 255.0));
+                writer.setColor(x, y, javafx.scene.paint.Color.rgb(r, g, b));
             }
         }
         return image;
     }
-    private BufferedImage return_rgb_buffered_image(BufferedImage bufferedImage){
-        if(bufferedImage.getType() == BufferedImage.TYPE_INT_RGB){
+
+    private BufferedImage return_argb_buffered_image(BufferedImage bufferedImage) {
+        if (bufferedImage.getType() == BufferedImage.TYPE_INT_ARGB) {
             return bufferedImage;
         } else {
-            BufferedImage new_rgb_buffered_image = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+            BufferedImage new_rgb_buffered_image = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
             new_rgb_buffered_image.createGraphics().drawImage(bufferedImage, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
             return new_rgb_buffered_image;
         }
     }
 
+    private Image whiten_the_image(BufferedImage image, float scale, float offset) {
+        // Scale factors and offsets
+        RescaleOp op = new RescaleOp(
+                new float[]{scale, scale, scale, 1.0f},
+                new float[]{offset, offset, offset, 0f}, null);
+
+        BufferedImage result = op.filter(image, null);
+        return buffer_image_to_image(result);
+    }
 }

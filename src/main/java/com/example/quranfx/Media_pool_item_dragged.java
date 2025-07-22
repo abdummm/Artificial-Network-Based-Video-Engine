@@ -7,18 +7,18 @@ public class Media_pool_item_dragged {
     private double x_pos;
     private double y_pos;
     private boolean has_this_been_dragged;
-    private String image_key_uuid;
-    private double[][] sorted_timing_array;
-    private String temp_rectangle_id;
+    private long image_key_uuid;
+    private Shape_object_time_line shapeObjectTimeLine;
+    private double[][] sorted_array;
 
-    public Media_pool_item_dragged(ImageView imageView, double x_pos, double y_pos,String image_key_uuid,double[][] sorted_timing_array,String temp_rectangle_id) {
+    public Media_pool_item_dragged(ImageView imageView, double x_pos, double y_pos,long image_key_uuid, Shape_object_time_line shapeObjectTimeLine,double[][] sorted_array) {
         this.imageView = imageView;
         this.x_pos = x_pos;
         this.y_pos = y_pos;
         this.has_this_been_dragged = false;
         this.image_key_uuid = image_key_uuid;
-        this.sorted_timing_array = sorted_timing_array;
-        this.temp_rectangle_id = temp_rectangle_id;
+        this.shapeObjectTimeLine = shapeObjectTimeLine;
+        this.sorted_array = sorted_array;
     }
 
     public ImageView getImageView() {
@@ -53,15 +53,15 @@ public class Media_pool_item_dragged {
         this.has_this_been_dragged = has_this_been_dragged;
     }
 
-    public String getImage_key_uuid() {
+    public long getImage_key_uuid() {
         return image_key_uuid;
     }
 
-    public double[][] getSorted_timing_array() {
-        return sorted_timing_array;
+    public Shape_object_time_line getShapeObjectTimeLine() {
+        return shapeObjectTimeLine;
     }
 
-    public String getTemp_rectangle_id() {
-        return temp_rectangle_id;
+    public double[][] getSorted_array() {
+        return sorted_array;
     }
 }

@@ -3,8 +3,9 @@ package com.example.quranfx;
 import com.sun.source.tree.Tree;
 import javafx.scene.shape.Polygon;
 
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class Time_line_pane_data {
     private double pixels_in_between_each_line;
@@ -14,10 +15,21 @@ public class Time_line_pane_data {
     private double polygon_width;
     private double time_line_base_line;
     private double time_line_end_base_line;
-    private HashMap<String, Shape_object_time_line> hashMap_containing_all_of_the_items;
+    private TreeSet<Shape_object_time_line> tree_set_containing_all_of_the_items;
 
     public Time_line_pane_data() {
-        hashMap_containing_all_of_the_items = new HashMap<>();
+        tree_set_containing_all_of_the_items = new TreeSet<Shape_object_time_line>(new Comparator<Shape_object_time_line>() {
+            @Override
+            public int compare(Shape_object_time_line o1, Shape_object_time_line o2) {
+                if(o1.getStart() < o2.getStart()){
+                    return -1;
+                } else if (o1.getStart() == o2.getStart()){
+                    return 0;
+                } else {
+                    return 1;
+                }
+            }
+        });
     }
 
     public double getPixels_in_between_each_line() {
@@ -76,7 +88,8 @@ public class Time_line_pane_data {
         this.time_line_end_base_line = time_line_end_base_line;
     }
 
-    public HashMap<String, Shape_object_time_line> getHashMap_containing_all_of_the_items() {
-        return hashMap_containing_all_of_the_items;
+    public TreeSet<Shape_object_time_line> getTree_set_containing_all_of_the_items() {
+        return tree_set_containing_all_of_the_items;
     }
+
 }

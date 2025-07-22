@@ -3,14 +3,14 @@ package com.example.quranfx;
 import javafx.scene.image.Image;
 
 public class Media_pool {
-    private String id;
+    private long id;
     private Image thumbnail;
     private String original_image_name;
     private boolean did_the_image_get_down_scaled;
     private int width;
     private int height;
 
-    public Media_pool(String id, Image thumbnail, String original_image_name, boolean did_the_image_get_down_scaled,int width,int height) {
+    public Media_pool(long id, Image thumbnail, String original_image_name, boolean did_the_image_get_down_scaled,int width,int height) {
         this.id = id;
         this.thumbnail = thumbnail;
         this.original_image_name = original_image_name;
@@ -19,7 +19,7 @@ public class Media_pool {
         this.height = height;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
