@@ -2214,7 +2214,7 @@ public class HelloApplication extends Application {
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                     Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
-                    Rectangle created_rectangle = create_and_return_time_line_rectangle(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data,TimeUnit.SECONDS.toNanos(1)));
+                    Rectangle created_rectangle = create_and_return_time_line_rectangle(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1)));
                     created_rectangle.setVisible(false);
                     Shape_object_time_line shapeObjectTimeLine = new Shape_object_time_line(0, nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1)), created_rectangle, mediaPool.getId());
                     set_up_the_image_rectangle(created_rectangle, mediaPool.getThumbnail(), helloController.time_line_pane);
@@ -2228,7 +2228,7 @@ public class HelloApplication extends Application {
                     ghost.setOpacity(0.75);
                     ghost.setLayoutX(real_x_pos);
                     ghost.setLayoutY(real_y_pos);
-                    Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(ghost, mouseEvent.getSceneX(), mouseEvent.getSceneY(), mediaPool.getId(), shapeObjectTimeLine,return_all_of_the_image_timings_sorted(time_line_pane_data.getTree_set_containing_all_of_the_items()));
+                    Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(ghost, mouseEvent.getSceneX(), mouseEvent.getSceneY(), mediaPool.getId(), shapeObjectTimeLine, return_all_of_the_image_timings_sorted(time_line_pane_data.getTree_set_containing_all_of_the_items()));
                     helloController.pane_holding_the_fourth_screen.getChildren().add(ghost);
                     imageView.setUserData(media_pool_item_dragged);
                 }
@@ -2256,7 +2256,9 @@ public class HelloApplication extends Application {
                             if (!shapeObjectTimeLine.getShape().isVisible()) {
                                 shapeObjectTimeLine.getShape().setVisible(true);
                             }
-                            move_the_rectangle(helloController.time_line_pane,(Rectangle) shapeObjectTimeLine.getShape(),x_pos_local);
+                            double start = move_the_rectangle(helloController.time_line_pane, (Rectangle) shapeObjectTimeLine.getShape(), x_pos_local);
+                            shapeObjectTimeLine.setStart(start);
+                            shapeObjectTimeLine.setEnd(start + ((Rectangle) shapeObjectTimeLine.getShape()).getWidth());
                         }
                         double min_x_pos_local;
                         double max_x_pos_local;
@@ -3105,20 +3107,22 @@ public class HelloApplication extends Application {
         return rectangle;
     }
 
-    private void move_the_rectangle(Pane pane,Rectangle rectangle, double x_pos){
+    private double move_the_rectangle(Pane pane, Rectangle rectangle, double x_pos) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
-        double width =rectangle.getWidth();
+        double width = rectangle.getWidth();
         x_pos -= (width / 2);
         x_pos = Math.max(x_pos, time_line_pane_data.getTime_line_base_line());
         if (x_pos + width >= time_line_pane_data.getTime_line_end_base_line()) {
             x_pos = time_line_pane_data.getTime_line_end_base_line() - width;
         }
         rectangle.setX(x_pos);
+        return x_pos;
     }
 
     private void remove_the_image_from_time_line_hash_map(Pane pane, Shape_object_time_line shapeObjectTimeLine) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         time_line_pane_data.getTree_set_containing_all_of_the_items().remove(shapeObjectTimeLine);
+        pane.getChildren().remove(shapeObjectTimeLine.getShape());
     }
 
     private void set_up_the_image_rectangle(Rectangle rectangle, Image image, Pane pane) {
@@ -3345,6 +3349,9 @@ public class HelloApplication extends Application {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                     Rectangle_changed_info rectangleChangedInfo = (Rectangle_changed_info) rectangle.getUserData();
                     double old_width = shapeObjectTimeLine.getEnd() - shapeObjectTimeLine.getStart();
+                    if (rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE) { // added later
+                        time_line_pane_data.getTree_set_containing_all_of_the_items().remove(shapeObjectTimeLine);
+                    }
                     shapeObjectTimeLine.setStart(rectangle.getX());
                     shapeObjectTimeLine.setEnd(rectangle.getX() + rectangle.getWidth());
                     if (rectangleChangedInfo.getFake_rectangle() != null) {
@@ -3353,6 +3360,9 @@ public class HelloApplication extends Application {
                     check_if_i_am_in_right_rectangle_for_cursor(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), shapeObjectTimeLine, change_cursor_to_double_arrow_buffer, pane);
                     if (rectangle.getWidth() != old_width) {
                         set_up_the_image_rectangle(rectangle, image, pane);
+                    }
+                    if (rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE) {// added becuase its removed earlier
+                        time_line_pane_data.getTree_set_containing_all_of_the_items().add(shapeObjectTimeLine);
                     }
                 }
             }
@@ -3378,15 +3388,12 @@ public class HelloApplication extends Application {
         if (mouse_scene_x_translated >= shapeObjectTimeLine.getStart() && mouse_scene_x_translated <= shapeObjectTimeLine.getEnd()) {
             set_the_rectangle_mouse_cursor(helloController, scene_x, scene_y, shapeObjectTimeLine, change_cursor_to_double_arrow_buffer);
         } else {
-            Iterator<Shape_object_time_line> iterator = time_line_pane_data.getTree_set_containing_all_of_the_items().iterator();
-            while(iterator.hasNext()){
-                Shape_object_time_line shapeObjectTimeLine_from_tree_set = iterator.next();
+            for (Shape_object_time_line shapeObjectTimeLine_from_tree_set : time_line_pane_data.getTree_set_containing_all_of_the_items()) {
                 if (mouse_scene_x_translated >= shapeObjectTimeLine_from_tree_set.getStart() && mouse_scene_x_translated <= shapeObjectTimeLine_from_tree_set.getEnd()) {
                     set_the_rectangle_mouse_cursor(helloController, scene_x, scene_y, shapeObjectTimeLine_from_tree_set, change_cursor_to_double_arrow_buffer);
                     break;
                 }
             }
-
         }
     }
 
@@ -3400,7 +3407,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void set_the_opacity_of_the_rectangle_in_time_line_pane(Rectangle rectangle,double opacity) {
+    private void set_the_opacity_of_the_rectangle_in_time_line_pane(Rectangle rectangle, double opacity) {
         rectangle.setOpacity(opacity);
         /*HashMap<String, Shape_object_time_line> hashMap_with_all_of_the_items = time_line_pane_data.getTree_set_containing_all_of_the_items();
         if (hashMap_with_all_of_the_items.containsKey(uuid)) {
@@ -3459,11 +3466,9 @@ public class HelloApplication extends Application {
 
     private double[][] return_all_of_the_image_timings_sorted(TreeSet<Shape_object_time_line> treeSet) {
         double[][] sorted_array = new double[treeSet.size()][2];
-        Iterator<Shape_object_time_line> iterator = treeSet.iterator();
         int counter = 0;
-        while (iterator.hasNext()){
-            Shape_object_time_line shapeObjectTimeLine = iterator.next();
-            sorted_array[counter] = new double[]{shapeObjectTimeLine.getStart(),shapeObjectTimeLine.getEnd()};
+        for (Shape_object_time_line shapeObjectTimeLine : treeSet) {
+            sorted_array[counter] = new double[]{shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd()};
             counter++;
         }
         return sorted_array;
