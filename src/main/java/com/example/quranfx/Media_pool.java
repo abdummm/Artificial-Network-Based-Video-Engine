@@ -3,23 +3,35 @@ package com.example.quranfx;
 import javafx.scene.image.Image;
 
 public class Media_pool {
-    private long id;
+    private String id;
     private Image thumbnail;
+    private Image blacked_thumbnail;
     private String original_image_name;
     private boolean did_the_image_get_down_scaled;
     private int width;
     private int height;
 
-    public Media_pool(long id, Image thumbnail, String original_image_name, boolean did_the_image_get_down_scaled,int width,int height) {
+    public Media_pool(String id, Image thumbnail, String original_image_name, boolean did_the_image_get_down_scaled,int width,int height) {
         this.id = id;
         this.thumbnail = thumbnail;
+        this.blacked_thumbnail = thumbnail;
         this.original_image_name = original_image_name;
         this.did_the_image_get_down_scaled = did_the_image_get_down_scaled;
         this.width = width;
         this.height = height;
     }
 
-    public long getId() {
+    public Media_pool(String id, Image thumbnail,Image blacked_thumbnail, String original_image_name, boolean did_the_image_get_down_scaled,int width,int height) {
+        this.id = id;
+        this.thumbnail = thumbnail;
+        this.blacked_thumbnail = blacked_thumbnail;
+        this.original_image_name = original_image_name;
+        this.did_the_image_get_down_scaled = did_the_image_get_down_scaled;
+        this.width = width;
+        this.height = height;
+    }
+
+    public String getId() {
         return id;
     }
 
@@ -41,5 +53,9 @@ public class Media_pool {
 
     public int getHeight() {
         return height;
+    }
+
+    public Image getBlacked_thumbnail() {
+        return blacked_thumbnail;
     }
 }

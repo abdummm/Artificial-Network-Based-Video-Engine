@@ -11,8 +11,10 @@ public class Rectangle_changed_info {
     private double relative_x;
     private double[][] sorted_array;
     private Rectangle fake_rectangle;
+    private String image_id;
+    private boolean did_we_ever_change_the_photo;
 
-    public Rectangle_changed_info(double original_x, MovementType type_of_movement,double original_start_rectangle,double original_end_rectangle,double relative_x,double[][] sorted_array) {
+    public Rectangle_changed_info(double original_x, MovementType type_of_movement,double original_start_rectangle,double original_end_rectangle,double relative_x,double[][] sorted_array,String image_id) {
         this.original_x = original_x;
         this.type_of_movement = type_of_movement;
         this.original_start_rectangle = original_start_rectangle;
@@ -20,10 +22,12 @@ public class Rectangle_changed_info {
         this.relative_x = relative_x;
         this.sorted_array = sorted_array;
         this.fake_rectangle = null;
+        this.image_id = image_id;
+        this.did_we_ever_change_the_photo = false;
     }
 
 
-    public Rectangle_changed_info(double original_x, MovementType type_of_movement,double original_start_rectangle,double original_end_rectangle,double relative_x,double[][] sorted_array,Rectangle fake_rectangle) {
+    public Rectangle_changed_info(double original_x, MovementType type_of_movement,double original_start_rectangle,double original_end_rectangle,double relative_x,double[][] sorted_array,Rectangle fake_rectangle,String image_id) {
         this.original_x = original_x;
         this.type_of_movement = type_of_movement;
         this.original_start_rectangle = original_start_rectangle;
@@ -31,6 +35,8 @@ public class Rectangle_changed_info {
         this.relative_x = relative_x;
         this.sorted_array = sorted_array;
         this.fake_rectangle = fake_rectangle;
+        this.did_we_ever_change_the_photo = false;
+        this.image_id = image_id;
     }
 
     public double getOriginal_x() {
@@ -59,5 +65,17 @@ public class Rectangle_changed_info {
 
     public Rectangle getFake_rectangle() {
         return fake_rectangle;
+    }
+
+    public String getImage_id() {
+        return image_id;
+    }
+
+    public boolean isDid_we_ever_change_the_photo() {
+        return did_we_ever_change_the_photo;
+    }
+
+    public void setDid_we_ever_change_the_photo(boolean did_we_ever_change_the_photo) {
+        this.did_we_ever_change_the_photo = did_we_ever_change_the_photo;
     }
 }

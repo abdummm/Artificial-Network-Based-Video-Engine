@@ -6,13 +6,20 @@ public class Shape_object_time_line {
     private double start;
     private double end;
     private Shape shape;
-    private long image_id;
+    private String image_id;
 
-    public Shape_object_time_line(double start, double end, Shape shape,long image_id) {
+    public Shape_object_time_line(double start, double end, Shape shape,String image_id) {
         this.start = start;
         this.end = end;
         this.shape = shape;
         this.image_id = image_id;
+    }
+
+    public Shape_object_time_line(double start) {
+        this.start = start;
+        this.end = 0;
+        this.shape = null;
+        this.image_id = "";
     }
 
     public double getStart() {
@@ -35,7 +42,7 @@ public class Shape_object_time_line {
         this.end = end;
     }
 
-    public long getImage_id() {
+    public String getImage_id() {
         return image_id;
     }
 }
