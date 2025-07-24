@@ -2280,17 +2280,21 @@ public class HelloApplication extends Application {
                                 min_x_pos_local = time_line_pane_data.getTime_line_end_base_line() - image_width_in_time_line;
                             }
                         }
-                        if (am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) && !is_there_is_a_collosion(media_pool_item_dragged.getSorted_array(), min_x_pos_local, max_x_pos_local)) {
+                        boolean should_i_be_visible = am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) && !is_there_is_a_collosion(media_pool_item_dragged.getSorted_array(), min_x_pos_local, max_x_pos_local);
+                        if (should_i_be_visible) {
                             set_the_opacity_of_the_rectangle_in_time_line_pane((Rectangle) shapeObjectTimeLine.getShape(), 1);
                             double polygon_x_pos = return_polygon_middle_position(time_line_pane_data);
-                            if (polygon_x_pos>= min_x_pos_local && polygon_x_pos<= max_x_pos_local){
-                                set_the_chatgpt_image_view(helloController, media_pool_item_dragged.getImage_key_uuid(),Type_of_Image.THUMBNAIL_QUALITY);
+                            if (polygon_x_pos >= min_x_pos_local && polygon_x_pos <= max_x_pos_local) {
+                                set_the_chatgpt_image_view(helloController, media_pool_item_dragged.getImage_key_uuid(), Type_of_Image.THUMBNAIL_QUALITY);
                                 media_pool_item_dragged.setDid_this_change_the_image(true);
-                            } else if(media_pool_item_dragged.isDid_this_change_the_image()){
-                                set_the_chatgpt_image_view(helloController,"black",Type_of_Image.FULL_QUALITY);
+                            } else if (media_pool_item_dragged.isDid_this_change_the_image()) {
+                                set_the_chatgpt_image_view(helloController, "black", Type_of_Image.FULL_QUALITY);
                             }
                         } else {
                             set_the_opacity_of_the_rectangle_in_time_line_pane((Rectangle) shapeObjectTimeLine.getShape(), 0.4D);
+                            if (media_pool_item_dragged.isDid_this_change_the_image()) {
+                                set_the_chatgpt_image_view(helloController, "black", Type_of_Image.FULL_QUALITY);
+                            }
                         }
                     }
                 }
@@ -2327,10 +2331,10 @@ public class HelloApplication extends Application {
                         helloController.time_line_pane.getChildren().remove(media_pool_item_dragged.getShapeObjectTimeLine().getShape());
                     }
                     double polygon_x_pos = return_polygon_middle_position(time_line_pane_data);
-                    if (polygon_x_pos>= min_x_pos_local && polygon_x_pos<= max_x_pos_local){
-                        set_the_chatgpt_image_view(helloController, media_pool_item_dragged.getImage_key_uuid(),Type_of_Image.FULL_QUALITY);
+                    if (polygon_x_pos >= min_x_pos_local && polygon_x_pos <= max_x_pos_local) {
+                        set_the_chatgpt_image_view(helloController, media_pool_item_dragged.getImage_key_uuid(), Type_of_Image.FULL_QUALITY);
                     } else {
-                        set_the_chatgpt_image_view(helloController,return_the_image_on_click(helloController.time_line_pane,polygon_x_pos),Type_of_Image.FULL_QUALITY);
+                        set_the_chatgpt_image_view(helloController, return_the_image_on_click(helloController.time_line_pane, polygon_x_pos), Type_of_Image.FULL_QUALITY);
                     }
                 }
             }
@@ -3237,7 +3241,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 remove_the_image_from_time_line_hash_map(pane, shapeObjectTimeLine);
-                clear_image_view_if_recatngle_is_in_boundries(helloController,pane,shapeObjectTimeLine);
+                clear_image_view_if_recatngle_is_in_boundries(helloController, pane, shapeObjectTimeLine);
             }
         });
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
@@ -3409,10 +3413,10 @@ public class HelloApplication extends Application {
                         time_line_pane_data.getTree_set_containing_all_of_the_items().add(shapeObjectTimeLine);
                     }
                     double polygon_x_pos = return_polygon_middle_position(time_line_pane_data);
-                    if (polygon_x_pos>= shapeObjectTimeLine.getStart() && polygon_x_pos<= shapeObjectTimeLine.getEnd()){
-                        set_the_chatgpt_image_view(helloController, shapeObjectTimeLine.getImage_id(),Type_of_Image.FULL_QUALITY);
+                    if (polygon_x_pos >= shapeObjectTimeLine.getStart() && polygon_x_pos <= shapeObjectTimeLine.getEnd()) {
+                        set_the_chatgpt_image_view(helloController, shapeObjectTimeLine.getImage_id(), Type_of_Image.FULL_QUALITY);
                     } else {
-                        set_the_chatgpt_image_view(helloController,return_the_image_on_click(helloController.time_line_pane,polygon_x_pos),Type_of_Image.FULL_QUALITY);
+                        set_the_chatgpt_image_view(helloController, return_the_image_on_click(helloController.time_line_pane, polygon_x_pos), Type_of_Image.FULL_QUALITY);
                     }
                 }
             }
@@ -3591,7 +3595,7 @@ public class HelloApplication extends Application {
     }
 
     private void set_the_chatgpt_image_view(HelloController helloController, String image_id, Type_of_Image typeOfImage) {
-        if (!id_of_the_last_image.getImage_id().equals(image_id) || (id_of_the_last_image.getTypeOfImage() == Type_of_Image.THUMBNAIL_QUALITY &&typeOfImage == Type_of_Image.FULL_QUALITY) ) {
+        if (!id_of_the_last_image.getImage_id().equals(image_id) || (id_of_the_last_image.getTypeOfImage() == Type_of_Image.THUMBNAIL_QUALITY && typeOfImage == Type_of_Image.FULL_QUALITY)) {
             id_of_the_last_image = new Last_shown_Image(image_id, typeOfImage);
             if (image_id.equals("black")) {
                 Image image = return_16_9_black_image();
@@ -3609,12 +3613,10 @@ public class HelloApplication extends Application {
                                 java.nio.file.Path path = Paths.get("temp/images/scaled", image_id.concat(".raw"));
                                 Image image = readRawImage(path.toString(), 1080, 1920);
                                 helloController.chatgpt_image_view.setImage(image);
-                                helloController.blurry_chatgpt_image_view.setImage(whiten_the_image(image_to_buffered_image(image), 0.7f, 60f));
                             } else {
                                 java.nio.file.Path path = Paths.get("temp/images/base", image_id.concat(".raw"));
                                 Image image = readRawImage(path.toString(), media_pool.getWidth(), media_pool.getHeight());
                                 helloController.chatgpt_image_view.setImage(image);
-                                helloController.blurry_chatgpt_image_view.setImage(whiten_the_image(image_to_buffered_image(image), 0.7f, 60f));
                             }
                         }
                     });
@@ -3775,11 +3777,12 @@ public class HelloApplication extends Application {
         double start = time_line_pane_data.getPolygon().getLayoutX();
         return start + time_line_pane_data.getPolygon_width() / 2;
     }
-    private void clear_image_view_if_recatngle_is_in_boundries(HelloController helloController,Pane pane,Shape_object_time_line shapeObjectTimeLine){
+
+    private void clear_image_view_if_recatngle_is_in_boundries(HelloController helloController, Pane pane, Shape_object_time_line shapeObjectTimeLine) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         double x_pos = return_polygon_middle_position(time_line_pane_data);
-        if(x_pos >= shapeObjectTimeLine.getStart() && x_pos<=shapeObjectTimeLine.getEnd()){
-            set_the_chatgpt_image_view(helloController,"black",Type_of_Image.FULL_QUALITY);
+        if (x_pos >= shapeObjectTimeLine.getStart() && x_pos <= shapeObjectTimeLine.getEnd()) {
+            set_the_chatgpt_image_view(helloController, "black", Type_of_Image.FULL_QUALITY);
         }
     }
 }
