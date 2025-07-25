@@ -2280,7 +2280,7 @@ public class HelloApplication extends Application {
                                 min_x_pos_local = time_line_pane_data.getTime_line_end_base_line() - image_width_in_time_line;
                             }
                         }
-                        boolean should_i_be_visible = am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) && !is_there_is_a_collosion(media_pool_item_dragged.getSorted_array(), min_x_pos_local, max_x_pos_local);
+                        boolean should_i_be_visible = am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) && !is_there_is_a_collosion_2(time_line_pane_data.getTree_set_containing_all_of_the_items(), min_x_pos_local, max_x_pos_local);
                         if (should_i_be_visible) {
                             set_the_opacity_of_the_rectangle_in_time_line_pane((Rectangle) shapeObjectTimeLine.getShape(), 1);
                             double polygon_x_pos = return_polygon_middle_position(time_line_pane_data);
@@ -3470,7 +3470,7 @@ public class HelloApplication extends Application {
         }*/
     }
 
-    private boolean is_there_is_a_collosion(double[][] sorted_array, double start, double end) {
+    /*private boolean is_there_is_a_collosion(double[][] sorted_array, double start, double end) {
         for (int i = 0; i < sorted_array.length; i++) {
             double local_start = sorted_array[i][0];
             double local_end = sorted_array[i][1];
@@ -3484,6 +3484,28 @@ public class HelloApplication extends Application {
             }
         }
         return false;
+    }*/
+
+    private boolean is_there_is_a_collosion(TreeSet<Shape_object_time_line> tree_set_with_all_of_the_items, double start, double end) {
+        Shape_object_time_line start_ceiled_shape_object_time_line = tree_set_with_all_of_the_items.floor(new Shape_object_time_line(start));
+        Shape_object_time_line end_ceiled_shape_object_time_line = tree_set_with_all_of_the_items.floor(new Shape_object_time_line(end));
+        if(start_ceiled_shape_object_time_line == null){
+            if(end_ceiled_shape_object_time_line == null){
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            if(!start_ceiled_shape_object_time_line.equals(end_ceiled_shape_object_time_line)){
+                return true;
+            } else {
+                if(start_ceiled_shape_object_time_line.getEnd() < start){
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        }
     }
 
     private double[] return_the_collision(double[][] sorted_array, double start, double end, CollisionSearchType collisionSearchType) {
