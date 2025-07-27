@@ -2,6 +2,8 @@ package com.example.quranfx;
 
 import javafx.scene.image.ImageView;
 
+import java.util.TreeSet;
+
 public class Media_pool_item_dragged {
     private ImageView imageView;
     private double x_pos;
@@ -9,18 +11,18 @@ public class Media_pool_item_dragged {
     private boolean has_this_been_dragged;
     private String image_key_uuid;
     private Shape_object_time_line shapeObjectTimeLine;
-    private double[][] sorted_array;
+    private TreeSet<Shape_object_time_line> tree_set_containing_all_of_the_items;
     private boolean did_this_change_the_image;
 
-    public Media_pool_item_dragged(ImageView imageView, double x_pos, double y_pos,String image_key_uuid, Shape_object_time_line shapeObjectTimeLine,double[][] sorted_array) {
+    public Media_pool_item_dragged(ImageView imageView, double x_pos, double y_pos,String image_key_uuid, Shape_object_time_line shapeObjectTimeLine, TreeSet<Shape_object_time_line> tree_set_containing_all_of_the_items) {
         this.imageView = imageView;
         this.x_pos = x_pos;
         this.y_pos = y_pos;
         this.has_this_been_dragged = false;
         this.image_key_uuid = image_key_uuid;
         this.shapeObjectTimeLine = shapeObjectTimeLine;
-        this.sorted_array = sorted_array;
         this.did_this_change_the_image = false;
+        this.tree_set_containing_all_of_the_items = tree_set_containing_all_of_the_items;
     }
 
     public ImageView getImageView() {
@@ -63,15 +65,15 @@ public class Media_pool_item_dragged {
         return shapeObjectTimeLine;
     }
 
-    public double[][] getSorted_array() {
-        return sorted_array;
-    }
-
     public boolean isDid_this_change_the_image() {
         return did_this_change_the_image;
     }
 
     public void setDid_this_change_the_image(boolean did_this_change_the_image) {
         this.did_this_change_the_image = did_this_change_the_image;
+    }
+
+    public TreeSet<Shape_object_time_line> getTree_set_containing_all_of_the_items() {
+        return tree_set_containing_all_of_the_items;
     }
 }

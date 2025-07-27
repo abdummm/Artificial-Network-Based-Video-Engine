@@ -2234,7 +2234,7 @@ public class HelloApplication extends Application {
                     ghost.setOpacity(0.75);
                     ghost.setLayoutX(real_x_pos);
                     ghost.setLayoutY(real_y_pos);
-                    Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(ghost, mouseEvent.getSceneX(), mouseEvent.getSceneY(), mediaPool.getId(), shapeObjectTimeLine, return_all_of_the_image_timings_sorted(time_line_pane_data.getTree_set_containing_all_of_the_items()));
+                    Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(ghost, mouseEvent.getSceneX(), mouseEvent.getSceneY(), mediaPool.getId(), shapeObjectTimeLine, time_line_pane_data.getTree_set_containing_all_of_the_items());
                     helloController.pane_holding_the_fourth_screen.getChildren().add(ghost);
                     imageView.setUserData(media_pool_item_dragged);
                 }
@@ -2280,7 +2280,7 @@ public class HelloApplication extends Application {
                                 min_x_pos_local = time_line_pane_data.getTime_line_end_base_line() - image_width_in_time_line;
                             }
                         }
-                        boolean should_i_be_visible = am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) && !is_there_is_a_collosion_2(time_line_pane_data.getTree_set_containing_all_of_the_items(), min_x_pos_local, max_x_pos_local);
+                        boolean should_i_be_visible = am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) && !is_there_is_a_collosion(time_line_pane_data.getTree_set_containing_all_of_the_items(), min_x_pos_local, max_x_pos_local);
                         if (should_i_be_visible) {
                             set_the_opacity_of_the_rectangle_in_time_line_pane((Rectangle) shapeObjectTimeLine.getShape(), 1);
                             double polygon_x_pos = return_polygon_middle_position(time_line_pane_data);
@@ -2325,7 +2325,7 @@ public class HelloApplication extends Application {
                             min_x_pos_local = time_line_pane_data.getTime_line_end_base_line() - image_width_in_time_line;
                         }
                     }
-                    if (am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) && !is_there_is_a_collosion(media_pool_item_dragged.getSorted_array(), min_x_pos_local, max_x_pos_local)) {
+                    if (am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) && !is_there_is_a_collosion(media_pool_item_dragged.getTree_set_containing_all_of_the_items(), min_x_pos_local, max_x_pos_local)) {
                         time_line_pane_data.getTree_set_containing_all_of_the_items().add(media_pool_item_dragged.getShapeObjectTimeLine());
                     } else {
                         helloController.time_line_pane.getChildren().remove(media_pool_item_dragged.getShapeObjectTimeLine().getShape());
@@ -3269,19 +3269,18 @@ public class HelloApplication extends Application {
                     double local_x = mouse_scene_x_translated - shapeObjectTimeLine.getStart();
                     TreeSet<Shape_object_time_line> copy_of_all_items_tree_set = new TreeSet<>(time_line_pane_data.getTree_set_containing_all_of_the_items());
                     copy_of_all_items_tree_set.remove(shapeObjectTimeLine);
-                    double[][] sorted_array_hashmap = return_all_of_the_image_timings_sorted(copy_of_all_items_tree_set);
                     if (get_type_of_movement(rectangle, local_x, change_cursor_to_double_arrow_buffer) == MovementType.START) {
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.START, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, sorted_array_hashmap, shapeObjectTimeLine.getImage_id());
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.START, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, shapeObjectTimeLine.getImage_id(), copy_of_all_items_tree_set);
                         rectangle.setUserData(rectangleChangedInfo);
                     } else if (get_type_of_movement(rectangle, local_x, change_cursor_to_double_arrow_buffer) == MovementType.END) {
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.END, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, sorted_array_hashmap, shapeObjectTimeLine.getImage_id());
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.END, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, shapeObjectTimeLine.getImage_id(), copy_of_all_items_tree_set);
                         rectangle.setUserData(rectangleChangedInfo);
                     } else {
                         Rectangle fake_rectanlge_less_opacity = deepCopyRectangle(rectangle);
                         fake_rectanlge_less_opacity.setOpacity(0.4D);
                         fake_rectanlge_less_opacity.setVisible(false);
                         pane.getChildren().add(fake_rectanlge_less_opacity);
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.MIDDLE, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, sorted_array_hashmap, fake_rectanlge_less_opacity, shapeObjectTimeLine.getImage_id());
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.MIDDLE, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, fake_rectanlge_less_opacity, shapeObjectTimeLine.getImage_id(), copy_of_all_items_tree_set);
                         rectangle.setUserData(rectangleChangedInfo);
                         rectangle.setCursor(Cursor.CLOSED_HAND);
                     }
@@ -3300,7 +3299,7 @@ public class HelloApplication extends Application {
                         double new_start = rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference;
                         double new_width = rectangleChangedInfo.getOriginal_end_rectangle() - new_start;
                         if (rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference >= time_line_pane_data.getTime_line_base_line() && new_width >= 0) {
-                            double[] collision_result = return_the_collision(rectangleChangedInfo.getSorted_array(), rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference, rectangleChangedInfo.getOriginal_end_rectangle(), CollisionSearchType.Start);
+                            double[] collision_result = return_the_collision(rectangleChangedInfo.getTree_set_containing_all_of_the_items(), rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference, rectangleChangedInfo.getOriginal_end_rectangle(), CollisionSearchType.Start);
                             if (collision_result[0] < 0) {
                                 rectangle.setX(rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference);
                                 rectangle.setWidth(new_width);
@@ -3309,7 +3308,7 @@ public class HelloApplication extends Application {
                                 rectangle.setWidth(rectangleChangedInfo.getOriginal_end_rectangle() - (collision_result[1] + 1));
                             }
                         } else if (rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference < time_line_pane_data.getTime_line_base_line()) {
-                            if (!is_there_is_a_collosion(rectangleChangedInfo.getSorted_array(), time_line_pane_data.getTime_line_base_line(), rectangleChangedInfo.getOriginal_end_rectangle())) {
+                            if (!is_there_is_a_collosion(rectangleChangedInfo.getTree_set_containing_all_of_the_items(), time_line_pane_data.getTime_line_base_line(), rectangleChangedInfo.getOriginal_end_rectangle())) {
                                 rectangle.setX(time_line_pane_data.getTime_line_base_line());
                                 rectangle.setWidth(rectangleChangedInfo.getOriginal_end_rectangle() - time_line_pane_data.getTime_line_base_line());
                             }
@@ -3326,7 +3325,7 @@ public class HelloApplication extends Application {
                         }
                     } else if (rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE) {
                         if (mouse_scene_x_translated - local_x >= time_line_pane_data.getTime_line_base_line() && mouse_scene_x_translated - local_x + rectangle.getWidth() <= time_line_pane_data.getTime_line_end_base_line()) {
-                            double[] collision_result = return_the_collision(rectangleChangedInfo.getSorted_array(), mouse_scene_x_translated - local_x, mouse_scene_x_translated - local_x + rectangle.getWidth(), CollisionSearchType.End);
+                            double[] collision_result = return_the_collision(rectangleChangedInfo.getTree_set_containing_all_of_the_items(), mouse_scene_x_translated - local_x, mouse_scene_x_translated - local_x + rectangle.getWidth(), CollisionSearchType.Middle);
                             double x_pos = mouseEvent.getSceneX() - rectangleChangedInfo.getOriginal_x() + rectangleChangedInfo.getOriginal_start_rectangle();
                             if (collision_result[0] < 0) {
                                 rectangle.setX(x_pos);
@@ -3336,22 +3335,22 @@ public class HelloApplication extends Application {
                                 fake_rectangle.setVisible(true);
                                 fake_rectangle.setX(x_pos);
                                 if (rectangle.getX() < collision_result[0]) {
-                                    if (!is_there_is_a_collosion(rectangleChangedInfo.getSorted_array(), collision_result[0] - 1 - rectangle.getWidth(), collision_result[0] - 1)) {
+                                    if (!is_there_is_a_collosion(rectangleChangedInfo.getTree_set_containing_all_of_the_items(), collision_result[0] - 1 - rectangle.getWidth(), collision_result[0] - 1)) {
                                         rectangle.setX(collision_result[0] - 1 - rectangle.getWidth());
                                     }
                                 } else {
-                                    if (!is_there_is_a_collosion(rectangleChangedInfo.getSorted_array(), collision_result[1] + 1, collision_result[1] + 1 + rectangle.getWidth())) {
+                                    if (!is_there_is_a_collosion(rectangleChangedInfo.getTree_set_containing_all_of_the_items(), collision_result[1] + 1, collision_result[1] + 1 + rectangle.getWidth())) {
                                         rectangle.setX(collision_result[1] + 1);
                                     }
                                 }
                             }
                         } else if (mouse_scene_x_translated - local_x < time_line_pane_data.getTime_line_base_line()) {
-                            if (!is_there_is_a_collosion(rectangleChangedInfo.getSorted_array(), time_line_pane_data.getTime_line_base_line(), time_line_pane_data.getTime_line_base_line() + rectangle.getWidth())) {
+                            if (!is_there_is_a_collosion(rectangleChangedInfo.getTree_set_containing_all_of_the_items(), time_line_pane_data.getTime_line_base_line(), time_line_pane_data.getTime_line_base_line() + rectangle.getWidth())) {
                                 rectangle.setX(time_line_pane_data.getTime_line_base_line());
                             }
                             rectangleChangedInfo.getFake_rectangle().setX(time_line_pane_data.getTime_line_base_line());
                         } else if (mouse_scene_x_translated - local_x + rectangle.getWidth() > time_line_pane_data.getTime_line_end_base_line()) {
-                            if (!is_there_is_a_collosion(rectangleChangedInfo.getSorted_array(), time_line_pane_data.getTime_line_end_base_line() - rectangle.getWidth(), time_line_pane_data.getTime_line_base_line())) {
+                            if (!is_there_is_a_collosion(rectangleChangedInfo.getTree_set_containing_all_of_the_items(), time_line_pane_data.getTime_line_end_base_line() - rectangle.getWidth(), time_line_pane_data.getTime_line_base_line())) {
                                 rectangle.setX(time_line_pane_data.getTime_line_end_base_line() - rectangle.getWidth());
                             }
                             rectangleChangedInfo.getFake_rectangle().setX(time_line_pane_data.getTime_line_end_base_line() - rectangle.getWidth());
@@ -3366,7 +3365,7 @@ public class HelloApplication extends Application {
                     } else if (rectangleChangedInfo.getType_of_movement() == MovementType.END) {
                         double original_width = rectangleChangedInfo.getOriginal_end_rectangle() - rectangleChangedInfo.getOriginal_start_rectangle();
                         double new_width = mouseEvent.getSceneX() - rectangleChangedInfo.getOriginal_x() + original_width;
-                        double[] collision_result = return_the_collision(rectangleChangedInfo.getSorted_array(), rectangleChangedInfo.getOriginal_start_rectangle(), rectangleChangedInfo.getOriginal_start_rectangle() + new_width, CollisionSearchType.End);
+                        double[] collision_result = return_the_collision(rectangleChangedInfo.getTree_set_containing_all_of_the_items(), rectangleChangedInfo.getOriginal_start_rectangle(), rectangleChangedInfo.getOriginal_start_rectangle() + new_width, CollisionSearchType.End);
                         if (rectangle.getX() + new_width <= time_line_pane_data.getTime_line_end_base_line() && new_width >= 0) {
                             if (collision_result[0] < 0) {
                                 rectangle.setWidth(new_width);
@@ -3376,7 +3375,7 @@ public class HelloApplication extends Application {
                         } else if (new_width < 0) {
                             rectangle.setWidth(0);
                         } else if (rectangle.getX() + new_width > time_line_pane_data.getTime_line_end_base_line()) {
-                            if (!is_there_is_a_collosion(rectangleChangedInfo.getSorted_array(), rectangleChangedInfo.getOriginal_start_rectangle(), rectangleChangedInfo.getOriginal_start_rectangle() + time_line_pane_data.getTime_line_end_base_line() - rectangleChangedInfo.getOriginal_start_rectangle())) {
+                            if (!is_there_is_a_collosion(rectangleChangedInfo.getTree_set_containing_all_of_the_items(), rectangleChangedInfo.getOriginal_start_rectangle(), rectangleChangedInfo.getOriginal_start_rectangle() + time_line_pane_data.getTime_line_end_base_line() - rectangleChangedInfo.getOriginal_start_rectangle())) {
                                 rectangle.setWidth(time_line_pane_data.getTime_line_end_base_line() - rectangleChangedInfo.getOriginal_start_rectangle());
                             }
                         }
@@ -3463,11 +3462,6 @@ public class HelloApplication extends Application {
 
     private void set_the_opacity_of_the_rectangle_in_time_line_pane(Rectangle rectangle, double opacity) {
         rectangle.setOpacity(opacity);
-        /*HashMap<String, Shape_object_time_line> hashMap_with_all_of_the_items = time_line_pane_data.getTree_set_containing_all_of_the_items();
-        if (hashMap_with_all_of_the_items.containsKey(uuid)) {
-            Rectangle rectangle = (Rectangle) hashMap_with_all_of_the_items.get(uuid).getShape();
-            rectangle.setOpacity(opacity);
-        }*/
     }
 
     /*private boolean is_there_is_a_collosion(double[][] sorted_array, double start, double end) {
@@ -3489,17 +3483,17 @@ public class HelloApplication extends Application {
     private boolean is_there_is_a_collosion(TreeSet<Shape_object_time_line> tree_set_with_all_of_the_items, double start, double end) {
         Shape_object_time_line start_ceiled_shape_object_time_line = tree_set_with_all_of_the_items.floor(new Shape_object_time_line(start));
         Shape_object_time_line end_ceiled_shape_object_time_line = tree_set_with_all_of_the_items.floor(new Shape_object_time_line(end));
-        if(start_ceiled_shape_object_time_line == null){
-            if(end_ceiled_shape_object_time_line == null){
+        if (start_ceiled_shape_object_time_line == null || end_ceiled_shape_object_time_line == null) {
+            if (end_ceiled_shape_object_time_line == null) {
                 return false;
             } else {
                 return true;
             }
         } else {
-            if(!start_ceiled_shape_object_time_line.equals(end_ceiled_shape_object_time_line)){
+            if (!start_ceiled_shape_object_time_line.equals(end_ceiled_shape_object_time_line)) {
                 return true;
             } else {
-                if(start_ceiled_shape_object_time_line.getEnd() < start){
+                if (start_ceiled_shape_object_time_line.getEnd() < start) {
                     return false;
                 } else {
                     return true;
@@ -3508,7 +3502,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    private double[] return_the_collision(double[][] sorted_array, double start, double end, CollisionSearchType collisionSearchType) {
+    /*private double[] return_the_collision(double[][] sorted_array, double start, double end, CollisionSearchType collisionSearchType) {
         if (collisionSearchType == CollisionSearchType.End) {
             for (int i = 0; i < sorted_array.length; i++) {
                 double local_start = sorted_array[i][0];
@@ -3538,16 +3532,37 @@ public class HelloApplication extends Application {
             }
             return new double[]{-1, -1};
         }
-    }
+    }*/
 
-    private double[][] return_all_of_the_image_timings_sorted(TreeSet<Shape_object_time_line> treeSet) {
-        double[][] sorted_array = new double[treeSet.size()][2];
-        int counter = 0;
-        for (Shape_object_time_line shapeObjectTimeLine : treeSet) {
-            sorted_array[counter] = new double[]{shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd()};
-            counter++;
+    private double[] return_the_collision(TreeSet<Shape_object_time_line> tree_set_containing_all_of_the_info, double start, double end, CollisionSearchType collisionSearchType) {
+        Shape_object_time_line start_floored_shape_object_time_line = tree_set_containing_all_of_the_info.floor(new Shape_object_time_line(start));
+        Shape_object_time_line end_floored_shape_object_time_line = tree_set_containing_all_of_the_info.floor(new Shape_object_time_line(end));
+        if (start_floored_shape_object_time_line == null || end_floored_shape_object_time_line == null) {
+            if (end_floored_shape_object_time_line == null) {
+                return new double[]{-1,-1};
+            } else {
+                Shape_object_time_line shapeObjectTimeLine_ceiled_start = tree_set_containing_all_of_the_info.ceiling(new Shape_object_time_line(start));
+                if(shapeObjectTimeLine_ceiled_start!=null){
+                    return new double[]{shapeObjectTimeLine_ceiled_start.getStart(),shapeObjectTimeLine_ceiled_start.getEnd()};
+                } else {
+                    return new double[]{-1,-1};
+                }
+            }
+        } else {
+            if (!start_floored_shape_object_time_line.equals(end_floored_shape_object_time_line)) {
+                if(collisionSearchType == CollisionSearchType.Start || collisionSearchType == CollisionSearchType.Middle){
+                    return new double[]{end_floored_shape_object_time_line.getStart(),end_floored_shape_object_time_line.getEnd()};
+                } else {
+                    return new double[]{end_floored_shape_object_time_line.getStart(),end_floored_shape_object_time_line.getEnd()};
+                }
+            } else {
+                if (start_floored_shape_object_time_line.getEnd() < start) {
+                    return new double[]{-1,-1};
+                } else {
+                    return new double[]{end_floored_shape_object_time_line.getStart(),end_floored_shape_object_time_line.getEnd()};
+                }
+            }
         }
-        return sorted_array;
     }
 
     private void black_out_the_image_view_at_the_start(HelloController helloController) {
