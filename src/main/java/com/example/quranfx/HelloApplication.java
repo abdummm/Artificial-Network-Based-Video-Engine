@@ -1526,7 +1526,7 @@ public class HelloApplication extends Application {
         long time_in_milliseconds = chatgpt_responses.get(selected_verse).getStart_millisecond();
         update_the_time_line_indicator(helloController.time_line_pane, time_in_milliseconds);
         force_the_time_line_indicator_to_be_at_the_middle(helloController.scroll_pane_hosting_the_time_line, time_line_pane_data.getPolygon().getLayoutX());
-        mediaPlayer.seek(Duration.millis(time_in_milliseconds));
+        mediaPlayer.seek(Duration.millis(TimeUnit.NANOSECONDS.toMillis(time_in_milliseconds)));
     }
 
     private String formatTime(double timeInMillis) {
@@ -3821,9 +3821,5 @@ public class HelloApplication extends Application {
         if (x_pos >= shapeObjectTimeLine.getStart() && x_pos <= shapeObjectTimeLine.getEnd()) {
             set_the_chatgpt_image_view(helloController, "black", Type_of_Image.FULL_QUALITY);
         }
-    }
-
-    private void (){
-
     }
 }
