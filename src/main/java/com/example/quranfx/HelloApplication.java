@@ -3822,4 +3822,8 @@ public class HelloApplication extends Application {
             set_the_chatgpt_image_view(helloController, "black", Type_of_Image.FULL_QUALITY);
         }
     }
+
+    private void (){
+
+    }
 }
