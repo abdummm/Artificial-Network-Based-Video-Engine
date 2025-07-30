@@ -717,7 +717,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent event) {
                 selected_verse++;
-                the_verse_changed(helloController, selected_verse);
+                the_verse_changed(helloController, selected_verse); // TODO make sure the verse is set correctly
                 scroll_to_specific_verse_time(helloController);
                 set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, chatgpt_responses.get(selected_verse).getStart_millisecond()), Type_of_Image.FULL_QUALITY);
             }
@@ -729,7 +729,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent event) {
                 selected_verse--;
-                the_verse_changed(helloController, selected_verse);
+                the_verse_changed(helloController, selected_verse); // TODO make sure the verse is set correctly
                 scroll_to_specific_verse_time(helloController);
                 set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, chatgpt_responses.get(selected_verse).getStart_millisecond()), Type_of_Image.FULL_QUALITY);
             }
