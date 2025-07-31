@@ -1527,6 +1527,7 @@ public class HelloApplication extends Application {
         update_the_time_line_indicator(helloController.time_line_pane, time_in_milliseconds);
         force_the_time_line_indicator_to_be_at_the_middle(helloController.scroll_pane_hosting_the_time_line, time_line_pane_data.getPolygon().getLayoutX());
         mediaPlayer.seek(Duration.millis(TimeUnit.NANOSECONDS.toMillis(time_in_milliseconds)));
+        lastKnownSystemTime = 0;
     }
 
     private String formatTime(double timeInMillis) {
