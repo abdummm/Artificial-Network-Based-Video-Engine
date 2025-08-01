@@ -110,6 +110,7 @@ public class HelloApplication extends Application {
     private final static String help_email = "abdomakesappshelp@gmail.com";
     private final static double blurry_circle_raduis = 30D;
     private final static double play_pause_button_size = 20D;
+    private final static int min_rectnagle_width = 3;
     ;
     //private final static double circle_button_radius = 20D;
     private final static int how_long_does_it_take_for_tool_tip_to_show_up = 500;
@@ -172,7 +173,6 @@ public class HelloApplication extends Application {
         listen_to_whole_screen_resize(scene, helloController);
         //listen_to_tile_pane_resized(helloController);
         listen_to_tile_pane_size_change(helloController);
-        set_cache_hints_of_scroll_pane_time_line(helloController);
         listen_to_give_feed_back_button(helloController);
         black_out_the_image_view_at_the_start(helloController);
         listen_to_chatgpt_image_view_on_mouse_enetered_and_left(helloController);
@@ -185,6 +185,7 @@ public class HelloApplication extends Application {
         make_play_button_circle(helloController);
         add_tool_tip_to_next_verse(helloController);
         add_tool_tip_to_previous_verse(helloController);
+        listen_to_the_h_scroll_of_the_time_line_scroll_pane(helloController);
     }
 
     public static void main(String[] args) {
@@ -1271,11 +1272,13 @@ public class HelloApplication extends Application {
         if (sound_path.isEmpty()) {
             boolean did_i_ever_fail_a_recitation = false;
             OkHttpClient client = new OkHttpClient.Builder()
+                    .protocols(Collections.singletonList(Protocol.HTTP_1_1))
                     .connectTimeout(10, TimeUnit.SECONDS)
                     .readTimeout(90, TimeUnit.SECONDS)
+                    .retryOnConnectionFailure(true)
                     .build();
-            client.dispatcher().setMaxRequests(16); // increase concurrency
-            client.dispatcher().setMaxRequestsPerHost(8);
+            client.dispatcher().setMaxRequests(8); // increase concurrency
+            client.dispatcher().setMaxRequestsPerHost(4);
             int start_ayat = return_start_ayat(helloController);
             int end_ayat = return_end_ayat(helloController);
             int number_of_ayats = end_ayat - start_ayat + 1;
@@ -1302,6 +1305,7 @@ public class HelloApplication extends Application {
             }
             ExecutorService executor = Executors.newFixedThreadPool(number_of_threads);
             for (int i = 0; i < number_of_threads; i++) {
+                int final_i = i;
                 executor.submit(() -> {
                     while (true) {
                         try {
@@ -1313,6 +1317,7 @@ public class HelloApplication extends Application {
                             Request request = new Request.Builder().url(verse_url).build();
                             try (Response response = client.newCall(request).execute()) {
                                 if (!response.isSuccessful()) {
+                                    System.err.println("code" + response.code());
                                     continue;
                                 }
                                 ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -1334,6 +1339,7 @@ public class HelloApplication extends Application {
                                 durations[verse_number - start_ayat] = getDurationWithFFmpeg(new_wav_file);
                             } catch (IOException e) {
                                 e.printStackTrace();
+                                Thread.sleep(500L * (final_i+1)); // exponential backoff
                             }
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
@@ -2681,11 +2687,6 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void set_cache_hints_of_scroll_pane_time_line(HelloController helloController) {
-        helloController.scroll_pane_hosting_tile_pane_media_pool.setCache(true);
-        helloController.scroll_pane_hosting_tile_pane_media_pool.setCacheHint(CacheHint.SPEED);
-    }
-
     private void set_up_the_verses_time_line(HelloController helloController, Pane pane, double base_time_line, double pixels_in_between_each_line, long time_between_every_line) {
         //double adjustor = pixels_in_between_each_line / time_between_every_line;
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
@@ -3299,7 +3300,7 @@ public class HelloApplication extends Application {
                         double mouse_difference = rectangleChangedInfo.getOriginal_x() - mouseEvent.getSceneX();
                         double new_start = rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference;
                         double new_width = rectangleChangedInfo.getOriginal_end_rectangle() - new_start;
-                        if (rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference >= time_line_pane_data.getTime_line_base_line() && new_width >= 0) {
+                        if (rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference >= time_line_pane_data.getTime_line_base_line() && new_width >= min_rectnagle_width) {
                             double[] collision_result = return_the_collision(rectangleChangedInfo.getTree_set_containing_all_of_the_items(), rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference, rectangleChangedInfo.getOriginal_end_rectangle(), CollisionSearchType.Start);
                             if (collision_result[0] < 0) {
                                 rectangle.setX(rectangleChangedInfo.getOriginal_start_rectangle() - mouse_difference);
@@ -3313,9 +3314,9 @@ public class HelloApplication extends Application {
                                 rectangle.setX(time_line_pane_data.getTime_line_base_line());
                                 rectangle.setWidth(rectangleChangedInfo.getOriginal_end_rectangle() - time_line_pane_data.getTime_line_base_line());
                             }
-                        } else if (new_width < 0) {
-                            rectangle.setX(rectangleChangedInfo.getOriginal_end_rectangle());
-                            rectangle.setWidth(0);
+                        } else if (new_width < min_rectnagle_width) {
+                            rectangle.setX(rectangleChangedInfo.getOriginal_end_rectangle() - min_rectnagle_width);
+                            rectangle.setWidth(min_rectnagle_width);
                         }
                         double polygon_pos = return_polygon_middle_position(time_line_pane_data);
                         if (rectangle.getX() <= polygon_pos && rectangle.getX() + rectangle.getWidth() >= polygon_pos) {
@@ -3367,14 +3368,14 @@ public class HelloApplication extends Application {
                         double original_width = rectangleChangedInfo.getOriginal_end_rectangle() - rectangleChangedInfo.getOriginal_start_rectangle();
                         double new_width = mouseEvent.getSceneX() - rectangleChangedInfo.getOriginal_x() + original_width;
                         double[] collision_result = return_the_collision(rectangleChangedInfo.getTree_set_containing_all_of_the_items(), rectangleChangedInfo.getOriginal_start_rectangle(), rectangleChangedInfo.getOriginal_start_rectangle() + new_width, CollisionSearchType.End);
-                        if (rectangle.getX() + new_width <= time_line_pane_data.getTime_line_end_base_line() && new_width >= 0) {
+                        if (rectangle.getX() + new_width <= time_line_pane_data.getTime_line_end_base_line() && new_width >= min_rectnagle_width) {
                             if (collision_result[0] < 0) {
                                 rectangle.setWidth(new_width);
                             } else {
                                 rectangle.setWidth((collision_result[0] - 1) - rectangleChangedInfo.getOriginal_start_rectangle());
                             }
-                        } else if (new_width < 0) {
-                            rectangle.setWidth(0);
+                        } else if (new_width < min_rectnagle_width) {
+                            rectangle.setWidth(min_rectnagle_width);
                         } else if (rectangle.getX() + new_width > time_line_pane_data.getTime_line_end_base_line()) {
                             if (!is_there_is_a_collosion(rectangleChangedInfo.getTree_set_containing_all_of_the_items(), rectangleChangedInfo.getOriginal_start_rectangle(), rectangleChangedInfo.getOriginal_start_rectangle() + time_line_pane_data.getTime_line_end_base_line() - rectangleChangedInfo.getOriginal_start_rectangle())) {
                                 rectangle.setWidth(time_line_pane_data.getTime_line_end_base_line() - rectangleChangedInfo.getOriginal_start_rectangle());
@@ -3452,12 +3453,30 @@ public class HelloApplication extends Application {
     }
 
     private MovementType get_type_of_movement(Rectangle rectangle, double local_x, double change_cursor_to_double_arrow_buffer) {
-        if (local_x <= change_cursor_to_double_arrow_buffer) {
-            return MovementType.START;
-        } else if (rectangle.getWidth() - local_x <= change_cursor_to_double_arrow_buffer) {
-            return MovementType.END;
+        if (rectangle.getWidth() >= change_cursor_to_double_arrow_buffer * 3) {
+            if (local_x <= change_cursor_to_double_arrow_buffer) {
+                return MovementType.START;
+            } else if (rectangle.getWidth() - local_x <= change_cursor_to_double_arrow_buffer) {
+                return MovementType.END;
+            } else {
+                return MovementType.MIDDLE;
+            }
         } else {
-            return MovementType.MIDDLE;
+            double local_change_cursor_to_double_arrow_buffer_start = rectangle.getWidth() / 3;
+            double local_change_cursor_to_double_arrow_buffer_end = local_change_cursor_to_double_arrow_buffer_start;
+            if (rectangle.getWidth() % 3 == 1) {
+                local_change_cursor_to_double_arrow_buffer_start++;
+            }
+            if (rectangle.getWidth() % 3 == 2) {
+                local_change_cursor_to_double_arrow_buffer_end++;
+            }
+            if (local_x <= local_change_cursor_to_double_arrow_buffer_start) {
+                return MovementType.START;
+            } else if (rectangle.getWidth() - local_x < local_change_cursor_to_double_arrow_buffer_end) {
+                return MovementType.END;
+            } else {
+                return MovementType.MIDDLE;
+            }
         }
     }
 
@@ -3540,27 +3559,27 @@ public class HelloApplication extends Application {
         Shape_object_time_line end_floored_shape_object_time_line = tree_set_containing_all_of_the_info.floor(new Shape_object_time_line(end));
         if (start_floored_shape_object_time_line == null || end_floored_shape_object_time_line == null) {
             if (end_floored_shape_object_time_line == null) {
-                return new double[]{-1,-1};
+                return new double[]{-1, -1};
             } else {
                 Shape_object_time_line shapeObjectTimeLine_ceiled_start = tree_set_containing_all_of_the_info.ceiling(new Shape_object_time_line(start));
-                if(shapeObjectTimeLine_ceiled_start!=null){
-                    return new double[]{shapeObjectTimeLine_ceiled_start.getStart(),shapeObjectTimeLine_ceiled_start.getEnd()};
+                if (shapeObjectTimeLine_ceiled_start != null) {
+                    return new double[]{shapeObjectTimeLine_ceiled_start.getStart(), shapeObjectTimeLine_ceiled_start.getEnd()};
                 } else {
-                    return new double[]{-1,-1};
+                    return new double[]{-1, -1};
                 }
             }
         } else {
             if (!start_floored_shape_object_time_line.equals(end_floored_shape_object_time_line)) {
-                if(collisionSearchType == CollisionSearchType.Start || collisionSearchType == CollisionSearchType.Middle){
-                    return new double[]{end_floored_shape_object_time_line.getStart(),end_floored_shape_object_time_line.getEnd()};
+                if (collisionSearchType == CollisionSearchType.Start || collisionSearchType == CollisionSearchType.Middle) {
+                    return new double[]{end_floored_shape_object_time_line.getStart(), end_floored_shape_object_time_line.getEnd()};
                 } else {
-                    return new double[]{end_floored_shape_object_time_line.getStart(),end_floored_shape_object_time_line.getEnd()};
+                    return new double[]{end_floored_shape_object_time_line.getStart(), end_floored_shape_object_time_line.getEnd()};
                 }
             } else {
                 if (start_floored_shape_object_time_line.getEnd() < start) {
-                    return new double[]{-1,-1};
+                    return new double[]{-1, -1};
                 } else {
-                    return new double[]{end_floored_shape_object_time_line.getStart(),end_floored_shape_object_time_line.getEnd()};
+                    return new double[]{end_floored_shape_object_time_line.getStart(), end_floored_shape_object_time_line.getEnd()};
                 }
             }
         }
@@ -3822,5 +3841,14 @@ public class HelloApplication extends Application {
         if (x_pos >= shapeObjectTimeLine.getStart() && x_pos <= shapeObjectTimeLine.getEnd()) {
             set_the_chatgpt_image_view(helloController, "black", Type_of_Image.FULL_QUALITY);
         }
+    }
+
+    private void listen_to_the_h_scroll_of_the_time_line_scroll_pane(HelloController helloController){
+        helloController.scroll_pane_hosting_the_time_line.hvalueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+
+            }
+        });
     }
 }
