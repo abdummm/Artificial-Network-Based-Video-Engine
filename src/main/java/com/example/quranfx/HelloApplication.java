@@ -33,6 +33,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
+import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
@@ -104,6 +105,7 @@ public class HelloApplication extends Application {
     private double max_hight_of_bottom_pane_fourth_screen = 0;
     private ContextMenu empty_tile_pane_context_menu = null;
     private HashMap<String, Media_pool> hashMap_with_media_pool_items = new HashMap<>();
+    private Shape_object_time_line last_seen_image_vid_is_playing = null;
 
     private final static int image_view_in_tile_pane_width = 90;
     private final static int image_view_in_tile_pane_height = 160;
@@ -185,7 +187,6 @@ public class HelloApplication extends Application {
         make_play_button_circle(helloController);
         add_tool_tip_to_next_verse(helloController);
         add_tool_tip_to_previous_verse(helloController);
-        listen_to_the_h_scroll_of_the_time_line_scroll_pane(helloController);
     }
 
     public static void main(String[] args) {
@@ -1339,7 +1340,7 @@ public class HelloApplication extends Application {
                                 durations[verse_number - start_ayat] = getDurationWithFFmpeg(new_wav_file);
                             } catch (IOException e) {
                                 e.printStackTrace();
-                                Thread.sleep(500L * (final_i+1)); // exponential backoff
+                                Thread.sleep(500L * (final_i + 1)); // exponential backoff
                             }
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
@@ -2120,10 +2121,16 @@ public class HelloApplication extends Application {
         File file = new File(file_path.concat("/").concat(name).concat(".raw"));
         file.deleteOnExit();
         try (FileOutputStream fos = new FileOutputStream(file)) {
-            ByteBuffer byteBuffer = ByteBuffer.allocate(pixels.length * 4);
+            ByteBuffer byteBuffer = ByteBuffer.allocate(pixels.length * 3);
             byteBuffer.order(ByteOrder.BIG_ENDIAN); // or LITTLE_ENDIAN depending on your platform
             for (int pixel : pixels) {
-                byteBuffer.putInt(pixel);
+                //int alpha = (pixel >> 24) & 0xFF;
+                byte red = (byte) (pixel >> 16);
+                byte green = (byte) (pixel >> 8);
+                byte blue = (byte) pixel;
+                byteBuffer.put(red);
+                byteBuffer.put(green);
+                byteBuffer.put(blue);
             }
             fos.write(byteBuffer.array());
         } catch (FileNotFoundException e) {
@@ -2229,7 +2236,7 @@ public class HelloApplication extends Application {
                     Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
                     Rectangle created_rectangle = create_and_return_time_line_rectangle(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1)));
                     created_rectangle.setVisible(false);
-                    Shape_object_time_line shapeObjectTimeLine = new Shape_object_time_line(0, nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1)), created_rectangle, mediaPool.getId());
+                    Shape_object_time_line shapeObjectTimeLine = new Shape_object_time_line(0, nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1)), created_rectangle, mediaPool.getId(), 0, TimeUnit.SECONDS.toNanos(1));
                     set_up_the_image_rectangle(created_rectangle, mediaPool.getThumbnail(), helloController.time_line_pane);
                     configure_the_image_rectangle(shapeObjectTimeLine, helloController, helloController.time_line_pane, mediaPool.getThumbnail());
                     imageView.setCursor(Cursor.CLOSED_HAND);
@@ -2271,7 +2278,9 @@ public class HelloApplication extends Application {
                             }
                             double start = move_the_rectangle(helloController.time_line_pane, (Rectangle) shapeObjectTimeLine.getShape(), x_pos_local);
                             shapeObjectTimeLine.setStart(start);
+                            shapeObjectTimeLine.setStart_time(pixels_to_nanoseconds(time_line_pane_data, start - time_line_pane_data.getTime_line_base_line()));
                             shapeObjectTimeLine.setEnd(start + ((Rectangle) shapeObjectTimeLine.getShape()).getWidth());
+                            shapeObjectTimeLine.setEnd_time(pixels_to_nanoseconds(time_line_pane_data, start + ((Rectangle) shapeObjectTimeLine.getShape()).getWidth() - time_line_pane_data.getTime_line_base_line()));
                         }
                         double min_x_pos_local;
                         double max_x_pos_local;
@@ -2890,9 +2899,18 @@ public class HelloApplication extends Application {
                 if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING && lastKnownSystemTime > 0) {
                     Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
                     double elapsed = (System.currentTimeMillis() - lastKnownSystemTime); // seconds
-                    update_the_time_line_indicator(helloController.time_line_pane, (lastKnownMediaTime + TimeUnit.MILLISECONDS.toNanos((long) elapsed)));
+                    long time_in_nanos = (lastKnownMediaTime + TimeUnit.MILLISECONDS.toNanos((long) elapsed));
+                    update_the_time_line_indicator(helloController.time_line_pane, time_in_nanos);
                     set_the_time_line_indicator_to_the_middle(helloController.scroll_pane_hosting_the_time_line, time_line_pane_data.getPolygon().getLayoutX());
-                    is_it_time_to_change_verses(helloController, (lastKnownMediaTime + TimeUnit.MILLISECONDS.toNanos((long) elapsed)));
+                    is_it_time_to_change_verses(helloController, time_in_nanos);
+                    if (last_seen_image_vid_is_playing == null || time_in_nanos > last_seen_image_vid_is_playing.getEnd_time()) {
+                        last_seen_image_vid_is_playing = return_the_shape_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, time_in_nanos) + time_line_pane_data.getTime_line_base_line());
+                        if (last_seen_image_vid_is_playing == null) {
+                            set_the_chatgpt_image_view(helloController, "black", Type_of_Image.FULL_QUALITY);
+                        } else {
+                            set_the_chatgpt_image_view(helloController, last_seen_image_vid_is_playing.getImage_id(), Type_of_Image.FULL_QUALITY);
+                        }
+                    }
                 }
             }
         };
@@ -3061,6 +3079,7 @@ public class HelloApplication extends Application {
                 if (new_status.equals(MediaPlayer.Status.READY)) {
                     media_is_ready(helloController);
                 } else if (new_status.equals(MediaPlayer.Status.PLAYING)) {
+                    last_seen_image_vid_is_playing = null;
                     lastKnownSystemTime = 0;
                     timer.start();
                     set_the_play_pause_button(helloController, "pause");
@@ -3402,7 +3421,9 @@ public class HelloApplication extends Application {
                         time_line_pane_data.getTree_set_containing_all_of_the_items().remove(shapeObjectTimeLine);
                     }
                     shapeObjectTimeLine.setStart(rectangle.getX());
+                    shapeObjectTimeLine.setStart_time(pixels_to_nanoseconds(time_line_pane_data, rectangle.getX() - time_line_pane_data.getTime_line_base_line()));
                     shapeObjectTimeLine.setEnd(rectangle.getX() + rectangle.getWidth());
+                    shapeObjectTimeLine.setEnd_time(pixels_to_nanoseconds(time_line_pane_data, rectangle.getX() + rectangle.getWidth() - time_line_pane_data.getTime_line_base_line()));
                     if (rectangleChangedInfo.getFake_rectangle() != null) {
                         pane.getChildren().remove(rectangleChangedInfo.getFake_rectangle());
                     }
@@ -3640,7 +3661,8 @@ public class HelloApplication extends Application {
     }
 
     private void set_up_glossy_pause_button(HelloController helloController) {
-        GaussianBlur blur = new GaussianBlur(30); // Adjust the radius for more/less blur
+        //GaussianBlur blur = new GaussianBlur(30); // Adjust the radius for more/less blur
+        BoxBlur blur = new BoxBlur(60, 60, 3);
         helloController.blurry_chatgpt_image_view.setEffect(blur);
         Circle circle = new Circle(helloController.blurry_chatgpt_image_view.getFitWidth() / 2, helloController.blurry_chatgpt_image_view.getFitHeight() / 2, blurry_circle_raduis);
         helloController.blurry_chatgpt_image_view.setClip(circle);
@@ -3766,7 +3788,7 @@ public class HelloApplication extends Application {
         WritableImage image = new WritableImage(width, height);
         PixelWriter writer = image.getPixelWriter();
 
-        int idx = 0;
+        /*int idx = 0;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 int argb = pixels[idx++];
@@ -3777,7 +3799,10 @@ public class HelloApplication extends Application {
                 //writer.setColor(x, y, javafx.scene.paint.Color.rgb(r, g, b, a / 255.0));
                 writer.setColor(x, y, javafx.scene.paint.Color.rgb(r, g, b));
             }
-        }
+        }*/
+        //writer.setPixels(0, 0, width, height, PixelFormat.getIntArgbInstance(), pixels, 0, width);
+        writer.setPixels(0, 0, width, height, PixelFormat.getByteRgbInstance(), bytes, 0, width * 3);
+
         return image;
     }
 
@@ -3802,15 +3827,24 @@ public class HelloApplication extends Application {
     }
 
     private String return_the_image_on_click(Pane pane, double x_position) {
+        Shape_object_time_line shapeObjectTimeLine = return_the_shape_on_click(pane, x_position);
+        if (shapeObjectTimeLine == null) {
+            return "black";
+        } else {
+            return shapeObjectTimeLine.getImage_id();
+        }
+    }
+
+    private Shape_object_time_line return_the_shape_on_click(Pane pane, double x_position) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         TreeSet<Shape_object_time_line> treeSet = time_line_pane_data.getTree_set_containing_all_of_the_items();
         x_position = return_min_max_or_normal_x_postion(time_line_pane_data, x_position);
         Shape_object_time_line fake_shapeObjectTimeLine = new Shape_object_time_line(x_position);
         Shape_object_time_line floored_item = treeSet.floor(fake_shapeObjectTimeLine);
         if (floored_item == null || x_position > floored_item.getEnd()) {
-            return "black";
+            return null;
         } else {
-            return floored_item.getImage_id();
+            return floored_item;
         }
     }
 
@@ -3841,14 +3875,5 @@ public class HelloApplication extends Application {
         if (x_pos >= shapeObjectTimeLine.getStart() && x_pos <= shapeObjectTimeLine.getEnd()) {
             set_the_chatgpt_image_view(helloController, "black", Type_of_Image.FULL_QUALITY);
         }
-    }
-
-    private void listen_to_the_h_scroll_of_the_time_line_scroll_pane(HelloController helloController){
-        helloController.scroll_pane_hosting_the_time_line.hvalueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-
-            }
-        });
     }
 }
