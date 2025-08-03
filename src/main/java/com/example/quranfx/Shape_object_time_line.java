@@ -7,12 +7,16 @@ public class Shape_object_time_line {
     private double end;
     private Shape shape;
     private String image_id;
+    private long start_time;
+    private long end_time;
 
-    public Shape_object_time_line(double start, double end, Shape shape,String image_id) {
+    public Shape_object_time_line(double start, double end, Shape shape,String image_id,long start_time,long end_time) {
         this.start = start;
         this.end = end;
         this.shape = shape;
         this.image_id = image_id;
+        this.start_time = start_time;
+        this.end_time = end_time;
     }
 
     public Shape_object_time_line(double start) {
@@ -44,5 +48,21 @@ public class Shape_object_time_line {
 
     public String getImage_id() {
         return image_id;
+    }
+
+    public long getStart_time() {
+        return start_time;
+    }
+
+    public long getEnd_time() {
+        return end_time;
+    }
+
+    public void setStart_time(long start_time) {
+        this.start_time = start_time;
+    }
+
+    public void setEnd_time(long end_time) {
+        this.end_time = end_time;
     }
 }

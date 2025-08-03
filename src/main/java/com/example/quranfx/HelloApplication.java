@@ -2643,7 +2643,9 @@ public class HelloApplication extends Application {
             double x_pos = i * pixels_in_between_each_line + base_line_for_the_end_rectangle;
             if ((time_between_every_line * (i + number_of_dividors)) % TimeUnit.MILLISECONDS.toNanos(1000) == 0) {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, long_line_length, long_line_color, line_thickness));
-                main_pane.getChildren().add(add_the_text_to_time_line(time_between_every_line * (number_of_dividors + i), x_pos, line_length, time_text_color));
+                if(i == 0){
+                    main_pane.getChildren().add(add_the_text_to_time_line(time_between_every_line * (number_of_dividors + i), x_pos, line_length, time_text_color));
+                }
             } else if ((time_between_every_line * (i + number_of_dividors)) % TimeUnit.MILLISECONDS.toNanos(500) == 0) {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, half_long_line_length, mid_line_color, line_thickness));
             } else {
@@ -3775,16 +3777,7 @@ public class HelloApplication extends Application {
             throw new RuntimeException(e);
         }
 
-        // 2. Convert bytes to int[] (ARGB format)
-        int[] pixels = new int[bytes.length / 4];
-        ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        buffer.order(ByteOrder.BIG_ENDIAN); // Use the same as write!
 
-        for (int i = 0; i < pixels.length; i++) {
-            pixels[i] = buffer.getInt();
-        }
-
-        // 3. Create WritableImage and fill with pixels
         WritableImage image = new WritableImage(width, height);
         PixelWriter writer = image.getPixelWriter();
 
