@@ -593,7 +593,9 @@ public class HelloApplication extends Application {
                 helloController.generating_screen.setVisible(true);
                 helloController.choose_ayat_screen.setVisible(false);
                 //copy_the_images(helloController, get_the_right_basic_image_aspect_ratio(return_the_aspect_ratio_as_an_object(helloController)));
-                get_the_sound_and_concat_them_into_one(helloController);
+                if(!sound_path.isEmpty()){
+                    get_the_sound_and_concat_them_into_one(helloController);
+                }
                 set_up_third_screen(helloController, helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
             }
         });
@@ -1270,140 +1272,138 @@ public class HelloApplication extends Application {
     }
 
     private void get_the_sound_and_concat_them_into_one(HelloController helloController) {
-        if (sound_path.isEmpty()) {
-            boolean did_i_ever_fail_a_recitation = false;
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .protocols(Collections.singletonList(Protocol.HTTP_1_1))
-                    .connectTimeout(10, TimeUnit.SECONDS)
-                    .readTimeout(90, TimeUnit.SECONDS)
-                    .retryOnConnectionFailure(true)
-                    .build();
-            client.dispatcher().setMaxRequests(8); // increase concurrency
-            client.dispatcher().setMaxRequestsPerHost(4);
-            int start_ayat = return_start_ayat(helloController);
-            int end_ayat = return_end_ayat(helloController);
-            int number_of_ayats = end_ayat - start_ayat + 1;
-            int number_of_threads = Math.max(Runtime.getRuntime().availableProcessors() * 4, number_of_ayats);
-            BlockingQueue<String> verseQueue = new ArrayBlockingQueue<>(number_of_ayats);
-            durations = new Long[number_of_ayats];
-            end_of_the_picture_durations = new Long[number_of_ayats];
-            HashMap<String, Integer> tie_verses_to_indexes = new HashMap<>();
-            String base_url = "";
-            if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits().isEmpty()) {
-                base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits();
-            } else if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_64_bits().isEmpty()) {
-                base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_64_bits();
-            } else if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_32_bits().isEmpty()) {
-                base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_32_bits();
-            }
-            String surat_number = String.format("%03d", helloController.choose_the_surat.getSelectionModel().getSelectedIndex() + 1);
-            base_url = base_url.concat(surat_number);
-            for (int i = start_ayat; i <= end_ayat; i++) {
-                String ayat_number = String.format("%03d", i);
-                String full_ayat = base_url.concat(ayat_number).concat(".mp3");
-                verseQueue.offer(full_ayat);
-                tie_verses_to_indexes.put(full_ayat, i);
-            }
-            ExecutorService executor = Executors.newFixedThreadPool(number_of_threads);
-            for (int i = 0; i < number_of_threads; i++) {
-                int final_i = i;
-                executor.submit(() -> {
-                    while (true) {
-                        try {
-                            String verse_url = verseQueue.poll(100, TimeUnit.MILLISECONDS);
-                            if (verse_url == null) {
-                                break; // Exit if no more verses to process
-                            }
-                            int verse_number = tie_verses_to_indexes.get(verse_url);
-                            Request request = new Request.Builder().url(verse_url).build();
-                            try (Response response = client.newCall(request).execute()) {
-                                if (!response.isSuccessful()) {
-                                    System.err.println("code" + response.code());
-                                    continue;
-                                }
-                                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                                try (InputStream input = response.body().byteStream()) {
-                                    byte[] temp = new byte[16384];
-                                    int bytesRead;
-                                    while ((bytesRead = input.read(temp)) != -1) {
-                                        buffer.write(temp, 0, bytesRead);
-                                    }
-                                }
-                                byte[] mp3Bytes = buffer.toByteArray();
-                                File tempFile = new File("temp/sound", String.format("%03d.mp3", verse_number));
-                                tempFile.deleteOnExit();
-                                try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-                                    fos.write(mp3Bytes);
-                                }
-                                File new_wav_file = convert_mp3_to_wav(tempFile, String.format("%03d.wav", verse_number));
-                                new_wav_file.deleteOnExit();
-                                durations[verse_number - start_ayat] = getDurationWithFFmpeg(new_wav_file);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                Thread.sleep(500L * (final_i + 1)); // exponential backoff
-                            }
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                            break;
+        boolean did_i_ever_fail_a_recitation = false;
+        OkHttpClient client = new OkHttpClient.Builder()
+                .protocols(Collections.singletonList(Protocol.HTTP_1_1))
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(90, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
+                .build();
+        client.dispatcher().setMaxRequests(8); // increase concurrency
+        client.dispatcher().setMaxRequestsPerHost(4);
+        int start_ayat = return_start_ayat(helloController);
+        int end_ayat = return_end_ayat(helloController);
+        int number_of_ayats = end_ayat - start_ayat + 1;
+        int number_of_threads = Math.max(Runtime.getRuntime().availableProcessors() * 4, number_of_ayats);
+        BlockingQueue<String> verseQueue = new ArrayBlockingQueue<>(number_of_ayats);
+        durations = new Long[number_of_ayats];
+        end_of_the_picture_durations = new Long[number_of_ayats];
+        HashMap<String, Integer> tie_verses_to_indexes = new HashMap<>();
+        String base_url = "";
+        if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits().isEmpty()) {
+            base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits();
+        } else if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_64_bits().isEmpty()) {
+            base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_64_bits();
+        } else if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_32_bits().isEmpty()) {
+            base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_32_bits();
+        }
+        String surat_number = String.format("%03d", helloController.choose_the_surat.getSelectionModel().getSelectedIndex() + 1);
+        base_url = base_url.concat(surat_number);
+        for (int i = start_ayat; i <= end_ayat; i++) {
+            String ayat_number = String.format("%03d", i);
+            String full_ayat = base_url.concat(ayat_number).concat(".mp3");
+            verseQueue.offer(full_ayat);
+            tie_verses_to_indexes.put(full_ayat, i);
+        }
+        ExecutorService executor = Executors.newFixedThreadPool(number_of_threads);
+        for (int i = 0; i < number_of_threads; i++) {
+            int final_i = i;
+            executor.submit(() -> {
+                while (true) {
+                    try {
+                        String verse_url = verseQueue.poll(100, TimeUnit.MILLISECONDS);
+                        if (verse_url == null) {
+                            break; // Exit if no more verses to process
                         }
+                        int verse_number = tie_verses_to_indexes.get(verse_url);
+                        Request request = new Request.Builder().url(verse_url).build();
+                        try (Response response = client.newCall(request).execute()) {
+                            if (!response.isSuccessful()) {
+                                System.err.println("code" + response.code());
+                                continue;
+                            }
+                            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                            try (InputStream input = response.body().byteStream()) {
+                                byte[] temp = new byte[16384];
+                                int bytesRead;
+                                while ((bytesRead = input.read(temp)) != -1) {
+                                    buffer.write(temp, 0, bytesRead);
+                                }
+                            }
+                            byte[] mp3Bytes = buffer.toByteArray();
+                            File tempFile = new File("temp/sound", String.format("%03d.mp3", verse_number));
+                            tempFile.deleteOnExit();
+                            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                                fos.write(mp3Bytes);
+                            }
+                            File new_wav_file = convert_mp3_to_wav(tempFile, String.format("%03d.wav", verse_number));
+                            new_wav_file.deleteOnExit();
+                            durations[verse_number - start_ayat] = getDurationWithFFmpeg(new_wav_file);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            Thread.sleep(500L * (final_i + 1)); // exponential backoff
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
                     }
-                });
-            }
-            executor.shutdown();
-            try {
-                executor.awaitTermination(5, TimeUnit.MINUTES); // Wait for all threads to finish
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            File tempFile = new File("temp/sound", String.format("%03d.wav", start_ayat));
-            audio_frequncy_of_the_sound = get_frequency_of_audio(tempFile.getAbsolutePath());
-            int get_the_number_of_audio_channels_local = set_the_number_of_audio_channels(getNumberOfChannels(tempFile.getAbsolutePath()));
-            end_of_the_picture_durations[0] = 0L;
-            if (number_of_ayats > 1) {
-                for (int i = 1; i < number_of_ayats; i++) {
-                    end_of_the_picture_durations[i] = durations[i - 1] + end_of_the_picture_durations[i - 1];
                 }
+            });
+        }
+        executor.shutdown();
+        try {
+            executor.awaitTermination(5, TimeUnit.MINUTES); // Wait for all threads to finish
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        File tempFile = new File("temp/sound", String.format("%03d.wav", start_ayat));
+        audio_frequncy_of_the_sound = get_frequency_of_audio(tempFile.getAbsolutePath());
+        int get_the_number_of_audio_channels_local = set_the_number_of_audio_channels(getNumberOfChannels(tempFile.getAbsolutePath()));
+        end_of_the_picture_durations[0] = 0L;
+        if (number_of_ayats > 1) {
+            for (int i = 1; i < number_of_ayats; i++) {
+                end_of_the_picture_durations[i] = durations[i - 1] + end_of_the_picture_durations[i - 1];
             }
-            File listFile = new File("temp/sound", "list.txt");
-            listFile.deleteOnExit();
-            try (PrintWriter writer = new PrintWriter(listFile)) {
-                for (int i = start_ayat; i <= end_ayat; i++) {
-                    String filename = String.format("%03d.mp3", i);
-                    writer.println("file '" + filename + "'");
-                }
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
+        }
+        File listFile = new File("temp/sound", "list.txt");
+        listFile.deleteOnExit();
+        try (PrintWriter writer = new PrintWriter(listFile)) {
+            for (int i = start_ayat; i <= end_ayat; i++) {
+                String filename = String.format("%03d.mp3", i);
+                writer.println("file '" + filename + "'");
             }
-            try {
-                ProcessBuilder pb = new ProcessBuilder(
-                        "ffmpeg", "-f", "concat", "-safe", "0",
-                        "-i", "temp/sound/list.txt",
-                        "-c:a", "pcm_s16le",  // <-- WAV encoding
-                        "-ar", String.valueOf(audio_frequncy_of_the_sound),       // <-- 44.1kHz sample rate (standard)
-                        "-ac", String.valueOf(get_the_number_of_audio_channels_local),           // <-- 2 channels (stereo); use "1" if you want mono
-                        "temp/sound/combined.wav"
-                );
-                pb.redirectErrorStream(true); // Combine stderr with stdout
-                Process process = pb.start();
-                int exitCode = process.waitFor();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                StringBuilder output = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    output.append(line).append("\n");
-                }
-                if (exitCode != 0) {
-                    System.err.println("FFmpeg failed with exit code " + exitCode);
-                    System.err.println("FFmpeg output:\n" + output);
-                    show_alert("Audio encoding failed. FFMPEG");
-                } else {
-                    File out_put_file = new File("temp/sound/combined.wav");
-                    out_put_file.deleteOnExit();
-                    sound_path = out_put_file.getAbsolutePath();
-                }
-            } catch (IOException | InterruptedException e) {
-                throw new RuntimeException(e);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            ProcessBuilder pb = new ProcessBuilder(
+                    "ffmpeg", "-f", "concat", "-safe", "0",
+                    "-i", "temp/sound/list.txt",
+                    "-c:a", "pcm_s16le",  // <-- WAV encoding
+                    "-ar", String.valueOf(audio_frequncy_of_the_sound),       // <-- 44.1kHz sample rate (standard)
+                    "-ac", String.valueOf(get_the_number_of_audio_channels_local),           // <-- 2 channels (stereo); use "1" if you want mono
+                    "temp/sound/combined.wav"
+            );
+            pb.redirectErrorStream(true); // Combine stderr with stdout
+            Process process = pb.start();
+            int exitCode = process.waitFor();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            StringBuilder output = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
             }
+            if (exitCode != 0) {
+                System.err.println("FFmpeg failed with exit code " + exitCode);
+                System.err.println("FFmpeg output:\n" + output);
+                show_alert("Audio encoding failed. FFMPEG");
+            } else {
+                File out_put_file = new File("temp/sound/combined.wav");
+                out_put_file.deleteOnExit();
+                sound_path = out_put_file.getAbsolutePath();
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -2643,7 +2643,7 @@ public class HelloApplication extends Application {
             double x_pos = i * pixels_in_between_each_line + base_line_for_the_end_rectangle;
             if ((time_between_every_line * (i + number_of_dividors)) % TimeUnit.MILLISECONDS.toNanos(1000) == 0) {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, long_line_length, long_line_color, line_thickness));
-                if(i == 0){
+                if (i == 0) {
                     main_pane.getChildren().add(add_the_text_to_time_line(time_between_every_line * (number_of_dividors + i), x_pos, line_length, time_text_color));
                 }
             } else if ((time_between_every_line * (i + number_of_dividors)) % TimeUnit.MILLISECONDS.toNanos(500) == 0) {
