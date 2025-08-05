@@ -16,7 +16,7 @@ public class Rectangle_changed_info {
     private boolean did_we_ever_change_the_photo;
     private TreeSet<Shape_object_time_line> tree_set_containing_all_of_the_items;
 
-    public Rectangle_changed_info(double original_x, MovementType type_of_movement, double original_start_rectangle, double original_end_rectangle, double relative_x, String image_id, TreeSet<Shape_object_time_line> tree_set_containing_all_of_the_items) {
+    public Rectangle_changed_info(double original_x, MovementType type_of_movement, double original_start_rectangle, double original_end_rectangle, double relative_x, String image_id, TreeSet<Shape_object_time_line> tree_set_containing_all_of_the_items,boolean did_we_ever_change_the_photo) {
         this.original_x = original_x;
         this.type_of_movement = type_of_movement;
         this.original_start_rectangle = original_start_rectangle;
@@ -24,21 +24,21 @@ public class Rectangle_changed_info {
         this.relative_x = relative_x;
         this.fake_rectangle = null;
         this.image_id = image_id;
-        this.did_we_ever_change_the_photo = false;
         this.tree_set_containing_all_of_the_items = tree_set_containing_all_of_the_items;
+        this.did_we_ever_change_the_photo = did_we_ever_change_the_photo;
     }
 
 
-    public Rectangle_changed_info(double original_x, MovementType type_of_movement,double original_start_rectangle,double original_end_rectangle,double relative_x,Rectangle fake_rectangle,String image_id,TreeSet<Shape_object_time_line> tree_set_containing_all_of_the_items) {
+    public Rectangle_changed_info(double original_x, MovementType type_of_movement,double original_start_rectangle,double original_end_rectangle,double relative_x,Rectangle fake_rectangle,String image_id,TreeSet<Shape_object_time_line> tree_set_containing_all_of_the_items,boolean did_we_ever_change_the_photo) {
         this.original_x = original_x;
         this.type_of_movement = type_of_movement;
         this.original_start_rectangle = original_start_rectangle;
         this.original_end_rectangle = original_end_rectangle;
         this.relative_x = relative_x;
         this.fake_rectangle = fake_rectangle;
-        this.did_we_ever_change_the_photo = false;
         this.image_id = image_id;
         this.tree_set_containing_all_of_the_items = tree_set_containing_all_of_the_items;
+        this.did_we_ever_change_the_photo = did_we_ever_change_the_photo;
     }
 
     public double getOriginal_x() {

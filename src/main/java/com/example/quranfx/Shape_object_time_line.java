@@ -10,7 +10,7 @@ public class Shape_object_time_line {
     private long start_time;
     private long end_time;
 
-    public Shape_object_time_line(double start, double end, Shape shape,String image_id,long start_time,long end_time) {
+    public Shape_object_time_line(double start, double end, Shape shape, String image_id, long start_time, long end_time) {
         this.start = start;
         this.end = end;
         this.shape = shape;
@@ -64,5 +64,17 @@ public class Shape_object_time_line {
 
     public void setEnd_time(long end_time) {
         this.end_time = end_time;
+    }
+
+    @Override
+    public String toString() {
+        return "Shape_object_time_line{" +
+                "start=" + start +
+                ", end=" + end +
+                ", shape=" + shape +
+                ", image_id='" + image_id + '\'' +
+                ", start_time=" + start_time +
+                ", end_time=" + end_time +
+                '}';
     }
 }

@@ -593,7 +593,7 @@ public class HelloApplication extends Application {
                 helloController.generating_screen.setVisible(true);
                 helloController.choose_ayat_screen.setVisible(false);
                 //copy_the_images(helloController, get_the_right_basic_image_aspect_ratio(return_the_aspect_ratio_as_an_object(helloController)));
-                if(!sound_path.isEmpty()){
+                if(sound_path.isEmpty()){
                     get_the_sound_and_concat_them_into_one(helloController);
                 }
                 set_up_third_screen(helloController, helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
@@ -2341,16 +2341,19 @@ public class HelloApplication extends Application {
                             min_x_pos_local = time_line_pane_data.getTime_line_end_base_line() - image_width_in_time_line;
                         }
                     }
+                    double polygon_x_pos = return_polygon_middle_position(time_line_pane_data);
                     if (am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) && !is_there_is_a_collosion(media_pool_item_dragged.getTree_set_containing_all_of_the_items(), min_x_pos_local, max_x_pos_local)) {
                         time_line_pane_data.getTree_set_containing_all_of_the_items().add(media_pool_item_dragged.getShapeObjectTimeLine());
+                        if (polygon_x_pos >= min_x_pos_local && polygon_x_pos <= max_x_pos_local) {
+                            set_the_chatgpt_image_view(helloController, media_pool_item_dragged.getImage_key_uuid(), Type_of_Image.FULL_QUALITY);
+                        } else {
+                            set_the_chatgpt_image_view(helloController, return_the_image_on_click(helloController.time_line_pane, polygon_x_pos), Type_of_Image.FULL_QUALITY);
+                        }
                     } else {
                         helloController.time_line_pane.getChildren().remove(media_pool_item_dragged.getShapeObjectTimeLine().getShape());
-                    }
-                    double polygon_x_pos = return_polygon_middle_position(time_line_pane_data);
-                    if (polygon_x_pos >= min_x_pos_local && polygon_x_pos <= max_x_pos_local) {
-                        set_the_chatgpt_image_view(helloController, media_pool_item_dragged.getImage_key_uuid(), Type_of_Image.FULL_QUALITY);
-                    } else {
-                        set_the_chatgpt_image_view(helloController, return_the_image_on_click(helloController.time_line_pane, polygon_x_pos), Type_of_Image.FULL_QUALITY);
+                        if(media_pool_item_dragged.isDid_this_change_the_image()){
+                            set_the_chatgpt_image_view(helloController, "black", Type_of_Image.FULL_QUALITY);
+                        }
                     }
                 }
             }
@@ -2840,8 +2843,6 @@ public class HelloApplication extends Application {
         polygon.setOnMouseReleased(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                /*double scroll_pane_x_pos = mouseEvent.getSceneX();
-                double scroll_pane_y_pos = mouseEvent.getSceneY();*/
                 Point2D local = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY());
                 if (polygon.contains(polygon.parentToLocal(local))) {
                     polygon.setCursor(Cursor.OPEN_HAND);
@@ -3292,18 +3293,25 @@ public class HelloApplication extends Application {
                     double local_x = mouse_scene_x_translated - shapeObjectTimeLine.getStart();
                     TreeSet<Shape_object_time_line> copy_of_all_items_tree_set = new TreeSet<>(time_line_pane_data.getTree_set_containing_all_of_the_items());
                     copy_of_all_items_tree_set.remove(shapeObjectTimeLine);
+                    double polygon_pos = return_polygon_middle_position(time_line_pane_data);
+                    boolean did_this_ever_change;
+                    if (rectangle.getX() <= polygon_pos && rectangle.getX() + rectangle.getWidth() >= polygon_pos) {
+                        did_this_ever_change = true;
+                    } else {
+                        did_this_ever_change = false;
+                    }
                     if (get_type_of_movement(rectangle, local_x, change_cursor_to_double_arrow_buffer) == MovementType.START) {
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.START, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, shapeObjectTimeLine.getImage_id(), copy_of_all_items_tree_set);
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.START, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, shapeObjectTimeLine.getImage_id(), copy_of_all_items_tree_set,did_this_ever_change);
                         rectangle.setUserData(rectangleChangedInfo);
                     } else if (get_type_of_movement(rectangle, local_x, change_cursor_to_double_arrow_buffer) == MovementType.END) {
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.END, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, shapeObjectTimeLine.getImage_id(), copy_of_all_items_tree_set);
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.END, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, shapeObjectTimeLine.getImage_id(), copy_of_all_items_tree_set,did_this_ever_change);
                         rectangle.setUserData(rectangleChangedInfo);
                     } else {
                         Rectangle fake_rectanlge_less_opacity = deepCopyRectangle(rectangle);
                         fake_rectanlge_less_opacity.setOpacity(0.4D);
                         fake_rectanlge_less_opacity.setVisible(false);
                         pane.getChildren().add(fake_rectanlge_less_opacity);
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.MIDDLE, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, fake_rectanlge_less_opacity, shapeObjectTimeLine.getImage_id(), copy_of_all_items_tree_set);
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.MIDDLE, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, fake_rectanlge_less_opacity, shapeObjectTimeLine.getImage_id(), copy_of_all_items_tree_set,did_this_ever_change);
                         rectangle.setUserData(rectangleChangedInfo);
                         rectangle.setCursor(Cursor.CLOSED_HAND);
                     }
@@ -3417,30 +3425,33 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                    Rectangle_changed_info rectangleChangedInfo = (Rectangle_changed_info) rectangle.getUserData();
-                    double old_width = shapeObjectTimeLine.getEnd() - shapeObjectTimeLine.getStart();
-                    if (rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE) { // added later
-                        time_line_pane_data.getTree_set_containing_all_of_the_items().remove(shapeObjectTimeLine);
-                    }
-                    shapeObjectTimeLine.setStart(rectangle.getX());
-                    shapeObjectTimeLine.setStart_time(pixels_to_nanoseconds(time_line_pane_data, rectangle.getX() - time_line_pane_data.getTime_line_base_line()));
-                    shapeObjectTimeLine.setEnd(rectangle.getX() + rectangle.getWidth());
-                    shapeObjectTimeLine.setEnd_time(pixels_to_nanoseconds(time_line_pane_data, rectangle.getX() + rectangle.getWidth() - time_line_pane_data.getTime_line_base_line()));
-                    if (rectangleChangedInfo.getFake_rectangle() != null) {
-                        pane.getChildren().remove(rectangleChangedInfo.getFake_rectangle());
-                    }
-                    check_if_i_am_in_right_rectangle_for_cursor(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), shapeObjectTimeLine, change_cursor_to_double_arrow_buffer, pane);
-                    if (rectangle.getWidth() != old_width) {
-                        set_up_the_image_rectangle(rectangle, image, pane);
-                    }
-                    if (rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE) {// added becuase its removed earlier
-                        time_line_pane_data.getTree_set_containing_all_of_the_items().add(shapeObjectTimeLine);
-                    }
-                    double polygon_x_pos = return_polygon_middle_position(time_line_pane_data);
-                    if (polygon_x_pos >= shapeObjectTimeLine.getStart() && polygon_x_pos <= shapeObjectTimeLine.getEnd()) {
-                        set_the_chatgpt_image_view(helloController, shapeObjectTimeLine.getImage_id(), Type_of_Image.FULL_QUALITY);
-                    } else {
-                        set_the_chatgpt_image_view(helloController, return_the_image_on_click(helloController.time_line_pane, polygon_x_pos), Type_of_Image.FULL_QUALITY);
+                    if(rectangle.getUserData()!=null){
+                        Rectangle_changed_info rectangleChangedInfo = (Rectangle_changed_info) rectangle.getUserData();
+                        double old_width = shapeObjectTimeLine.getEnd() - shapeObjectTimeLine.getStart();
+                        if (rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE) { // added later
+                            time_line_pane_data.getTree_set_containing_all_of_the_items().remove(shapeObjectTimeLine);
+                        }
+                        shapeObjectTimeLine.setStart(rectangle.getX());
+                        shapeObjectTimeLine.setStart_time(pixels_to_nanoseconds(time_line_pane_data, rectangle.getX() - time_line_pane_data.getTime_line_base_line()));
+                        shapeObjectTimeLine.setEnd(rectangle.getX() + rectangle.getWidth());
+                        shapeObjectTimeLine.setEnd_time(pixels_to_nanoseconds(time_line_pane_data, rectangle.getX() + rectangle.getWidth() - time_line_pane_data.getTime_line_base_line()));
+                        if (rectangleChangedInfo.getFake_rectangle() != null) {
+                            pane.getChildren().remove(rectangleChangedInfo.getFake_rectangle());
+                        }
+                        check_if_i_am_in_right_rectangle_for_cursor(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), shapeObjectTimeLine, change_cursor_to_double_arrow_buffer, pane);
+                        if (rectangle.getWidth() != old_width) {
+                            set_up_the_image_rectangle(rectangle, image, pane);
+                        }
+                        if (rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE) {// added becuase its removed earlier
+                            time_line_pane_data.getTree_set_containing_all_of_the_items().add(shapeObjectTimeLine);
+                        }
+                        double polygon_x_pos = return_polygon_middle_position(time_line_pane_data);
+                        if (polygon_x_pos >= shapeObjectTimeLine.getStart() && polygon_x_pos <= shapeObjectTimeLine.getEnd()) {
+                            set_the_chatgpt_image_view(helloController, shapeObjectTimeLine.getImage_id(), Type_of_Image.FULL_QUALITY);
+                        } else {
+                            set_the_chatgpt_image_view(helloController, return_the_image_on_click(helloController.time_line_pane, polygon_x_pos), Type_of_Image.FULL_QUALITY);
+                        }
+                        rectangle.setUserData(null);
                     }
                 }
             }
