@@ -106,6 +106,8 @@ public class HelloApplication extends Application {
     private ContextMenu empty_tile_pane_context_menu = null;
     private HashMap<String, Media_pool> hashMap_with_media_pool_items = new HashMap<>();
     private Shape_object_time_line last_seen_image_vid_is_playing = null;
+    private Image blacked_out_image;
+    private Image blacked_out_image_whitened;
 
     private final static int image_view_in_tile_pane_width = 90;
     private final static int image_view_in_tile_pane_height = 160;
@@ -143,7 +145,6 @@ public class HelloApplication extends Application {
         listen_to_next_button_clicked(helloController);
         watch_the_advanced_settings_box(helloController);
         set_up_the_which_chat_gpt_to_use(helloController);
-        set_up_the_which_chat_gpt_to_use(helloController);
         set_the_width_of_which_gpt_spinner(helloController);
         set_up_the_which_image_spinner(helloController);
         set_the_width_of_image_size(helloController);
@@ -176,7 +177,6 @@ public class HelloApplication extends Application {
         //listen_to_tile_pane_resized(helloController);
         listen_to_tile_pane_size_change(helloController);
         listen_to_give_feed_back_button(helloController);
-        black_out_the_image_view_at_the_start(helloController);
         listen_to_chatgpt_image_view_on_mouse_enetered_and_left(helloController);
         play_the_sound_on_chatgpt_image_clicked(helloController);
         add_tool_tip_to_create_button(helloController);
@@ -187,6 +187,8 @@ public class HelloApplication extends Application {
         make_play_button_circle(helloController);
         add_tool_tip_to_next_verse(helloController);
         add_tool_tip_to_previous_verse(helloController);
+        write_the_black_image_and_the_whitened_black_image();
+        black_out_the_image_view_at_the_start(helloController);
     }
 
     public static void main(String[] args) {
@@ -3690,9 +3692,8 @@ public class HelloApplication extends Application {
         if (!id_of_the_last_image.getImage_id().equals(image_id) || (id_of_the_last_image.getTypeOfImage() == Type_of_Image.THUMBNAIL_QUALITY && typeOfImage == Type_of_Image.FULL_QUALITY)) {
             id_of_the_last_image = new Last_shown_Image(image_id, typeOfImage);
             if (image_id.equals("black")) {
-                Image image = return_16_9_black_image();
-                helloController.chatgpt_image_view.setImage(image);
-                helloController.blurry_chatgpt_image_view.setImage(whiten_the_image(image_to_buffered_image(image), 0.7f, 60f));
+                helloController.chatgpt_image_view.setImage(blacked_out_image);
+                helloController.blurry_chatgpt_image_view.setImage(blacked_out_image_whitened);
             } else {
                 Media_pool media_pool = hashMap_with_media_pool_items.get(image_id);
                 helloController.chatgpt_image_view.setImage(media_pool.getBlacked_thumbnail());
@@ -3879,5 +3880,10 @@ public class HelloApplication extends Application {
         if (x_pos >= shapeObjectTimeLine.getStart() && x_pos <= shapeObjectTimeLine.getEnd()) {
             set_the_chatgpt_image_view(helloController, "black", Type_of_Image.FULL_QUALITY);
         }
+    }
+
+    private void write_the_black_image_and_the_whitened_black_image(){
+        blacked_out_image = return_16_9_black_image();
+        blacked_out_image_whitened = whiten_the_image(image_to_buffered_image(blacked_out_image),0.7f,60f);
     }
 }
