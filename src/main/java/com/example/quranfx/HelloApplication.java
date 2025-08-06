@@ -113,7 +113,7 @@ public class HelloApplication extends Application {
     private final static int image_view_in_tile_pane_height = 160;
     private final static String help_email = "abdomakesappshelp@gmail.com";
     private final static double blurry_circle_raduis = 30D;
-    private final static double play_pause_button_size = 20D;
+    private final static int play_pause_button_size = 30;
     private final static int min_rectnagle_width = 3;
     ;
     //private final static double circle_button_radius = 20D;
@@ -595,7 +595,7 @@ public class HelloApplication extends Application {
                 helloController.generating_screen.setVisible(true);
                 helloController.choose_ayat_screen.setVisible(false);
                 //copy_the_images(helloController, get_the_right_basic_image_aspect_ratio(return_the_aspect_ratio_as_an_object(helloController)));
-                if(sound_path.isEmpty()){
+                if (sound_path.isEmpty()) {
                     get_the_sound_and_concat_them_into_one(helloController);
                 }
                 set_up_third_screen(helloController, helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
@@ -2353,7 +2353,7 @@ public class HelloApplication extends Application {
                         }
                     } else {
                         helloController.time_line_pane.getChildren().remove(media_pool_item_dragged.getShapeObjectTimeLine().getShape());
-                        if(media_pool_item_dragged.isDid_this_change_the_image()){
+                        if (media_pool_item_dragged.isDid_this_change_the_image()) {
                             set_the_chatgpt_image_view(helloController, "black", Type_of_Image.FULL_QUALITY);
                         }
                     }
@@ -2462,7 +2462,7 @@ public class HelloApplication extends Application {
 
     private void set_the_play_pause_button(HelloController helloController, String type) {
         if (type.equals("play")) {
-            helloController.play_sound.setGraphic(return_region_for_svg(get_the_svg_path("play_icon"), play_pause_button_size));
+            helloController.play_sound.setGraphic(return_the_icon("play_arrow",play_pause_button_size,play_pause_button_size));
             helloController.play_sound.getProperties().put("type", "play");
 
         } else if (type.equals("pause")) {
@@ -3303,17 +3303,17 @@ public class HelloApplication extends Application {
                         did_this_ever_change = false;
                     }
                     if (get_type_of_movement(rectangle, local_x, change_cursor_to_double_arrow_buffer) == MovementType.START) {
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.START, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, shapeObjectTimeLine.getImage_id(), copy_of_all_items_tree_set,did_this_ever_change);
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.START, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, shapeObjectTimeLine.getImage_id(), copy_of_all_items_tree_set, did_this_ever_change);
                         rectangle.setUserData(rectangleChangedInfo);
                     } else if (get_type_of_movement(rectangle, local_x, change_cursor_to_double_arrow_buffer) == MovementType.END) {
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.END, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, shapeObjectTimeLine.getImage_id(), copy_of_all_items_tree_set,did_this_ever_change);
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.END, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, shapeObjectTimeLine.getImage_id(), copy_of_all_items_tree_set, did_this_ever_change);
                         rectangle.setUserData(rectangleChangedInfo);
                     } else {
                         Rectangle fake_rectanlge_less_opacity = deepCopyRectangle(rectangle);
                         fake_rectanlge_less_opacity.setOpacity(0.4D);
                         fake_rectanlge_less_opacity.setVisible(false);
                         pane.getChildren().add(fake_rectanlge_less_opacity);
-                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.MIDDLE, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, fake_rectanlge_less_opacity, shapeObjectTimeLine.getImage_id(), copy_of_all_items_tree_set,did_this_ever_change);
+                        Rectangle_changed_info rectangleChangedInfo = new Rectangle_changed_info(mouseEvent.getSceneX(), MovementType.MIDDLE, shapeObjectTimeLine.getStart(), shapeObjectTimeLine.getEnd(), local_x, fake_rectanlge_less_opacity, shapeObjectTimeLine.getImage_id(), copy_of_all_items_tree_set, did_this_ever_change);
                         rectangle.setUserData(rectangleChangedInfo);
                         rectangle.setCursor(Cursor.CLOSED_HAND);
                     }
@@ -3427,7 +3427,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                    if(rectangle.getUserData()!=null){
+                    if (rectangle.getUserData() != null) {
                         Rectangle_changed_info rectangleChangedInfo = (Rectangle_changed_info) rectangle.getUserData();
                         double old_width = shapeObjectTimeLine.getEnd() - shapeObjectTimeLine.getStart();
                         if (rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE) { // added later
@@ -3882,8 +3882,32 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void write_the_black_image_and_the_whitened_black_image(){
+    private void write_the_black_image_and_the_whitened_black_image() {
         blacked_out_image = return_16_9_black_image();
-        blacked_out_image_whitened = whiten_the_image(image_to_buffered_image(blacked_out_image),0.7f,60f);
+        blacked_out_image_whitened = whiten_the_image(image_to_buffered_image(blacked_out_image), 0.7f, 60f);
+    }
+
+    private ImageView return_the_icon(String name, int width, int height) {
+        String imagePath = "/icons/" + name + ".png";
+        InputStream inputStream = getClass().getResourceAsStream(imagePath);
+        if (inputStream != null) {
+            Image image = new Image(inputStream); // PNG path in resources
+            ImageView imageView = new ImageView(image);
+            imageView.setFitWidth(width);
+            imageView.setFitHeight(height);
+            return imageView;
+        } else { // image not found
+            WritableImage writableImage = new WritableImage(width, height);
+            PixelWriter pixelWriter = writableImage.getPixelWriter();
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    pixelWriter.setArgb(x, y, 0x00000000); // Fully transparent, no visible color
+                }
+            }
+            ImageView imageView = new ImageView(writableImage);
+            imageView.setFitWidth(width);
+            imageView.setFitHeight(height);
+            return imageView;
+        }
     }
 }
