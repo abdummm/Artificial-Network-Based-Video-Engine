@@ -29,6 +29,7 @@ import javafx.scene.CacheHint;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
@@ -113,8 +114,11 @@ public class HelloApplication extends Application {
     private final static int image_view_in_tile_pane_height = 160;
     private final static String help_email = "abdomakesappshelp@gmail.com";
     private final static double blurry_circle_raduis = 30D;
-    private final static int play_pause_button_size = 30;
+    private final static int play_button_size = 30;
+    private final static int pause_button_size = 33;
     private final static int min_rectnagle_width = 3;
+    private final static int next_prev_button_size = 26;
+    private final static int next_prev_circle_size = 50;
     ;
     //private final static double circle_button_radius = 20D;
     private final static int how_long_does_it_take_for_tool_tip_to_show_up = 500;
@@ -1891,32 +1895,34 @@ public class HelloApplication extends Application {
     }
 
     private void set_the_icons(HelloController helloController) {
-        helloController.next_photo_chat_gpt_result.setGraphic(return_region_for_svg(get_the_svg_path("arrow_forward_ios"), 25D));
+        helloController.next_photo_chat_gpt_result.setShape(new Circle(next_prev_circle_size));
+        helloController.next_photo_chat_gpt_result.setGraphic(return_the_icon("arrow_forward_ios",next_prev_button_size,next_prev_button_size));
         helloController.next_photo_chat_gpt_result.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         helloController.next_photo_chat_gpt_result.setAlignment(Pos.CENTER);
 
-        helloController.previous_photo_chat_gpt_result.setGraphic(return_region_for_svg(get_the_svg_path("arrow_back_ios"), 25D));
+        helloController.previous_photo_chat_gpt_result.setShape(new Circle(next_prev_circle_size));
+        helloController.previous_photo_chat_gpt_result.setGraphic(return_the_icon("arrow_back_ios",next_prev_button_size,next_prev_button_size));
         helloController.previous_photo_chat_gpt_result.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         helloController.previous_photo_chat_gpt_result.setAlignment(Pos.CENTER);
 
-        helloController.full_screen_button_fourth_screen.setGraphic(return_region_for_svg(get_the_svg_path("fullscreen"), 25D));
+       /* helloController.full_screen_button_fourth_screen.setGraphic(return_the_icon("fullscreen"), 25D));
         helloController.full_screen_button_fourth_screen.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         helloController.full_screen_button_fourth_screen.setAlignment(Pos.CENTER);
 
-        helloController.cancel_video.setGraphic(return_region_for_svg(get_the_svg_path("arrow_back_with_line"), 25D));
+        helloController.cancel_video.setGraphic(return_region_for_svg(get_the_svg_path("arrow_back_with_line"), 25D)); TODO add this later
         helloController.cancel_video.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         helloController.cancel_video.setAlignment(Pos.CENTER);
 
-        helloController.create_video_final.setGraphic(return_region_for_svg(get_the_svg_path("rocket_launch"), 25D));
+        helloController.create_video_final.setGraphic(return_region_for_svg(get_the_svg_path("rocket_launch"), 25D)); TODO add this later
         helloController.create_video_final.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-        helloController.create_video_final.setAlignment(Pos.CENTER);
+        helloController.create_video_final.setAlignment(Pos.CENTER);*/
 
         set_the_play_pause_button(helloController, "play");
         helloController.play_sound.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         helloController.play_sound.setAlignment(Pos.CENTER);
     }
 
-    private String getSvgPathContent(String resourcePath) {
+    /*private String getSvgPathContent(String resourcePath) {
         String final_resource_path = "/icons/".concat(resourcePath).concat(".svg");
         try (InputStream inputStream = getClass().getResourceAsStream(final_resource_path)) {
             if (inputStream == null) {
@@ -1939,9 +1945,9 @@ public class HelloApplication extends Application {
             e.printStackTrace();
             return null;
         }
-    }
+    }*/
 
-    private Region return_region_for_svg(SVGPath svgPath, double max_width_height) {
+    /*private Region return_region_for_svg(SVGPath svgPath, double max_width_height) {
         double[] width_and_height = return_real_width_and_height_of_svg(svgPath, max_width_height);
         Region region = new Region();
         region.setShape(svgPath);
@@ -1950,7 +1956,7 @@ public class HelloApplication extends Application {
         region.setMaxSize(width_and_height[0], width_and_height[1]);
         region.setStyle("-fx-background-color: black;");
         return region;
-    }
+    }*/
 
     private double[] return_real_width_and_height_of_svg(SVGPath svgPath, double max_width_height) {
         Bounds bounds = svgPath.getBoundsInLocal();
@@ -1965,12 +1971,12 @@ public class HelloApplication extends Application {
         }
     }
 
-    private SVGPath get_the_svg_path(String file_name) {
+    /*private SVGPath get_the_svg_path(String file_name) {
         SVGPath svgPath = new SVGPath();
         svgPath.setContent(getSvgPathContent(file_name)); // <-- only the path string
         svgPath.setFill(javafx.scene.paint.Paint.valueOf("#000000"));
         return svgPath;
-    }
+    }*/
 
     private void listen_to_enter_click_on_select_surat_listview(HelloController helloController) {
         helloController.choose_the_surat.setOnKeyPressed(event -> {
@@ -2462,12 +2468,11 @@ public class HelloApplication extends Application {
 
     private void set_the_play_pause_button(HelloController helloController, String type) {
         if (type.equals("play")) {
-            helloController.play_sound.setGraphic(return_the_icon("play_arrow",play_pause_button_size,play_pause_button_size));
+            helloController.play_sound.setGraphic(return_the_icon("play_arrow",play_button_size,play_button_size));
             helloController.play_sound.getProperties().put("type", "play");
-
         } else if (type.equals("pause")) {
             Region region = new Region();
-            helloController.play_sound.setGraphic(return_region_for_svg(get_the_svg_path("pause_icon"), play_pause_button_size));
+            helloController.play_sound.setGraphic(return_the_icon("pause",pause_button_size,pause_button_size));
             helloController.play_sound.getProperties().put("type", "pause");
         }
     }
