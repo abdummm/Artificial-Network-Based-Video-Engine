@@ -173,7 +173,6 @@ public class HelloApplication extends Application {
         clear_temp_directory();
         set_the_icons(helloController);
         listen_to_enter_click_on_select_surat_listview(helloController);
-        listen_to_list_click_list_view(helloController);
         listen_to_upload_media_button(helloController);
         set_the_width_of_the_left_and_right(helloController);
         listen_to_top_and_bottom_pane_size_change_fourth_screen(helloController, scene);
@@ -1895,13 +1894,15 @@ public class HelloApplication extends Application {
     }
 
     private void set_the_icons(HelloController helloController) {
-        helloController.next_photo_chat_gpt_result.setShape(new Circle(next_prev_circle_size));
-        helloController.next_photo_chat_gpt_result.setGraphic(return_the_icon("arrow_forward_ios",next_prev_button_size,next_prev_button_size));
+        set_pref_min_max(helloController.next_photo_chat_gpt_result, next_prev_button_size * 2);
+        helloController.next_photo_chat_gpt_result.setShape(new Circle(next_prev_button_size * 2));
+        helloController.next_photo_chat_gpt_result.setGraphic(return_the_icon("arrow_forward_ios", next_prev_button_size, next_prev_button_size));
         helloController.next_photo_chat_gpt_result.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         helloController.next_photo_chat_gpt_result.setAlignment(Pos.CENTER);
 
-        helloController.previous_photo_chat_gpt_result.setShape(new Circle(next_prev_circle_size));
-        helloController.previous_photo_chat_gpt_result.setGraphic(return_the_icon("arrow_back_ios",next_prev_button_size,next_prev_button_size));
+        helloController.previous_photo_chat_gpt_result.setShape(new Circle(next_prev_button_size));
+        set_pref_min_max(helloController.previous_photo_chat_gpt_result, next_prev_button_size * 2);
+        helloController.previous_photo_chat_gpt_result.setGraphic(return_the_icon("arrow_back_ios", next_prev_button_size, next_prev_button_size));
         helloController.previous_photo_chat_gpt_result.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         helloController.previous_photo_chat_gpt_result.setAlignment(Pos.CENTER);
 
@@ -1920,6 +1921,15 @@ public class HelloApplication extends Application {
         set_the_play_pause_button(helloController, "play");
         helloController.play_sound.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         helloController.play_sound.setAlignment(Pos.CENTER);
+    }
+
+    private void set_pref_min_max(JFXButton button, int value) {
+        button.setPrefHeight(value);
+        button.setPrefWidth(value);
+        button.setMinWidth(value);
+        button.setMinHeight(value);
+        button.setMaxWidth(value);
+        button.setMaxHeight(value);
     }
 
     /*private String getSvgPathContent(String resourcePath) {
@@ -1984,28 +1994,6 @@ public class HelloApplication extends Application {
                 helloController.choose_surat_screen.setVisible(false);
                 helloController.choose_ayat_screen.setVisible(true);
                 set_up_second_screen(helloController, helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
-            }
-        });
-    }
-
-    private void listen_to_list_click_list_view(HelloController helloController) {
-        empty_tile_pane_context_menu = new ContextMenu();
-        MenuItem item1 = new MenuItem("Upload media");
-        item1.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                upload_media_has_been_clicked(helloController);
-            }
-        });
-        empty_tile_pane_context_menu.getItems().addAll(item1);
-        helloController.tile_pane_media_pool.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                    empty_tile_pane_context_menu.show(helloController.tile_pane_media_pool, mouseEvent.getScreenX(), mouseEvent.getScreenY());
-                } else {
-                    empty_tile_pane_context_menu.hide(); // Optional: hide it on other clicks
-                }
             }
         });
     }
@@ -2468,11 +2456,11 @@ public class HelloApplication extends Application {
 
     private void set_the_play_pause_button(HelloController helloController, String type) {
         if (type.equals("play")) {
-            helloController.play_sound.setGraphic(return_the_icon("play_arrow",play_button_size,play_button_size));
+            helloController.play_sound.setGraphic(return_the_icon("play_arrow", play_button_size, play_button_size));
             helloController.play_sound.getProperties().put("type", "play");
         } else if (type.equals("pause")) {
             Region region = new Region();
-            helloController.play_sound.setGraphic(return_the_icon("pause",pause_button_size,pause_button_size));
+            helloController.play_sound.setGraphic(return_the_icon("pause", pause_button_size, pause_button_size));
             helloController.play_sound.getProperties().put("type", "pause");
         }
     }
@@ -2781,13 +2769,28 @@ public class HelloApplication extends Application {
         double y_drag_area = time_line_pane_data.getMouse_drag_y_area();
         double base_time_line = time_line_pane_data.getTime_line_base_line();
         double end_time_line = time_line_pane_data.getTime_line_end_base_line();
+        empty_tile_pane_context_menu = new ContextMenu();
+        MenuItem item1 = new MenuItem("Upload media");
+        item1.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                upload_media_has_been_clicked(helloController);
+            }
+        });
+        empty_tile_pane_context_menu.getItems().addAll(item1);
         pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                if (mouseEvent.getY() <= y_drag_area && mouseEvent.getX() >= base_time_line && mouseEvent.getX() <= end_time_line) {
-                    time_line_clicked(helloController, pane, mouseEvent.getX());
-                    which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, mouseEvent.getX() - time_line_pane_data.getTime_line_base_line()));
-                    set_the_chatgpt_image_view(helloController, return_the_image_on_click(pane, mouseEvent.getX()), Type_of_Image.FULL_QUALITY);
+                if(mouseEvent.getButton() == MouseButton.PRIMARY){
+                    empty_tile_pane_context_menu.hide();
+                    if (mouseEvent.getY() <= y_drag_area && mouseEvent.getX() >= base_time_line && mouseEvent.getX() <= end_time_line) {
+                        time_line_clicked(helloController, pane, mouseEvent.getX());
+                        which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, mouseEvent.getX() - time_line_pane_data.getTime_line_base_line()));
+                        set_the_chatgpt_image_view(helloController, return_the_image_on_click(pane, mouseEvent.getX()), Type_of_Image.FULL_QUALITY);
+                    }
+                }
+                else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+                    empty_tile_pane_context_menu.show(helloController.tile_pane_media_pool, mouseEvent.getScreenX(), mouseEvent.getScreenY());
                 }
             }
         });
