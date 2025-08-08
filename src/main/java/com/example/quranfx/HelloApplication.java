@@ -2219,7 +2219,6 @@ public class HelloApplication extends Application {
                 } else if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
                     contextMenu.show(stackPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
                 }
-                mouseEvent.consume();
                 if (empty_tile_pane_context_menu != null) {
                     empty_tile_pane_context_menu.hide();
                 }
@@ -3284,6 +3283,7 @@ public class HelloApplication extends Application {
         rectangle.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                mouseEvent.consume();
                 if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
                     contextMenu.show(rectangle, mouseEvent.getScreenX(), mouseEvent.getScreenY());
                 }
@@ -3899,12 +3899,12 @@ public class HelloApplication extends Application {
         String imagePath = "/icons/" + name + ".png";
         InputStream inputStream = getClass().getResourceAsStream(imagePath);
         if (inputStream != null) {
-            Image image = new Image(inputStream); // PNG path in resources
+            Image image = new Image(inputStream);
             ImageView imageView = new ImageView(image);
             imageView.setFitWidth(width);
             imageView.setFitHeight(height);
             return imageView;
-        } else { // image not found
+        } else {
             WritableImage writableImage = new WritableImage(width, height);
             PixelWriter pixelWriter = writableImage.getPixelWriter();
             for (int y = 0; y < height; y++) {
