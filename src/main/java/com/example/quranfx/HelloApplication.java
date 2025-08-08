@@ -25,17 +25,14 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
-import javafx.scene.CacheHint;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.effect.BoxBlur;
-import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
@@ -57,12 +54,12 @@ import java.awt.image.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javafx.util.Duration;
 import net.coobird.thumbnailator.Thumbnails;
@@ -109,6 +106,8 @@ public class HelloApplication extends Application {
     private Shape_object_time_line last_seen_image_vid_is_playing = null;
     private Image blacked_out_image;
     private Image blacked_out_image_whitened;
+    private String quran_token;
+    private long token_expiry;
 
     private final static int image_view_in_tile_pane_width = 90;
     private final static int image_view_in_tile_pane_height = 160;
@@ -119,7 +118,12 @@ public class HelloApplication extends Application {
     private final static int min_rectnagle_width = 3;
     private final static int next_prev_button_size = 26;
     private final static int next_prev_circle_size = 50;
-    ;
+    private final static String clientId_pre_live = Quran_api_secrets.clientId_pre_live;
+    private final static String clientSecret_pre_live = Quran_api_secrets.clientSecret_pre_live;
+    private final static String clientId_live = Quran_api_secrets.clientId_live;
+    private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
+    private final static Live_mode live_or_pre_live_quran_api = Live_mode.PRE_LIVE;
+
     //private final static double circle_button_radius = 20D;
     private final static int how_long_does_it_take_for_tool_tip_to_show_up = 500;
 
@@ -141,7 +145,8 @@ public class HelloApplication extends Application {
         stage.requestFocus();
         main_stage = stage;
         HelloController helloController = fxmlLoader.getController();
-        call_chapters_api(helloController);
+        get_the_quran_api_token(helloController, true);
+        //call_chapters_api(helloController);
         listen_to_surat_choose(helloController);
         dalle_spinner_listener(helloController);
         ratio_spinner_listen(helloController);
@@ -161,7 +166,6 @@ public class HelloApplication extends Application {
         next_photo_click_listen(helloController);
         previous_photo_click_listen(helloController);
         listen_to_play(helloController);
-        //set_the_width_of_play_pause_button(helloController);
         listen_to_full_screen_button(helloController);
         listen_to_genereate_chat_gpt_checkbox(helloController);
         upload_sound_listen(helloController);
@@ -177,7 +181,6 @@ public class HelloApplication extends Application {
         set_the_width_of_the_left_and_right(helloController);
         listen_to_top_and_bottom_pane_size_change_fourth_screen(helloController, scene);
         listen_to_whole_screen_resize(scene, helloController);
-        //listen_to_tile_pane_resized(helloController);
         listen_to_tile_pane_size_change(helloController);
         listen_to_give_feed_back_button(helloController);
         listen_to_chatgpt_image_view_on_mouse_enetered_and_left(helloController);
@@ -200,7 +203,42 @@ public class HelloApplication extends Application {
 
 
     private void call_chapters_api(HelloController helloController) {
-        HttpUrl httpurl = new HttpUrl.Builder()
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+        MediaType mediaType = MediaType.parse("text/plain");
+        RequestBody body = RequestBody.create(mediaType, "");
+        Request request;
+        if (live_or_pre_live_quran_api.equals(Live_mode.LIVE)) {
+            request = new Request.Builder()
+                    .url("https://apis.quran.foundation/content/api/v4/chapters")
+                    .get()
+                    .addHeader("Accept", "application/json")
+                    .addHeader("x-auth-token", quran_token)
+                    .addHeader("x-client-id", clientId_live)
+                    .build();
+        } else {
+            request = new Request.Builder()
+                    .url("https://apis-prelive.quran.foundation/content/api/v4/chapters")
+                    .get()
+                    .addHeader("Accept", "application/json")
+                    .addHeader("x-auth-token", quran_token)
+                    .addHeader("x-client-id", clientId_pre_live)
+                    .build();
+        }
+        try {
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected HTTP code: " + response.code()
+                        + " - " + (response.body() != null ? response.body().string() : ""));
+            }
+            chapters_string = response.body().string();
+            add_surats_to_the_list_view(helloController, chapters_string);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        /*HttpUrl httpurl = new HttpUrl.Builder()
                 .scheme("https")
                 .host("api.quran.com")
                 .addPathSegment("api")
@@ -219,7 +257,7 @@ public class HelloApplication extends Application {
             add_surats_to_the_list_view(helloController, chapters_string);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
+        }*/
     }
 
     private void call_verses_api(HelloController helloController, int id, int page) {
@@ -2726,7 +2764,7 @@ public class HelloApplication extends Application {
         final double left_side_of_rectangle = (time_line_indicator_width - rectangle_width) / 2;
         final double full_pane_height = pane.getHeight();
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
-        javafx.scene.shape.Polygon polygon = new Polygon();
+        Polygon polygon = new Polygon();
         polygon.setSmooth(true);
         polygon.getPoints().addAll(
                 0D, 0D,     // Top-left
@@ -2753,7 +2791,7 @@ public class HelloApplication extends Application {
         long time_between_every_line = time_line_pane_data.getTime_between_every_line();
         double adjustor = pixels_in_between_each_line / time_between_every_line;
         double time_line_base_line = time_line_pane_data.getTime_line_base_line();
-        javafx.scene.shape.Polygon polygon = time_line_pane_data.getPolygon();
+        Polygon polygon = time_line_pane_data.getPolygon();
         double half_polygon = time_line_pane_data.getPolygon_width() / 2;
         if (polygon == null) {
             show_alert("Time line not rendered correctly. Please restart app.");
@@ -2780,15 +2818,14 @@ public class HelloApplication extends Application {
         pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                if(mouseEvent.getButton() == MouseButton.PRIMARY){
+                if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                     empty_tile_pane_context_menu.hide();
                     if (mouseEvent.getY() <= y_drag_area && mouseEvent.getX() >= base_time_line && mouseEvent.getX() <= end_time_line) {
                         time_line_clicked(helloController, pane, mouseEvent.getX());
                         which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, mouseEvent.getX() - time_line_pane_data.getTime_line_base_line()));
                         set_the_chatgpt_image_view(helloController, return_the_image_on_click(pane, mouseEvent.getX()), Type_of_Image.FULL_QUALITY);
                     }
-                }
-                else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+                } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
                     empty_tile_pane_context_menu.show(helloController.tile_pane_media_pool, mouseEvent.getScreenX(), mouseEvent.getScreenY());
                 }
             }
@@ -2797,7 +2834,7 @@ public class HelloApplication extends Application {
 
     private void time_line_clicked(HelloController helloController, Pane pane, double x_position) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
-        javafx.scene.shape.Polygon polygon = time_line_pane_data.getPolygon();
+        Polygon polygon = time_line_pane_data.getPolygon();
         double base_time_line = time_line_pane_data.getTime_line_base_line();
         double half_polygon = time_line_pane_data.getPolygon_width() / 2;
         double end_time_line = time_line_pane_data.getTime_line_end_base_line();
@@ -3711,11 +3748,11 @@ public class HelloApplication extends Application {
                         @Override
                         public void run() {
                             if (media_pool.isDid_the_image_get_down_scaled()) {
-                                java.nio.file.Path path = Paths.get("temp/images/scaled", image_id.concat(".raw"));
+                                Path path = Paths.get("temp/images/scaled", image_id.concat(".raw"));
                                 Image image = readRawImage(path.toString(), 1080, 1920);
                                 helloController.chatgpt_image_view.setImage(image);
                             } else {
-                                java.nio.file.Path path = Paths.get("temp/images/base", image_id.concat(".raw"));
+                                Path path = Paths.get("temp/images/base", image_id.concat(".raw"));
                                 Image image = readRawImage(path.toString(), media_pool.getWidth(), media_pool.getHeight());
                                 helloController.chatgpt_image_view.setImage(image);
                             }
@@ -3916,6 +3953,46 @@ public class HelloApplication extends Application {
             imageView.setFitWidth(width);
             imageView.setFitHeight(height);
             return imageView;
+        }
+    }
+
+    private void get_the_quran_api_token(HelloController helloController, boolean call_apis) {
+        String url = "";
+        String credentials;
+        if (live_or_pre_live_quran_api.equals(Live_mode.PRE_LIVE)) {
+            url = "https://prelive-oauth2.quran.foundation";
+            credentials = clientId_pre_live + ":" + clientSecret_pre_live;
+        } else {
+            url = "https://oauth2.quran.foundation";
+            credentials = clientId_live + ":" + clientSecret_live;
+        }
+        String basicAuth = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = new FormBody.Builder()
+                .add("grant_type", "client_credentials")
+                .add("scope", "content")
+                .build();
+        Request request = new Request.Builder()
+                .url(url + "/oauth2/token")
+                .header("Authorization", basicAuth)
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .post(body)
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected code " + response);
+            }
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readTree(response.body().string());
+            quran_token = jsonNode.get("access_token").asText();
+            token_expiry = TimeUnit.SECONDS.toMillis(jsonNode.get("expires_in").asInt()) + System.currentTimeMillis();
+            System.out.println(quran_token);
+            if (call_apis) {
+                call_chapters_api(helloController);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
