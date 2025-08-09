@@ -25,6 +25,7 @@ module com.example.quranfx {
     requires atlantafx.base;
     requires MaterialFX;
     requires jdk.compiler;
+    requires annotations;
 
     opens com.example.quranfx to javafx.fxml;
     exports com.example.quranfx;

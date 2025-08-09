@@ -69,6 +69,7 @@ import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.io.FileUtils;
 import org.imgscalr.Scalr;
+import org.jetbrains.annotations.NotNull;
 import org.jsoup.*;
 
 import javax.imageio.ImageIO;
@@ -122,7 +123,7 @@ public class HelloApplication extends Application {
     private final static String clientSecret_pre_live = Quran_api_secrets.clientSecret_pre_live;
     private final static String clientId_live = Quran_api_secrets.clientId_live;
     private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
-    private final static Live_mode live_or_pre_live_quran_api = Live_mode.PRE_LIVE;
+    private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
 
     //private final static double circle_button_radius = 20D;
     private final static int how_long_does_it_take_for_tool_tip_to_show_up = 500;
@@ -145,8 +146,8 @@ public class HelloApplication extends Application {
         stage.requestFocus();
         main_stage = stage;
         HelloController helloController = fxmlLoader.getController();
-        get_the_quran_api_token(helloController, true);
         //call_chapters_api(helloController);
+        get_the_quran_api_token(helloController,true);
         listen_to_surat_choose(helloController);
         dalle_spinner_listener(helloController);
         ratio_spinner_listen(helloController);
@@ -3978,21 +3979,31 @@ public class HelloApplication extends Application {
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .post(body)
                 .build();
-        try {
-            Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected code " + response);
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        throw new RuntimeException(e);
+                    }
+                });
             }
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode jsonNode = mapper.readTree(response.body().string());
-            quran_token = jsonNode.get("access_token").asText();
-            token_expiry = TimeUnit.SECONDS.toMillis(jsonNode.get("expires_in").asInt()) + System.currentTimeMillis();
-            System.out.println(quran_token);
-            if (call_apis) {
-                call_chapters_api(helloController);
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Unexpected code " + response);
+                }
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode jsonNode = mapper.readTree(response.body().string());
+                quran_token = jsonNode.get("access_token").asText();
+                token_expiry = TimeUnit.SECONDS.toMillis(jsonNode.get("expires_in").asInt()) + System.currentTimeMillis();
+                System.out.println(quran_token);
+                if (call_apis) {
+                    call_chapters_api(helloController);
+                }
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
 }
