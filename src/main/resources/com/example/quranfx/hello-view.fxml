@@ -36,10 +36,18 @@
 <?import atlantafx.base.controls.RingProgressIndicator?>
 <?import io.github.palexdev.materialfx.controls.MFXProgressSpinner?>
 <?import javafx.scene.shape.Circle?>
+<?import com.jfoenix.controls.JFXProgressBar?>
 <StackPane prefHeight="365.0" prefWidth="366.0" xmlns="http://javafx.com/javafx/23.0.1"
            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.quranfx.HelloController"
            style="-fx-background-color: #FFFFFF;" fx:id="parent_stack_pane">
-    <BorderPane fx:id="choose_surat_screen">
+    <StackPane fx:id="show_logo_loading_screen" visible="true">
+        <ImageView fx:id="logo_at_the_start_of_the_app" fitWidth="128" fitHeight="128"/>
+        <MFXProgressSpinner fx:id="progress_indicator_first_loading_screen" prefWidth="30" prefHeight="30" stylesheets="@mfx_spinner_style_loading_start.css">
+        </MFXProgressSpinner>
+
+
+    </StackPane>
+    <BorderPane fx:id="choose_surat_screen" visible="false">
         <top>
             <VBox alignment="CENTER">
                 <JFXButton fx:id="fake_invisible_button_for_margin" visible="false" text="Give Feedback"

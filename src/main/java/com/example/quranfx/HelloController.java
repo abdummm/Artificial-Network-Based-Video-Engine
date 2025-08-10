@@ -175,4 +175,13 @@ public class HelloController {
 
     @FXML
     public ImageView blurry_chatgpt_image_view;
+
+    @FXML
+    public ImageView logo_at_the_start_of_the_app;
+
+    @FXML
+    public StackPane show_logo_loading_screen;
+
+    @FXML
+    public MFXProgressSpinner progress_indicator_first_loading_screen;
 }

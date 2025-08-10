@@ -109,6 +109,7 @@ public class HelloApplication extends Application {
     private Image blacked_out_image_whitened;
     private String quran_token;
     private long token_expiry;
+    private ChangeListener<Number> heightListener_to_scene_for_logo_at_start;
 
     private final static int image_view_in_tile_pane_width = 90;
     private final static int image_view_in_tile_pane_height = 160;
@@ -123,7 +124,10 @@ public class HelloApplication extends Application {
     private final static String clientSecret_pre_live = Quran_api_secrets.clientSecret_pre_live;
     private final static String clientId_live = Quran_api_secrets.clientId_live;
     private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
-    private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
+    private final static Live_mode live_or_pre_live_quran_api = Live_mode.PRE_LIVE;
+    private final static String app_name = "Sabrly";
+    private final static double screen_width_multiplier = 0.55D;
+    private final static double screen_height_multiplier = 0.55D;
 
     //private final static double circle_button_radius = 20D;
     private final static int how_long_does_it_take_for_tool_tip_to_show_up = 500;
@@ -137,17 +141,25 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), Screen.getPrimary().getBounds().getWidth() * 0.55, Screen.getPrimary().getBounds().getHeight() * 0.55);
+        Scene scene = new Scene(fxmlLoader.load(), Screen.getPrimary().getBounds().getWidth() * screen_width_multiplier, Screen.getPrimary().getBounds().getHeight() * screen_height_multiplier);
         //scene.getStylesheets().add(PrimerLight.class.getResource("primer-light.css").toExternalForm());
-        stage.setTitle("السلام عليكم ورحمة الله وبركاته");
+        //stage.setTitle("السلام عليكم ورحمة الله وبركاته");
+        stage.setTitle("Sabrly");
         stage.setScene(scene);
         stage.show();
         stage.toFront();
         stage.requestFocus();
         main_stage = stage;
         HelloController helloController = fxmlLoader.getController();
-        //call_chapters_api(helloController);
-        get_the_quran_api_token(helloController,true);
+        set_the_logo_at_the_start(helloController);
+        center_the_progress_indicator(helloController,scene);
+        listen_to_height_change_property(helloController,scene);
+        get_the_quran_api_token(helloController,true,scene);
+    }
+
+
+
+    private void everything_to_be_called_at_the_start(HelloController helloController,Scene scene){
         listen_to_surat_choose(helloController);
         dalle_spinner_listener(helloController);
         ratio_spinner_listen(helloController);
@@ -196,6 +208,7 @@ public class HelloApplication extends Application {
         add_tool_tip_to_previous_verse(helloController);
         write_the_black_image_and_the_whitened_black_image();
         black_out_the_image_view_at_the_start(helloController);
+        remove_the_start_listener(helloController,scene);
     }
 
     public static void main(String[] args) {
@@ -203,7 +216,7 @@ public class HelloApplication extends Application {
     }
 
 
-    private void call_chapters_api(HelloController helloController) {
+    private void call_chapters_api(HelloController helloController,Scene scene) {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
         MediaType mediaType = MediaType.parse("text/plain");
@@ -234,6 +247,13 @@ public class HelloApplication extends Application {
             }
             chapters_string = response.body().string();
             add_surats_to_the_list_view(helloController, chapters_string);
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    everything_to_be_called_at_the_start(helloController,scene);
+                    make_the_first_real_screen_visible(helloController);
+                }
+            });
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -2416,7 +2436,7 @@ public class HelloApplication extends Application {
         if (scene.getHeight() > 0) {
             screen_height = scene.getHeight();
         } else {
-            screen_height = Screen.getPrimary().getBounds().getHeight() / 2;
+            screen_height = Screen.getPrimary().getBounds().getHeight()* screen_height_multiplier;
         }
         if (helloController.top_pane_fourth_screen.getHeight() > 0) {
             max_hight_of_top_pane_fourth_screen = Math.max(helloController.top_pane_fourth_screen.getHeight(), max_hight_of_top_pane_fourth_screen);
@@ -3957,17 +3977,16 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void get_the_quran_api_token(HelloController helloController, boolean call_apis) {
+    private void get_the_quran_api_token(HelloController helloController, boolean call_apis,Scene scene) {
         String url = "";
-        String credentials;
+        String authHeader;
         if (live_or_pre_live_quran_api.equals(Live_mode.PRE_LIVE)) {
             url = "https://prelive-oauth2.quran.foundation";
-            credentials = clientId_pre_live + ":" + clientSecret_pre_live;
+            authHeader = Credentials.basic(clientId_pre_live, clientSecret_pre_live, StandardCharsets.UTF_8);
         } else {
             url = "https://oauth2.quran.foundation";
-            credentials = clientId_live + ":" + clientSecret_live;
+            authHeader = Credentials.basic(clientId_live, clientSecret_live, StandardCharsets.UTF_8);
         }
-        String basicAuth = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
         OkHttpClient client = new OkHttpClient();
         RequestBody body = new FormBody.Builder()
                 .add("grant_type", "client_credentials")
@@ -3975,35 +3994,92 @@ public class HelloApplication extends Application {
                 .build();
         Request request = new Request.Builder()
                 .url(url + "/oauth2/token")
-                .header("Authorization", basicAuth)
+                .header("Authorization", authHeader)
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .post(body)
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        throw new RuntimeException(e);
-                    }
-                });
+                e.printStackTrace();
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    throw new IOException("Unexpected code " + response);
-                }
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode jsonNode = mapper.readTree(response.body().string());
-                quran_token = jsonNode.get("access_token").asText();
-                token_expiry = TimeUnit.SECONDS.toMillis(jsonNode.get("expires_in").asInt()) + System.currentTimeMillis();
-                System.out.println(quran_token);
-                if (call_apis) {
-                    call_chapters_api(helloController);
+                try {
+                    if (!response.isSuccessful()) {
+                        throw new IOException("Unexpected HTTP code: " + response.code()
+                                + " - " + (response.body() != null ? response.body().string() : ""));
+                    }
+                    ObjectMapper mapper = new ObjectMapper();
+                    JsonNode jsonNode = mapper.readTree(response.body().string());
+                    quran_token = jsonNode.get("access_token").asText();
+                    token_expiry = TimeUnit.SECONDS.toMillis(jsonNode.get("expires_in").asInt()) + System.currentTimeMillis();
+                    if (call_apis) {
+                        call_chapters_api(helloController,scene);
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
             }
         });
+        /*try {
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected HTTP code: " + response.code()
+                        + " - " + (response.body() != null ? response.body().string() : ""));
+            }
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readTree(response.body().string());
+            quran_token = jsonNode.get("access_token").asText();
+            token_expiry = TimeUnit.SECONDS.toMillis(jsonNode.get("expires_in").asInt()) + System.currentTimeMillis();
+            if (call_apis) {
+                call_chapters_api(helloController);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }*/
+    }
+
+    private void set_the_logo_at_the_start(HelloController helloController){
+        File file = new File("src/main/resources/Sabrly mini.png");
+        Image image = new Image(file.toURI().toString());
+        helloController.logo_at_the_start_of_the_app.setImage(image);
+    }
+
+    private void make_the_first_real_screen_visible(HelloController helloController){
+        helloController.show_logo_loading_screen.setVisible(false);
+        helloController.choose_surat_screen.setVisible(true);
+    }
+
+    private void center_the_progress_indicator(HelloController helloController,Scene scene){
+        if(helloController.show_logo_loading_screen.isVisible()){
+            double scene_height;
+            if(scene.getHeight() == 0){
+                scene_height = Screen.getPrimary().getBounds().getHeight() * screen_height_multiplier;
+            } else {
+                scene_height = scene.getHeight();
+            }
+            double logo_height = helloController.logo_at_the_start_of_the_app.getFitHeight();
+            double progress_spinner_height = helloController.progress_indicator_first_loading_screen.getPrefHeight();
+            double distance_mid_to_bottom = scene_height / 2D;
+            StackPane.setMargin(helloController.progress_indicator_first_loading_screen, new Insets(distance_mid_to_bottom - (progress_spinner_height/2) + (logo_height/2), 0, 0, 0));
+        }
+    }
+
+    private void listen_to_height_change_property(HelloController helloController,Scene scene){
+        heightListener_to_scene_for_logo_at_start = new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
+                center_the_progress_indicator(helloController, scene);
+            }
+        };
+        scene.heightProperty().addListener(heightListener_to_scene_for_logo_at_start);
+    }
+
+    private void remove_the_start_listener(HelloController helloController,Scene scene){
+        if(heightListener_to_scene_for_logo_at_start!=null){
+            scene.heightProperty().removeListener(heightListener_to_scene_for_logo_at_start);
+        }
     }
 }
