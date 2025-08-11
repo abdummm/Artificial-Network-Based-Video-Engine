@@ -5,13 +5,11 @@ import java.util.ArrayList;
 public class Verse_class_final {
     private ArrayList<Language_text> arrayList_of_all_of_the_languages;
     private Integer verse_number;
-    private Ayat_settings ayatSettings;
     private long duration;
     private long start_millisecond;
 
     public Verse_class_final(long duration) {
         this.duration = duration;
-        this.ayatSettings = new Ayat_settings();
     }
 
     public ArrayList<Language_text> getArrayList_of_all_of_the_languages() {
@@ -28,14 +26,6 @@ public class Verse_class_final {
 
     public void setVerse_number(Integer verse_number) {
         this.verse_number = verse_number;
-    }
-
-    public Ayat_settings getAyatSettings() {
-        return ayatSettings;
-    }
-
-    public void setAyatSettings(Ayat_settings ayatSettings) {
-        this.ayatSettings = ayatSettings;
     }
 
     public long getDuration() {

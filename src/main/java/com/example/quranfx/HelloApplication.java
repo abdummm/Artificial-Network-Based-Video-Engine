@@ -92,7 +92,7 @@ public class HelloApplication extends Application {
     private MediaPlayer mediaPlayer;
     private String sound_path = "";
     private Stage main_stage;
-    
+
     private int number_of_audio_channels = 2;
     private boolean did_this_play_already = false;
     private int audio_frequncy_of_the_sound = 44100;
@@ -107,7 +107,7 @@ public class HelloApplication extends Application {
     private long token_expiry;
     private ChangeListener<Number> heightListener_to_scene_for_logo_at_start;
     private HashMap<String, ArrayList<Integer>> hash_map_with_the_translations = new HashMap<>();
-    private HashMap<Integer,String> hashMap_id_to_language_name_text = new HashMap<>();
+    private HashMap<Integer, String> hashMap_id_to_language_name_text = new HashMap<>();
     private Sound_mode sound_mode;
     private long[] start_millisecond_of_each_verse;
 
@@ -124,7 +124,7 @@ public class HelloApplication extends Application {
     private final static String clientSecret_pre_live = Quran_api_secrets.clientSecret_pre_live;
     private final static String clientId_live = Quran_api_secrets.clientId_live;
     private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
-    private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
+    private final static Live_mode live_or_pre_live_quran_api = Live_mode.PRE_LIVE;
     private final static String app_name = "Sabrly";
     private final static double screen_width_multiplier = 0.55D;
     private final static double screen_height_multiplier = 0.55D;
@@ -152,14 +152,13 @@ public class HelloApplication extends Application {
         main_stage = stage;
         HelloController helloController = fxmlLoader.getController();
         set_the_logo_at_the_start(helloController);
-        center_the_progress_indicator(helloController,scene);
-        listen_to_height_change_property(helloController,scene);
-        get_the_quran_api_token(helloController,true,scene);
+        center_the_progress_indicator(helloController, scene);
+        listen_to_height_change_property(helloController, scene);
+        get_the_quran_api_token(helloController, true, scene);
     }
 
 
-
-    private void everything_to_be_called_at_the_start(HelloController helloController,Scene scene){
+    private void everything_to_be_called_at_the_start(HelloController helloController, Scene scene) {
         call_translations_api();
         listen_to_surat_choose(helloController);
         dalle_spinner_listener(helloController);
@@ -209,7 +208,7 @@ public class HelloApplication extends Application {
         add_tool_tip_to_previous_verse(helloController);
         write_the_black_image_and_the_whitened_black_image();
         black_out_the_image_view_at_the_start(helloController);
-        remove_the_start_listener(helloController,scene);
+        remove_the_start_listener(helloController, scene);
     }
 
     public static void main(String[] args) {
@@ -217,11 +216,10 @@ public class HelloApplication extends Application {
     }
 
 
-    private void call_chapters_api(HelloController helloController,Scene scene) {
+    private void call_chapters_api(HelloController helloController, Scene scene) {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
         MediaType mediaType = MediaType.parse("text/plain");
-        RequestBody body = RequestBody.create(mediaType, "");
         Request request;
         if (live_or_pre_live_quran_api.equals(Live_mode.LIVE)) {
             request = new Request.Builder()
@@ -251,7 +249,7 @@ public class HelloApplication extends Application {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    everything_to_be_called_at_the_start(helloController,scene);
+                    everything_to_be_called_at_the_start(helloController, scene);
                     make_the_first_real_screen_visible(helloController);
                 }
             });
@@ -282,17 +280,27 @@ public class HelloApplication extends Application {
         }*/
     }
 
-    private void call_verses_api(HelloController helloController, int id, int page,int start_ayat) {
+    private void call_verses_api(HelloController helloController, int id, int page) {
+        String host;
+        String client_id;
+        if (live_or_pre_live_quran_api.equals(Live_mode.LIVE)) {
+            host = "apis.quran.foundation";
+            client_id = clientId_live;
+        } else {
+            host = "apis-prelive.quran.foundation";
+            client_id = clientId_pre_live;
+        }
         HttpUrl httpurl = new HttpUrl.Builder()
                 .scheme("https")
-                .host("api.quran.com")
+                .host(host)
+                .addPathSegment("content")
                 .addPathSegment("api")
                 .addPathSegment("v4")
                 .addPathSegment("verses")
                 .addPathSegment("by_chapter")
                 .addPathSegment(String.valueOf(id + 1))
                 .addQueryParameter("language", "en")
-                .addQueryParameter("translations", "85")
+                .addQueryParameter("translations", return_the_translation_string())
                 .addQueryParameter("translation_fields", "text")
                 .addQueryParameter("per_page", "50")
                 .addQueryParameter("page", String.valueOf(page))
@@ -301,8 +309,10 @@ public class HelloApplication extends Application {
         OkHttpClient client = new OkHttpClient().newBuilder().build();
         Request request = new Request.Builder()
                 .url(httpurl)
-                .method("GET", null)
+                .get()
                 .addHeader("Accept", "application/json")
+                .addHeader("x-auth-token", quran_token)
+                .addHeader("x-client-id", client_id)
                 .build();
         try {
             Response response = client.newCall(request).execute();
@@ -457,12 +467,12 @@ public class HelloApplication extends Application {
             get_the_sound_and_concat_them_into_one(helloController);
         } else {
             sound_mode = Sound_mode.UPLOADED;
-            set_up_sound_for_chosen_verses(start_ayat,end_ayat);
+            set_up_sound_for_chosen_verses(start_ayat, end_ayat);
         }
         int start_ayat_section = (int) Math.ceil(start_ayat / 50D);
         int end_ayat_section = (int) Math.ceil(end_ayat / 50D);
         for (int i = start_ayat_section; i <= end_ayat_section; i++) {
-            call_verses_api(helloController, id, i,start_ayat);
+            call_verses_api(helloController, id, i);
         }
         set_up_the_fourth_screen(helloController);
     }
@@ -481,13 +491,13 @@ public class HelloApplication extends Application {
             }
             ArrayList<Language_text> arrayList_with_all_of_the_languages = new ArrayList<>();
             String arabic_ayat = String.valueOf(arrayNode.get(i).get("text_uthmani"));
-            arrayList_with_all_of_the_languages.add(new Language_text("Arabic",arabic_ayat));
+            arrayList_with_all_of_the_languages.add(new Language_text("Arabic", arabic_ayat));
             ArrayNode translations_array_node = (ArrayNode) arrayNode.get(i).get("translations");
             for (JsonNode translation : translations_array_node) {
                 int id = translation.get("resource_id").asInt();
                 String language_name = hashMap_id_to_language_name_text.get(id);
                 String verse_text = translation.get("text").asText();
-                Language_text language_text = new Language_text(language_name,verse_text);
+                Language_text language_text = new Language_text(language_name, verse_text);
                 arrayList_with_all_of_the_languages.add(language_text);
             }
             ayats_processed[ayat_number - start_ayat].setArrayList_of_all_of_the_languages(arrayList_with_all_of_the_languages);
@@ -577,7 +587,7 @@ public class HelloApplication extends Application {
         selected_verse = 0;
         sound_path = "";
         array_list_with_times.clear();
-        Arrays.fill(ayats_processed,null);
+        Arrays.fill(ayats_processed, null);
 
         clear_temp_directory();
     }
@@ -1365,7 +1375,7 @@ public class HelloApplication extends Application {
         long start_millisecond = 0;
         if (number_of_ayats > 1) {
             for (int i = 1; i < number_of_ayats; i++) {
-                start_millisecond += ayats_processed[i-1].getDuration();
+                start_millisecond += ayats_processed[i - 1].getDuration();
                 ayats_processed[i].setStart_millisecond(start_millisecond);
             }
         }
@@ -2376,7 +2386,7 @@ public class HelloApplication extends Application {
         if (scene.getHeight() > 0) {
             screen_height = scene.getHeight();
         } else {
-            screen_height = Screen.getPrimary().getBounds().getHeight()* screen_height_multiplier;
+            screen_height = Screen.getPrimary().getBounds().getHeight() * screen_height_multiplier;
         }
         if (helloController.top_pane_fourth_screen.getHeight() > 0) {
             max_hight_of_top_pane_fourth_screen = Math.max(helloController.top_pane_fourth_screen.getHeight(), max_hight_of_top_pane_fourth_screen);
@@ -3917,7 +3927,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void get_the_quran_api_token(HelloController helloController, boolean call_apis,Scene scene) {
+    private void get_the_quran_api_token(HelloController helloController, boolean call_apis, Scene scene) {
         String url = "";
         String authHeader;
         if (live_or_pre_live_quran_api.equals(Live_mode.PRE_LIVE)) {
@@ -3927,7 +3937,11 @@ public class HelloApplication extends Application {
             url = "https://oauth2.quran.foundation";
             authHeader = Credentials.basic(clientId_live, clientSecret_live, StandardCharsets.UTF_8);
         }
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS) // Time to establish connection
+                .readTimeout(60, TimeUnit.SECONDS)    // Time to wait for data
+                .writeTimeout(60, TimeUnit.SECONDS)   // Time allowed to send data
+                .build();
         RequestBody body = new FormBody.Builder()
                 .add("grant_type", "client_credentials")
                 .add("scope", "content")
@@ -3954,48 +3968,33 @@ public class HelloApplication extends Application {
                     ObjectMapper mapper = new ObjectMapper();
                     JsonNode jsonNode = mapper.readTree(response.body().string());
                     quran_token = jsonNode.get("access_token").asText();
+                    System.out.println(quran_token);
                     token_expiry = TimeUnit.SECONDS.toMillis(jsonNode.get("expires_in").asInt()) + System.currentTimeMillis();
                     if (call_apis) {
-                        call_chapters_api(helloController,scene);
+                        call_chapters_api(helloController, scene);
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
         });
-        /*try {
-            Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected HTTP code: " + response.code()
-                        + " - " + (response.body() != null ? response.body().string() : ""));
-            }
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode jsonNode = mapper.readTree(response.body().string());
-            quran_token = jsonNode.get("access_token").asText();
-            token_expiry = TimeUnit.SECONDS.toMillis(jsonNode.get("expires_in").asInt()) + System.currentTimeMillis();
-            if (call_apis) {
-                call_chapters_api(helloController);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }*/
     }
 
-    private void set_the_logo_at_the_start(HelloController helloController){
+    private void set_the_logo_at_the_start(HelloController helloController) {
         File file = new File("src/main/resources/Sabrly mini.png");
         Image image = new Image(file.toURI().toString());
         helloController.logo_at_the_start_of_the_app.setImage(image);
     }
 
-    private void make_the_first_real_screen_visible(HelloController helloController){
+    private void make_the_first_real_screen_visible(HelloController helloController) {
         helloController.show_logo_loading_screen.setVisible(false);
         helloController.choose_surat_screen.setVisible(true);
     }
 
-    private void center_the_progress_indicator(HelloController helloController,Scene scene){
-        if(helloController.show_logo_loading_screen.isVisible()){
+    private void center_the_progress_indicator(HelloController helloController, Scene scene) {
+        if (helloController.show_logo_loading_screen.isVisible()) {
             double scene_height;
-            if(scene.getHeight() == 0){
+            if (scene.getHeight() == 0) {
                 scene_height = Screen.getPrimary().getBounds().getHeight() * screen_height_multiplier;
             } else {
                 scene_height = scene.getHeight();
@@ -4003,11 +4002,11 @@ public class HelloApplication extends Application {
             double logo_height = helloController.logo_at_the_start_of_the_app.getFitHeight();
             double progress_spinner_height = helloController.progress_indicator_first_loading_screen.getPrefHeight();
             double distance_mid_to_bottom = scene_height / 2D;
-            StackPane.setMargin(helloController.progress_indicator_first_loading_screen, new Insets(distance_mid_to_bottom - (progress_spinner_height/2) + (logo_height/2), 0, 0, 0));
+            StackPane.setMargin(helloController.progress_indicator_first_loading_screen, new Insets(distance_mid_to_bottom - (progress_spinner_height / 2) + (logo_height / 2), 0, 0, 0));
         }
     }
 
-    private void listen_to_height_change_property(HelloController helloController,Scene scene){
+    private void listen_to_height_change_property(HelloController helloController, Scene scene) {
         heightListener_to_scene_for_logo_at_start = new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
@@ -4017,8 +4016,8 @@ public class HelloApplication extends Application {
         scene.heightProperty().addListener(heightListener_to_scene_for_logo_at_start);
     }
 
-    private void remove_the_start_listener(HelloController helloController,Scene scene){
-        if(heightListener_to_scene_for_logo_at_start!=null){
+    private void remove_the_start_listener(HelloController helloController, Scene scene) {
+        if (heightListener_to_scene_for_logo_at_start != null) {
             scene.heightProperty().removeListener(heightListener_to_scene_for_logo_at_start);
         }
     }
@@ -4060,7 +4059,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void process_the_translations(String response){
+    private void process_the_translations(String response) {
         try {
             hash_map_with_the_translations = new HashMap<>();
             ObjectMapper mapper = new ObjectMapper();
@@ -4069,25 +4068,113 @@ public class HelloApplication extends Application {
             for (JsonNode item : translations) {
                 String language_name = item.get("language_name").asText();
                 int id = item.get("id").asInt();
-                ArrayList<Integer> arrayList_with_ids = hash_map_with_the_translations.getOrDefault(language_name,new ArrayList<>());
+                ArrayList<Integer> arrayList_with_ids = hash_map_with_the_translations.getOrDefault(language_name, new ArrayList<>());
                 arrayList_with_ids.add(id);
-                hash_map_with_the_translations.put(language_name,arrayList_with_ids);
-                hashMap_id_to_language_name_text.put(id,language_name);
+                hash_map_with_the_translations.put(language_name.toLowerCase(), arrayList_with_ids);
+                hashMap_id_to_language_name_text.put(id, language_name);
             }
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void set_up_sound_for_chosen_verses(int start_ayat,int end_ayat){
+    private void set_up_sound_for_chosen_verses(int start_ayat, int end_ayat) {
         long total_duration = getDurationWithFFmpeg(new File(sound_path));
         int total_ayats = end_ayat - start_ayat + 1;
         ayats_processed = new Verse_class_final[total_ayats];
-        long duration_per_verse = total_duration/total_ayats;
-        for(int i = 0;i<total_ayats;i++){
+        long duration_per_verse = total_duration / total_ayats;
+        for (int i = 0; i < total_ayats; i++) {
             Verse_class_final verseClassFinal = new Verse_class_final(duration_per_verse);
-            verseClassFinal.setStart_millisecond(duration_per_verse*i);
+            verseClassFinal.setStart_millisecond(duration_per_verse * i);
             ayats_processed[i] = verseClassFinal;
         }
+    }
+
+    private String return_the_translation_string() {
+        StringBuilder string_with_all_of_the_translations_to_be_returned = new StringBuilder();
+        for (String key : hash_map_with_the_translations.keySet()) {
+            ArrayList<Integer> array_list_with_ids = hash_map_with_the_translations.get(key);
+            if (array_list_with_ids.size() == 1) {
+                string_with_all_of_the_translations_to_be_returned.append(hash_map_with_the_translations.get(key).get(0));
+                string_with_all_of_the_translations_to_be_returned.append(",");
+            } else {
+                int id = -1;
+                if (key.equals("albanian")) {
+                    id = 89;
+                } else if (key.equals("azeri")) {
+                    id = 75;
+                } else if (key.equals("bambara")) {
+                    id = 796;
+                } else if (key.equals("bengali")) {
+                    id = 213;
+                } else if (key.equals("bosnian")) {
+                    id = 126;
+                } else if (key.equals("chinese")) {
+                    id = 109;
+                } else if (key.equals("divehi")) {
+                    id = 840;
+                } else if (key.equals("english")) {
+                    id = 85;
+                } else if (key.equals("french")) {
+                    id = 136;
+                } else if (key.equals("german")) {
+                    id = 27;
+                } else if (key.equals("hausa")) {
+                    id = 32;
+                } else if (key.equals("indonesian")) {
+                    id = 33;
+                } else if (key.equals("italian")) {
+                    id = 153;
+                } else if (key.equals("japanese")) {
+                    id = 218;
+                } else if (key.equals("kazakh")) {
+                    id = 222;
+                } else if (key.equals("korean")) {
+                    id = 219;
+                } else if (key.equals("kurdish")) {
+                    id = 81;
+                } else if (key.equals("malayalam")) {
+                    id = 37;
+                } else if (key.equals("persian")) {
+                    id = 29;
+                } else if (key.equals("portuguese")) {
+                    id = 43;
+                } else if (key.equals("romanian")) {
+                    id = 782;
+                } else if (key.equals("russian")) {
+                    id = 45;
+                } else if (key.equals("somali")) {
+                    id = 786;
+                } else if (key.equals("spanish")) {
+                    id = 83;
+                } else if (key.equals("tajik")) {
+                    id = 74;
+                } else if (key.equals("tamil")) {
+                    id = 133;
+                } else if (key.equals("thai")) {
+                    id = 51;
+                } else if (key.equals("turkish")) {
+                    id = 77;
+                } else if (key.equals("urdu")) {
+                    id = 234;
+                } else if (key.equals("uzbek")) {
+                    id = 55;
+                } else if (key.equals("vietnamese")) {
+                    id = 221;
+                }
+                if (id == -1 || !array_list_with_ids.contains(id)) {
+                    System.err.println("There has been an error getting the correct translation. A substitute translation has been chosen");
+                    int min_id = Collections.min(hash_map_with_the_translations.get(key));
+                    string_with_all_of_the_translations_to_be_returned.append(min_id);
+                    string_with_all_of_the_translations_to_be_returned.append(",");
+                } else {
+                    string_with_all_of_the_translations_to_be_returned.append(id).append(",");
+                }
+            }
+        }
+        if (!string_with_all_of_the_translations_to_be_returned.isEmpty()) {
+            string_with_all_of_the_translations_to_be_returned.deleteCharAt(string_with_all_of_the_translations_to_be_returned.length() - 1);
+        }
+        return string_with_all_of_the_translations_to_be_returned.toString();
     }
 }
