@@ -372,7 +372,7 @@
                     <!-- RIGHT -->
                     <HBox HBox.hgrow="ALWAYS">
                         <StackPane fx:id="right_stack_pane_in_grid_pane">
-
+                            <Label text="Text" textFill="black"/>
                         </StackPane>
                     </HBox>
                 </HBox>

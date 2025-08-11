@@ -82,11 +82,9 @@ public class HelloApplication extends Application {
 
     private int number_of_prompts_per_minute = 5;
     private ArrayList<Long> array_list_with_times = new ArrayList<>();
-    private ArrayList<Verse_class> array_list_with_verses = new ArrayList<>();
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-    private ArrayList<Verse_class_final> chatgpt_responses = new ArrayList<>();
+    private Verse_class_final[] ayats_processed;
 
-    private int initial_number_of_ayats = 0;
     private int chat_gpt_processed_ayats = 0;
     private int selected_verse = 0;
     private String surat_name_selected = "Al-Fatiha";
@@ -94,9 +92,7 @@ public class HelloApplication extends Application {
     private MediaPlayer mediaPlayer;
     private String sound_path = "";
     private Stage main_stage;
-
-    private Long[] durations;
-    private Long[] end_of_the_picture_durations;
+    
     private int number_of_audio_channels = 2;
     private boolean did_this_play_already = false;
     private int audio_frequncy_of_the_sound = 44100;
@@ -110,6 +106,10 @@ public class HelloApplication extends Application {
     private String quran_token;
     private long token_expiry;
     private ChangeListener<Number> heightListener_to_scene_for_logo_at_start;
+    private HashMap<String, ArrayList<Integer>> hash_map_with_the_translations = new HashMap<>();
+    private HashMap<Integer,String> hashMap_id_to_language_name_text = new HashMap<>();
+    private Sound_mode sound_mode;
+    private long[] start_millisecond_of_each_verse;
 
     private final static int image_view_in_tile_pane_width = 90;
     private final static int image_view_in_tile_pane_height = 160;
@@ -124,7 +124,7 @@ public class HelloApplication extends Application {
     private final static String clientSecret_pre_live = Quran_api_secrets.clientSecret_pre_live;
     private final static String clientId_live = Quran_api_secrets.clientId_live;
     private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
-    private final static Live_mode live_or_pre_live_quran_api = Live_mode.PRE_LIVE;
+    private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
     private final static String app_name = "Sabrly";
     private final static double screen_width_multiplier = 0.55D;
     private final static double screen_height_multiplier = 0.55D;
@@ -160,6 +160,7 @@ public class HelloApplication extends Application {
 
 
     private void everything_to_be_called_at_the_start(HelloController helloController,Scene scene){
+        call_translations_api();
         listen_to_surat_choose(helloController);
         dalle_spinner_listener(helloController);
         ratio_spinner_listen(helloController);
@@ -281,7 +282,7 @@ public class HelloApplication extends Application {
         }*/
     }
 
-    private void call_verses_api(HelloController helloController, int id, int page) {
+    private void call_verses_api(HelloController helloController, int id, int page,int start_ayat) {
         HttpUrl httpurl = new HttpUrl.Builder()
                 .scheme("https")
                 .host("api.quran.com")
@@ -306,13 +307,13 @@ public class HelloApplication extends Application {
         try {
             Response response = client.newCall(request).execute();
             String verses_string = response.body().string();
-            add_all_of_the_verses_to_the_list_after(helloController, verses_string, page);
+            add_all_of_the_verses_to_the_list_after(helloController, verses_string);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void call_the_chatgpt_api(HelloController helloController, String ayat_text, int ayat_number) throws JsonProcessingException {
+    /*private void call_the_chatgpt_api(HelloController helloController, String ayat_text, int ayat_number) throws JsonProcessingException {
         HttpUrl httpurl = new HttpUrl.Builder()
                 .scheme("https")
                 .host("api.openai.com")
@@ -330,18 +331,10 @@ public class HelloApplication extends Application {
         try {
             Response response = client.newCall(request).execute();
             String response_string = response.body().string();
-            process_chat_gpt_response_and_add_it_to_the_list(ayat_text, ayat_number, response_string);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void process_chat_gpt_response_and_add_it_to_the_list(String ayat_text, int ayat_number, String response_string) {
-        JsonNode Node = return_name_node(response_string);
-        ArrayNode arrayNode = (ArrayNode) Node.get("data");
-        //Verse_class_final verseClassFinal = new Verse_class_final(ayat_text, ayat_number, String.valueOf(arrayNode.get(0).get("b64_json")), ayat_number * 1000L, new Ayat_settings());
-        //chatgpt_responses.add(verseClassFinal);
-    }
+    }*/
 
     private void add_surats_to_the_list_view(HelloController helloController, String response_string) {
         JsonNode nameNode = return_name_node(response_string);
@@ -456,86 +449,52 @@ public class HelloApplication extends Application {
         String generating_message;
         int start_ayat = return_start_ayat(helloController);
         int end_ayat = return_end_ayat(helloController);
-        if (is_it_only_one_ayat_selected(helloController)) {
-            generating_message = "Generating ayat ".concat(String.valueOf(return_start_ayat(helloController))).concat(" for surat ".concat(surat_name).concat("."));
+        int number_of_ayats = end_ayat - start_ayat + 1;
+        ayats_processed = new Verse_class_final[number_of_ayats];
+        start_millisecond_of_each_verse = new long[number_of_ayats];
+        if (sound_path.isEmpty()) {
+            sound_mode = Sound_mode.CHOSEN;
+            get_the_sound_and_concat_them_into_one(helloController);
         } else {
-            generating_message = "Generating ayats ".concat(String.valueOf(return_start_ayat(helloController))).concat(" - ").concat(String.valueOf(return_end_ayat(helloController))).concat(" for surat ".concat(surat_name).concat("."));
+            sound_mode = Sound_mode.UPLOADED;
+            set_up_sound_for_chosen_verses(start_ayat,end_ayat);
         }
-        make_the_generating_text(helloController, generating_message);
-        initial_number_of_ayats = end_ayat - start_ayat + 1;
         int start_ayat_section = (int) Math.ceil(start_ayat / 50D);
         int end_ayat_section = (int) Math.ceil(end_ayat / 50D);
         for (int i = start_ayat_section; i <= end_ayat_section; i++) {
-            call_verses_api(helloController, id, i);
+            call_verses_api(helloController, id, i,start_ayat);
         }
-        set_number_of_verses_left(helloController, initial_number_of_ayats);
-        if (helloController.generate_chat_gpt_images.isSelected()) {
-
-        }
+        set_up_the_fourth_screen(helloController);
     }
 
-    private void add_all_of_the_verses_to_the_list_after(HelloController helloController, String verses_string, int page) {
+    private void add_all_of_the_verses_to_the_list_after(HelloController helloController, String verses_string) {
         JsonNode nameNode = return_name_node(verses_string);
         ArrayNode arrayNode = (ArrayNode) nameNode.get("verses");
         int start_ayat = return_start_ayat(helloController);
         int end_ayat = return_end_ayat(helloController);
-        if (!is_it_only_one_ayat_selected(helloController)) {
-            for (int i = 0; i < arrayNode.size(); i++) {
-                int ayat_number = Integer.parseInt(String.valueOf(arrayNode.get(i).get("verse_number")));
-                if (ayat_number < start_ayat) {
-                    continue;
-                } else if (ayat_number > end_ayat) {
-                    break;
-                }
-                String arabic_ayat = String.valueOf(arrayNode.get(i).get("text_uthmani"));
-                ArrayNode translations_array_node = (ArrayNode) arrayNode.get(i).get("translations");
-                add_to_array_list_with_verses(Jsoup.parse(String.valueOf(translations_array_node.get(0).get("text"))).text(), ayat_number, arabic_ayat);
-                if (array_list_with_verses.size() == initial_number_of_ayats) {
-                    for (int j = 0; j < array_list_with_verses.size(); j++) {
-                        if (durations == null || durations.length == 0) {
-                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), j * TimeUnit.SECONDS.toNanos(1), TimeUnit.SECONDS.toNanos(1)));
-                        } else {
-                            chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), end_of_the_picture_durations[j], durations[j]));
-                        }
-                    }
-                    set_up_the_fourth_screen(helloController);
-                }
-            }
-        } else {
-            for (int i = 0; i < arrayNode.size(); i++) {
-                int ayat_number = Integer.parseInt(String.valueOf(arrayNode.get(i).get("verse_number")));
-                if (ayat_number < start_ayat) {
-                    continue;
-                }
-                String arabic_ayat = String.valueOf(arrayNode.get(i).get("text_uthmani"));
-                ArrayNode translations_array_node = (ArrayNode) arrayNode.get(i).get("translations");
-                add_to_array_list_with_verses(Jsoup.parse(String.valueOf(translations_array_node.get(0).get("text"))).text(), ayat_number, arabic_ayat);
-                for (int j = 0; j < array_list_with_verses.size(); j++) {
-                    if (durations == null || durations.length == 0) {
-                        chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), 0, TimeUnit.SECONDS.toNanos(1)));
-                    } else {
-                        chatgpt_responses.add(new Verse_class_final(capatilize_first_letter(update_the_verse_text(array_list_with_verses.get(j).getVerse())), array_list_with_verses.get(j).getVerse_number(), remove_qoutes_from_arabic_text(array_list_with_verses.get(j).getArabic_verse()), 0, durations[0]));
-                    }
-                }
-                set_up_the_fourth_screen(helloController);
+        for (int i = 0; i < arrayNode.size(); i++) {
+            int ayat_number = Integer.parseInt(String.valueOf(arrayNode.get(i).get("verse_number")));
+            if (ayat_number < start_ayat) {
+                continue;
+            } else if (ayat_number > end_ayat) {
                 break;
             }
+            ArrayList<Language_text> arrayList_with_all_of_the_languages = new ArrayList<>();
+            String arabic_ayat = String.valueOf(arrayNode.get(i).get("text_uthmani"));
+            arrayList_with_all_of_the_languages.add(new Language_text("Arabic",arabic_ayat));
+            ArrayNode translations_array_node = (ArrayNode) arrayNode.get(i).get("translations");
+            for (JsonNode translation : translations_array_node) {
+                int id = translation.get("resource_id").asInt();
+                String language_name = hashMap_id_to_language_name_text.get(id);
+                String verse_text = translation.get("text").asText();
+                Language_text language_text = new Language_text(language_name,verse_text);
+                arrayList_with_all_of_the_languages.add(language_text);
+            }
+            ayats_processed[ayat_number - start_ayat].setArrayList_of_all_of_the_languages(arrayList_with_all_of_the_languages);
+            ayats_processed[ayat_number - start_ayat].setVerse_number(ayat_number);
         }
     }
 
-
-    private void add_to_array_list_with_verses(String verse, int ayat_number, String arabic_verse) {
-        Verse_class verseClass = new Verse_class(surat_name_selected, verse, ayat_number, arabic_verse);
-        array_list_with_verses.add(verseClass);
-    }
-
-    private void set_number_of_verses_left(HelloController helloController, int number_of_verses) {
-        if (number_of_verses == 1) {
-            update_the_number_of_verses_left_text(helloController, String.valueOf(number_of_verses).concat(" verse left"));
-        } else {
-            update_the_number_of_verses_left_text(helloController, String.valueOf(number_of_verses).concat(" verses left"));
-        }
-    }
 
     private double return_width_of_the_spinner(ObservableList<String> items, Font font) {
         double max_width = 0;
@@ -615,17 +574,10 @@ public class HelloApplication extends Application {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
         }
-        if (durations != null) {
-            Arrays.fill(durations, null);
-        }
-        if (end_of_the_picture_durations != null) {
-            Arrays.fill(end_of_the_picture_durations, null);
-        }
         selected_verse = 0;
         sound_path = "";
         array_list_with_times.clear();
-        array_list_with_verses.clear();
-        chatgpt_responses.clear();
+        Arrays.fill(ayats_processed,null);
 
         clear_temp_directory();
     }
@@ -657,21 +609,9 @@ public class HelloApplication extends Application {
                 helloController.generating_screen.setVisible(true);
                 helloController.choose_ayat_screen.setVisible(false);
                 //copy_the_images(helloController, get_the_right_basic_image_aspect_ratio(return_the_aspect_ratio_as_an_object(helloController)));
-                if (sound_path.isEmpty()) {
-                    get_the_sound_and_concat_them_into_one(helloController);
-                }
                 set_up_third_screen(helloController, helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
             }
         });
-    }
-
-    private void make_the_generating_text(HelloController helloController, String text) {
-        helloController.generating_text.setText(text);
-    }
-
-    private void update_the_number_of_verses_left_text(HelloController helloController, String text) {
-        helloController.how_many_verses_are_left_text.setText(text);
-        helloController.how_many_verses_are_left_text.setVisible(true);
     }
 
     private void watch_the_advanced_settings_box(HelloController helloController) {
@@ -769,7 +709,7 @@ public class HelloApplication extends Application {
         } else {
             helloController.previous_photo_chat_gpt_result.setDisable(false);
         }
-        if (position >= chatgpt_responses.size() - 1) {
+        if (position >= ayats_processed.length - 1) {
             helloController.next_photo_chat_gpt_result.setDisable(true);
         } else {
             helloController.next_photo_chat_gpt_result.setDisable(false);
@@ -787,7 +727,7 @@ public class HelloApplication extends Application {
                 selected_verse++;
                 the_verse_changed(helloController, selected_verse); // TODO make sure the verse is set correctly
                 scroll_to_specific_verse_time(helloController);
-                set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, chatgpt_responses.get(selected_verse).getStart_millisecond()), Type_of_Image.FULL_QUALITY);
+                set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, ayats_processed[selected_verse].getStart_millisecond()), Type_of_Image.FULL_QUALITY);
             }
         });
     }
@@ -799,13 +739,13 @@ public class HelloApplication extends Application {
                 selected_verse--;
                 the_verse_changed(helloController, selected_verse); // TODO make sure the verse is set correctly
                 scroll_to_specific_verse_time(helloController);
-                set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, chatgpt_responses.get(selected_verse).getStart_millisecond()), Type_of_Image.FULL_QUALITY);
+                set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, ayats_processed[selected_verse].getStart_millisecond()), Type_of_Image.FULL_QUALITY);
             }
         });
     }
 
     private void set_selected_verse_text(HelloController helloController, int verse_position) {
-        set_the_verse_text_fourth_screen(helloController, chatgpt_responses.get(verse_position).getVerse_number(), surat_name_selected);
+        set_the_verse_text_fourth_screen(helloController, ayats_processed[verse_position].getVerse_number(), surat_name_selected);
     }
 
     private void set_the_verse_text_fourth_screen(HelloController helloController, int verse, String surat) {
@@ -870,7 +810,7 @@ public class HelloApplication extends Application {
         mediaPlayer.setOnEndOfMedia(new Runnable() {
             @Override
             public void run() {
-                selected_verse = chatgpt_responses.size() - 1;
+                selected_verse = ayats_processed.length - 1;
                 set_the_play_pause_button(helloController, "play");
 //                helloController.sound_slider_fourth_screen.setValue(helloController.sound_slider_fourth_screen.getMax());
                 timer.stop();
@@ -1350,8 +1290,6 @@ public class HelloApplication extends Application {
         int number_of_ayats = end_ayat - start_ayat + 1;
         int number_of_threads = Math.max(Runtime.getRuntime().availableProcessors() * 4, number_of_ayats);
         BlockingQueue<String> verseQueue = new ArrayBlockingQueue<>(number_of_ayats);
-        durations = new Long[number_of_ayats];
-        end_of_the_picture_durations = new Long[number_of_ayats];
         HashMap<String, Integer> tie_verses_to_indexes = new HashMap<>();
         String base_url = "";
         if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits().isEmpty()) {
@@ -1402,7 +1340,7 @@ public class HelloApplication extends Application {
                             }
                             File new_wav_file = convert_mp3_to_wav(tempFile, String.format("%03d.wav", verse_number));
                             new_wav_file.deleteOnExit();
-                            durations[verse_number - start_ayat] = getDurationWithFFmpeg(new_wav_file);
+                            ayats_processed[verse_number - start_ayat] = new Verse_class_final(getDurationWithFFmpeg(new_wav_file));
                         } catch (IOException e) {
                             e.printStackTrace();
                             Thread.sleep(500L * (final_i + 1)); // exponential backoff
@@ -1423,10 +1361,12 @@ public class HelloApplication extends Application {
         File tempFile = new File("temp/sound", String.format("%03d.wav", start_ayat));
         audio_frequncy_of_the_sound = get_frequency_of_audio(tempFile.getAbsolutePath());
         int get_the_number_of_audio_channels_local = set_the_number_of_audio_channels(getNumberOfChannels(tempFile.getAbsolutePath()));
-        end_of_the_picture_durations[0] = 0L;
+        ayats_processed[0].setStart_millisecond(0);
+        long start_millisecond = 0;
         if (number_of_ayats > 1) {
             for (int i = 1; i < number_of_ayats; i++) {
-                end_of_the_picture_durations[i] = durations[i - 1] + end_of_the_picture_durations[i - 1];
+                start_millisecond += ayats_processed[i-1].getDuration();
+                ayats_processed[i].setStart_millisecond(start_millisecond);
             }
         }
         File listFile = new File("temp/sound", "list.txt");
@@ -1594,7 +1534,7 @@ public class HelloApplication extends Application {
 
     private void scroll_to_specific_verse_time(HelloController helloController) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
-        long time_in_milliseconds = chatgpt_responses.get(selected_verse).getStart_millisecond();
+        long time_in_milliseconds = ayats_processed[selected_verse].getStart_millisecond();
         update_the_time_line_indicator(helloController.time_line_pane, time_in_milliseconds);
         force_the_time_line_indicator_to_be_at_the_middle(helloController.scroll_pane_hosting_the_time_line, time_line_pane_data.getPolygon().getLayoutX());
         mediaPlayer.seek(Duration.millis(TimeUnit.NANOSECONDS.toMillis(time_in_milliseconds)));
@@ -2757,15 +2697,15 @@ public class HelloApplication extends Application {
     private void set_up_the_verses_time_line(HelloController helloController, Pane pane, double base_time_line, double pixels_in_between_each_line, long time_between_every_line) {
         //double adjustor = pixels_in_between_each_line / time_between_every_line;
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
-        for (int i = 0; i < chatgpt_responses.size(); i++) {
-            Text verse_text = new Text("Verse ".concat(String.valueOf(chatgpt_responses.get(i).getVerse_number())));
-            double start_x = base_time_line + (nanoseconds_to_pixels(time_line_pane_data, chatgpt_responses.get(i).getStart_millisecond()));
+        for (int i = 0; i < ayats_processed.length; i++) {
+            Text verse_text = new Text("Verse ".concat(String.valueOf(ayats_processed[i].getVerse_number())));
+            double start_x = base_time_line + (nanoseconds_to_pixels(time_line_pane_data, ayats_processed[i].getStart_millisecond()));
             StackPane stackPane = new StackPane();
-            stackPane.setPrefWidth(nanoseconds_to_pixels(time_line_pane_data, chatgpt_responses.get(i).getDuration()));
+            stackPane.setPrefWidth(nanoseconds_to_pixels(time_line_pane_data, ayats_processed[i].getDuration()));
             stackPane.setPrefHeight(30);
             stackPane.setLayoutX(start_x);
             stackPane.setLayoutY(30);
-            Rectangle rectangle = new Rectangle(nanoseconds_to_pixels(time_line_pane_data, chatgpt_responses.get(i).getDuration()), 20);
+            Rectangle rectangle = new Rectangle(nanoseconds_to_pixels(time_line_pane_data, ayats_processed[i].getDuration()), 20);
             rectangle.setStrokeWidth(1);
             rectangle.setStroke(javafx.scene.paint.Color.BLACK);
             rectangle.setArcHeight(5);
@@ -3112,7 +3052,7 @@ public class HelloApplication extends Application {
     }
 
     private void which_verse_am_i_on_milliseconds(HelloController helloController, long milliseconds) {
-        int index = Arrays.binarySearch(end_of_the_picture_durations, milliseconds);
+        int index = Arrays.binarySearch(start_millisecond_of_each_verse, milliseconds);
         if (index >= 0) {
             selected_verse = index;
             the_verse_changed(helloController, selected_verse);
@@ -3133,10 +3073,10 @@ public class HelloApplication extends Application {
     }
 
     private void is_it_time_to_change_verses(HelloController helloController, double milliseconds) {
-        if (chatgpt_responses.size() - 1 == selected_verse) {
+        if (ayats_processed.length - 1 == selected_verse) {
             return;
         }
-        if (milliseconds > chatgpt_responses.get(selected_verse + 1).getStart_millisecond()) {
+        if (milliseconds > ayats_processed[selected_verse + 1].getStart_millisecond()) {
             selected_verse++;
             the_verse_changed(helloController, selected_verse);
         }
@@ -4080,6 +4020,74 @@ public class HelloApplication extends Application {
     private void remove_the_start_listener(HelloController helloController,Scene scene){
         if(heightListener_to_scene_for_logo_at_start!=null){
             scene.heightProperty().removeListener(heightListener_to_scene_for_logo_at_start);
+        }
+    }
+
+    private void call_translations_api() {
+        OkHttpClient client = new OkHttpClient.Builder().build();
+        String baseUrl;
+        String clientId;
+        if (live_or_pre_live_quran_api.equals(Live_mode.LIVE)) {
+            baseUrl = "https://apis.quran.foundation";
+            clientId = clientId_live;
+        } else {
+            baseUrl = "https://apis-prelive.quran.foundation";
+            clientId = clientId_pre_live;
+        }
+        HttpUrl url = HttpUrl.parse(baseUrl + "/content/api/v4/resources/translations")
+                .newBuilder()
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .addHeader("Accept", "application/json")
+                .addHeader("x-auth-token", quran_token)
+                .addHeader("x-client-id", clientId)
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                String errBody = (response.body() != null ? response.body().string() : "");
+                throw new IOException("Unexpected HTTP code: " + response.code() + " - " + errBody);
+            }
+            String translations_json = (response.body() != null ? response.body().string() : "");
+            response.close();
+            process_the_translations(translations_json);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void process_the_translations(String response){
+        try {
+            hash_map_with_the_translations = new HashMap<>();
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response);
+            JsonNode translations = root.get("translations");
+            for (JsonNode item : translations) {
+                String language_name = item.get("language_name").asText();
+                int id = item.get("id").asInt();
+                ArrayList<Integer> arrayList_with_ids = hash_map_with_the_translations.getOrDefault(language_name,new ArrayList<>());
+                arrayList_with_ids.add(id);
+                hash_map_with_the_translations.put(language_name,arrayList_with_ids);
+                hashMap_id_to_language_name_text.put(id,language_name);
+            }
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void set_up_sound_for_chosen_verses(int start_ayat,int end_ayat){
+        long total_duration = getDurationWithFFmpeg(new File(sound_path));
+        int total_ayats = end_ayat - start_ayat + 1;
+        ayats_processed = new Verse_class_final[total_ayats];
+        long duration_per_verse = total_duration/total_ayats;
+        for(int i = 0;i<total_ayats;i++){
+            Verse_class_final verseClassFinal = new Verse_class_final(duration_per_verse);
+            verseClassFinal.setStart_millisecond(duration_per_verse*i);
+            ayats_processed[i] = verseClassFinal;
         }
     }
 }
