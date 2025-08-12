@@ -60,6 +60,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.function.Function;
 
 import javafx.util.Duration;
 import net.coobird.thumbnailator.Thumbnails;
@@ -124,7 +125,7 @@ public class HelloApplication extends Application {
     private final static String clientSecret_pre_live = Quran_api_secrets.clientSecret_pre_live;
     private final static String clientId_live = Quran_api_secrets.clientId_live;
     private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
-    private final static Live_mode live_or_pre_live_quran_api = Live_mode.PRE_LIVE;
+    private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
     private final static String app_name = "Sabrly";
     private final static double screen_width_multiplier = 0.55D;
     private final static double screen_height_multiplier = 0.55D;
@@ -159,7 +160,7 @@ public class HelloApplication extends Application {
 
 
     private void everything_to_be_called_at_the_start(HelloController helloController, Scene scene) {
-        call_translations_api();
+        make_the_first_real_screen_visible(helloController);
         listen_to_surat_choose(helloController);
         dalle_spinner_listener(helloController);
         ratio_spinner_listen(helloController);
@@ -216,10 +217,9 @@ public class HelloApplication extends Application {
     }
 
 
-    private void call_chapters_api(HelloController helloController, Scene scene) {
+    private Request call_chapters_api(HelloController helloController, Scene scene) {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
-        MediaType mediaType = MediaType.parse("text/plain");
         Request request;
         if (live_or_pre_live_quran_api.equals(Live_mode.LIVE)) {
             request = new Request.Builder()
@@ -238,8 +238,9 @@ public class HelloApplication extends Application {
                     .addHeader("x-client-id", clientId_pre_live)
                     .build();
         }
-        try {
-            Response response = client.newCall(request).execute();
+        return request;
+        /*try {
+            Response response = client.newCall(request).enqueue(new );
             if (!response.isSuccessful()) {
                 throw new IOException("Unexpected HTTP code: " + response.code()
                         + " - " + (response.body() != null ? response.body().string() : ""));
@@ -249,13 +250,12 @@ public class HelloApplication extends Application {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    everything_to_be_called_at_the_start(helloController, scene);
-                    make_the_first_real_screen_visible(helloController);
+
                 }
             });
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
+        }*/
 
 
         /*HttpUrl httpurl = new HttpUrl.Builder()
@@ -454,27 +454,40 @@ public class HelloApplication extends Application {
     }
 
     private void set_up_third_screen(HelloController helloController, int id) {
-        JsonNode nameNode = return_name_node(chapters_string);
-        String surat_name = String.valueOf(nameNode.get("chapters").get(id).get("name_simple"));
-        String generating_message;
+        helloController.choose_ayat_screen.setVisible(false);
+        helloController.show_logo_loading_screen.setVisible(true);
         int start_ayat = return_start_ayat(helloController);
         int end_ayat = return_end_ayat(helloController);
-        int number_of_ayats = end_ayat - start_ayat + 1;
-        ayats_processed = new Verse_class_final[number_of_ayats];
-        start_millisecond_of_each_verse = new long[number_of_ayats];
-        if (sound_path.isEmpty()) {
-            sound_mode = Sound_mode.CHOSEN;
-            get_the_sound_and_concat_them_into_one(helloController);
-        } else {
-            sound_mode = Sound_mode.UPLOADED;
-            set_up_sound_for_chosen_verses(start_ayat, end_ayat);
-        }
-        int start_ayat_section = (int) Math.ceil(start_ayat / 50D);
-        int end_ayat_section = (int) Math.ceil(end_ayat / 50D);
-        for (int i = start_ayat_section; i <= end_ayat_section; i++) {
-            call_verses_api(helloController, id, i);
-        }
-        set_up_the_fourth_screen(helloController);
+        int surat_number = helloController.choose_the_surat.getSelectionModel().getSelectedIndex() + 1;
+        Reciters_info reciters_info = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                int number_of_ayats = end_ayat - start_ayat + 1;
+                ayats_processed = new Verse_class_final[number_of_ayats];
+                start_millisecond_of_each_verse = new long[number_of_ayats];
+                if (sound_path.isEmpty()) {
+                    sound_mode = Sound_mode.CHOSEN;
+                    get_the_sound_and_concat_them_into_one(start_ayat, end_ayat,surat_number,reciters_info);
+                } else {
+                    sound_mode = Sound_mode.UPLOADED;
+                    set_up_sound_for_chosen_verses(start_ayat, end_ayat);
+                }
+                int start_ayat_section = (int) Math.ceil(start_ayat / 50D);
+                int end_ayat_section = (int) Math.ceil(end_ayat / 50D);
+                for (int i = start_ayat_section; i <= end_ayat_section; i++) {
+                    call_verses_api(helloController, id, i);
+                }
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        set_up_the_fourth_screen(helloController);
+                    }
+                });
+            }
+        });
+        executor.shutdown();
     }
 
     private void add_all_of_the_verses_to_the_list_after(HelloController helloController, String verses_string) {
@@ -592,10 +605,12 @@ public class HelloApplication extends Application {
         clear_temp_directory();
     }
 
+    // TODO the next previous firing needs to be looked at.
+
     private void listen_to_previous_button_clicked(HelloController helloController) {
-        helloController.previous_page_second_screen.setOnAction(new EventHandler<ActionEvent>() {
+        helloController.previous_page_second_screen.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
-            public void handle(ActionEvent event) {
+            public void handle(MouseEvent mouseEvent) {
                 helloController.choose_surat_screen.setVisible(true);
                 helloController.choose_ayat_screen.setVisible(false);
                 reset_all_of_the_advanced_settings(helloController);
@@ -604,9 +619,9 @@ public class HelloApplication extends Application {
     }
 
     private void listen_to_next_button_clicked(HelloController helloController) {
-        helloController.next_page_second_screen.setOnAction(new EventHandler<ActionEvent>() {
+        helloController.next_page_second_screen.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
-            public void handle(ActionEvent event) {
+            public void handle(MouseEvent mouseEvent) {
                 boolean result = is_the_ayat_format_correct(helloController);
                 if (!result) {
                     show_alert("The starting verse must be less than or equal to the ending verse.");
@@ -616,8 +631,6 @@ public class HelloApplication extends Application {
                     show_alert("Please select a sound before proceeding. You can do so by uploading a sound or by simply selecting a reciter.");
                     return;
                 }
-                helloController.generating_screen.setVisible(true);
-                helloController.choose_ayat_screen.setVisible(false);
                 //copy_the_images(helloController, get_the_right_basic_image_aspect_ratio(return_the_aspect_ratio_as_an_object(helloController)));
                 set_up_third_screen(helloController, helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
             }
@@ -697,7 +710,7 @@ public class HelloApplication extends Application {
     }
 
     private void set_up_the_fourth_screen(HelloController helloController) {
-        helloController.generating_screen.setVisible(false);
+        helloController.show_logo_loading_screen.setVisible(false);
         //helloController.show_the_result_screen.setVisible(true);
         //helloController.pane_holding_the_fourth_screen.setVisible(true);
         helloController.show_the_result_screen_stack_pane.setVisible(true);
@@ -1285,8 +1298,7 @@ public class HelloApplication extends Application {
         return TimeUnit.MILLISECONDS.toNanos((long) media.getDuration().toMillis());
     }
 
-    private void get_the_sound_and_concat_them_into_one(HelloController helloController) {
-        boolean did_i_ever_fail_a_recitation = false;
+    private void get_the_sound_and_concat_them_into_one(int start_ayat, int end_ayat, int surat_number_int, Reciters_info recitersInfo) {
         OkHttpClient client = new OkHttpClient.Builder()
                 .protocols(Collections.singletonList(Protocol.HTTP_1_1))
                 .connectTimeout(10, TimeUnit.SECONDS)
@@ -1295,21 +1307,20 @@ public class HelloApplication extends Application {
                 .build();
         client.dispatcher().setMaxRequests(8); // increase concurrency
         client.dispatcher().setMaxRequestsPerHost(4);
-        int start_ayat = return_start_ayat(helloController);
-        int end_ayat = return_end_ayat(helloController);
         int number_of_ayats = end_ayat - start_ayat + 1;
         int number_of_threads = Math.max(Runtime.getRuntime().availableProcessors() * 4, number_of_ayats);
         BlockingQueue<String> verseQueue = new ArrayBlockingQueue<>(number_of_ayats);
         HashMap<String, Integer> tie_verses_to_indexes = new HashMap<>();
         String base_url = "";
-        if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits().isEmpty()) {
-            base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_128_bits();
-        } else if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_64_bits().isEmpty()) {
-            base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_64_bits();
-        } else if (!helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_32_bits().isEmpty()) {
-            base_url = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0).getLink_for_32_bits();
+        if (!recitersInfo.getLink_for_128_bits().isEmpty()) {
+            base_url = recitersInfo.getLink_for_128_bits();
+        } else if (!recitersInfo.getLink_for_64_bits().isEmpty()) {
+            base_url = recitersInfo.getLink_for_64_bits();
+        } else if (!recitersInfo.getLink_for_32_bits().isEmpty()) {
+            base_url = recitersInfo.getLink_for_32_bits();
         }
-        String surat_number = String.format("%03d", helloController.choose_the_surat.getSelectionModel().getSelectedIndex() + 1);
+        //String surat_number = String.format("%03d", helloController.choose_the_surat.getSelectionModel().getSelectedIndex() + 1);
+        String surat_number = String.format("%03d", surat_number_int);
         base_url = base_url.concat(surat_number);
         for (int i = start_ayat; i <= end_ayat; i++) {
             String ayat_number = String.format("%03d", i);
@@ -3968,10 +3979,9 @@ public class HelloApplication extends Application {
                     ObjectMapper mapper = new ObjectMapper();
                     JsonNode jsonNode = mapper.readTree(response.body().string());
                     quran_token = jsonNode.get("access_token").asText();
-                    System.out.println(quran_token);
                     token_expiry = TimeUnit.SECONDS.toMillis(jsonNode.get("expires_in").asInt()) + System.currentTimeMillis();
                     if (call_apis) {
-                        call_chapters_api(helloController, scene);
+                        call_the_2_apis_at_the_start(helloController, scene);
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -4022,8 +4032,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void call_translations_api() {
-        OkHttpClient client = new OkHttpClient.Builder().build();
+    private Request call_translations_api() {
         String baseUrl;
         String clientId;
         if (live_or_pre_live_quran_api.equals(Live_mode.LIVE)) {
@@ -4044,8 +4053,8 @@ public class HelloApplication extends Application {
                 .addHeader("x-auth-token", quran_token)
                 .addHeader("x-client-id", clientId)
                 .build();
-
-        try {
+        return request;
+        /*try {
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
                 String errBody = (response.body() != null ? response.body().string() : "");
@@ -4056,7 +4065,7 @@ public class HelloApplication extends Application {
             process_the_translations(translations_json);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
+        }*/
     }
 
     private void process_the_translations(String response) {
@@ -4176,5 +4185,87 @@ public class HelloApplication extends Application {
             string_with_all_of_the_translations_to_be_returned.deleteCharAt(string_with_all_of_the_translations_to_be_returned.length() - 1);
         }
         return string_with_all_of_the_translations_to_be_returned.toString();
+    }
+
+    private CompletableFuture<Response> callAsync(OkHttpClient client, Request request) {
+        CompletableFuture<Response> future = new CompletableFuture<>();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                future.completeExceptionally(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) {
+                future.complete(response);
+            }
+        });
+        return future;
+    }
+
+    private void call_the_2_apis_at_the_start(HelloController helloController, Scene scene) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS) // Time to establish connection
+                .readTimeout(60, TimeUnit.SECONDS)    // Time to wait for data
+                .writeTimeout(60, TimeUnit.SECONDS)   // Time allowed to send data
+                .build();
+        Request translation_request = call_translations_api();
+        Request chapters_request = call_chapters_api(helloController, scene);
+        CompletableFuture<String> translationsFuture = callAsync(client, translation_request)
+                .thenApply(new Function<Response, String>() {
+                    @Override
+                    public String apply(Response response) {
+                        try {
+                            if (response.body() != null) {
+                                return response.body().string();
+                            } else {
+                                return "";
+                            }
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
+
+        CompletableFuture<String> chaptersFuture =
+                callAsync(client, chapters_request)
+                        .thenApply(new Function<Response, String>() {
+                            @Override
+                            public String apply(Response response) {
+                                try {
+                                    if (response.body() != null) {
+                                        return response.body().string();
+                                    } else {
+                                        return "";
+                                    }
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        });
+        CompletableFuture
+                .allOf(translationsFuture, chaptersFuture)
+                .thenRun(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            String translationsJson = translationsFuture.get();
+                            chapters_string = chaptersFuture.get();
+                            // If these touch UI, do it on FX thread:
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    add_surats_to_the_list_view(helloController, chapters_string);
+                                    process_the_translations(translationsJson);
+                                    everything_to_be_called_at_the_start(helloController, scene);
+                                }
+                            });
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
     }
 }

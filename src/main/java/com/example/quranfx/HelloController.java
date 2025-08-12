@@ -46,10 +46,6 @@ public class HelloController {
     @FXML
     public JFXButton next_page_second_screen;
 
-
-    @FXML
-    public StackPane generating_screen;
-
     @FXML
     public Label generating_text;
 
