@@ -250,20 +250,6 @@
             </VBox>
         </VBox>
     </StackPane>
-    <StackPane fx:id="generating_screen" visible="false">
-        <VBox alignment="CENTER">
-            <Label fx:id="generating_text" text="Generating...">
-                <font>
-                    <Font size="20.0"/>
-                </font>
-            </Label>
-            <Label fx:id="how_many_verses_are_left_text" text="5 verses left" visible="false">
-                <VBox.margin>
-                    <Insets top="15.0"/>
-                </VBox.margin>
-            </Label>
-        </VBox>
-    </StackPane>
     <StackPane fx:id="show_the_result_screen_stack_pane" visible="false">
         <BorderPane fx:id="show_the_result_screen">
             <!-- Top -->

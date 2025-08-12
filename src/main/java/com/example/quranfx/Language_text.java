@@ -3,7 +3,7 @@ package com.example.quranfx;
 public class Language_text {
     private String language_name;
     private String verse;
-    private Ayat_settings ayat_settings;
+    private Text_item ayat_settings;
 
     public Language_text(String language_name, String verse) {
         this.language_name = language_name;
