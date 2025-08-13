@@ -184,4 +184,7 @@ public class HelloController {
 
     @FXML
     public Canvas canvas_on_top_of_time_line_pane;
+
+    @FXML
+    public Pane pane_overlying_the_time_line_pane_for_polygon_indicator;
 }

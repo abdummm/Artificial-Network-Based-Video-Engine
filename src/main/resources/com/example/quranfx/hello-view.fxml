@@ -43,7 +43,8 @@
            style="-fx-background-color: #FFFFFF;" fx:id="parent_stack_pane">
     <StackPane fx:id="show_logo_loading_screen" visible="true">
         <ImageView fx:id="logo_at_the_start_of_the_app" fitWidth="128" fitHeight="128"/>
-        <MFXProgressSpinner fx:id="progress_indicator_first_loading_screen" prefWidth="30" prefHeight="30" stylesheets="@mfx_spinner_style_loading_start.css">
+        <MFXProgressSpinner fx:id="progress_indicator_first_loading_screen" prefWidth="30" prefHeight="30"
+                            stylesheets="@mfx_spinner_style_loading_start.css">
         </MFXProgressSpinner>
 
 
@@ -317,7 +318,7 @@
                             <VBox alignment="CENTER">
                                 <HBox alignment="CENTER">
                                     <VBox alignment="CENTER">
-                                        <JFXButton fx:id="previous_photo_chat_gpt_result" focusTraversable="false" />
+                                        <JFXButton fx:id="previous_photo_chat_gpt_result" focusTraversable="false"/>
                                     </VBox>
                                     <Pane fx:id="stack_pane_of_image_view_and_text">
                                         <HBox.margin>
@@ -383,11 +384,8 @@
                                     </StackPane.margin>
                                     <Pane fx:id="time_line_pane" prefHeight="180"/>
                                 </ScrollPane>
-                                <Canvas fx:id="canvas_on_top_of_time_line_pane" mouseTransparent="true">
-                                    <StackPane.margin>
-                                        <Insets top="1.0" left="1.0"/>
-                                    </StackPane.margin>
-                                </Canvas>
+                                <Canvas fx:id="canvas_on_top_of_time_line_pane" mouseTransparent="true"/>
+                                <Pane fx:id="pane_overlying_the_time_line_pane_for_polygon_indicator" mouseTransparent="true" StackPane.alignment="TOP_CENTER"/>
                             </StackPane>
                         </HBox>
                     </VBox>

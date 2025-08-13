@@ -13,6 +13,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -130,6 +131,7 @@ public class HelloApplication extends Application {
     private final static String app_name = "Sabrly";
     private final static double screen_width_multiplier = 0.55D;
     private final static double screen_height_multiplier = 0.55D;
+    private final static int scroll_pane_hosting_time_line_border_width = 1;
 
     //private final static double circle_button_radius = 20D;
     private final static int how_long_does_it_take_for_tool_tip_to_show_up = 500;
@@ -211,7 +213,11 @@ public class HelloApplication extends Application {
         write_the_black_image_and_the_whitened_black_image();
         black_out_the_image_view_at_the_start(helloController);
         remove_the_start_listener(helloController, scene);
-        tie_the_canvas_to_time_line_pane(helloController);
+        bind_scroll_pane_height_to_canvas(helloController);
+        listen_to_canvas_size_change(helloController);
+        set_the_width_of_the_border_of_scroll_pane(helloController);
+        scroll_pane_time_line_h_vlaue_listener(helloController);
+        set_the_time_line_over_laying_pane_margin(helloController);
     }
 
     public static void main(String[] args) {
@@ -2611,8 +2617,6 @@ public class HelloApplication extends Application {
         listen_to_time_line_clicked(helloController, main_pane);
         listen_to_mouse_movement_over_time_line_indicator(helloController, main_pane);
         listen_to_mouse_moving_in_time_line_pane(main_pane);
-        scroll_pane_h_vlaue_listener(helloController, total_pane_width);
-        set_the_canvas(helloController, 0);
     }
 
     private void draw_the_rectangle_time_line_pane(double start_x, double width, double height, Pane pane) {
@@ -4213,16 +4217,16 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void scroll_pane_h_vlaue_listener(HelloController helloController, double pane_width) {
+    private void scroll_pane_time_line_h_vlaue_listener(HelloController helloController) {
         helloController.scroll_pane_hosting_the_time_line.hvalueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                set_the_canvas(helloController, t1.doubleValue());
+                set_the_canvas(helloController,t1.doubleValue(),helloController.scroll_pane_hosting_the_time_line.getViewportBounds().getWidth());
             }
         });
     }
 
-    private void set_the_canvas(HelloController helloController, double h_value) {
+    private void set_the_canvas(HelloController helloController, double h_value, double canvas_width) {
         final double pixels_in_between_each_line = 10;
         final double long_line_length = 20;
         final double half_long_line_length = 13;
@@ -4235,23 +4239,22 @@ public class HelloApplication extends Application {
         final javafx.scene.paint.Color short_line_color = javafx.scene.paint.Color.rgb(66, 71, 78);
         final javafx.scene.paint.Color time_text_color = javafx.scene.paint.Color.rgb(146, 146, 146);
         final javafx.scene.paint.Color time_line_indicitor_color = javafx.scene.paint.Color.rgb(206, 47, 40);
-        double scroll_pane_view_port_width = helloController.scroll_pane_hosting_the_time_line.getViewportBounds().getWidth();
-        double pane_width = helloController.scroll_pane_hosting_the_time_line.getContent().getLayoutBounds().getWidth();
-        double total_width_minus_view_port = pane_width - scroll_pane_view_port_width; // TODO width of pane less than scroll pane
-        double pixel_position = total_width_minus_view_port * h_value;
         Canvas canvas = helloController.canvas_on_top_of_time_line_pane;
+        double pane_width = helloController.scroll_pane_hosting_the_time_line.getContent().getLayoutBounds().getWidth();
+        double total_width_minus_view_port = pane_width - canvas_width;
+        double pixel_position = total_width_minus_view_port * h_value;
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         int base_number_of_divider = (int) Math.floorDiv((long) pixel_position, (long) pixels_in_between_each_line) + start_lines_offset;
         double first_offset = pixel_position % pixels_in_between_each_line;
-        double visible_number_of_dividers = scroll_pane_view_port_width/ pixels_in_between_each_line; // TODO last line not being drawn
+        double visible_number_of_dividers = canvas_width / pixels_in_between_each_line + 1;
         for (int i = 0; i < visible_number_of_dividers; i++) {
             int current_number_of_divider = base_number_of_divider + i;
             double x_pos = (i * pixels_in_between_each_line) - first_offset;
             graphicsContext.setLineWidth(line_thickness);
             if ((time_between_every_line * current_number_of_divider) % TimeUnit.MILLISECONDS.toNanos(1000) == 0) {
                 draw_the_line_graphics_context(graphicsContext, x_pos, line_thickness, long_line_length, long_line_color);
-                add_the_text_graphics_context(graphicsContext,time_between_every_line * (current_number_of_divider - start_lines_offset),x_pos,line_length,time_text_color);
+                add_the_text_graphics_context(graphicsContext, time_between_every_line * (current_number_of_divider - start_lines_offset), x_pos, line_length, time_text_color); // TODO allow drawing of text in engative direction
             } else if ((time_between_every_line * current_number_of_divider) % TimeUnit.MILLISECONDS.toNanos(500) == 0) {
                 draw_the_line_graphics_context(graphicsContext, x_pos, line_thickness, half_long_line_length, mid_line_color);
             } else {
@@ -4260,33 +4263,13 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void tie_the_canvas_to_time_line_pane(HelloController helloController) {
-        helloController.scroll_pane_hosting_the_time_line.widthProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                Insets margin = StackPane.getMargin(helloController.canvas_on_top_of_time_line_pane);
-                helloController.canvas_on_top_of_time_line_pane.setWidth(t1.doubleValue() - margin.getLeft());
-                helloController.canvas_on_top_of_time_line_pane.setHeight(helloController.scroll_pane_hosting_the_time_line.getHeight() - margin.getTop());
-                set_the_canvas(helloController, helloController.scroll_pane_hosting_the_time_line.getHvalue());
-            }
-        });
-        helloController.scroll_pane_hosting_the_time_line.heightProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                Insets margin = StackPane.getMargin(helloController.canvas_on_top_of_time_line_pane);
-                helloController.canvas_on_top_of_time_line_pane.setHeight(helloController.scroll_pane_hosting_the_time_line.getHeight() - margin.getTop());
-                set_the_canvas(helloController, helloController.scroll_pane_hosting_the_time_line.getHvalue());
-            }
-        });
-    }
-
     private void draw_the_line_graphics_context(GraphicsContext graphicsContext, double x_pos, double line_width, double line_length, javafx.scene.paint.Color line_color) {
         graphicsContext.setStroke(line_color);       // same as setStroke(...) on Line
         graphicsContext.setLineWidth(line_width);    // same as setStrokeWidth(...)
         graphicsContext.strokeLine(x_pos, 0, x_pos, line_length);
     }
 
-    private void add_the_text_graphics_context(GraphicsContext graphicsContext,long millisecond, double line_end, double line_length, javafx.scene.paint.Color color) {
+    private void add_the_text_graphics_context(GraphicsContext graphicsContext, long millisecond, double line_end, double line_length, javafx.scene.paint.Color color) {
         Font font = new Font(11);
         Text time_label = new Text(convertnanosecondsToTime(millisecond));
         time_label.setFont(font);
@@ -4294,5 +4277,28 @@ public class HelloApplication extends Application {
         graphicsContext.setFont(font);
         graphicsContext.setFill(color);
         graphicsContext.fillText(time_label.getText(), line_end + 5, line_length - bounds.getMinY() + 2.5);
+    }
+
+    private void bind_scroll_pane_height_to_canvas(HelloController helloController) {
+        helloController.canvas_on_top_of_time_line_pane.heightProperty().bind(helloController.scroll_pane_hosting_the_time_line.heightProperty().subtract(scroll_pane_hosting_time_line_border_width * 2));
+        helloController.canvas_on_top_of_time_line_pane.widthProperty().bind(helloController.scroll_pane_hosting_the_time_line.widthProperty().subtract(scroll_pane_hosting_time_line_border_width * 2));
+    }
+
+    private void listen_to_canvas_size_change(HelloController helloController) {
+        helloController.canvas_on_top_of_time_line_pane.widthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                set_the_canvas(helloController, helloController.scroll_pane_hosting_the_time_line.getHvalue(), t1.doubleValue());
+            }
+        });
+    }
+
+    private void set_the_width_of_the_border_of_scroll_pane(HelloController helloController) {
+        String new_style = helloController.scroll_pane_hosting_the_time_line.getStyle() + "-fx-border-width: " + String.valueOf(scroll_pane_hosting_time_line_border_width);
+        helloController.scroll_pane_hosting_the_time_line.setStyle(new_style);
+    }
+
+    private void set_the_time_line_over_laying_pane_margin(HelloController helloController){
+        StackPane.setMargin(helloController.pane_overlying_the_time_line_pane_for_polygon_indicator,new Insets(scroll_pane_hosting_time_line_border_width,0,0,0));
     }
 }
