@@ -27,6 +27,8 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -71,7 +73,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.io.FileUtils;
 import org.imgscalr.Scalr;
 import org.jetbrains.annotations.NotNull;
-import org.jsoup.*;
 
 import javax.imageio.ImageIO;
 
@@ -210,6 +211,7 @@ public class HelloApplication extends Application {
         write_the_black_image_and_the_whitened_black_image();
         black_out_the_image_view_at_the_start(helloController);
         remove_the_start_listener(helloController, scene);
+        tie_the_canvas_to_time_line_pane(helloController);
     }
 
     public static void main(String[] args) {
@@ -469,11 +471,12 @@ public class HelloApplication extends Application {
                 start_millisecond_of_each_verse = new long[number_of_ayats];
                 if (sound_path.isEmpty()) {
                     sound_mode = Sound_mode.CHOSEN;
-                    get_the_sound_and_concat_them_into_one(start_ayat, end_ayat,surat_number,reciters_info);
+                    get_the_sound_and_concat_them_into_one(start_ayat, end_ayat, surat_number, reciters_info);
                 } else {
                     sound_mode = Sound_mode.UPLOADED;
                     set_up_sound_for_chosen_verses(start_ayat, end_ayat);
                 }
+                set_up_the_start_millisecond_of_each_verse_duplicate_array();
                 int start_ayat_section = (int) Math.ceil(start_ayat / 50D);
                 int end_ayat_section = (int) Math.ceil(end_ayat / 50D);
                 for (int i = start_ayat_section; i <= end_ayat_section; i++) {
@@ -810,7 +813,7 @@ public class HelloApplication extends Application {
     }
 
     private void set_the_media_player_listener(HelloController helloController) {
-        mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
+        mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() { // TODO work is being done here and in AnimationTimer
             @Override
             public void changed(ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue) {
                 change_the_image_based_on_audio_fourth_screen(helloController, newValue.toMillis() + 10);
@@ -1305,10 +1308,10 @@ public class HelloApplication extends Application {
                 .readTimeout(90, TimeUnit.SECONDS)
                 .retryOnConnectionFailure(true)
                 .build();
-        client.dispatcher().setMaxRequests(8); // increase concurrency
-        client.dispatcher().setMaxRequestsPerHost(4);
+        client.dispatcher().setMaxRequests(4); // increase concurrency
+        client.dispatcher().setMaxRequestsPerHost(2);
         int number_of_ayats = end_ayat - start_ayat + 1;
-        int number_of_threads = Math.max(Runtime.getRuntime().availableProcessors() * 4, number_of_ayats);
+        int number_of_threads = Math.min(Runtime.getRuntime().availableProcessors(), number_of_ayats);
         BlockingQueue<String> verseQueue = new ArrayBlockingQueue<>(number_of_ayats);
         HashMap<String, Integer> tie_verses_to_indexes = new HashMap<>();
         String base_url = "";
@@ -1679,65 +1682,6 @@ public class HelloApplication extends Application {
         mediaPlayer.play();
     }
 
-    /*private void copy_the_images(HelloController helloController, BufferedImage image_to_write) {
-        String format = "bmp";
-        int start_ayat = return_start_ayat(helloController);
-        int end_ayat = return_end_ayat(helloController);
-        int number_of_ayats = end_ayat - start_ayat + 1;
-        byte[] imageBytes;
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(image_to_write, "bmp", baos);
-            baos.flush();
-            imageBytes = baos.toByteArray();
-            baos.close(); // good practice
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        int number_of_threads = Math.max(16, Math.max(Runtime.getRuntime().availableProcessors() * 2, number_of_ayats));
-        //number_of_threads = 32;
-        BlockingQueue<String[]> blockingQueue = new ArrayBlockingQueue<>(number_of_ayats * 3);
-        for (int i = start_ayat; i <= end_ayat; i++) {
-            blockingQueue.offer(new String[]{"base", String.valueOf(i)});
-        }
-        for (int i = start_ayat; i <= end_ayat; i++) {
-            blockingQueue.offer(new String[]{"edited", String.valueOf(i)});
-        }
-        for (int i = start_ayat; i <= end_ayat; i++) {
-            blockingQueue.offer(new String[]{"scaled", String.valueOf(i)});
-        }
-        ExecutorService executor = Executors.newFixedThreadPool(number_of_threads);
-        for (int i = 0; i < number_of_threads; i++) {
-            executor.submit(() -> {
-                while (true) {
-                    try {
-                        String[] item = blockingQueue.poll(100, TimeUnit.MILLISECONDS);
-                        if (item == null) {
-                            break; // Exit if no more verses to process
-                        }
-                        Path targetPath = Paths.get("temp/images", item[0], item[1] + "." + format);
-                        File file = targetPath.toFile();
-                        file.deleteOnExit();
-                        try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(targetPath.toFile()))) {
-                            bos.write(imageBytes);
-                        }
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        break;
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
-        }
-        executor.shutdown();
-        try {
-            executor.awaitTermination(5, TimeUnit.MINUTES); // Wait for all threads to finish
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }*/
-
     private void stop_and_start_the_media_again() {
         mediaPlayer.setOnStopped(new Runnable() {
             @Override
@@ -1760,15 +1704,6 @@ public class HelloApplication extends Application {
         });
         mediaPlayer.pause();
     }
-
-    /*private void listen_to_image_click(HelloController helloController) {
-        helloController.chatgpt_image_view.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                play_or_pause_the_video_after_click(helloController);
-            }
-        });
-    }*/
 
     private File convert_mp3_to_wav(File input_file, String output_name) {
         String output_file_path = "temp/sound/".concat(output_name);
@@ -2633,29 +2568,30 @@ public class HelloApplication extends Application {
         final javafx.scene.paint.Color time_line_indicitor_color = javafx.scene.paint.Color.rgb(206, 47, 40);
         int number_of_dividors = (int) Math.ceilDiv(get_duration(), time_between_every_line) + 1;
         double base_time_line = pixels_in_between_each_line * 11;
+        double total_pane_width = (base_time_line * 2) + ((number_of_dividors - 1) * pixels_in_between_each_line);
         time_line_pane_data.setTime_line_base_line(base_time_line);
         main_pane.setUserData(time_line_pane_data);
         draw_the_rectangle_time_line_pane(0, base_time_line, main_pane.getPrefHeight(), main_pane);
-        for (int i = 0; i < 11; i++) {
+        /*for (int i = 0; i < 11; i++) {
             if ((i == 1)) {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(i * pixels_in_between_each_line, half_long_line_length, mid_line_color, line_thickness));
             } else {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(i * pixels_in_between_each_line, line_length, short_line_color, line_thickness));
             }
-        }
-        for (int i = 0; i < number_of_dividors; i++) {
+        }*/
+        /*for (int i = 0; i < number_of_dividors; i++) {
             double x_pos = (i * pixels_in_between_each_line) + base_time_line;
             if ((time_between_every_line * i) % TimeUnit.MILLISECONDS.toNanos(1000) == 0) {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, long_line_length, long_line_color, line_thickness));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, long_line_length, javafx.scene.paint.Color.RED, line_thickness));
                 main_pane.getChildren().add(add_the_text_to_time_line(time_between_every_line * i, x_pos, line_length, time_text_color));
             } else if ((time_between_every_line * i) % TimeUnit.MILLISECONDS.toNanos(500) == 0) {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, half_long_line_length, mid_line_color, line_thickness));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, half_long_line_length, javafx.scene.paint.Color.RED, line_thickness));
             } else {
-                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, line_length, short_line_color, line_thickness));
+                main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, line_length, javafx.scene.paint.Color.RED, line_thickness));
             }
-        }
+        }*/
         draw_the_rectangle_time_line_pane(base_time_line + (number_of_dividors - 1) * pixels_in_between_each_line, base_time_line, main_pane.getPrefHeight(), main_pane);
-        double base_line_for_the_end_rectangle = base_time_line + (number_of_dividors) * pixels_in_between_each_line;
+        /*double base_line_for_the_end_rectangle = base_time_line + (number_of_dividors) * pixels_in_between_each_line;
         for (int i = 0; i < 11; i++) {
             double x_pos = i * pixels_in_between_each_line + base_line_for_the_end_rectangle;
             if ((time_between_every_line * (i + number_of_dividors)) % TimeUnit.MILLISECONDS.toNanos(1000) == 0) {
@@ -2668,13 +2604,15 @@ public class HelloApplication extends Application {
             } else {
                 main_pane.getChildren().add(draw_the_line_on_the_time_line(x_pos, line_length, short_line_color, line_thickness));
             }
-        }
+        }*/
         time_line_pane_data.setTime_line_end_base_line(base_time_line + (number_of_dividors - 1) * pixels_in_between_each_line);
         set_up_the_verses_time_line(helloController, main_pane, base_time_line, pixels_in_between_each_line, time_between_every_line);
         set_up_time_line_indicator(main_pane, base_time_line, time_line_indicitor_color);
         listen_to_time_line_clicked(helloController, main_pane);
         listen_to_mouse_movement_over_time_line_indicator(helloController, main_pane);
         listen_to_mouse_moving_in_time_line_pane(main_pane);
+        scroll_pane_h_vlaue_listener(helloController, total_pane_width);
+        set_the_canvas(helloController, 0);
     }
 
     private void draw_the_rectangle_time_line_pane(double start_x, double width, double height, Pane pane) {
@@ -4267,5 +4205,94 @@ public class HelloApplication extends Application {
                         }
                     }
                 });
+    }
+
+    private void set_up_the_start_millisecond_of_each_verse_duplicate_array() {
+        for (int i = 0; i < ayats_processed.length; i++) {
+            start_millisecond_of_each_verse[i] = ayats_processed[i].getStart_millisecond();
+        }
+    }
+
+    private void scroll_pane_h_vlaue_listener(HelloController helloController, double pane_width) {
+        helloController.scroll_pane_hosting_the_time_line.hvalueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                set_the_canvas(helloController, t1.doubleValue());
+            }
+        });
+    }
+
+    private void set_the_canvas(HelloController helloController, double h_value) {
+        final double pixels_in_between_each_line = 10;
+        final double long_line_length = 20;
+        final double half_long_line_length = 13;
+        final double line_length = 7.5;
+        final double line_thickness = 1.5;
+        final int start_lines_offset = 9;
+        final long time_between_every_line = TimeUnit.MILLISECONDS.toNanos(50);
+        final javafx.scene.paint.Color long_line_color = javafx.scene.paint.Color.rgb(100, 101, 103);
+        final javafx.scene.paint.Color mid_line_color = javafx.scene.paint.Color.rgb(89, 95, 103);
+        final javafx.scene.paint.Color short_line_color = javafx.scene.paint.Color.rgb(66, 71, 78);
+        final javafx.scene.paint.Color time_text_color = javafx.scene.paint.Color.rgb(146, 146, 146);
+        final javafx.scene.paint.Color time_line_indicitor_color = javafx.scene.paint.Color.rgb(206, 47, 40);
+        double scroll_pane_view_port_width = helloController.scroll_pane_hosting_the_time_line.getViewportBounds().getWidth();
+        double pane_width = helloController.scroll_pane_hosting_the_time_line.getContent().getLayoutBounds().getWidth();
+        double total_width_minus_view_port = pane_width - scroll_pane_view_port_width; // TODO width of pane less than scroll pane
+        double pixel_position = total_width_minus_view_port * h_value;
+        Canvas canvas = helloController.canvas_on_top_of_time_line_pane;
+        GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+        graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        int base_number_of_divider = (int) Math.floorDiv((long) pixel_position, (long) pixels_in_between_each_line) + start_lines_offset;
+        double first_offset = pixel_position % pixels_in_between_each_line;
+        double visible_number_of_dividers = scroll_pane_view_port_width/ pixels_in_between_each_line; // TODO last line not being drawn
+        for (int i = 0; i < visible_number_of_dividers; i++) {
+            int current_number_of_divider = base_number_of_divider + i;
+            double x_pos = (i * pixels_in_between_each_line) - first_offset;
+            graphicsContext.setLineWidth(line_thickness);
+            if ((time_between_every_line * current_number_of_divider) % TimeUnit.MILLISECONDS.toNanos(1000) == 0) {
+                draw_the_line_graphics_context(graphicsContext, x_pos, line_thickness, long_line_length, long_line_color);
+                add_the_text_graphics_context(graphicsContext,time_between_every_line * (current_number_of_divider - start_lines_offset),x_pos,line_length,time_text_color);
+            } else if ((time_between_every_line * current_number_of_divider) % TimeUnit.MILLISECONDS.toNanos(500) == 0) {
+                draw_the_line_graphics_context(graphicsContext, x_pos, line_thickness, half_long_line_length, mid_line_color);
+            } else {
+                draw_the_line_graphics_context(graphicsContext, x_pos, line_thickness, line_length, short_line_color);
+            }
+        }
+    }
+
+    private void tie_the_canvas_to_time_line_pane(HelloController helloController) {
+        helloController.scroll_pane_hosting_the_time_line.widthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                Insets margin = StackPane.getMargin(helloController.canvas_on_top_of_time_line_pane);
+                helloController.canvas_on_top_of_time_line_pane.setWidth(t1.doubleValue() - margin.getLeft());
+                helloController.canvas_on_top_of_time_line_pane.setHeight(helloController.scroll_pane_hosting_the_time_line.getHeight() - margin.getTop());
+                set_the_canvas(helloController, helloController.scroll_pane_hosting_the_time_line.getHvalue());
+            }
+        });
+        helloController.scroll_pane_hosting_the_time_line.heightProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                Insets margin = StackPane.getMargin(helloController.canvas_on_top_of_time_line_pane);
+                helloController.canvas_on_top_of_time_line_pane.setHeight(helloController.scroll_pane_hosting_the_time_line.getHeight() - margin.getTop());
+                set_the_canvas(helloController, helloController.scroll_pane_hosting_the_time_line.getHvalue());
+            }
+        });
+    }
+
+    private void draw_the_line_graphics_context(GraphicsContext graphicsContext, double x_pos, double line_width, double line_length, javafx.scene.paint.Color line_color) {
+        graphicsContext.setStroke(line_color);       // same as setStroke(...) on Line
+        graphicsContext.setLineWidth(line_width);    // same as setStrokeWidth(...)
+        graphicsContext.strokeLine(x_pos, 0, x_pos, line_length);
+    }
+
+    private void add_the_text_graphics_context(GraphicsContext graphicsContext,long millisecond, double line_end, double line_length, javafx.scene.paint.Color color) {
+        Font font = new Font(11);
+        Text time_label = new Text(convertnanosecondsToTime(millisecond));
+        time_label.setFont(font);
+        Bounds bounds = time_label.getLayoutBounds();
+        graphicsContext.setFont(font);
+        graphicsContext.setFill(color);
+        graphicsContext.fillText(time_label.getText(), line_end + 5, line_length - bounds.getMinY() + 2.5);
     }
 }
