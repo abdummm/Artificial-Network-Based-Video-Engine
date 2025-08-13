@@ -11,6 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -180,4 +181,7 @@ public class HelloController {
 
     @FXML
     public MFXProgressSpinner progress_indicator_first_loading_screen;
+
+    @FXML
+    public Canvas canvas_on_top_of_time_line_pane;
 }
