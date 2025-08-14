@@ -10,9 +10,9 @@ import java.util.TreeSet;
 public class Time_line_pane_data {
     private double pixels_in_between_each_line;
     private long time_between_every_line;
-    private Polygon polygon;
     private double mouse_drag_y_area = 30D;
     private double polygon_width;
+    private double real_polygon_position;
     private double time_line_base_line;
     private double time_line_end_base_line;
     private TreeSet<Shape_object_time_line> tree_set_containing_all_of_the_items;
@@ -46,14 +46,6 @@ public class Time_line_pane_data {
 
     public void setTime_between_every_line(long time_between_every_line) {
         this.time_between_every_line = time_between_every_line;
-    }
-
-    public Polygon getPolygon() {
-        return polygon;
-    }
-
-    public void setPolygon(Polygon polygon) {
-        this.polygon = polygon;
     }
 
     public double getMouse_drag_y_area() {
@@ -91,5 +83,14 @@ public class Time_line_pane_data {
     public TreeSet<Shape_object_time_line> getTree_set_containing_all_of_the_items() {
         return tree_set_containing_all_of_the_items;
     }
+
+    public double getReal_polygon_position() {
+        return real_polygon_position;
+    }
+
+    public void setReal_polygon_position(double real_polygon_position) {
+        this.real_polygon_position = real_polygon_position;
+    }
+
 
 }
