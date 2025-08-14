@@ -11,11 +11,10 @@ public class Time_line_pane_data {
     private double pixels_in_between_each_line;
     private long time_between_every_line;
     private double mouse_drag_y_area = 30D;
-    private double polygon_width;
-    private double real_polygon_position;
     private double time_line_base_line;
     private double time_line_end_base_line;
     private TreeSet<Shape_object_time_line> tree_set_containing_all_of_the_items;
+    Polygon polygon;
 
     public Time_line_pane_data() {
         tree_set_containing_all_of_the_items = new TreeSet<Shape_object_time_line>(new Comparator<Shape_object_time_line>() {
@@ -56,14 +55,6 @@ public class Time_line_pane_data {
         this.mouse_drag_y_area = mouse_drag_y_area;
     }
 
-    public double getPolygon_width() {
-        return polygon_width;
-    }
-
-    public void setPolygon_width(double polygon_width) {
-        this.polygon_width = polygon_width;
-    }
-
     public double getTime_line_base_line() {
         return time_line_base_line;
     }
@@ -84,13 +75,11 @@ public class Time_line_pane_data {
         return tree_set_containing_all_of_the_items;
     }
 
-    public double getReal_polygon_position() {
-        return real_polygon_position;
+    public Polygon getPolygon() {
+        return polygon;
     }
 
-    public void setReal_polygon_position(double real_polygon_position) {
-        this.real_polygon_position = real_polygon_position;
+    public void setPolygon(Polygon polygon) {
+        this.polygon = polygon;
     }
-
-
 }

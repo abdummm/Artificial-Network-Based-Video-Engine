@@ -2616,6 +2616,7 @@ public class HelloApplication extends Application {
         time_line_pane_data.setTime_line_end_base_line(base_time_line + (number_of_dividors - 1) * pixels_in_between_each_line);
         set_up_the_verses_time_line(helloController, main_pane, base_time_line, pixels_in_between_each_line, time_between_every_line);
         Polygon polygon = set_up_the_polygon_for_the_overlaying_pane(helloController, base_time_line, time_line_indicitor_color, main_pane);
+        time_line_pane_data.setPolygon(polygon);
         //set_up_time_line_indicator(main_pane, base_time_line, time_line_indicitor_color);
         listen_to_time_line_clicked(helloController, main_pane);
         listen_to_mouse_movement_over_time_line_indicator(helloController, main_pane, polygon);
@@ -2708,7 +2709,7 @@ public class HelloApplication extends Application {
         polygon.setLayoutX(start_x - (time_line_indicator_width / 2));
         polygon.setLayoutY(0);
         pane.getChildren().add(polygon);
-        time_line_pane_data.setPolygon_width(time_line_indicator_width);
+        //time_line_pane_data.setPolygon_width(time_line_indicator_width);
     }
 
     private void update_the_time_line_indicator(Pane pane, long milliseconds) {
@@ -2760,30 +2761,36 @@ public class HelloApplication extends Application {
 
     private void time_line_clicked(HelloController helloController, Pane pane, double x_position) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
+        Polygon polygon = time_line_pane_data.getPolygon();
+        Polygon_data polygon_data = (Polygon_data) time_line_pane_data.getPolygon().getUserData();
         double base_time_line = time_line_pane_data.getTime_line_base_line();
-        double half_polygon = time_line_pane_data.getPolygon_width() / 2;
+        double half_polygon = polygon_data.getPolygon_width() / 2;
         double end_time_line = time_line_pane_data.getTime_line_end_base_line();
         if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
             pause_the_media_player(helloController);
         }
         if (x_position < base_time_line) {
             seek_media_based_on_time_line_changed(pane, 0);
-            draw_the_polygon_time_line(helloController,base_time_line - half_polygon);
+            draw_the_polygon_time_line(helloController, base_time_line - half_polygon);
+            set_the_polygon_real_start(polygon,base_time_line - half_polygon);
             return;
         }
         if (x_position > end_time_line) {
             seek_media_based_on_time_line_changed(pane, end_time_line - base_time_line);
-            draw_the_polygon_time_line(helloController,base_time_line - half_polygon);
+            draw_the_polygon_time_line(helloController, end_time_line - half_polygon);
+            set_the_polygon_real_start(polygon,end_time_line - half_polygon);
             return;
         }
         seek_media_based_on_time_line_changed(pane, x_position - base_time_line);
-        draw_the_polygon_time_line(helloController,x_position - half_polygon);
+        draw_the_polygon_time_line(helloController, x_position - half_polygon);
+        set_the_polygon_real_start(polygon,x_position - half_polygon);
     }
 
     private void listen_to_mouse_movement_over_time_line_indicator(HelloController helloController, Pane pane, Polygon polygon) {
         Time_line_pane_data time_line_pane_data = ((Time_line_pane_data) pane.getUserData());
+        Polygon_data polygon_data = (Polygon_data) time_line_pane_data.getPolygon().getUserData();
         double y_area = time_line_pane_data.getMouse_drag_y_area();
-        double half_polygon = time_line_pane_data.getPolygon_width()/2;
+        double half_polygon = polygon_data.getPolygon_width() / 2;
         polygon.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -3834,8 +3841,9 @@ public class HelloApplication extends Application {
     }
 
     private double return_polygon_middle_position(Time_line_pane_data time_line_pane_data) {
-        double start = time_line_pane_data.getReal_polygon_position();
-        return start + time_line_pane_data.getPolygon_width() / 2;
+        Polygon_data polygon_data = (Polygon_data) time_line_pane_data.getPolygon().getUserData();
+        double start = polygon_data.getReal_polygon_position();
+        return start + polygon_data.getPolygon_width() / 2;
     }
 
     private void clear_image_view_if_recatngle_is_in_boundries(HelloController helloController, Pane pane, Shape_object_time_line shapeObjectTimeLine) {
@@ -4333,6 +4341,7 @@ public class HelloApplication extends Application {
         final double right_side_of_rectangle = ((time_line_indicator_width - rectangle_width) / 2) + rectangle_width;
         final double left_side_of_rectangle = (time_line_indicator_width - rectangle_width) / 2;
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
+        Polygon_data polygon_data;
         double height = pane.getHeight();
         Polygon polygon = new Polygon();
         polygon.setSmooth(true);
@@ -4350,8 +4359,10 @@ public class HelloApplication extends Application {
         polygon.setLayoutX(start_x - (time_line_indicator_width / 2));
         polygon.setLayoutY(0);
         helloController.pane_overlying_the_time_line_pane_for_polygon_indicator.getChildren().add(polygon);
-        time_line_pane_data.setReal_polygon_position(start_x - (time_line_indicator_width / 2));
-        time_line_pane_data.setPolygon_width(time_line_indicator_width);
+        polygon_data = new Polygon_data(start_x - (time_line_indicator_width / 2), time_line_indicator_width);
+        /*time_line_pane_data.setReal_polygon_position(start_x - (time_line_indicator_width / 2));
+        time_line_pane_data.setPolygon_width(time_line_indicator_width);*/
+        polygon.setUserData(polygon_data);
         return polygon;
     }
 
@@ -4402,12 +4413,20 @@ public class HelloApplication extends Application {
         double view_port_width = helloController.scroll_pane_hosting_the_time_line.getViewportBounds().getWidth();
         double h_value = helloController.scroll_pane_hosting_the_time_line.getHvalue();
         Polygon polygon = (Polygon) helloController.pane_overlying_the_time_line_pane_for_polygon_indicator.getChildren().get(0);
+        Polygon_data polygon_data = (Polygon_data) polygon.getUserData();
+        double polygon_width = polygon_data.getPolygon_width();
         double start_of_window = return_pixel_position(contnet_width, view_port_width, h_value);
         double end_of_window = start_of_window + view_port_width;
-        if (x_pos >= start_of_window && x_pos <= end_of_window) {
+        double start_window_minus_width = start_of_window - polygon_width;
+        double end_of_window_plus_width = end_of_window + polygon_width;
+        if (x_pos >= start_window_minus_width && x_pos <= end_of_window_plus_width) {
             double real_position = x_pos - start_of_window;
             polygon.setLayoutX(real_position);
-
         }
+    }
+
+    private void set_the_polygon_real_start(Polygon polygon,double x_pos){
+        Polygon_data polygon_data = (Polygon_data) polygon.getUserData();
+        polygon_data.setReal_polygon_position(x_pos);
     }
 }
