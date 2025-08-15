@@ -4225,6 +4225,11 @@ public class HelloApplication extends Application {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
                 set_the_canvas(helloController, t1.doubleValue(), helloController.scroll_pane_hosting_the_time_line.getViewportBounds().getWidth());
+                Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
+                if(time_line_pane_data!=null){
+                    Polygon_data polygon_data = (Polygon_data) time_line_pane_data.getPolygon().getUserData();
+                    draw_the_polygon_time_line(helloController,polygon_data.getReal_polygon_position());
+                }
             }
         });
     }
