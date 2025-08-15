@@ -220,6 +220,7 @@ public class HelloApplication extends Application {
         set_the_time_line_over_laying_pane_margin(helloController);
         bind_scroll_pane_view_port_to_pane_over_laying_time_line(helloController);
         clip_the_over_the_over_laying_pane(helloController);
+        listen_to_pane_over_time_line_being_resized(helloController);
     }
 
     public static void main(String[] args) {
@@ -848,7 +849,7 @@ public class HelloApplication extends Application {
                 set_the_play_pause_button(helloController, "play");
 //                helloController.sound_slider_fourth_screen.setValue(helloController.sound_slider_fourth_screen.getMax());
                 timer.stop();
-                update_the_time_line_indicator(helloController.time_line_pane, get_duration());
+                update_the_time_line_indicator(helloController, get_duration());
                 //stop_and_start_the_media_again();
             }
         });
@@ -1567,7 +1568,7 @@ public class HelloApplication extends Application {
     private void scroll_to_specific_verse_time(HelloController helloController) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
         long time_in_milliseconds = ayats_processed[selected_verse].getStart_millisecond();
-        update_the_time_line_indicator(helloController.time_line_pane, time_in_milliseconds);
+        update_the_time_line_indicator(helloController, time_in_milliseconds);
         //force_the_time_line_indicator_to_be_at_the_middle(helloController.scroll_pane_hosting_the_time_line, time_line_pane_data.getPolygon().getLayoutX());
         mediaPlayer.seek(Duration.millis(TimeUnit.NANOSECONDS.toMillis(time_in_milliseconds)));
         lastKnownSystemTime = 0;
@@ -2712,20 +2713,19 @@ public class HelloApplication extends Application {
         //time_line_pane_data.setPolygon_width(time_line_indicator_width);
     }
 
-    private void update_the_time_line_indicator(Pane pane, long milliseconds) {
-      /*  Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
+    private void update_the_time_line_indicator(HelloController helloController, long milliseconds) {
+        Pane pane_holding_the_time_line = helloController.time_line_pane;
+        Polygon polygon = get_the_polygon_from_the_time_line_over_lay(helloController);
+        Polygon_data polygon_data = (Polygon_data) polygon.getUserData();
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane_holding_the_time_line.getUserData();
         double pixels_in_between_each_line = time_line_pane_data.getPixels_in_between_each_line();
         long time_between_every_line = time_line_pane_data.getTime_between_every_line();
         double adjustor = pixels_in_between_each_line / time_between_every_line;
         double time_line_base_line = time_line_pane_data.getTime_line_base_line();
-        Polygon polygon = time_line_pane_data.getPolygon();
-        double half_polygon = time_line_pane_data.getPolygon_width() / 2;
-        if (polygon == null) {
-            show_alert("Time line not rendered correctly. Please restart app.");
-            return;
-        }
+        double half_polygon = polygon_data.getPolygon_width()/2;
         double new_x = (milliseconds * adjustor) - half_polygon + time_line_base_line;
-        polygon.setLayoutX(new_x);*/
+        polygon_data.setReal_polygon_position(new_x);
+        draw_the_polygon_time_line(helloController,new_x);
     }
 
     private void listen_to_time_line_clicked(HelloController helloController, Pane pane) {
@@ -2875,7 +2875,7 @@ public class HelloApplication extends Application {
                     Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
                     double elapsed = (System.currentTimeMillis() - lastKnownSystemTime); // seconds
                     long time_in_nanos = (lastKnownMediaTime + TimeUnit.MILLISECONDS.toNanos((long) elapsed));
-                    update_the_time_line_indicator(helloController.time_line_pane, time_in_nanos);
+                    update_the_time_line_indicator(helloController, time_in_nanos);
                     //set_the_time_line_indicator_to_the_middle(helloController.scroll_pane_hosting_the_time_line, time_line_pane_data.getPolygon().getLayoutX());
                     is_it_time_to_change_verses(helloController, time_in_nanos);
                     if (last_seen_image_vid_is_playing == null || time_in_nanos > last_seen_image_vid_is_playing.getEnd_time()) {
@@ -4404,7 +4404,7 @@ public class HelloApplication extends Application {
     }
 
     private void draw_the_polygon_time_line(HelloController helloController, double contnet_width, double view_port_width, double h_value, double x_pos) {
-        Polygon polygon = (Polygon) helloController.pane_overlying_the_time_line_pane_for_polygon_indicator.getChildren().get(0);
+        Polygon polygon = get_the_polygon_from_the_time_line_over_lay(helloController);
         double start_of_window = return_pixel_position(contnet_width, view_port_width, h_value);
         double end_of_window = start_of_window + view_port_width;
         if (x_pos >= start_of_window && x_pos <= end_of_window) {
@@ -4417,7 +4417,7 @@ public class HelloApplication extends Application {
         double contnet_width = helloController.scroll_pane_hosting_the_time_line.getContent().getLayoutBounds().getWidth();
         double view_port_width = helloController.scroll_pane_hosting_the_time_line.getViewportBounds().getWidth();
         double h_value = helloController.scroll_pane_hosting_the_time_line.getHvalue();
-        Polygon polygon = (Polygon) helloController.pane_overlying_the_time_line_pane_for_polygon_indicator.getChildren().get(0);
+        Polygon polygon = get_the_polygon_from_the_time_line_over_lay(helloController);
         Polygon_data polygon_data = (Polygon_data) polygon.getUserData();
         double polygon_width = polygon_data.getPolygon_width();
         double start_of_window = return_pixel_position(contnet_width, view_port_width, h_value);
@@ -4427,11 +4427,41 @@ public class HelloApplication extends Application {
         if (x_pos >= start_window_minus_width && x_pos <= end_of_window_plus_width) {
             double real_position = x_pos - start_of_window;
             polygon.setLayoutX(real_position);
+            polygon.setVisible(true);
+        } else {
+            polygon.setVisible(false);
         }
     }
 
     private void set_the_polygon_real_start(Polygon polygon,double x_pos){
         Polygon_data polygon_data = (Polygon_data) polygon.getUserData();
         polygon_data.setReal_polygon_position(x_pos);
+    }
+
+    private void listen_to_pane_over_time_line_being_resized(HelloController helloController){
+        helloController.pane_overlying_the_time_line_pane_for_polygon_indicator.prefWidthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                Polygon polygon = get_the_polygon_from_the_time_line_over_lay(helloController);
+                Polygon_data polygon_data = (Polygon_data) polygon.getUserData();
+                draw_the_polygon_time_line(helloController,helloController.scroll_pane_hosting_the_time_line.getContent().getLayoutBounds().getWidth(),t1.doubleValue(),helloController.scroll_pane_hosting_the_time_line.getHvalue(),polygon_data.getReal_polygon_position());
+            }
+        });
+    }
+
+    private Polygon get_the_polygon_from_the_time_line_over_lay(HelloController helloController){
+        if(helloController.pane_overlying_the_time_line_pane_for_polygon_indicator.getChildren().isEmpty()){
+            return new Polygon();
+        }
+        if(helloController.pane_overlying_the_time_line_pane_for_polygon_indicator.getChildren().get(0) instanceof Polygon){
+            return (Polygon) helloController.pane_overlying_the_time_line_pane_for_polygon_indicator.getChildren().get(0);
+        } else {
+            for(int i = 0;i<helloController.pane_overlying_the_time_line_pane_for_polygon_indicator.getChildren().size();i++){
+                if(helloController.pane_overlying_the_time_line_pane_for_polygon_indicator.getChildren().get(i) instanceof Polygon){
+                    return (Polygon) helloController.pane_overlying_the_time_line_pane_for_polygon_indicator.getChildren().get(i);
+                }
+            }
+        }
+        return new Polygon();
     }
 }
