@@ -207,6 +207,7 @@ public class HelloApplication extends Application {
         set_up_glossy_pause_button(helloController);
         make_the_blurry_chatgpt_image_always_have_the_same_size_as_non_blurry(helloController);
         listen_to_blurry_image_view_size_change_and_center_the_clip(helloController);
+        bind_play_button_to_circle(helloController);
         make_play_button_circle(helloController);
         add_tool_tip_to_next_verse(helloController);
         add_tool_tip_to_previous_verse(helloController);
@@ -3683,7 +3684,7 @@ public class HelloApplication extends Application {
         //GaussianBlur blur = new GaussianBlur(30); // Adjust the radius for more/less blur
         BoxBlur blur = new BoxBlur(60, 60, 3);
         helloController.blurry_chatgpt_image_view.setEffect(blur);
-        Circle circle = new Circle(helloController.blurry_chatgpt_image_view.getFitWidth() / 2, helloController.blurry_chatgpt_image_view.getFitHeight() / 2, blurry_circle_raduis);
+        Circle circle = new Circle(blurry_circle_raduis);
         helloController.blurry_chatgpt_image_view.setClip(circle);
     }
 
@@ -3723,7 +3724,31 @@ public class HelloApplication extends Application {
     }
 
     private void listen_to_blurry_image_view_size_change_and_center_the_clip(HelloController helloController) {
-        helloController.blurry_chatgpt_image_view.fitWidthProperty().addListener(new ChangeListener<Number>() {
+        double vertical_bias = 0.875D;
+        Circle circle_from_glossy_pane = (Circle) helloController.blurry_chatgpt_image_view.getClip();
+        circle_from_glossy_pane.centerXProperty().bind(new DoubleBinding() {
+            {
+                super.bind(helloController.blurry_chatgpt_image_view.fitWidthProperty());
+            }
+            @Override
+            protected double computeValue() {
+                return helloController.blurry_chatgpt_image_view.getFitWidth() / 2;
+            }
+        });
+        circle_from_glossy_pane.centerYProperty().bind(new DoubleBinding() {
+            {
+                super.bind(helloController.blurry_chatgpt_image_view.fitHeightProperty());
+            }
+            @Override
+            protected double computeValue() {
+                if((helloController.blurry_chatgpt_image_view.getFitHeight()*vertical_bias) + blurry_circle_raduis > helloController.blurry_chatgpt_image_view.getFitHeight()){
+                    return ((helloController.blurry_chatgpt_image_view.getFitHeight() - blurry_circle_raduis*2)*vertical_bias) + blurry_circle_raduis;
+                } else {
+                    return helloController.blurry_chatgpt_image_view.getFitHeight()*vertical_bias;
+                }
+            }
+        });
+        /*helloController.blurry_chatgpt_image_view.fitWidthProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
                 if (helloController.blurry_chatgpt_image_view.getClip() != null) {
@@ -3741,7 +3766,13 @@ public class HelloApplication extends Application {
                     helloController.play_sound.setLayoutY(t1.doubleValue() * vertical_bias - blurry_circle_raduis);
                 }
             }
-        });
+        });*/
+    }
+
+    private void bind_play_button_to_circle(HelloController helloController){
+        Circle circle_from_glossy_pane = (Circle) helloController.blurry_chatgpt_image_view.getClip();
+        helloController.play_sound.layoutXProperty().bind(circle_from_glossy_pane.centerXProperty().subtract(blurry_circle_raduis));
+        helloController.play_sound.layoutYProperty().bind(circle_from_glossy_pane.centerYProperty().subtract(blurry_circle_raduis));
     }
 
     private void make_play_button_circle(HelloController helloController) {
@@ -4483,7 +4514,7 @@ public class HelloApplication extends Application {
     }
 
     private Polygon get_the_polygon_from_the_time_line_over_lay(HelloController helloController){
-        if(helloController.pane_overlying_the_time_line_pane_for_polygon_indicator.getChildren().isEmpty()){
+        /*if(helloController.pane_overlying_the_time_line_pane_for_polygon_indicator.getChildren().isEmpty()){
             return new Polygon();
         }
         if(helloController.pane_overlying_the_time_line_pane_for_polygon_indicator.getChildren().get(0) instanceof Polygon){
@@ -4495,7 +4526,9 @@ public class HelloApplication extends Application {
                 }
             }
         }
-        return new Polygon();
+        return new Polygon();*/
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
+        return time_line_pane_data.getPolygon();
     }
 
     private void set_the_polygon_to_the_middle_when_video_is_playing(HelloController helloController){
