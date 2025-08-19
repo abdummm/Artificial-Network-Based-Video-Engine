@@ -128,14 +128,14 @@ public class HelloApplication extends Application {
     private final static String clientSecret_pre_live = Quran_api_secrets.clientSecret_pre_live;
     private final static String clientId_live = Quran_api_secrets.clientId_live;
     private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
-    private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
+    private final static Live_mode live_or_pre_live_quran_api = Live_mode.PRE_LIVE;
     private final static String app_name = "Sabrly";
     private final static double screen_width_multiplier = 0.55D;
     private final static double screen_height_multiplier = 0.55D;
     private final static int scroll_pane_hosting_time_line_border_width = 1;
+    private final static int how_long_does_it_take_for_tool_tip_to_show_up = 200;
 
     //private final static double circle_button_radius = 20D;
-    private final static int how_long_does_it_take_for_tool_tip_to_show_up = 500;
 
     private long lastKnownMediaTime = 0;
     private long lastKnownSystemTime = 0;
@@ -159,7 +159,7 @@ public class HelloApplication extends Application {
         set_the_logo_at_the_start(helloController);
         center_the_progress_indicator(helloController, scene);
         listen_to_height_change_property(helloController, scene);
-        get_the_quran_api_token(helloController, true, scene);
+        //get_the_quran_api_token(helloController, true, scene);
     }
 
 
@@ -763,7 +763,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent event) {
                 selected_verse++;
-                the_verse_changed(helloController, selected_verse); // TODO make sure the verse is set correctly
+                the_verse_changed(helloController, selected_verse);
                 scroll_to_specific_verse_time(helloController);
                 set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, ayats_processed[selected_verse].getStart_millisecond()), Type_of_Image.FULL_QUALITY);
             }
@@ -775,7 +775,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent event) {
                 selected_verse--;
-                the_verse_changed(helloController, selected_verse); // TODO make sure the verse is set correctly
+                the_verse_changed(helloController, selected_verse);
                 scroll_to_specific_verse_time(helloController);
                 set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, ayats_processed[selected_verse].getStart_millisecond()), Type_of_Image.FULL_QUALITY);
             }
@@ -3663,25 +3663,25 @@ public class HelloApplication extends Application {
 
     private void add_tool_tip_to_create_button(HelloController helloController) {
         Tooltip tooltip = new Tooltip("Create video");
-        tooltip.setShowDelay(new Duration(500));
+        tooltip.setShowDelay(new Duration(how_long_does_it_take_for_tool_tip_to_show_up));
         Tooltip.install(helloController.create_video_final, tooltip);
     }
 
     private void add_cancel_video_tool_tip(HelloController helloController) {
         Tooltip tooltip = new Tooltip("Cancel video");
-        tooltip.setShowDelay(new Duration(500));
+        tooltip.setShowDelay(new Duration(how_long_does_it_take_for_tool_tip_to_show_up));
         Tooltip.install(helloController.cancel_video, tooltip);
     }
 
     private void add_tool_tip_to_next_verse(HelloController helloController) {
         Tooltip tooltip = new Tooltip("Next verse");
-        tooltip.setShowDelay(new Duration(500));
+        tooltip.setShowDelay(new Duration(how_long_does_it_take_for_tool_tip_to_show_up));
         Tooltip.install(helloController.next_photo_chat_gpt_result, tooltip);
     }
 
     private void add_tool_tip_to_previous_verse(HelloController helloController) {
         Tooltip tooltip = new Tooltip("Previous verse");
-        tooltip.setShowDelay(new Duration(500));
+        tooltip.setShowDelay(new Duration(how_long_does_it_take_for_tool_tip_to_show_up));
         Tooltip.install(helloController.previous_photo_chat_gpt_result, tooltip);
     }
 
