@@ -187,4 +187,7 @@ public class HelloController {
 
     @FXML
     public Pane pane_overlying_the_time_line_pane_for_polygon_indicator;
+
+    @FXML
+    public ListView list_view_with_all_of_the_languages;
 }

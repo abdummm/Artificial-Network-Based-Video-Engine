@@ -128,7 +128,7 @@ public class HelloApplication extends Application {
     private final static String clientSecret_pre_live = Quran_api_secrets.clientSecret_pre_live;
     private final static String clientId_live = Quran_api_secrets.clientId_live;
     private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
-    private final static Live_mode live_or_pre_live_quran_api = Live_mode.PRE_LIVE;
+    private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
     private final static String app_name = "Sabrly";
     private final static double screen_width_multiplier = 0.55D;
     private final static double screen_height_multiplier = 0.55D;
@@ -149,7 +149,7 @@ public class HelloApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load(), Screen.getPrimary().getBounds().getWidth() * screen_width_multiplier, Screen.getPrimary().getBounds().getHeight() * screen_height_multiplier);
         //scene.getStylesheets().add(PrimerLight.class.getResource("primer-light.css").toExternalForm());
         //stage.setTitle("السلام عليكم ورحمة الله وبركاته");
-        stage.setTitle("Sabrly");
+        stage.setTitle(app_name);
         stage.setScene(scene);
         stage.show();
         stage.toFront();
@@ -2829,13 +2829,15 @@ public class HelloApplication extends Application {
         polygon.setOnMouseReleased(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                Point2D local = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY());
+                Node parent_of_the_polygon = polygon.getParent();
+                Point2D local = parent_of_the_polygon.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY());
                 if (polygon.contains(polygon.parentToLocal(local))) {
                     polygon.setCursor(Cursor.OPEN_HAND);
                 } else {
                     polygon.setCursor(Cursor.DEFAULT);
                 }
-                set_the_chatgpt_image_view(helloController, return_the_image_on_click(pane, local.getX()), Type_of_Image.FULL_QUALITY);
+                Point2D point_2d_relative_to_the_time_line = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY());
+                set_the_chatgpt_image_view(helloController, return_the_image_on_click(pane, point_2d_relative_to_the_time_line.getX()), Type_of_Image.FULL_QUALITY);
             }
         });
         polygon.setOnMouseDragged(new EventHandler<MouseEvent>() {
@@ -4584,4 +4586,6 @@ public class HelloApplication extends Application {
             }
         });
     }
+
+    //TODO restart the quran token after an hour
 }
