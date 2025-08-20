@@ -108,7 +108,7 @@ public class HelloApplication extends Application {
     private Image blacked_out_image;
     private Image blacked_out_image_whitened;
     private String quran_token;
-    private long token_expiry;
+    //private long token_expiry;
     private ChangeListener<Number> heightListener_to_scene_for_logo_at_start;
     private HashMap<String, ArrayList<Integer>> hash_map_with_the_translations = new HashMap<>();
     private HashMap<Integer, String> hashMap_id_to_language_name_text = new HashMap<>();
@@ -134,6 +134,7 @@ public class HelloApplication extends Application {
     private final static double screen_height_multiplier = 0.55D;
     private final static int scroll_pane_hosting_time_line_border_width = 1;
     private final static int how_long_does_it_take_for_tool_tip_to_show_up = 200;
+    private final static int number_of_seconds_of_quran_token_pre_fire = 120;
 
     //private final static double circle_button_radius = 20D;
 
@@ -159,7 +160,7 @@ public class HelloApplication extends Application {
         set_the_logo_at_the_start(helloController);
         center_the_progress_indicator(helloController, scene);
         listen_to_height_change_property(helloController, scene);
-        //get_the_quran_api_token(helloController, true, scene);
+        get_the_quran_api_token(helloController, true, scene);
     }
 
 
@@ -224,6 +225,7 @@ public class HelloApplication extends Application {
         clip_the_over_the_over_laying_pane(helloController);
         listen_to_pane_over_time_line_being_resized(helloController);
         ignore_scroll_for_overlaying_pane_for_time_line(helloController);
+        test();
     }
 
     public static void main(String[] args) {
@@ -855,6 +857,8 @@ public class HelloApplication extends Application {
                 update_the_time_line_indicator(helloController, get_duration());
                 //stop_and_start_the_media_again();
                 set_the_status_of_locked_in_polygon(helloController, false);
+                //mediaPlayer.pause();
+                // TODO stop media after its finished
             }
         });
     }
@@ -3995,7 +3999,8 @@ public class HelloApplication extends Application {
                     ObjectMapper mapper = new ObjectMapper();
                     JsonNode jsonNode = mapper.readTree(response.body().string());
                     quran_token = jsonNode.get("access_token").asText();
-                    token_expiry = TimeUnit.SECONDS.toMillis(jsonNode.get("expires_in").asInt()) + System.currentTimeMillis();
+                    //token_expiry = TimeUnit.SECONDS.toMillis(jsonNode.get("expires_in").asInt()) + System.currentTimeMillis();
+                    refresh_the_quran_token(helloController, scene, jsonNode.get("expires_in").asInt());
                     if (call_apis) {
                         call_the_2_apis_at_the_start(helloController, scene);
                     }
@@ -4587,5 +4592,26 @@ public class HelloApplication extends Application {
         });
     }
 
-    //TODO restart the quran token after an hour
+    private void refresh_the_quran_token(HelloController helloController, Scene scene, int time_in_seconds) {
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.schedule(new Runnable() {
+            @Override
+            public void run() {
+                get_the_quran_api_token(helloController, false, scene);
+                scheduler.shutdown(); // shutdown after execution
+            }
+        }, time_in_seconds - number_of_seconds_of_quran_token_pre_fire, TimeUnit.SECONDS);
+    }
+
+    private void test() {
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (mediaPlayer != null) {
+                    System.out.println(mediaPlayer.getStatus());
+                }
+            }
+        }, 0, 1000); // start immediately, repeat every 1000 ms
+    }
 }
