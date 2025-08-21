@@ -360,7 +360,7 @@
                     <!-- RIGHT -->
                     <HBox HBox.hgrow="ALWAYS">
                         <StackPane fx:id="right_stack_pane_in_grid_pane">
-                            <ListView fx:id="list_view_with_all_of_the_languages"  prefHeight="100" prefWidth="200" maxHeight="100" maxWidth="200" />
+                            <ListView fx:id="list_view_with_all_of_the_languages"  prefHeight="200" prefWidth="300" maxHeight="200" maxWidth="300" />
                         </StackPane>
                     </HBox>
                 </HBox>

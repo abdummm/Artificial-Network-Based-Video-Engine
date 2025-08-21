@@ -225,6 +225,7 @@ public class HelloApplication extends Application {
         clip_the_over_the_over_laying_pane(helloController);
         listen_to_pane_over_time_line_being_resized(helloController);
         ignore_scroll_for_overlaying_pane_for_time_line(helloController);
+        set_up_the_languages(helloController);
     }
 
     public static void main(String[] args) {
@@ -295,7 +296,7 @@ public class HelloApplication extends Application {
         }*/
     }
 
-    private void call_verses_api(HelloController helloController, int id, int page) {
+    private void call_verses_api(HelloController helloController, int id, int page, HashMap<String, ArrayList<String>> hashMap_with_all_of_the_translations_of_verses) {
         String host;
         String client_id;
         if (live_or_pre_live_quran_api.equals(Live_mode.LIVE)) {
@@ -332,7 +333,7 @@ public class HelloApplication extends Application {
         try {
             Response response = client.newCall(request).execute();
             String verses_string = response.body().string();
-            add_all_of_the_verses_to_the_list_after(helloController, verses_string);
+            add_all_of_the_verses_to_the_list_after(helloController, verses_string, hashMap_with_all_of_the_translations_of_verses);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -492,9 +493,11 @@ public class HelloApplication extends Application {
                 set_up_the_start_millisecond_of_each_verse_duplicate_array();
                 int start_ayat_section = (int) Math.ceil(start_ayat / 50D);
                 int end_ayat_section = (int) Math.ceil(end_ayat / 50D);
+                HashMap<String, ArrayList<String>> hashMap_with_all_of_the_translations_of_verses = new HashMap<>();
                 for (int i = start_ayat_section; i <= end_ayat_section; i++) {
-                    call_verses_api(helloController, id, i);
+                    call_verses_api(helloController, id, i, hashMap_with_all_of_the_translations_of_verses);
                 }
+                update_the_translations(helloController, hashMap_with_all_of_the_translations_of_verses);
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
@@ -506,7 +509,7 @@ public class HelloApplication extends Application {
         executor.shutdown();
     }
 
-    private void add_all_of_the_verses_to_the_list_after(HelloController helloController, String verses_string) {
+    private void add_all_of_the_verses_to_the_list_after(HelloController helloController, String verses_string, HashMap<String, ArrayList<String>> hashMap_with_all_of_the_translations_of_the_verses) {
         JsonNode nameNode = return_name_node(verses_string);
         ArrayNode arrayNode = (ArrayNode) nameNode.get("verses");
         int start_ayat = return_start_ayat(helloController);
@@ -518,21 +521,21 @@ public class HelloApplication extends Application {
             } else if (ayat_number > end_ayat) {
                 break;
             }
-            ArrayList<Language_info> arrayList_with_all_of_the_languages = new ArrayList<>();
             {
                 String arabic_ayat = String.valueOf(arrayNode.get(i).get("text_uthmani"));
-                Language_info language_info = new Language_info("Arabic",arabic_ayat);
-                arrayList_with_all_of_the_languages.add(language_info);
+                ArrayList<String> arabic_verses = hashMap_with_all_of_the_translations_of_the_verses.getOrDefault("arabic", new ArrayList<>());
+                arabic_verses.add(arabic_ayat);
+                hashMap_with_all_of_the_translations_of_the_verses.put("arabic", arabic_verses);
             }
             ArrayNode translations_array_node = (ArrayNode) arrayNode.get(i).get("translations");
             for (JsonNode translation : translations_array_node) {
                 int id = translation.get("resource_id").asInt();
                 String language_name = hashMap_id_to_language_name_text.get(id);
                 String verse_text = translation.get("text").asText();
-                Language_info language_info = new Language_info(language_name, verse_text);
-                arrayList_with_all_of_the_languages.add(language_info);
+                ArrayList<String> translated_verses = hashMap_with_all_of_the_translations_of_the_verses.getOrDefault(language_name, new ArrayList<>());
+                translated_verses.add(verse_text);
+                hashMap_with_all_of_the_translations_of_the_verses.put(language_name, translated_verses);
             }
-            ayats_processed[ayat_number - start_ayat].setArrayList_of_all_of_the_languages(arrayList_with_all_of_the_languages);
             ayats_processed[ayat_number - start_ayat].setVerse_number(ayat_number);
         }
     }
@@ -4101,7 +4104,7 @@ public class HelloApplication extends Application {
                 ArrayList<Integer> arrayList_with_ids = hash_map_with_the_translations.getOrDefault(language_name, new ArrayList<>());
                 arrayList_with_ids.add(id);
                 hash_map_with_the_translations.put(language_name.toLowerCase(), arrayList_with_ids);
-                hashMap_id_to_language_name_text.put(id, language_name);
+                hashMap_id_to_language_name_text.put(id, language_name.toLowerCase());
             }
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -4122,9 +4125,7 @@ public class HelloApplication extends Application {
 
     private String return_the_translation_string() {
         StringBuilder string_with_all_of_the_translations_to_be_returned = new StringBuilder();
-        System.out.println(hash_map_with_the_translations.size());
         for (String key : hash_map_with_the_translations.keySet()) {
-            System.out.println(key);
             ArrayList<Integer> array_list_with_ids = hash_map_with_the_translations.get(key);
             if (array_list_with_ids.size() == 1) {
                 string_with_all_of_the_translations_to_be_returned.append(hash_map_with_the_translations.get(key).get(0));
@@ -4603,5 +4604,138 @@ public class HelloApplication extends Application {
                 scheduler.shutdown(); // shutdown after execution
             }
         }, time_in_seconds - number_of_seconds_of_quran_token_pre_fire, TimeUnit.SECONDS);
+    }
+
+    private HashMap<String, Integer> get_the_language_ranking() {
+        HashMap<String, Integer> hash_map_with_each_language_ranking = new HashMap<>();
+        hash_map_with_each_language_ranking.put("arabic", 0);
+        hash_map_with_each_language_ranking.put("english", 1);
+        hash_map_with_each_language_ranking.put("indonesian", 2);
+        hash_map_with_each_language_ranking.put("urdu", 3);
+        hash_map_with_each_language_ranking.put("bengali", 4);
+        hash_map_with_each_language_ranking.put("turkish", 5);
+        hash_map_with_each_language_ranking.put("french", 6);
+        hash_map_with_each_language_ranking.put("hausa", 7);
+        hash_map_with_each_language_ranking.put("persian", 8);
+        hash_map_with_each_language_ranking.put("spanish", 9);
+        hash_map_with_each_language_ranking.put("swahili", 10);
+        hash_map_with_each_language_ranking.put("malay", 11);
+        hash_map_with_each_language_ranking.put("hindi", 12);
+        hash_map_with_each_language_ranking.put("russian", 13);
+        hash_map_with_each_language_ranking.put("pashto", 14);
+        hash_map_with_each_language_ranking.put("somali", 15);
+        hash_map_with_each_language_ranking.put("uzbek", 16);
+        hash_map_with_each_language_ranking.put("dari", 17);
+        hash_map_with_each_language_ranking.put("kazakh", 18);
+        hash_map_with_each_language_ranking.put("albanian", 19);
+        hash_map_with_each_language_ranking.put("azeri", 20);
+        hash_map_with_each_language_ranking.put("kurdish", 21);
+        hash_map_with_each_language_ranking.put("oromo", 22);
+        hash_map_with_each_language_ranking.put("amharic", 23);
+        hash_map_with_each_language_ranking.put("portuguese", 24);
+        hash_map_with_each_language_ranking.put("yoruba", 25);
+        hash_map_with_each_language_ranking.put("bosnian", 26);
+        hash_map_with_each_language_ranking.put("tajik", 27);
+        hash_map_with_each_language_ranking.put("italian", 28);
+        hash_map_with_each_language_ranking.put("german", 29);
+        hash_map_with_each_language_ranking.put("japanese", 30);
+        hash_map_with_each_language_ranking.put("korean", 31);
+        hash_map_with_each_language_ranking.put("vietnamese", 32);
+        hash_map_with_each_language_ranking.put("thai", 33);
+        hash_map_with_each_language_ranking.put("chinese", 34);
+        hash_map_with_each_language_ranking.put("romanian", 35);
+        hash_map_with_each_language_ranking.put("polish", 36);
+        hash_map_with_each_language_ranking.put("czech", 37);
+        hash_map_with_each_language_ranking.put("swedish", 38);
+        hash_map_with_each_language_ranking.put("dutch", 39);
+        hash_map_with_each_language_ranking.put("tamil", 40);
+        hash_map_with_each_language_ranking.put("malayalam", 41);
+        hash_map_with_each_language_ranking.put("telugu", 42);
+        hash_map_with_each_language_ranking.put("kannada", 43);
+        hash_map_with_each_language_ranking.put("marathi", 44);
+        hash_map_with_each_language_ranking.put("gujarati", 45);
+        hash_map_with_each_language_ranking.put("sindhi", 46);
+        hash_map_with_each_language_ranking.put("assamese", 47);
+        hash_map_with_each_language_ranking.put("uighur, uyghur", 48);
+        hash_map_with_each_language_ranking.put("tatar", 49);
+        hash_map_with_each_language_ranking.put("chechen", 50);
+        hash_map_with_each_language_ranking.put("serbian", 51);
+        hash_map_with_each_language_ranking.put("macedonian", 52);
+        hash_map_with_each_language_ranking.put("bulgarian", 53);
+        hash_map_with_each_language_ranking.put("ukrainian", 54);
+        hash_map_with_each_language_ranking.put("nepali", 55);
+        hash_map_with_each_language_ranking.put("central khmer", 56);
+        hash_map_with_each_language_ranking.put("kinyarwanda", 57);
+        hash_map_with_each_language_ranking.put("ganda", 58);
+        hash_map_with_each_language_ranking.put("bambara", 59);
+        hash_map_with_each_language_ranking.put("amazigh", 60);
+        hash_map_with_each_language_ranking.put("tagalog", 61);
+        hash_map_with_each_language_ranking.put("norwegian", 62);
+        hash_map_with_each_language_ranking.put("finnish", 63);
+        hash_map_with_each_language_ranking.put("hebrew", 64);
+        hash_map_with_each_language_ranking.put("divehi", 65);
+        hash_map_with_each_language_ranking.put("maranao", 66);
+        hash_map_with_each_language_ranking.put("yau,yuw", 67);
+        hash_map_with_each_language_ranking.put("sinhala, sinhalese", 68);
+        return hash_map_with_each_language_ranking;
+    }
+
+    private void set_up_the_languages(HelloController helloController) {
+        ObservableList<Language_info> items = FXCollections.observableArrayList();
+        items.add(new Language_info("arabic"));
+        for (String key : hash_map_with_the_translations.keySet()) {
+            items.add(new Language_info(key));
+        }
+        HashMap<String, Integer> ranking_languages_hash_map = get_the_language_ranking();
+        items.sort(new Comparator<Language_info>() {
+            @Override
+            public int compare(Language_info o1, Language_info o2) {
+                int language_one_value = ranking_languages_hash_map.get(o1.getLanguage_name());
+                int language_two_value = ranking_languages_hash_map.get(o2.getLanguage_name());
+                return Integer.compare(language_one_value, language_two_value);
+            }
+        });
+        helloController.list_view_with_all_of_the_languages.setItems(items);
+        helloController.list_view_with_all_of_the_languages.setCellFactory(new javafx.util.Callback<ListView<Language_info>, ListCell<Language_info>>() {
+            @Override
+            public ListCell<Language_info> call(ListView<Language_info> listView) {
+                return new ListCell<Language_info>() {
+                    private HBox root;
+                    private Label name;
+                    {
+                        // UI setup
+                        root = new HBox(10);
+                        name = new Label();
+                        root.getChildren().addAll(name);
+                    }
+
+                    @Override
+                    protected void updateItem(Language_info item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if (empty || item == null) {
+                            setText(null);
+                            setGraphic(null);
+                        } else {
+                            name.setText(item.getDisplayed_language_name());
+                            setGraphic(root);
+                        }
+                    }
+                };
+            }
+        });
+    }
+
+    private void update_the_translations(HelloController helloController, HashMap<String, ArrayList<String>> hash_map_with_allf_of_the_verses) {
+        ObservableList<Language_info> arrayList_from_the_list = helloController.list_view_with_all_of_the_languages.getItems();
+        for (int i = 0; i < arrayList_from_the_list.size(); i++) {
+            Language_info languageInfo = arrayList_from_the_list.get(i);
+            String language_name = languageInfo.getLanguage_name();
+            if (hash_map_with_allf_of_the_verses.containsKey(language_name)) {
+                languageInfo.setArrayList_of_all_of_the_translations(hash_map_with_allf_of_the_verses.get(language_name));
+            } else {
+                System.out.println("error" + language_name);
+            }
+        }
     }
 }
