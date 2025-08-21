@@ -5,7 +5,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class Text_item {
-    private String text;
+    private String verse_text;
     private Point2D point2D;
     private Font font;
     private Color color;
@@ -15,4 +15,7 @@ public class Text_item {
     private double width;
     private double height;
 
+    public Text_item(String verse_text) {
+        this.verse_text = verse_text;
+    }
 }

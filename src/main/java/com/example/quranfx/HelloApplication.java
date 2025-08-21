@@ -128,7 +128,7 @@ public class HelloApplication extends Application {
     private final static String clientSecret_pre_live = Quran_api_secrets.clientSecret_pre_live;
     private final static String clientId_live = Quran_api_secrets.clientId_live;
     private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
-    private final static Live_mode live_or_pre_live_quran_api = Live_mode.PRE_LIVE;
+    private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
     private final static String app_name = "Sabrly";
     private final static double screen_width_multiplier = 0.55D;
     private final static double screen_height_multiplier = 0.55D;
@@ -225,7 +225,6 @@ public class HelloApplication extends Application {
         clip_the_over_the_over_laying_pane(helloController);
         listen_to_pane_over_time_line_being_resized(helloController);
         ignore_scroll_for_overlaying_pane_for_time_line(helloController);
-        test();
     }
 
     public static void main(String[] args) {
@@ -519,16 +518,19 @@ public class HelloApplication extends Application {
             } else if (ayat_number > end_ayat) {
                 break;
             }
-            ArrayList<Language_text> arrayList_with_all_of_the_languages = new ArrayList<>();
-            String arabic_ayat = String.valueOf(arrayNode.get(i).get("text_uthmani"));
-            arrayList_with_all_of_the_languages.add(new Language_text("Arabic", arabic_ayat));
+            ArrayList<Language_info> arrayList_with_all_of_the_languages = new ArrayList<>();
+            {
+                String arabic_ayat = String.valueOf(arrayNode.get(i).get("text_uthmani"));
+                Language_info language_info = new Language_info("Arabic",arabic_ayat);
+                arrayList_with_all_of_the_languages.add(language_info);
+            }
             ArrayNode translations_array_node = (ArrayNode) arrayNode.get(i).get("translations");
             for (JsonNode translation : translations_array_node) {
                 int id = translation.get("resource_id").asInt();
                 String language_name = hashMap_id_to_language_name_text.get(id);
                 String verse_text = translation.get("text").asText();
-                Language_text language_text = new Language_text(language_name, verse_text);
-                arrayList_with_all_of_the_languages.add(language_text);
+                Language_info language_info = new Language_info(language_name, verse_text);
+                arrayList_with_all_of_the_languages.add(language_info);
             }
             ayats_processed[ayat_number - start_ayat].setArrayList_of_all_of_the_languages(arrayList_with_all_of_the_languages);
             ayats_processed[ayat_number - start_ayat].setVerse_number(ayat_number);
@@ -855,9 +857,8 @@ public class HelloApplication extends Application {
 //                helloController.sound_slider_fourth_screen.setValue(helloController.sound_slider_fourth_screen.getMax());
                 timer.stop();
                 update_the_time_line_indicator(helloController, get_duration());
-                //stop_and_start_the_media_again();
                 set_the_status_of_locked_in_polygon(helloController, false);
-                //mediaPlayer.pause();
+                stop_and_start_the_media_again();
                 // TODO stop media after its finished
             }
         });
@@ -1707,7 +1708,7 @@ public class HelloApplication extends Application {
             @Override
             public void run() {
                 mediaPlayer.setOnStopped(null);
-                start_and_unstart_the_media_player(get_duration());
+                start_and_unstart_the_media_player(0);
             }
         });
         mediaPlayer.stop();
@@ -3109,7 +3110,6 @@ public class HelloApplication extends Application {
                     set_the_status_of_locked_in_polygon(helloController, false);
                 } else if (new_status.equals(MediaPlayer.Status.STOPPED)) {
                     set_the_status_of_locked_in_polygon(helloController, false);
-                    //timer.stop();
                 }
             }
         });
@@ -4122,7 +4122,9 @@ public class HelloApplication extends Application {
 
     private String return_the_translation_string() {
         StringBuilder string_with_all_of_the_translations_to_be_returned = new StringBuilder();
+        System.out.println(hash_map_with_the_translations.size());
         for (String key : hash_map_with_the_translations.keySet()) {
+            System.out.println(key);
             ArrayList<Integer> array_list_with_ids = hash_map_with_the_translations.get(key);
             if (array_list_with_ids.size() == 1) {
                 string_with_all_of_the_translations_to_be_returned.append(hash_map_with_the_translations.get(key).get(0));
@@ -4601,17 +4603,5 @@ public class HelloApplication extends Application {
                 scheduler.shutdown(); // shutdown after execution
             }
         }, time_in_seconds - number_of_seconds_of_quran_token_pre_fire, TimeUnit.SECONDS);
-    }
-
-    private void test() {
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (mediaPlayer != null) {
-                    System.out.println(mediaPlayer.getStatus());
-                }
-            }
-        }, 0, 1000); // start immediately, repeat every 1000 ms
     }
 }

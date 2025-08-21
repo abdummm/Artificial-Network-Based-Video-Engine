@@ -1,22 +1,13 @@
 package com.example.quranfx;
 
-import atlantafx.base.controls.RingProgressIndicator;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXProgressSpinner;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Circle;
 
 public class HelloController {
 
@@ -189,5 +180,5 @@ public class HelloController {
     public Pane pane_overlying_the_time_line_pane_for_polygon_indicator;
 
     @FXML
-    public ListView list_view_with_all_of_the_languages;
+    public ListView<Language_info> list_view_with_all_of_the_languages;
 }
