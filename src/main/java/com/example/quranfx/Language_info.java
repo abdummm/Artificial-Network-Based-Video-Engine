@@ -8,11 +8,13 @@ public class Language_info {
     private String displayed_language_name;
     private boolean visible;
     private ArrayList<Text_item> arrayList_of_all_of_the_translations;
+    private boolean item_extended;
     public Language_info(String language_name) {
         this.language_name = language_name;
         this.visible = false;
         this.arrayList_of_all_of_the_translations = new ArrayList<>();
         this.displayed_language_name = edit_displayed_language_name(language_name);
+        this.item_extended = false;
     }
 
     private String edit_displayed_language_name(String language_name){
@@ -48,5 +50,13 @@ public class Language_info {
 
     public String getDisplayed_language_name() {
         return displayed_language_name;
+    }
+
+    public boolean isItem_extended() {
+        return item_extended;
+    }
+
+    public void setItem_extended(boolean item_extended) {
+        this.item_extended = item_extended;
     }
 }

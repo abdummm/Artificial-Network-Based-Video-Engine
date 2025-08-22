@@ -4715,16 +4715,22 @@ public class HelloApplication extends Application {
                     private JFXButton jfxButton;
                     private Label language_name;
                     private ImageView down_or_left_image_view;
+                    private StackPane stackPane_extended_with_all_of_the_info;
                     {
-                        root = new VBox();
+                        root = new VBox(0);
                         stackPane_of_the_top = new StackPane();
                         jfxButton = new JFXButton();
                         language_name = new Label();
                         down_or_left_image_view = return_the_icon("arrow_forward_ios",20,20);
+                        stackPane_extended_with_all_of_the_info = new StackPane();
+
+                        set_pref_min_max(stackPane_extended_with_all_of_the_info, 120, Resize_type.HEIGHT);
+                        stackPane_extended_with_all_of_the_info.setVisible(false);
+                        stackPane_extended_with_all_of_the_info.setManaged(false);
 
                         stackPane_of_the_top.getChildren().add(language_name);
-                        stackPane_of_the_top.getChildren().add(jfxButton);
                         stackPane_of_the_top.getChildren().add(down_or_left_image_view);
+                        stackPane_of_the_top.getChildren().add(jfxButton);
 
                         set_pref_min_max(stackPane_of_the_top, 40, Resize_type.HEIGHT);
 
@@ -4738,7 +4744,8 @@ public class HelloApplication extends Application {
                         StackPane.setAlignment(language_name, Pos.CENTER_LEFT);
                         StackPane.setAlignment(down_or_left_image_view,Pos.CENTER_RIGHT);
 
-                        root.getChildren().addAll(stackPane_of_the_top);
+                        root.getChildren().add(stackPane_of_the_top);
+                        root.getChildren().add(stackPane_extended_with_all_of_the_info);
                     }
 
                     @Override
@@ -4750,6 +4757,19 @@ public class HelloApplication extends Application {
                             setGraphic(null);
                         } else {
                             language_name.setText(item.getDisplayed_language_name());
+                            make_the_language_translation_extended(stackPane_extended_with_all_of_the_info,down_or_left_image_view,item,item.isItem_extended());
+                            jfxButton.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    if(item.isItem_extended()){
+                                        make_the_language_translation_extended(stackPane_extended_with_all_of_the_info,down_or_left_image_view,item,false);
+                                        item.setItem_extended(false);
+                                    } else {
+                                        make_the_language_translation_extended(stackPane_extended_with_all_of_the_info,down_or_left_image_view,item,true);
+                                        item.setItem_extended(true);
+                                    }
+                                }
+                            });
                             setGraphic(root);
                         }
                     }
@@ -4773,5 +4793,17 @@ public class HelloApplication extends Application {
 
     private void make_list_view_selection_model_null(HelloController helloController){
         helloController.list_view_with_all_of_the_languages.setSelectionModel(null);
+    }
+
+    private void make_the_language_translation_extended(StackPane stackPane,ImageView imageView,Language_info language_info,boolean extended){
+        if(extended){
+            stackPane.setVisible(true);
+            stackPane.setManaged(true);
+            imageView.setRotate(90);
+        } else {
+            stackPane.setVisible(false);
+            stackPane.setManaged(false);
+            imageView.setRotate(0);
+        }
     }
 }
