@@ -4716,6 +4716,8 @@ public class HelloApplication extends Application {
                     private Label language_name;
                     private ImageView down_or_left_image_view;
                     private StackPane stackPane_extended_with_all_of_the_info;
+                    private VBox v_box_inside_the_stack_pane;
+                    private CheckBox check_box_is_the_langauge_enabled;
                     {
                         root = new VBox(0);
                         stackPane_of_the_top = new StackPane();
@@ -4723,6 +4725,12 @@ public class HelloApplication extends Application {
                         language_name = new Label();
                         down_or_left_image_view = return_the_icon("arrow_forward_ios",20,20);
                         stackPane_extended_with_all_of_the_info = new StackPane();
+                        v_box_inside_the_stack_pane = new VBox();
+                        check_box_is_the_langauge_enabled = new CheckBox();
+
+                        check_box_is_the_langauge_enabled.setText("Show Text");
+
+                        //v_box_inside_the_stack_pane.setAlignment(Pos.CENTER);
 
                         set_pref_min_max(stackPane_extended_with_all_of_the_info, 120, Resize_type.HEIGHT);
                         stackPane_extended_with_all_of_the_info.setVisible(false);
@@ -4743,7 +4751,10 @@ public class HelloApplication extends Application {
 
                         StackPane.setAlignment(language_name, Pos.CENTER_LEFT);
                         StackPane.setAlignment(down_or_left_image_view,Pos.CENTER_RIGHT);
+                        StackPane.setAlignment(v_box_inside_the_stack_pane,Pos.BOTTOM_CENTER);
 
+                        v_box_inside_the_stack_pane.getChildren().add(check_box_is_the_langauge_enabled);
+                        stackPane_extended_with_all_of_the_info.getChildren().add(v_box_inside_the_stack_pane);
                         root.getChildren().add(stackPane_of_the_top);
                         root.getChildren().add(stackPane_extended_with_all_of_the_info);
                     }
@@ -4751,7 +4762,6 @@ public class HelloApplication extends Application {
                     @Override
                     protected void updateItem(Language_info item, boolean empty) {
                         super.updateItem(item, empty);
-
                         if (empty || item == null) {
                             setText(null);
                             setGraphic(null);
@@ -4770,6 +4780,18 @@ public class HelloApplication extends Application {
                                     }
                                 }
                             });
+                            check_box_is_the_langauge_enabled.setSelected(item.isVisible_check_mark_checked());
+                            check_box_is_the_langauge_enabled.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    item.setVisible_check_mark_checked(check_box_is_the_langauge_enabled.isSelected());
+                                }
+                            });
+                            if(item.getLanguage_name().equals("arabic")){
+                                check_box_is_the_langauge_enabled.setText("Show text");
+                            } else {
+                                check_box_is_the_langauge_enabled.setText("Show translation");
+                            }
                             setGraphic(root);
                         }
                     }

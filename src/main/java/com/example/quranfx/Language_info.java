@@ -1,17 +1,21 @@
 package com.example.quranfx;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+
+
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Language_info {
     private String language_name;
     private String displayed_language_name;
-    private boolean visible;
+    private boolean visible_check_mark_checked;
     private ArrayList<Text_item> arrayList_of_all_of_the_translations;
     private boolean item_extended;
     public Language_info(String language_name) {
         this.language_name = language_name;
-        this.visible = false;
+        this.visible_check_mark_checked = false;
         this.arrayList_of_all_of_the_translations = new ArrayList<>();
         this.displayed_language_name = edit_displayed_language_name(language_name);
         this.item_extended = false;
@@ -58,5 +62,13 @@ public class Language_info {
 
     public void setItem_extended(boolean item_extended) {
         this.item_extended = item_extended;
+    }
+
+    public boolean isVisible_check_mark_checked() {
+        return visible_check_mark_checked;
+    }
+
+    public void setVisible_check_mark_checked(boolean visible_check_mark_checked) {
+        this.visible_check_mark_checked = visible_check_mark_checked;
     }
 }
