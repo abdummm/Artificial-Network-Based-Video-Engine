@@ -226,6 +226,7 @@ public class HelloApplication extends Application {
         listen_to_pane_over_time_line_being_resized(helloController);
         ignore_scroll_for_overlaying_pane_for_time_line(helloController);
         set_up_the_languages(helloController);
+        make_list_view_selection_model_null(helloController);
     }
 
     public static void main(String[] args) {
@@ -1873,14 +1874,14 @@ public class HelloApplication extends Application {
     }
 
     private void set_the_icons(HelloController helloController) {
-        set_pref_min_max(helloController.next_photo_chat_gpt_result, next_prev_button_size * 2,Resize_type.WIDTH_AND_HEIGHT);
+        set_pref_min_max(helloController.next_photo_chat_gpt_result, next_prev_button_size * 2, Resize_type.WIDTH_AND_HEIGHT);
         helloController.next_photo_chat_gpt_result.setShape(new Circle(next_prev_button_size * 2));
         helloController.next_photo_chat_gpt_result.setGraphic(return_the_icon("arrow_forward_ios", next_prev_button_size, next_prev_button_size));
         helloController.next_photo_chat_gpt_result.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         helloController.next_photo_chat_gpt_result.setAlignment(Pos.CENTER);
 
         helloController.previous_photo_chat_gpt_result.setShape(new Circle(next_prev_button_size));
-        set_pref_min_max(helloController.previous_photo_chat_gpt_result, next_prev_button_size * 2,Resize_type.WIDTH_AND_HEIGHT);
+        set_pref_min_max(helloController.previous_photo_chat_gpt_result, next_prev_button_size * 2, Resize_type.WIDTH_AND_HEIGHT);
         helloController.previous_photo_chat_gpt_result.setGraphic(return_the_icon("arrow_back_ios", next_prev_button_size, next_prev_button_size));
         helloController.previous_photo_chat_gpt_result.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         helloController.previous_photo_chat_gpt_result.setAlignment(Pos.CENTER);
@@ -1902,14 +1903,14 @@ public class HelloApplication extends Application {
         helloController.play_sound.setAlignment(Pos.CENTER);
     }
 
-    private void set_pref_min_max(Region region, int value,Resize_type resizeType) {
-        if(resizeType == Resize_type.WIDTH_AND_HEIGHT || resizeType == Resize_type.WIDTH){
+    private void set_pref_min_max(Region region, int value, Resize_type resizeType) {
+        if (resizeType == Resize_type.WIDTH_AND_HEIGHT || resizeType == Resize_type.HEIGHT) {
             region.setPrefHeight(value);
             region.setMinHeight(value);
             region.setMaxHeight(value);
         }
 
-        if(resizeType == Resize_type.WIDTH_AND_HEIGHT || resizeType == Resize_type.HEIGHT){
+        if (resizeType == Resize_type.WIDTH_AND_HEIGHT || resizeType == Resize_type.WIDTH) {
             region.setPrefWidth(value);
             region.setMinWidth(value);
             region.setMaxWidth(value);
@@ -4688,7 +4689,7 @@ public class HelloApplication extends Application {
     private void set_up_the_languages(HelloController helloController) {
         ObservableList<Language_info> items = FXCollections.observableArrayList();
         for (String key : hash_map_with_the_translations.keySet()) {
-            if(!key.equals("english")){
+            if (!key.equals("english")) {
                 items.add(new Language_info(key));
             }
         }
@@ -4702,8 +4703,8 @@ public class HelloApplication extends Application {
                 return o1.getLanguage_name().compareTo(o2.getLanguage_name());
             }
         });
-        items.add(0,new Language_info("arabic"));
-        items.add(1,new Language_info("english"));
+        items.add(0, new Language_info("arabic"));
+        items.add(1, new Language_info("english"));
         helloController.list_view_with_all_of_the_languages.setItems(items);
         helloController.list_view_with_all_of_the_languages.setCellFactory(new javafx.util.Callback<ListView<Language_info>, ListCell<Language_info>>() {
             @Override
@@ -4715,14 +4716,29 @@ public class HelloApplication extends Application {
                     private Label language_name;
                     private ImageView down_or_left_image_view;
                     {
-                        stackPane_of_the_top = new StackPane();
-                        set_pref_min_max(stackPane_of_the_top,40,Resize_type.HEIGHT);
-                        jfxButton = new JFXButton();
-
-                        // UI setup
                         root = new VBox();
+                        stackPane_of_the_top = new StackPane();
                         jfxButton = new JFXButton();
-                        root.getChildren().addAll(jfxButton);
+                        language_name = new Label();
+                        down_or_left_image_view = return_the_icon("arrow_forward_ios",20,20);
+
+                        stackPane_of_the_top.getChildren().add(language_name);
+                        stackPane_of_the_top.getChildren().add(jfxButton);
+                        stackPane_of_the_top.getChildren().add(down_or_left_image_view);
+
+                        set_pref_min_max(stackPane_of_the_top, 40, Resize_type.HEIGHT);
+
+                        jfxButton.prefWidthProperty().bind(stackPane_of_the_top.widthProperty());
+                        jfxButton.minWidthProperty().bind(stackPane_of_the_top.widthProperty());
+                        jfxButton.maxWidthProperty().bind(stackPane_of_the_top.widthProperty());
+                        set_pref_min_max(jfxButton,40,Resize_type.HEIGHT);
+
+                        StackPane.setMargin(language_name,new Insets(0,0,0,5));
+
+                        StackPane.setAlignment(language_name, Pos.CENTER_LEFT);
+                        StackPane.setAlignment(down_or_left_image_view,Pos.CENTER_RIGHT);
+
+                        root.getChildren().addAll(stackPane_of_the_top);
                     }
 
                     @Override
@@ -4733,7 +4749,7 @@ public class HelloApplication extends Application {
                             setText(null);
                             setGraphic(null);
                         } else {
-                            jfxButton.setText(item.getDisplayed_language_name());
+                            language_name.setText(item.getDisplayed_language_name());
                             setGraphic(root);
                         }
                     }
@@ -4753,5 +4769,9 @@ public class HelloApplication extends Application {
                 System.err.println("A translation wasn't found in the hash map. The language is: " + language_name);
             }
         }
+    }
+
+    private void make_list_view_selection_model_null(HelloController helloController){
+        helloController.list_view_with_all_of_the_languages.setSelectionModel(null);
     }
 }
