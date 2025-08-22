@@ -1873,14 +1873,14 @@ public class HelloApplication extends Application {
     }
 
     private void set_the_icons(HelloController helloController) {
-        set_pref_min_max(helloController.next_photo_chat_gpt_result, next_prev_button_size * 2);
+        set_pref_min_max(helloController.next_photo_chat_gpt_result, next_prev_button_size * 2,Resize_type.WIDTH_AND_HEIGHT);
         helloController.next_photo_chat_gpt_result.setShape(new Circle(next_prev_button_size * 2));
         helloController.next_photo_chat_gpt_result.setGraphic(return_the_icon("arrow_forward_ios", next_prev_button_size, next_prev_button_size));
         helloController.next_photo_chat_gpt_result.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         helloController.next_photo_chat_gpt_result.setAlignment(Pos.CENTER);
 
         helloController.previous_photo_chat_gpt_result.setShape(new Circle(next_prev_button_size));
-        set_pref_min_max(helloController.previous_photo_chat_gpt_result, next_prev_button_size * 2);
+        set_pref_min_max(helloController.previous_photo_chat_gpt_result, next_prev_button_size * 2,Resize_type.WIDTH_AND_HEIGHT);
         helloController.previous_photo_chat_gpt_result.setGraphic(return_the_icon("arrow_back_ios", next_prev_button_size, next_prev_button_size));
         helloController.previous_photo_chat_gpt_result.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         helloController.previous_photo_chat_gpt_result.setAlignment(Pos.CENTER);
@@ -1902,13 +1902,18 @@ public class HelloApplication extends Application {
         helloController.play_sound.setAlignment(Pos.CENTER);
     }
 
-    private void set_pref_min_max(JFXButton button, int value) {
-        button.setPrefHeight(value);
-        button.setPrefWidth(value);
-        button.setMinWidth(value);
-        button.setMinHeight(value);
-        button.setMaxWidth(value);
-        button.setMaxHeight(value);
+    private void set_pref_min_max(Region region, int value,Resize_type resizeType) {
+        if(resizeType == Resize_type.WIDTH_AND_HEIGHT || resizeType == Resize_type.WIDTH){
+            region.setPrefHeight(value);
+            region.setMinHeight(value);
+            region.setMaxHeight(value);
+        }
+
+        if(resizeType == Resize_type.WIDTH_AND_HEIGHT || resizeType == Resize_type.HEIGHT){
+            region.setPrefWidth(value);
+            region.setMinWidth(value);
+            region.setMaxWidth(value);
+        }
     }
 
     /*private String getSvgPathContent(String resourcePath) {
@@ -4682,31 +4687,42 @@ public class HelloApplication extends Application {
 
     private void set_up_the_languages(HelloController helloController) {
         ObservableList<Language_info> items = FXCollections.observableArrayList();
-        items.add(new Language_info("arabic"));
         for (String key : hash_map_with_the_translations.keySet()) {
-            items.add(new Language_info(key));
+            if(!key.equals("english")){
+                items.add(new Language_info(key));
+            }
         }
-        HashMap<String, Integer> ranking_languages_hash_map = get_the_language_ranking();
+        //HashMap<String, Integer> ranking_languages_hash_map = get_the_language_ranking();
         items.sort(new Comparator<Language_info>() {
             @Override
             public int compare(Language_info o1, Language_info o2) {
-                int language_one_value = ranking_languages_hash_map.get(o1.getLanguage_name());
+                /*int language_one_value = ranking_languages_hash_map.get(o1.getLanguage_name());
                 int language_two_value = ranking_languages_hash_map.get(o2.getLanguage_name());
-                return Integer.compare(language_one_value, language_two_value);
+                return Integer.compare(language_one_value, language_two_value);*/
+                return o1.getLanguage_name().compareTo(o2.getLanguage_name());
             }
         });
+        items.add(0,new Language_info("arabic"));
+        items.add(1,new Language_info("english"));
         helloController.list_view_with_all_of_the_languages.setItems(items);
         helloController.list_view_with_all_of_the_languages.setCellFactory(new javafx.util.Callback<ListView<Language_info>, ListCell<Language_info>>() {
             @Override
             public ListCell<Language_info> call(ListView<Language_info> listView) {
                 return new ListCell<Language_info>() {
-                    private HBox root;
-                    private Label name;
+                    private VBox root;
+                    private StackPane stackPane_of_the_top;
+                    private JFXButton jfxButton;
+                    private Label language_name;
+                    private ImageView down_or_left_image_view;
                     {
+                        stackPane_of_the_top = new StackPane();
+                        set_pref_min_max(stackPane_of_the_top,40,Resize_type.HEIGHT);
+                        jfxButton = new JFXButton();
+
                         // UI setup
-                        root = new HBox(10);
-                        name = new Label();
-                        root.getChildren().addAll(name);
+                        root = new VBox();
+                        jfxButton = new JFXButton();
+                        root.getChildren().addAll(jfxButton);
                     }
 
                     @Override
@@ -4717,7 +4733,7 @@ public class HelloApplication extends Application {
                             setText(null);
                             setGraphic(null);
                         } else {
-                            name.setText(item.getDisplayed_language_name());
+                            jfxButton.setText(item.getDisplayed_language_name());
                             setGraphic(root);
                         }
                     }
@@ -4734,7 +4750,7 @@ public class HelloApplication extends Application {
             if (hash_map_with_allf_of_the_verses.containsKey(language_name)) {
                 languageInfo.setArrayList_of_all_of_the_translations(hash_map_with_allf_of_the_verses.get(language_name));
             } else {
-                System.out.println("error" + language_name);
+                System.err.println("A translation wasn't found in the hash map. The language is: " + language_name);
             }
         }
     }
