@@ -4723,10 +4723,17 @@ public class HelloApplication extends Application {
                         stackPane_of_the_top = new StackPane();
                         jfxButton = new JFXButton();
                         language_name = new Label();
-                        down_or_left_image_view = return_the_icon("arrow_forward_ios",20,20);
+                        check_box_is_the_langauge_enabled = new CheckBox();
                         stackPane_extended_with_all_of_the_info = new StackPane();
                         v_box_inside_the_stack_pane = new VBox();
-                        check_box_is_the_langauge_enabled = new CheckBox();
+
+                        //lnaguage name stuff
+                        language_name.setMouseTransparent(true);
+
+
+
+
+                        down_or_left_image_view = return_the_icon("arrow_forward_ios",20,20);
 
                         check_box_is_the_langauge_enabled.setText("Show Text");
 
@@ -4736,9 +4743,9 @@ public class HelloApplication extends Application {
                         stackPane_extended_with_all_of_the_info.setVisible(false);
                         stackPane_extended_with_all_of_the_info.setManaged(false);
 
-                        stackPane_of_the_top.getChildren().add(language_name);
                         stackPane_of_the_top.getChildren().add(down_or_left_image_view);
                         stackPane_of_the_top.getChildren().add(jfxButton);
+                        stackPane_of_the_top.getChildren().add(language_name);
 
                         set_pref_min_max(stackPane_of_the_top, 40, Resize_type.HEIGHT);
 
@@ -4766,7 +4773,6 @@ public class HelloApplication extends Application {
                             setText(null);
                             setGraphic(null);
                         } else {
-                            language_name.setText(item.getDisplayed_language_name());
                             make_the_language_translation_extended(stackPane_extended_with_all_of_the_info,down_or_left_image_view,item,item.isItem_extended());
                             jfxButton.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
@@ -4780,11 +4786,12 @@ public class HelloApplication extends Application {
                                     }
                                 }
                             });
-                            check_box_is_the_langauge_enabled.setSelected(item.isVisible_check_mark_checked());
+                            select_or_un_select_the_language(item,jfxButton,language_name,check_box_is_the_langauge_enabled);
                             check_box_is_the_langauge_enabled.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
                                     item.setVisible_check_mark_checked(check_box_is_the_langauge_enabled.isSelected());
+                                    select_or_un_select_the_language(item,jfxButton,language_name,check_box_is_the_langauge_enabled);
                                 }
                             });
                             if(item.getLanguage_name().equals("arabic")){
@@ -4826,6 +4833,20 @@ public class HelloApplication extends Application {
             stackPane.setVisible(false);
             stackPane.setManaged(false);
             imageView.setRotate(0);
+        }
+    }
+
+    private void select_or_un_select_the_language(Language_info item,JFXButton jfxButton,Label language_name, CheckBox check_box_is_the_langauge_enabled){
+        if(item.isVisible_check_mark_checked()){
+            language_name.setText(item.getDisplayed_language_name());
+            language_name.setTextFill(javafx.scene.paint.Color.WHITE);
+            jfxButton.setStyle("-fx-background-color: #000000; -fx-text-fill: #FFFFFF;");
+            check_box_is_the_langauge_enabled.setSelected(true);
+        } else {
+            language_name.setText(item.getDisplayed_language_name());
+            language_name.setTextFill(javafx.scene.paint.Color.BLACK);
+            jfxButton.setStyle("-fx-background-color: #00000000;");
+            check_box_is_the_langauge_enabled.setSelected(false);
         }
     }
 }
