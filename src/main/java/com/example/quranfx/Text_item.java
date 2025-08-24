@@ -18,4 +18,8 @@ public class Text_item {
     public Text_item(String verse_text) {
         this.verse_text = verse_text;
     }
+
+    public String getVerse_text() {
+        return verse_text;
+    }
 }

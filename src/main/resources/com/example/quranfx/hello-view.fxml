@@ -345,7 +345,8 @@
                                                    focusTraversable="false" visible="false"/>
                                     </VBox>
                                 </HBox>
-                                <Label fx:id="what_verse_is_this" text="Surat Maryam verse 59" visible="false" managed="false">
+                                <Label fx:id="what_verse_is_this" text="Surat Maryam verse 59" visible="false"
+                                       managed="false">
                                     <font>
                                         <Font size="16.0"/>
                                     </font>
@@ -360,7 +361,8 @@
                     <!-- RIGHT -->
                     <HBox HBox.hgrow="ALWAYS">
                         <StackPane fx:id="right_stack_pane_in_grid_pane">
-                            <ListView fx:id="list_view_with_all_of_the_languages"  prefHeight="450" prefWidth="400" maxHeight="450" maxWidth="400" focusTraversable="false"/>
+                            <ListView fx:id="list_view_with_all_of_the_languages" prefHeight="450" prefWidth="400"
+                                      maxHeight="450" maxWidth="400" focusTraversable="false"/>
                         </StackPane>
                     </HBox>
                 </HBox>

@@ -135,6 +135,7 @@ public class HelloApplication extends Application {
     private final static int scroll_pane_hosting_time_line_border_width = 1;
     private final static int how_long_does_it_take_for_tool_tip_to_show_up = 200;
     private final static int number_of_seconds_of_quran_token_pre_fire = 120;
+    private final static int width_and_height_of_arrow_image_view_translation = 20;
 
     //private final static double circle_button_radius = 20D;
 
@@ -3944,14 +3945,22 @@ public class HelloApplication extends Application {
     }
 
     private ImageView return_the_icon(String name, int width, int height) {
+        Image image = return_the_image_to_be_the_icon(name, width, height);
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(width);
+        imageView.setFitHeight(height);
+        return imageView;
+    }
+
+    private Image return_the_image_to_be_the_icon(String name, int width, int height) {
         String imagePath = "/icons/" + name + ".png";
         InputStream inputStream = getClass().getResourceAsStream(imagePath);
         if (inputStream != null) {
-            Image image = new Image(inputStream);
-            ImageView imageView = new ImageView(image);
+            /*ImageView imageView = new ImageView(image);
             imageView.setFitWidth(width);
             imageView.setFitHeight(height);
-            return imageView;
+            return imageView;*/
+            return new Image(inputStream);
         } else {
             WritableImage writableImage = new WritableImage(width, height);
             PixelWriter pixelWriter = writableImage.getPixelWriter();
@@ -3960,10 +3969,11 @@ public class HelloApplication extends Application {
                     pixelWriter.setArgb(x, y, 0x00000000); // Fully transparent, no visible color
                 }
             }
-            ImageView imageView = new ImageView(writableImage);
+            /*ImageView imageView = new ImageView(writableImage);
             imageView.setFitWidth(width);
             imageView.setFitHeight(height);
-            return imageView;
+            return imageView;*/
+            return writableImage;
         }
     }
 
@@ -4235,9 +4245,10 @@ public class HelloApplication extends Application {
 
     private void call_the_2_apis_at_the_start(HelloController helloController, Scene scene) {
         OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(30, TimeUnit.SECONDS) // Time to establish connection
-                .readTimeout(60, TimeUnit.SECONDS)    // Time to wait for data
-                .writeTimeout(60, TimeUnit.SECONDS)   // Time allowed to send data
+                .connectTimeout(1, TimeUnit.SECONDS) // Time to establish connection
+                .readTimeout(1, TimeUnit.SECONDS)    // Time to wait for data
+                .writeTimeout(1, TimeUnit.SECONDS)   // Time allowed to send data
+                .callTimeout(1,TimeUnit.SECONDS)
                 .build();
         Request translation_request = call_translations_api();
         Request chapters_request = call_chapters_api(helloController, scene);
@@ -4252,6 +4263,7 @@ public class HelloApplication extends Application {
                                 return "";
                             }
                         } catch (IOException e) {
+
                             throw new RuntimeException(e);
                         }
                     }
@@ -4291,10 +4303,24 @@ public class HelloApplication extends Application {
                                 }
                             });
                         } catch (InterruptedException e) {
+                            e.printStackTrace();
                             Thread.currentThread().interrupt();
                         } catch (ExecutionException e) {
                             e.printStackTrace();
                         }
+                    }
+                }).exceptionally(new Function<Throwable, Void>() {
+                    @Override
+                    public Void apply(Throwable throwable) {
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                System.err.println("API failed: " + throwable.getMessage());
+                                show_alert("Could not form a connection with the API, please try restarting the program. If the error persists, please try again later.");
+                                throw new RuntimeException("API call failed", throwable); // this will propagate
+                            }
+                        });
+                        return null;
                     }
                 });
     }
@@ -4718,6 +4744,7 @@ public class HelloApplication extends Application {
                     private StackPane stackPane_extended_with_all_of_the_info;
                     private VBox v_box_inside_the_stack_pane;
                     private CheckBox check_box_is_the_langauge_enabled;
+
                     {
                         root = new VBox(0);
                         stackPane_of_the_top = new StackPane();
@@ -4727,24 +4754,25 @@ public class HelloApplication extends Application {
                         stackPane_extended_with_all_of_the_info = new StackPane();
                         v_box_inside_the_stack_pane = new VBox();
 
+                        v_box_inside_the_stack_pane.setAlignment(Pos.CENTER);
+
                         //lnaguage name stuff
                         language_name.setMouseTransparent(true);
 
 
-
-
-                        down_or_left_image_view = return_the_icon("arrow_forward_ios",20,20);
+                        down_or_left_image_view = return_the_icon("arrow_forward_ios", width_and_height_of_arrow_image_view_translation, width_and_height_of_arrow_image_view_translation);
+                        down_or_left_image_view.setMouseTransparent(true);
+                        StackPane.setMargin(down_or_left_image_view,new Insets(0,5,0,0));
 
                         check_box_is_the_langauge_enabled.setText("Show Text");
 
-                        //v_box_inside_the_stack_pane.setAlignment(Pos.CENTER);
 
                         set_pref_min_max(stackPane_extended_with_all_of_the_info, 120, Resize_type.HEIGHT);
                         stackPane_extended_with_all_of_the_info.setVisible(false);
                         stackPane_extended_with_all_of_the_info.setManaged(false);
 
-                        stackPane_of_the_top.getChildren().add(down_or_left_image_view);
                         stackPane_of_the_top.getChildren().add(jfxButton);
+                        stackPane_of_the_top.getChildren().add(down_or_left_image_view);
                         stackPane_of_the_top.getChildren().add(language_name);
 
                         set_pref_min_max(stackPane_of_the_top, 40, Resize_type.HEIGHT);
@@ -4752,13 +4780,13 @@ public class HelloApplication extends Application {
                         jfxButton.prefWidthProperty().bind(stackPane_of_the_top.widthProperty());
                         jfxButton.minWidthProperty().bind(stackPane_of_the_top.widthProperty());
                         jfxButton.maxWidthProperty().bind(stackPane_of_the_top.widthProperty());
-                        set_pref_min_max(jfxButton,40,Resize_type.HEIGHT);
+                        set_pref_min_max(jfxButton, 40, Resize_type.HEIGHT);
 
-                        StackPane.setMargin(language_name,new Insets(0,0,0,5));
+                        StackPane.setMargin(language_name, new Insets(0, 0, 0, 5));
 
                         StackPane.setAlignment(language_name, Pos.CENTER_LEFT);
-                        StackPane.setAlignment(down_or_left_image_view,Pos.CENTER_RIGHT);
-                        StackPane.setAlignment(v_box_inside_the_stack_pane,Pos.BOTTOM_CENTER);
+                        StackPane.setAlignment(down_or_left_image_view, Pos.CENTER_RIGHT);
+                        StackPane.setAlignment(v_box_inside_the_stack_pane, Pos.BOTTOM_CENTER);
 
                         v_box_inside_the_stack_pane.getChildren().add(check_box_is_the_langauge_enabled);
                         stackPane_extended_with_all_of_the_info.getChildren().add(v_box_inside_the_stack_pane);
@@ -4773,28 +4801,28 @@ public class HelloApplication extends Application {
                             setText(null);
                             setGraphic(null);
                         } else {
-                            make_the_language_translation_extended(stackPane_extended_with_all_of_the_info,down_or_left_image_view,item,item.isItem_extended());
+                            make_the_language_translation_extended(stackPane_extended_with_all_of_the_info, down_or_left_image_view, item, item.isItem_extended());
                             jfxButton.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    if(item.isItem_extended()){
-                                        make_the_language_translation_extended(stackPane_extended_with_all_of_the_info,down_or_left_image_view,item,false);
+                                    if (item.isItem_extended()) {
+                                        make_the_language_translation_extended(stackPane_extended_with_all_of_the_info, down_or_left_image_view, item, false);
                                         item.setItem_extended(false);
                                     } else {
-                                        make_the_language_translation_extended(stackPane_extended_with_all_of_the_info,down_or_left_image_view,item,true);
+                                        make_the_language_translation_extended(stackPane_extended_with_all_of_the_info, down_or_left_image_view, item, true);
                                         item.setItem_extended(true);
                                     }
                                 }
                             });
-                            select_or_un_select_the_language(item,jfxButton,language_name,check_box_is_the_langauge_enabled);
+                            select_or_un_select_the_language(item, jfxButton, language_name, check_box_is_the_langauge_enabled, down_or_left_image_view,helloController);
                             check_box_is_the_langauge_enabled.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
                                     item.setVisible_check_mark_checked(check_box_is_the_langauge_enabled.isSelected());
-                                    select_or_un_select_the_language(item,jfxButton,language_name,check_box_is_the_langauge_enabled);
+                                    select_or_un_select_the_language(item, jfxButton, language_name, check_box_is_the_langauge_enabled, down_or_left_image_view,helloController);
                                 }
                             });
-                            if(item.getLanguage_name().equals("arabic")){
+                            if (item.getLanguage_name().equals("arabic")) {
                                 check_box_is_the_langauge_enabled.setText("Show text");
                             } else {
                                 check_box_is_the_langauge_enabled.setText("Show translation");
@@ -4820,12 +4848,12 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void make_list_view_selection_model_null(HelloController helloController){
+    private void make_list_view_selection_model_null(HelloController helloController) {
         helloController.list_view_with_all_of_the_languages.setSelectionModel(null);
     }
 
-    private void make_the_language_translation_extended(StackPane stackPane,ImageView imageView,Language_info language_info,boolean extended){
-        if(extended){
+    private void make_the_language_translation_extended(StackPane stackPane, ImageView imageView, Language_info language_info, boolean extended) {
+        if (extended) {
             stackPane.setVisible(true);
             stackPane.setManaged(true);
             imageView.setRotate(90);
@@ -4836,17 +4864,74 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void select_or_un_select_the_language(Language_info item,JFXButton jfxButton,Label language_name, CheckBox check_box_is_the_langauge_enabled){
-        if(item.isVisible_check_mark_checked()){
+    private void select_or_un_select_the_language(Language_info item, JFXButton jfxButton, Label language_name, CheckBox check_box_is_the_langauge_enabled, ImageView down_or_left_image_view,HelloController helloController) {
+        if (item.isVisible_check_mark_checked()) {
             language_name.setText(item.getDisplayed_language_name());
             language_name.setTextFill(javafx.scene.paint.Color.WHITE);
             jfxButton.setStyle("-fx-background-color: #000000; -fx-text-fill: #FFFFFF;");
             check_box_is_the_langauge_enabled.setSelected(true);
+            down_or_left_image_view.setImage(return_white_logo_from_black("arrow_forward_ios", (int) down_or_left_image_view.getFitWidth(), (int) down_or_left_image_view.getFitHeight()));
+            show_the_canvas(helloController,create_the_translation_canvas(item),item.getLanguage_name());
         } else {
             language_name.setText(item.getDisplayed_language_name());
             language_name.setTextFill(javafx.scene.paint.Color.BLACK);
             jfxButton.setStyle("-fx-background-color: #00000000;");
             check_box_is_the_langauge_enabled.setSelected(false);
+            down_or_left_image_view.setImage(return_the_image_to_be_the_icon("arrow_forward_ios", (int) down_or_left_image_view.getFitWidth(), (int) down_or_left_image_view.getFitHeight()));
         }
+    }
+
+    private Image return_white_logo_from_black(String icon_name, int width, int height) {
+        Image normal_icon = return_the_image_to_be_the_icon(icon_name, width, height);
+        WritableImage writable_image_to_be_returned = new WritableImage((int) normal_icon.getWidth(), (int) normal_icon.getHeight());
+        PixelReader pixelReader = normal_icon.getPixelReader();
+        PixelWriter pixelWriter = writable_image_to_be_returned.getPixelWriter();
+        int writeable_image_width = (int) writable_image_to_be_returned.getWidth();
+        int writeable_image_height = (int) writable_image_to_be_returned.getHeight();
+        for (int i = 0; i < writeable_image_width; i++) {
+            for (int j = 0; j < writeable_image_height; j++) {
+                if (pixelReader.getColor(i, j).getOpacity() == 0) {
+                    pixelWriter.setColor(i, j, javafx.scene.paint.Color.TRANSPARENT);
+                } else {
+                    javafx.scene.paint.Color color = pixelReader.getColor(i, j);
+                    double red = color.getRed();
+                    double green = color.getGreen();
+                    double blue = color.getBlue();
+                    javafx.scene.paint.Color new_color = new javafx.scene.paint.Color(1D - red, 1D - green, 1D - blue, color.getOpacity());
+                    pixelWriter.setColor(i, j, new_color);
+                }
+            }
+        }
+        return writable_image_to_be_returned;
+    }
+
+    private void show_the_canvas(HelloController helloController,Canvas canvas,String language_name){
+        Pane showing_the_chatgpt_images_pane = helloController.stack_pane_of_image_view_and_text;
+        Canvas_data canvas_data = new Canvas_data(language_name);
+        canvas.setUserData(canvas_data);
+        showing_the_chatgpt_images_pane.getChildren().add(canvas);
+    }
+
+    private void hide_the_language_canvas(HelloController helloController, Canvas canvas, String language_name){
+        Pane showing_the_chatgpt_images_pane = helloController.stack_pane_of_image_view_and_text;
+        Canvas_data canvas_data = new Canvas_data(language_name);
+        for(int i = 0;i<showing_the_chatgpt_images_pane.getChildren().size();i++){
+            Canvas_data local_canvas_data = (Canvas_data) showing_the_chatgpt_images_pane.getChildren().get(i).getUserData();
+            if(local_canvas_data.equals(canvas_data)){
+                showing_the_chatgpt_images_pane.getChildren().remove(i);
+                break;
+            }
+        }
+    }
+
+    private Canvas create_the_translation_canvas(Language_info language_info){
+        Text_item text_item = language_info.getArrayList_of_all_of_the_translations().get(selected_verse);
+        Canvas canvas = new Canvas(1080,1920);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.setFill(javafx.scene.paint.Color.WHITE);
+        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.setFont(new Font("Arial", 40)); // font & size
+        gc.fillText(text_item.getVerse_text(), 50, 100); // x=50, y=100
+        return canvas;
     }
 }
