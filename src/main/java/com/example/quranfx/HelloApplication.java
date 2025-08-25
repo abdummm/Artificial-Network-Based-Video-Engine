@@ -4018,7 +4018,7 @@ public class HelloApplication extends Application {
                     ObjectMapper mapper = new ObjectMapper();
                     JsonNode jsonNode = mapper.readTree(response.body().string());
                     quran_token = jsonNode.get("access_token").asText();
-                    //token_expiry = TimeUnit.SECONDS.toMillis(jsonNode.get("expires_in").asInt()) + System.currentTimeMillis();
+                    //long token_expiry = TimeUnit.SECONDS.toMillis(jsonNode.get("expires_in").asInt()) + System.currentTimeMillis();
                     refresh_the_quran_token(helloController, scene, jsonNode.get("expires_in").asInt());
                     if (call_apis) {
                         call_the_2_apis_at_the_start(helloController, scene);
@@ -4245,10 +4245,9 @@ public class HelloApplication extends Application {
 
     private void call_the_2_apis_at_the_start(HelloController helloController, Scene scene) {
         OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(1, TimeUnit.SECONDS) // Time to establish connection
-                .readTimeout(1, TimeUnit.SECONDS)    // Time to wait for data
-                .writeTimeout(1, TimeUnit.SECONDS)   // Time allowed to send data
-                .callTimeout(1,TimeUnit.SECONDS)
+                .connectTimeout(10, TimeUnit.SECONDS) // Time to establish connection
+                .readTimeout(30, TimeUnit.SECONDS)    // Time to wait for data
+                .writeTimeout(30, TimeUnit.SECONDS)   // Time allowed to send data
                 .build();
         Request translation_request = call_translations_api();
         Request chapters_request = call_chapters_api(helloController, scene);
@@ -4762,7 +4761,7 @@ public class HelloApplication extends Application {
 
                         down_or_left_image_view = return_the_icon("arrow_forward_ios", width_and_height_of_arrow_image_view_translation, width_and_height_of_arrow_image_view_translation);
                         down_or_left_image_view.setMouseTransparent(true);
-                        StackPane.setMargin(down_or_left_image_view,new Insets(0,5,0,0));
+                        StackPane.setMargin(down_or_left_image_view, new Insets(0, 5, 0, 0));
 
                         check_box_is_the_langauge_enabled.setText("Show Text");
 
@@ -4814,12 +4813,13 @@ public class HelloApplication extends Application {
                                     }
                                 }
                             });
-                            select_or_un_select_the_language(item, jfxButton, language_name, check_box_is_the_langauge_enabled, down_or_left_image_view,helloController);
+                            select_or_un_select_the_language(item, jfxButton, language_name, check_box_is_the_langauge_enabled, down_or_left_image_view, helloController);
                             check_box_is_the_langauge_enabled.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
                                     item.setVisible_check_mark_checked(check_box_is_the_langauge_enabled.isSelected());
-                                    select_or_un_select_the_language(item, jfxButton, language_name, check_box_is_the_langauge_enabled, down_or_left_image_view,helloController);
+                                    select_or_un_select_the_language(item, jfxButton, language_name, check_box_is_the_langauge_enabled, down_or_left_image_view, helloController);
+                                    set_up_or_hide_the_canvas(helloController,item);
                                 }
                             });
                             if (item.getLanguage_name().equals("arabic")) {
@@ -4833,6 +4833,19 @@ public class HelloApplication extends Application {
                 };
             }
         });
+    }
+
+    private void set_up_or_hide_the_canvas(HelloController helloController,Language_info language_info){
+        if(language_info.isVisible_check_mark_checked()){
+            Canvas canvas = create_the_translation_canvas(language_info);
+            bind_the_canvas_to_the_image_view(helloController, canvas);
+            set_the_canvas_data(canvas,language_info);
+            add_the_canvas_to_the_main_pane(helloController,canvas);
+            language_info.setLanguage_canvas(canvas);
+        } else {
+            hide_the_language_canvas(helloController,language_info.getLanguage_canvas());
+            language_info.setLanguage_canvas(null);
+        }
     }
 
     private void update_the_translations(HelloController helloController, HashMap<String, ArrayList<String>> hash_map_with_allf_of_the_verses) {
@@ -4864,20 +4877,21 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void select_or_un_select_the_language(Language_info item, JFXButton jfxButton, Label language_name, CheckBox check_box_is_the_langauge_enabled, ImageView down_or_left_image_view,HelloController helloController) {
+    private void select_or_un_select_the_language(Language_info item, JFXButton jfxButton, Label language_name, CheckBox check_box_is_the_langauge_enabled, ImageView down_or_left_image_view, HelloController helloController) {
         if (item.isVisible_check_mark_checked()) {
             language_name.setText(item.getDisplayed_language_name());
             language_name.setTextFill(javafx.scene.paint.Color.WHITE);
             jfxButton.setStyle("-fx-background-color: #000000; -fx-text-fill: #FFFFFF;");
             check_box_is_the_langauge_enabled.setSelected(true);
             down_or_left_image_view.setImage(return_white_logo_from_black("arrow_forward_ios", (int) down_or_left_image_view.getFitWidth(), (int) down_or_left_image_view.getFitHeight()));
-            show_the_canvas(helloController,create_the_translation_canvas(item),item.getLanguage_name());
+            //show_the_canvas(helloController, create_the_translation_canvas(item), item.getLanguage_name());
         } else {
             language_name.setText(item.getDisplayed_language_name());
             language_name.setTextFill(javafx.scene.paint.Color.BLACK);
             jfxButton.setStyle("-fx-background-color: #00000000;");
             check_box_is_the_langauge_enabled.setSelected(false);
             down_or_left_image_view.setImage(return_the_image_to_be_the_icon("arrow_forward_ios", (int) down_or_left_image_view.getFitWidth(), (int) down_or_left_image_view.getFitHeight()));
+            //hide_the_language_canvas(helloController, item);
         }
     }
 
@@ -4905,33 +4919,88 @@ public class HelloApplication extends Application {
         return writable_image_to_be_returned;
     }
 
-    private void show_the_canvas(HelloController helloController,Canvas canvas,String language_name){
+    private void add_the_canvas_to_the_main_pane(HelloController helloController, Canvas canvas) {
         Pane showing_the_chatgpt_images_pane = helloController.stack_pane_of_image_view_and_text;
-        Canvas_data canvas_data = new Canvas_data(language_name);
-        canvas.setUserData(canvas_data);
         showing_the_chatgpt_images_pane.getChildren().add(canvas);
     }
 
-    private void hide_the_language_canvas(HelloController helloController, Canvas canvas, String language_name){
-        Pane showing_the_chatgpt_images_pane = helloController.stack_pane_of_image_view_and_text;
-        Canvas_data canvas_data = new Canvas_data(language_name);
-        for(int i = 0;i<showing_the_chatgpt_images_pane.getChildren().size();i++){
-            Canvas_data local_canvas_data = (Canvas_data) showing_the_chatgpt_images_pane.getChildren().get(i).getUserData();
-            if(local_canvas_data.equals(canvas_data)){
-                showing_the_chatgpt_images_pane.getChildren().remove(i);
-                break;
-            }
-        }
+    private void set_the_canvas_data(Canvas canvas,Language_info language_info){
+        Canvas_data canvas_data = new Canvas_data(language_info.getLanguage_name());
+        canvas.setUserData(canvas_data);
     }
 
-    private Canvas create_the_translation_canvas(Language_info language_info){
+    private void hide_the_language_canvas(HelloController helloController, Canvas canvas) {
+        Pane showing_the_chatgpt_images_pane = helloController.stack_pane_of_image_view_and_text;
+        /*Canvas_data canvas_data = new Canvas_data(language_info.getLanguage_name());
+        for (int i = 0; i < showing_the_chatgpt_images_pane.getChildren().size(); i++) {
+            if (showing_the_chatgpt_images_pane.getChildren().get(i) instanceof Canvas) {
+                Canvas_data local_canvas_data = (Canvas_data) showing_the_chatgpt_images_pane.getChildren().get(i).getUserData();
+                if (local_canvas_data != null && local_canvas_data.equals(canvas_data)) {
+                    showing_the_chatgpt_images_pane.getChildren().remove(i);
+                    break;
+                }
+            }
+        }*/
+        showing_the_chatgpt_images_pane.getChildren().remove(canvas);
+    }
+
+    private Canvas create_the_translation_canvas(Language_info language_info) {
         Text_item text_item = language_info.getArrayList_of_all_of_the_translations().get(selected_verse);
-        Canvas canvas = new Canvas(1080,1920);
+        Canvas canvas = new Canvas(1080, 1920);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setFill(javafx.scene.paint.Color.WHITE);
-        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.setFont(new Font("Arial", 40)); // font & size
-        gc.fillText(text_item.getVerse_text(), 50, 100); // x=50, y=100
+        gc.setFont(Font.font("Arial", 48)); // pick a font that supports Arabic
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.fillText(text_item.getVerse_text(), canvas.getWidth()/2, canvas.getHeight()/2);
         return canvas;
+    }
+
+    private void bind_the_canvas_to_the_image_view(HelloController helloController, Canvas canvas) {
+        DoubleBinding x_binding = new DoubleBinding() {
+            {
+                super.bind(helloController.chatgpt_image_view.fitWidthProperty());
+            }
+
+            @Override
+            protected double computeValue() {
+                return helloController.chatgpt_image_view.getFitWidth() / canvas.getWidth();
+            }
+        };
+
+        DoubleBinding x_translate_binding = new DoubleBinding() {
+            {
+                super.bind(x_binding);
+            }
+
+            @Override
+            protected double computeValue() {
+                return -(canvas.getWidth() - canvas.getScaleX() * canvas.getWidth()) / 2;
+            }
+        };
+        DoubleBinding y_binding = new DoubleBinding() {
+            {
+                super.bind(helloController.chatgpt_image_view.fitHeightProperty());
+            }
+
+            @Override
+            protected double computeValue() {
+                return helloController.chatgpt_image_view.getFitHeight() / canvas.getHeight();
+            }
+        };
+
+        DoubleBinding y_translate_binding = new DoubleBinding() {
+            {
+                super.bind(y_binding);
+            }
+
+            @Override
+            protected double computeValue() {
+                return -(canvas.getHeight() - canvas.getScaleY() * canvas.getHeight()) / 2;
+            }
+        };
+        canvas.scaleXProperty().bind(x_binding);
+        canvas.scaleYProperty().bind(y_binding);
+        canvas.translateXProperty().bind(x_translate_binding);
+        canvas.translateYProperty().bind(y_translate_binding);
     }
 }

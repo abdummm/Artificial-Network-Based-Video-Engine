@@ -21,6 +21,7 @@ public class Language_info {
         this.arrayList_of_all_of_the_translations = new ArrayList<>();
         this.displayed_language_name = edit_displayed_language_name(language_name);
         this.item_extended = false;
+        this.language_canvas = null;
     }
 
     private String edit_displayed_language_name(String language_name){
@@ -76,5 +77,13 @@ public class Language_info {
 
     public ArrayList<Text_item> getArrayList_of_all_of_the_translations() {
         return arrayList_of_all_of_the_translations;
+    }
+
+    public Canvas getLanguage_canvas() {
+        return language_canvas;
+    }
+
+    public void setLanguage_canvas(Canvas language_canvas) {
+        this.language_canvas = language_canvas;
     }
 }
