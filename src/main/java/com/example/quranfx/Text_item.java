@@ -14,6 +14,7 @@ public class Text_item {
     private long end_time;
     private double width;
     private double height;
+    private Text_on_canvas_mode text_on_canvas_mode;
 
     public Text_item(String verse_text) {
         this.verse_text = verse_text;

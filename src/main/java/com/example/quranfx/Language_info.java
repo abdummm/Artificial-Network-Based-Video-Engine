@@ -17,6 +17,7 @@ public class Language_info {
     private ArrayList<Text_item> arrayList_of_all_of_the_translations;
     private boolean item_extended;
     private Canvas language_canvas;
+
     public Language_info(String language_name) {
         this.language_name = language_name;
         this.visible_check_mark_checked = false;
@@ -26,41 +27,41 @@ public class Language_info {
         this.language_canvas = null;
     }
 
-    private String edit_displayed_language_name(String language_name){
+    private String edit_displayed_language_name(String language_name) {
         StringBuilder stringBuilder = new StringBuilder();
         String[] split_on_a_comma = language_name.split(",");
-        for(int i = 0;i<split_on_a_comma.length;i++){
+        for (int i = 0; i < split_on_a_comma.length; i++) {
             split_on_a_comma[i] = split_on_a_comma[i].trim();
             stringBuilder.append(return_the_first_letter_capital(split_on_a_comma[i]));
             stringBuilder.append(", ");
         }
-        if(!stringBuilder.isEmpty()){
-            stringBuilder.delete(stringBuilder.length()-2,stringBuilder.length());
+        if (!stringBuilder.isEmpty()) {
+            stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
         }
         return stringBuilder.toString();
     }
 
-    private String return_the_first_letter_capital (String string){
-        if(string.isEmpty()){
+    private String return_the_first_letter_capital(String string) {
+        if (string.isEmpty()) {
             return string;
         }
-        return string.substring(0,1).toUpperCase() + string.substring(1);
+        return string.substring(0, 1).toUpperCase() + string.substring(1);
     }
 
-    private void edit_the_verses_before_adding_them(ArrayList<String> arrayList_of_all_of_the_translations){
+    private void edit_the_verses_before_adding_them(ArrayList<String> arrayList_of_all_of_the_translations) {
         /*System.out.println();
         System.out.println();
         for(int i = 0;i<arrayList_of_all_of_the_translations.size();i++){
             System.out.println(arrayList_of_all_of_the_translations.get(i));
         }*/
 
-        for(int i = 0;i<arrayList_of_all_of_the_translations.size();i++){
+        for (int i = 0; i < arrayList_of_all_of_the_translations.size(); i++) {
             Document doc = Jsoup.parse(arrayList_of_all_of_the_translations.get(i));
             doc.select("script, style, noscript, sup, sub").remove(); // drop entire elements incl. text
             String cleaned_html = doc.text().trim();
             cleaned_html = cleaned_html.replaceAll("::\\{\\d+}", "");
             cleaned_html = cleaned_html.replace("\"", "");
-            arrayList_of_all_of_the_translations.set(i,cleaned_html);
+            arrayList_of_all_of_the_translations.set(i, cleaned_html);
         }
         /*System.out.println();
         System.out.println("======================================================================================");
@@ -77,7 +78,7 @@ public class Language_info {
 
     public void setArrayList_of_all_of_the_translations(ArrayList<String> arrayList_of_all_of_the_translations) {
         edit_the_verses_before_adding_them(arrayList_of_all_of_the_translations);
-        for(int i = 0;i<arrayList_of_all_of_the_translations.size();i++){
+        for (int i = 0; i < arrayList_of_all_of_the_translations.size(); i++) {
             this.arrayList_of_all_of_the_translations.add(new Text_item(arrayList_of_all_of_the_translations.get(i)));
         }
     }
@@ -113,4 +114,6 @@ public class Language_info {
     public void setLanguage_canvas(Canvas language_canvas) {
         this.language_canvas = language_canvas;
     }
+
+
 }

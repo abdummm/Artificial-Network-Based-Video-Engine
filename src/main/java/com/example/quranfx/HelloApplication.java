@@ -8,13 +8,13 @@ import com.drew.metadata.exif.ExifIFD0Directory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXButton;
-import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -34,7 +34,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
+import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
@@ -65,6 +67,7 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import javafx.util.Duration;
 import net.coobird.thumbnailator.Thumbnails;
@@ -1876,14 +1879,14 @@ public class HelloApplication extends Application {
     }
 
     private void set_the_icons(HelloController helloController) {
-        set_pref_min_max(helloController.next_photo_chat_gpt_result, next_prev_button_size * 2, Resize_type.WIDTH_AND_HEIGHT);
+        set_pref_min_max(helloController.next_photo_chat_gpt_result, next_prev_button_size * 2, Resize_bind_type.WIDTH_AND_HEIGHT);
         helloController.next_photo_chat_gpt_result.setShape(new Circle(next_prev_button_size * 2));
         helloController.next_photo_chat_gpt_result.setGraphic(return_the_icon("arrow_forward_ios", next_prev_button_size, next_prev_button_size));
         helloController.next_photo_chat_gpt_result.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         helloController.next_photo_chat_gpt_result.setAlignment(Pos.CENTER);
 
         helloController.previous_photo_chat_gpt_result.setShape(new Circle(next_prev_button_size));
-        set_pref_min_max(helloController.previous_photo_chat_gpt_result, next_prev_button_size * 2, Resize_type.WIDTH_AND_HEIGHT);
+        set_pref_min_max(helloController.previous_photo_chat_gpt_result, next_prev_button_size * 2, Resize_bind_type.WIDTH_AND_HEIGHT);
         helloController.previous_photo_chat_gpt_result.setGraphic(return_the_icon("arrow_back_ios", next_prev_button_size, next_prev_button_size));
         helloController.previous_photo_chat_gpt_result.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         helloController.previous_photo_chat_gpt_result.setAlignment(Pos.CENTER);
@@ -1905,14 +1908,14 @@ public class HelloApplication extends Application {
         helloController.play_sound.setAlignment(Pos.CENTER);
     }
 
-    private void set_pref_min_max(Region region, int value, Resize_type resizeType) {
-        if (resizeType == Resize_type.WIDTH_AND_HEIGHT || resizeType == Resize_type.HEIGHT) {
+    private void set_pref_min_max(Region region, int value, Resize_bind_type resizeType) {
+        if (resizeType == Resize_bind_type.WIDTH_AND_HEIGHT || resizeType == Resize_bind_type.HEIGHT) {
             region.setPrefHeight(value);
             region.setMinHeight(value);
             region.setMaxHeight(value);
         }
 
-        if (resizeType == Resize_type.WIDTH_AND_HEIGHT || resizeType == Resize_type.WIDTH) {
+        if (resizeType == Resize_bind_type.WIDTH_AND_HEIGHT || resizeType == Resize_bind_type.WIDTH) {
             region.setPrefWidth(value);
             region.setMinWidth(value);
             region.setMaxWidth(value);
@@ -4745,8 +4748,14 @@ public class HelloApplication extends Application {
                     private VBox v_box_inside_the_stack_pane;
                     private CheckBox check_box_is_the_langauge_enabled;
                     private Separator separator_between_check_box_and_everything;
+                    private HBox hbox_for_x_and_y_positions;
+                    private TextField x_position_of_text;
+                    private TextField y_position_of_text;
+                    private Label x_label_beside_x_pos;
+                    private Label y_label_beside_y_pos;
 
                     {
+                        setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                         root = new VBox(0);
                         stackPane_of_the_top = new StackPane();
                         jfxButton = new JFXButton();
@@ -4755,45 +4764,91 @@ public class HelloApplication extends Application {
                         stackPane_extended_with_all_of_the_info = new StackPane();
                         v_box_inside_the_stack_pane = new VBox();
                         separator_between_check_box_and_everything = new Separator();
+                        hbox_for_x_and_y_positions = new HBox();
+                        x_position_of_text = new TextField();
+                        y_position_of_text = new TextField();
+                        x_label_beside_x_pos = new Label();
+                        y_label_beside_y_pos = new Label();
 
-                        v_box_inside_the_stack_pane.setAlignment(Pos.CENTER);
+                        //root
+                        root.setMinWidth(150);
+                        root.setPrefWidth(150);
+                        root.setMaxWidth(150);
 
-                        //lnaguage name stuff
+                        //stackPane_of_the_top
+                        set_pref_min_max(stackPane_of_the_top, 40, Resize_bind_type.HEIGHT);
+
+                        //jfxButton
+                        jfxButton.prefWidthProperty().bind(stackPane_of_the_top.widthProperty());
+                        jfxButton.minWidthProperty().bind(stackPane_of_the_top.widthProperty());
+                        jfxButton.maxWidthProperty().bind(stackPane_of_the_top.widthProperty());
+                        set_pref_min_max(jfxButton, 40, Resize_bind_type.HEIGHT);
+
+                        //lnaguage_name
                         language_name.setMouseTransparent(true);
+                        StackPane.setMargin(language_name, new Insets(0, 0, 0, 5));
+                        StackPane.setAlignment(language_name, Pos.CENTER_LEFT);
 
+                        //check_box_is_the_langauge_enabled
+                        check_box_is_the_langauge_enabled.setText("Show Text");
+
+                        //stackPane_extended_with_all_of_the_info
+                        set_pref_min_max(stackPane_extended_with_all_of_the_info, 120, Resize_bind_type.HEIGHT);
+                        stackPane_extended_with_all_of_the_info.setVisible(false);
+                        stackPane_extended_with_all_of_the_info.setManaged(false);
+
+                        //v_box_inside_the_stack_pane
+                        v_box_inside_the_stack_pane.setAlignment(Pos.CENTER);
+                        StackPane.setAlignment(v_box_inside_the_stack_pane, Pos.BOTTOM_CENTER);
+
+                        //separator_between_check_box_and_everything
                         VBox.setMargin(separator_between_check_box_and_everything, new Insets(10, 5, 0, 5));
                         separator_between_check_box_and_everything.getStyleClass().add("my-separator");
 
+                        //down_or_left_image_view
                         down_or_left_image_view = return_the_icon("arrow_forward_ios", width_and_height_of_arrow_image_view_translation, width_and_height_of_arrow_image_view_translation);
                         down_or_left_image_view.setMouseTransparent(true);
                         StackPane.setMargin(down_or_left_image_view, new Insets(0, 5, 0, 0));
+                        StackPane.setAlignment(down_or_left_image_view, Pos.CENTER_RIGHT);
 
-                        check_box_is_the_langauge_enabled.setText("Show Text");
+                        //hbox_for_x_and_y_positions
+                        hbox_for_x_and_y_positions.setAlignment(Pos.CENTER);
+                        VBox.setMargin(hbox_for_x_and_y_positions, new Insets(10, 0, 0, 0));
+
+                        //x_position_of_text
+                        format_the_text_filed_to_only_accept_positive_integers(x_position_of_text);
+                        HBox.setMargin(x_position_of_text, new Insets(0, 0, 0, 5));
+                        HBox.setHgrow(x_position_of_text, Priority.ALWAYS);
+                        x_position_of_text.setMaxWidth(Double.MAX_VALUE);
 
 
-                        set_pref_min_max(stackPane_extended_with_all_of_the_info, 120, Resize_type.HEIGHT);
-                        stackPane_extended_with_all_of_the_info.setVisible(false);
-                        stackPane_extended_with_all_of_the_info.setManaged(false);
+                        //y_position_of_text
+                        format_the_text_filed_to_only_accept_positive_integers(y_position_of_text);
+                        HBox.setMargin(y_position_of_text, new Insets(0, 0, 0, 5));
+                        HBox.setHgrow(y_position_of_text, Priority.ALWAYS);
+                        y_position_of_text.setMaxWidth(Double.MAX_VALUE);
+
+                        //x_label_beside_x_pos
+                        x_label_beside_x_pos.setText("X:");
+                        x_label_beside_x_pos.setMinWidth(Region.USE_PREF_SIZE);
+
+                        //y_label_beside_y_pos
+                        y_label_beside_y_pos.setText("Y:");
+                        HBox.setMargin(y_label_beside_y_pos, new Insets(0, 0, 0, 10));
+                        y_label_beside_y_pos.setMinWidth(Region.USE_PREF_SIZE);
+
+                        hbox_for_x_and_y_positions.getChildren().add(x_label_beside_x_pos);
+                        hbox_for_x_and_y_positions.getChildren().add(x_position_of_text);
+                        hbox_for_x_and_y_positions.getChildren().add(y_label_beside_y_pos);
+                        hbox_for_x_and_y_positions.getChildren().add(y_position_of_text);
 
                         stackPane_of_the_top.getChildren().add(jfxButton);
                         stackPane_of_the_top.getChildren().add(down_or_left_image_view);
                         stackPane_of_the_top.getChildren().add(language_name);
 
-                        set_pref_min_max(stackPane_of_the_top, 40, Resize_type.HEIGHT);
-
-                        jfxButton.prefWidthProperty().bind(stackPane_of_the_top.widthProperty());
-                        jfxButton.minWidthProperty().bind(stackPane_of_the_top.widthProperty());
-                        jfxButton.maxWidthProperty().bind(stackPane_of_the_top.widthProperty());
-                        set_pref_min_max(jfxButton, 40, Resize_type.HEIGHT);
-
-                        StackPane.setMargin(language_name, new Insets(0, 0, 0, 5));
-
-                        StackPane.setAlignment(language_name, Pos.CENTER_LEFT);
-                        StackPane.setAlignment(down_or_left_image_view, Pos.CENTER_RIGHT);
-                        StackPane.setAlignment(v_box_inside_the_stack_pane, Pos.BOTTOM_CENTER);
-
                         v_box_inside_the_stack_pane.getChildren().add(check_box_is_the_langauge_enabled);
                         v_box_inside_the_stack_pane.getChildren().add(separator_between_check_box_and_everything);
+                        v_box_inside_the_stack_pane.getChildren().add(hbox_for_x_and_y_positions);
 
                         stackPane_extended_with_all_of_the_info.getChildren().add(v_box_inside_the_stack_pane);
                         root.getChildren().add(stackPane_of_the_top);
@@ -4845,7 +4900,7 @@ public class HelloApplication extends Application {
     private void set_up_or_hide_the_canvas(HelloController helloController, Language_info language_info) {
         if (language_info.isVisible_check_mark_checked()) {
             Canvas canvas = create_the_translation_canvas();
-            add_the_text_to_the_canvas_initially(canvas,language_info);
+            add_the_text_to_the_canvas_initially(canvas, language_info);
             bind_the_canvas_to_the_image_view(helloController, canvas);
             set_the_canvas_data(canvas, language_info);
             add_the_canvas_to_the_main_pane(helloController, canvas);
@@ -4955,14 +5010,14 @@ public class HelloApplication extends Application {
         return canvas;
     }
 
-    private void add_the_text_to_the_canvas_initially(Canvas canvas,Language_info language_info){
+    private void add_the_text_to_the_canvas_initially(Canvas canvas, Language_info language_info) {
         Text_item text_item = language_info.getArrayList_of_all_of_the_translations().get(selected_verse);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setFill(javafx.scene.paint.Color.WHITE);
         gc.setFont(new Font(32)); // pick a font that supports Arabic
-        gc.setTextAlign(TextAlignment.LEFT);   // x = left edge
-        gc.setTextBaseline(VPos.TOP);          // y = top edge
-        gc.fillText(text_item.getVerse_text(), 0, 0);
+        gc.setTextAlign(TextAlignment.CENTER);   // x = left edge
+        gc.setTextBaseline(VPos.CENTER);          // y = top edge
+        gc.fillText(text_item.getVerse_text(), 1080 / 2D, 1920 / 2D);
     }
 
     private void bind_the_canvas_to_the_image_view(HelloController helloController, Canvas canvas) {
@@ -5013,8 +5068,8 @@ public class HelloApplication extends Application {
     }
 
     private void add_style_sheet_to_the_scene(Scene scene, String css_file_path) {
-        URL css_url  = getClass().getResource(css_file_path);
-        if(css_url == null){
+        URL css_url = getClass().getResource(css_file_path);
+        if (css_url == null) {
             return;
         }
         scene.getStylesheets().add(
@@ -5022,7 +5077,77 @@ public class HelloApplication extends Application {
         );
     }
 
-    private void add_the_css_files_at_the_start(Scene scene){
-        add_style_sheet_to_the_scene(scene,"my-separator.css");
+    private void add_the_css_files_at_the_start(Scene scene) {
+        add_style_sheet_to_the_scene(scene, "my-separator.css");
+    }
+
+    private void format_the_text_filed_to_only_accept_positive_integers(TextField textField) {
+        int max_int_length = String.valueOf(Integer.MAX_VALUE).length();
+        UnaryOperator<TextFormatter.Change> filter = new UnaryOperator<TextFormatter.Change>() {
+            @Override
+            public TextFormatter.Change apply(TextFormatter.Change change) {
+                String newText = change.getControlNewText();
+                if (newText.isEmpty()) {
+                    return change;
+                }
+                if (newText.matches("\\d+") && newText.length() <= max_int_length - 1) {
+                    return change;
+                } else {
+                    return null; // block anything else
+                }
+            }
+        };
+        TextFormatter<String> textFormatter = new TextFormatter<>(filter);
+        textField.setTextFormatter(textFormatter);
+    }
+
+    private void bind_the_pref_min_max(Region child_bind, Region parent_bind, Resize_bind_type resizeType) {
+        if (resizeType == Resize_bind_type.WIDTH_AND_HEIGHT || resizeType == Resize_bind_type.WIDTH) {
+            child_bind.minWidthProperty().bind(parent_bind.minWidthProperty());
+            child_bind.prefWidthProperty().bind(parent_bind.prefWidthProperty());
+            child_bind.maxWidthProperty().bind(parent_bind.maxWidthProperty());
+        }
+
+        if (resizeType == Resize_bind_type.WIDTH_AND_HEIGHT || resizeType == Resize_bind_type.HEIGHT) {
+            child_bind.minHeightProperty().bind(parent_bind.minHeightProperty());
+            child_bind.prefHeightProperty().bind(parent_bind.prefHeightProperty());
+            child_bind.maxHeightProperty().bind(parent_bind.maxHeightProperty());
+        }
+    }
+
+    private void get_the_skin_of_list_view_to_bind(HelloController helloController, Region root_of_list_view) {
+        Skin<?> initial_skin_of_list_view = helloController.list_view_with_all_of_the_languages.getSkin();
+        if (initial_skin_of_list_view != null) {
+            bind_the_root_to_the_skin_of_the_listview(helloController, root_of_list_view, initial_skin_of_list_view);
+        } else {
+            helloController.list_view_with_all_of_the_languages.skinProperty().addListener(new ChangeListener<Skin<?>>() {
+                @Override
+                public void changed(ObservableValue<? extends Skin<?>> observableValue, Skin<?> skin, Skin<?> new_skin) {
+                    bind_the_root_to_the_skin_of_the_listview(helloController, root_of_list_view, new_skin);
+                }
+            });
+        }
+    }
+
+    private void bind_the_root_to_the_skin_of_the_listview(HelloController helloController, Region root_of_list_view, Skin<?> skin) {
+        if (skin != null) {
+            VirtualFlow<?> flow = (VirtualFlow<?>) helloController.list_view_with_all_of_the_languages.lookup(".virtual-flow");
+            if (flow != null) {
+                bind_the_min_pref_max_to_a_width_property(root_of_list_view,flow.widthProperty(), Resize_bind_type.WIDTH);
+            }
+        }
+    }
+
+    private void bind_the_min_pref_max_to_a_width_property(Region child_bind, ReadOnlyDoubleProperty parent_property, Resize_bind_type resize_bind_type) {
+        if (resize_bind_type == Resize_bind_type.WIDTH_AND_HEIGHT || resize_bind_type == Resize_bind_type.WIDTH) {
+            child_bind.minWidthProperty().bind(parent_property);
+            child_bind.prefWidthProperty().bind(parent_property);
+            child_bind.maxWidthProperty().bind(parent_property);
+        }
+        if (resize_bind_type == Resize_bind_type.WIDTH_AND_HEIGHT || resize_bind_type == Resize_bind_type.HEIGHT) {
+            child_bind.minHeightProperty().bind(parent_property);
+            child_bind.prefHeightProperty().bind(parent_property);
+            child_bind.maxHeightProperty().bind(parent_property);
+        }
     }
 }
