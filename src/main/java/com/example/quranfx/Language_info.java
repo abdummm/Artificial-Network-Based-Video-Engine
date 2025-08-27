@@ -4,6 +4,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.canvas.Canvas;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 
 import java.util.ArrayList;
@@ -45,11 +47,36 @@ public class Language_info {
         return string.substring(0,1).toUpperCase() + string.substring(1);
     }
 
+    private void edit_the_verses_before_adding_them(ArrayList<String> arrayList_of_all_of_the_translations){
+        /*System.out.println();
+        System.out.println();
+        for(int i = 0;i<arrayList_of_all_of_the_translations.size();i++){
+            System.out.println(arrayList_of_all_of_the_translations.get(i));
+        }*/
+
+        for(int i = 0;i<arrayList_of_all_of_the_translations.size();i++){
+            Document doc = Jsoup.parse(arrayList_of_all_of_the_translations.get(i));
+            doc.select("script, style, noscript, sup, sub").remove(); // drop entire elements incl. text
+            String cleaned_html = doc.text().trim();
+            cleaned_html = cleaned_html.replaceAll("::\\{\\d+}", "");
+            cleaned_html = cleaned_html.replace("\"", "");
+            arrayList_of_all_of_the_translations.set(i,cleaned_html);
+        }
+        /*System.out.println();
+        System.out.println("======================================================================================");
+        System.out.println();
+
+        for(int i = 0;i<arrayList_of_all_of_the_translations.size();i++){
+            System.out.println(arrayList_of_all_of_the_translations.get(i));
+        }*/
+    }
+
     public String getLanguage_name() {
         return language_name;
     }
 
     public void setArrayList_of_all_of_the_translations(ArrayList<String> arrayList_of_all_of_the_translations) {
+        edit_the_verses_before_adding_them(arrayList_of_all_of_the_translations);
         for(int i = 0;i<arrayList_of_all_of_the_translations.size();i++){
             this.arrayList_of_all_of_the_translations.add(new Text_item(arrayList_of_all_of_the_translations.get(i)));
         }

@@ -1,0 +1,5 @@
+.my-separator:horizontal .line {
+    -fx-background-color: #000000;
+    -fx-pref-height: 1;      /* thickness for horizontal */
+    -fx-border-color: transparent;
+}

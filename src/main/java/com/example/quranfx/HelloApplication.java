@@ -8,6 +8,7 @@ import com.drew.metadata.exif.ExifIFD0Directory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXButton;
+import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -22,10 +23,8 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Bounds;
+import javafx.geometry.*;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -56,6 +55,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.io.*;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -128,7 +128,7 @@ public class HelloApplication extends Application {
     private final static String clientSecret_pre_live = Quran_api_secrets.clientSecret_pre_live;
     private final static String clientId_live = Quran_api_secrets.clientId_live;
     private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
-    private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
+    private final static Live_mode live_or_pre_live_quran_api = Live_mode.PRE_LIVE;
     private final static String app_name = "Sabrly";
     private final static double screen_width_multiplier = 0.55D;
     private final static double screen_height_multiplier = 0.55D;
@@ -228,6 +228,7 @@ public class HelloApplication extends Application {
         ignore_scroll_for_overlaying_pane_for_time_line(helloController);
         set_up_the_languages(helloController);
         make_list_view_selection_model_null(helloController);
+        add_the_css_files_at_the_start(scene);
     }
 
     public static void main(String[] args) {
@@ -4743,6 +4744,7 @@ public class HelloApplication extends Application {
                     private StackPane stackPane_extended_with_all_of_the_info;
                     private VBox v_box_inside_the_stack_pane;
                     private CheckBox check_box_is_the_langauge_enabled;
+                    private Separator separator_between_check_box_and_everything;
 
                     {
                         root = new VBox(0);
@@ -4752,12 +4754,15 @@ public class HelloApplication extends Application {
                         check_box_is_the_langauge_enabled = new CheckBox();
                         stackPane_extended_with_all_of_the_info = new StackPane();
                         v_box_inside_the_stack_pane = new VBox();
+                        separator_between_check_box_and_everything = new Separator();
 
                         v_box_inside_the_stack_pane.setAlignment(Pos.CENTER);
 
                         //lnaguage name stuff
                         language_name.setMouseTransparent(true);
 
+                        VBox.setMargin(separator_between_check_box_and_everything, new Insets(10, 5, 0, 5));
+                        separator_between_check_box_and_everything.getStyleClass().add("my-separator");
 
                         down_or_left_image_view = return_the_icon("arrow_forward_ios", width_and_height_of_arrow_image_view_translation, width_and_height_of_arrow_image_view_translation);
                         down_or_left_image_view.setMouseTransparent(true);
@@ -4788,6 +4793,8 @@ public class HelloApplication extends Application {
                         StackPane.setAlignment(v_box_inside_the_stack_pane, Pos.BOTTOM_CENTER);
 
                         v_box_inside_the_stack_pane.getChildren().add(check_box_is_the_langauge_enabled);
+                        v_box_inside_the_stack_pane.getChildren().add(separator_between_check_box_and_everything);
+
                         stackPane_extended_with_all_of_the_info.getChildren().add(v_box_inside_the_stack_pane);
                         root.getChildren().add(stackPane_of_the_top);
                         root.getChildren().add(stackPane_extended_with_all_of_the_info);
@@ -4819,7 +4826,7 @@ public class HelloApplication extends Application {
                                 public void handle(ActionEvent actionEvent) {
                                     item.setVisible_check_mark_checked(check_box_is_the_langauge_enabled.isSelected());
                                     select_or_un_select_the_language(item, jfxButton, language_name, check_box_is_the_langauge_enabled, down_or_left_image_view, helloController);
-                                    set_up_or_hide_the_canvas(helloController,item);
+                                    set_up_or_hide_the_canvas(helloController, item);
                                 }
                             });
                             if (item.getLanguage_name().equals("arabic")) {
@@ -4835,15 +4842,16 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void set_up_or_hide_the_canvas(HelloController helloController,Language_info language_info){
-        if(language_info.isVisible_check_mark_checked()){
-            Canvas canvas = create_the_translation_canvas(language_info);
+    private void set_up_or_hide_the_canvas(HelloController helloController, Language_info language_info) {
+        if (language_info.isVisible_check_mark_checked()) {
+            Canvas canvas = create_the_translation_canvas();
+            add_the_text_to_the_canvas_initially(canvas,language_info);
             bind_the_canvas_to_the_image_view(helloController, canvas);
-            set_the_canvas_data(canvas,language_info);
-            add_the_canvas_to_the_main_pane(helloController,canvas);
+            set_the_canvas_data(canvas, language_info);
+            add_the_canvas_to_the_main_pane(helloController, canvas);
             language_info.setLanguage_canvas(canvas);
         } else {
-            hide_the_language_canvas(helloController,language_info.getLanguage_canvas());
+            hide_the_language_canvas(helloController, language_info.getLanguage_canvas());
             language_info.setLanguage_canvas(null);
         }
     }
@@ -4884,14 +4892,12 @@ public class HelloApplication extends Application {
             jfxButton.setStyle("-fx-background-color: #000000; -fx-text-fill: #FFFFFF;");
             check_box_is_the_langauge_enabled.setSelected(true);
             down_or_left_image_view.setImage(return_white_logo_from_black("arrow_forward_ios", (int) down_or_left_image_view.getFitWidth(), (int) down_or_left_image_view.getFitHeight()));
-            //show_the_canvas(helloController, create_the_translation_canvas(item), item.getLanguage_name());
         } else {
             language_name.setText(item.getDisplayed_language_name());
             language_name.setTextFill(javafx.scene.paint.Color.BLACK);
             jfxButton.setStyle("-fx-background-color: #00000000;");
             check_box_is_the_langauge_enabled.setSelected(false);
             down_or_left_image_view.setImage(return_the_image_to_be_the_icon("arrow_forward_ios", (int) down_or_left_image_view.getFitWidth(), (int) down_or_left_image_view.getFitHeight()));
-            //hide_the_language_canvas(helloController, item);
         }
     }
 
@@ -4924,13 +4930,14 @@ public class HelloApplication extends Application {
         showing_the_chatgpt_images_pane.getChildren().add(canvas);
     }
 
-    private void set_the_canvas_data(Canvas canvas,Language_info language_info){
+    private void set_the_canvas_data(Canvas canvas, Language_info language_info) {
         Canvas_data canvas_data = new Canvas_data(language_info.getLanguage_name());
         canvas.setUserData(canvas_data);
     }
 
     private void hide_the_language_canvas(HelloController helloController, Canvas canvas) {
         Pane showing_the_chatgpt_images_pane = helloController.stack_pane_of_image_view_and_text;
+        showing_the_chatgpt_images_pane.getChildren().remove(canvas);
         /*Canvas_data canvas_data = new Canvas_data(language_info.getLanguage_name());
         for (int i = 0; i < showing_the_chatgpt_images_pane.getChildren().size(); i++) {
             if (showing_the_chatgpt_images_pane.getChildren().get(i) instanceof Canvas) {
@@ -4941,18 +4948,21 @@ public class HelloApplication extends Application {
                 }
             }
         }*/
-        showing_the_chatgpt_images_pane.getChildren().remove(canvas);
     }
 
-    private Canvas create_the_translation_canvas(Language_info language_info) {
-        Text_item text_item = language_info.getArrayList_of_all_of_the_translations().get(selected_verse);
+    private Canvas create_the_translation_canvas() {
         Canvas canvas = new Canvas(1080, 1920);
+        return canvas;
+    }
+
+    private void add_the_text_to_the_canvas_initially(Canvas canvas,Language_info language_info){
+        Text_item text_item = language_info.getArrayList_of_all_of_the_translations().get(selected_verse);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setFill(javafx.scene.paint.Color.WHITE);
-        gc.setFont(Font.font("Arial", 48)); // pick a font that supports Arabic
-        gc.setTextAlign(TextAlignment.CENTER);
-        gc.fillText(text_item.getVerse_text(), canvas.getWidth()/2, canvas.getHeight()/2);
-        return canvas;
+        gc.setFont(new Font(32)); // pick a font that supports Arabic
+        gc.setTextAlign(TextAlignment.LEFT);   // x = left edge
+        gc.setTextBaseline(VPos.TOP);          // y = top edge
+        gc.fillText(text_item.getVerse_text(), 0, 0);
     }
 
     private void bind_the_canvas_to_the_image_view(HelloController helloController, Canvas canvas) {
@@ -4966,7 +4976,6 @@ public class HelloApplication extends Application {
                 return helloController.chatgpt_image_view.getFitWidth() / canvas.getWidth();
             }
         };
-
         DoubleBinding x_translate_binding = new DoubleBinding() {
             {
                 super.bind(x_binding);
@@ -4987,7 +4996,6 @@ public class HelloApplication extends Application {
                 return helloController.chatgpt_image_view.getFitHeight() / canvas.getHeight();
             }
         };
-
         DoubleBinding y_translate_binding = new DoubleBinding() {
             {
                 super.bind(y_binding);
@@ -5002,5 +5010,19 @@ public class HelloApplication extends Application {
         canvas.scaleYProperty().bind(y_binding);
         canvas.translateXProperty().bind(x_translate_binding);
         canvas.translateYProperty().bind(y_translate_binding);
+    }
+
+    private void add_style_sheet_to_the_scene(Scene scene, String css_file_path) {
+        URL css_url  = getClass().getResource(css_file_path);
+        if(css_url == null){
+            return;
+        }
+        scene.getStylesheets().add(
+                css_url.toExternalForm()
+        );
+    }
+
+    private void add_the_css_files_at_the_start(Scene scene){
+        add_style_sheet_to_the_scene(scene,"my-separator.css");
     }
 }
