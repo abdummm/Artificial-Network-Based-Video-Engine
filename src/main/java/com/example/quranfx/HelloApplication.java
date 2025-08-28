@@ -14,8 +14,9 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -136,6 +137,7 @@ public class HelloApplication extends Application {
     private final static double screen_width_multiplier = 0.55D;
     private final static double screen_height_multiplier = 0.55D;
     private final static int scroll_pane_hosting_time_line_border_width = 1;
+    private final static int list_view_languages_border_width = 1;
     private final static int how_long_does_it_take_for_tool_tip_to_show_up = 200;
     private final static int number_of_seconds_of_quran_token_pre_fire = 120;
     private final static int width_and_height_of_arrow_image_view_translation = 20;
@@ -232,6 +234,7 @@ public class HelloApplication extends Application {
         set_up_the_languages(helloController);
         make_list_view_selection_model_null(helloController);
         add_the_css_files_at_the_start(scene);
+        set_the_border_width_of_list_view_languages(helloController);
     }
 
     public static void main(String[] args) {
@@ -4753,6 +4756,7 @@ public class HelloApplication extends Application {
                     private TextField y_position_of_text;
                     private Label x_label_beside_x_pos;
                     private Label y_label_beside_y_pos;
+                    private VBox v_box_with_all_of_the_controls_except_check_box;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -4769,11 +4773,9 @@ public class HelloApplication extends Application {
                         y_position_of_text = new TextField();
                         x_label_beside_x_pos = new Label();
                         y_label_beside_y_pos = new Label();
-
+                        v_box_with_all_of_the_controls_except_check_box = new VBox();
                         //root
-                        root.setMinWidth(150);
-                        root.setPrefWidth(150);
-                        root.setMaxWidth(150);
+                        bind_the_root_to_list_view(helloController, root,paddingProperty());
 
                         //stackPane_of_the_top
                         set_pref_min_max(stackPane_of_the_top, 40, Resize_bind_type.HEIGHT);
@@ -4803,7 +4805,7 @@ public class HelloApplication extends Application {
 
                         //separator_between_check_box_and_everything
                         VBox.setMargin(separator_between_check_box_and_everything, new Insets(10, 5, 0, 5));
-                        separator_between_check_box_and_everything.getStyleClass().add("my-separator");
+                        //separator_between_check_box_and_everything.getStyleClass().add("my-separator");
 
                         //down_or_left_image_view
                         down_or_left_image_view = return_the_icon("arrow_forward_ios", width_and_height_of_arrow_image_view_translation, width_and_height_of_arrow_image_view_translation);
@@ -4814,6 +4816,9 @@ public class HelloApplication extends Application {
                         //hbox_for_x_and_y_positions
                         hbox_for_x_and_y_positions.setAlignment(Pos.CENTER);
                         VBox.setMargin(hbox_for_x_and_y_positions, new Insets(10, 0, 0, 0));
+                        hbox_for_x_and_y_positions.minWidthProperty().bind(root.widthProperty());
+                        hbox_for_x_and_y_positions.prefWidthProperty().bind(root.widthProperty());
+                        hbox_for_x_and_y_positions.maxWidthProperty().bind(root.widthProperty());
 
                         //x_position_of_text
                         format_the_text_filed_to_only_accept_positive_integers(x_position_of_text);
@@ -4837,6 +4842,11 @@ public class HelloApplication extends Application {
                         HBox.setMargin(y_label_beside_y_pos, new Insets(0, 0, 0, 10));
                         y_label_beside_y_pos.setMinWidth(Region.USE_PREF_SIZE);
 
+                        //v_box_with_all_of_the_controls_except_check_box
+                        v_box_with_all_of_the_controls_except_check_box.setDisable(true);
+
+
+
                         hbox_for_x_and_y_positions.getChildren().add(x_label_beside_x_pos);
                         hbox_for_x_and_y_positions.getChildren().add(x_position_of_text);
                         hbox_for_x_and_y_positions.getChildren().add(y_label_beside_y_pos);
@@ -4848,7 +4858,11 @@ public class HelloApplication extends Application {
 
                         v_box_inside_the_stack_pane.getChildren().add(check_box_is_the_langauge_enabled);
                         v_box_inside_the_stack_pane.getChildren().add(separator_between_check_box_and_everything);
-                        v_box_inside_the_stack_pane.getChildren().add(hbox_for_x_and_y_positions);
+
+
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_for_x_and_y_positions);
+
+                        v_box_inside_the_stack_pane.getChildren().add(v_box_with_all_of_the_controls_except_check_box);
 
                         stackPane_extended_with_all_of_the_info.getChildren().add(v_box_inside_the_stack_pane);
                         root.getChildren().add(stackPane_of_the_top);
@@ -4882,6 +4896,7 @@ public class HelloApplication extends Application {
                                     item.setVisible_check_mark_checked(check_box_is_the_langauge_enabled.isSelected());
                                     select_or_un_select_the_language(item, jfxButton, language_name, check_box_is_the_langauge_enabled, down_or_left_image_view, helloController);
                                     set_up_or_hide_the_canvas(helloController, item);
+                                    v_box_with_all_of_the_controls_except_check_box.setDisable(!check_box_is_the_langauge_enabled.isSelected());
                                 }
                             });
                             if (item.getLanguage_name().equals("arabic")) {
@@ -4891,6 +4906,7 @@ public class HelloApplication extends Application {
                             }
                             setGraphic(root);
                         }
+
                     }
                 };
             }
@@ -5101,53 +5117,32 @@ public class HelloApplication extends Application {
         textField.setTextFormatter(textFormatter);
     }
 
-    private void bind_the_pref_min_max(Region child_bind, Region parent_bind, Resize_bind_type resizeType) {
-        if (resizeType == Resize_bind_type.WIDTH_AND_HEIGHT || resizeType == Resize_bind_type.WIDTH) {
-            child_bind.minWidthProperty().bind(parent_bind.minWidthProperty());
-            child_bind.prefWidthProperty().bind(parent_bind.prefWidthProperty());
-            child_bind.maxWidthProperty().bind(parent_bind.maxWidthProperty());
-        }
-
-        if (resizeType == Resize_bind_type.WIDTH_AND_HEIGHT || resizeType == Resize_bind_type.HEIGHT) {
-            child_bind.minHeightProperty().bind(parent_bind.minHeightProperty());
-            child_bind.prefHeightProperty().bind(parent_bind.prefHeightProperty());
-            child_bind.maxHeightProperty().bind(parent_bind.maxHeightProperty());
-        }
-    }
-
-    private void get_the_skin_of_list_view_to_bind(HelloController helloController, Region root_of_list_view) {
-        Skin<?> initial_skin_of_list_view = helloController.list_view_with_all_of_the_languages.getSkin();
-        if (initial_skin_of_list_view != null) {
-            bind_the_root_to_the_skin_of_the_listview(helloController, root_of_list_view, initial_skin_of_list_view);
-        } else {
-            helloController.list_view_with_all_of_the_languages.skinProperty().addListener(new ChangeListener<Skin<?>>() {
-                @Override
-                public void changed(ObservableValue<? extends Skin<?>> observableValue, Skin<?> skin, Skin<?> new_skin) {
-                    bind_the_root_to_the_skin_of_the_listview(helloController, root_of_list_view, new_skin);
-                }
-            });
-        }
-    }
-
-    private void bind_the_root_to_the_skin_of_the_listview(HelloController helloController, Region root_of_list_view, Skin<?> skin) {
-        if (skin != null) {
-            VirtualFlow<?> flow = (VirtualFlow<?>) helloController.list_view_with_all_of_the_languages.lookup(".virtual-flow");
-            if (flow != null) {
-                bind_the_min_pref_max_to_a_width_property(root_of_list_view,flow.widthProperty(), Resize_bind_type.WIDTH);
+    private void bind_the_root_to_list_view(HelloController helloController, Region root,ObjectProperty<Insets> padding_property) {
+        ScrollBar scrollBar = (ScrollBar) helloController.list_view_with_all_of_the_languages.lookup(".scroll-bar:vertical");
+        DoubleBinding double_binding = new DoubleBinding() {
+            {
+                super.bind(helloController.list_view_with_all_of_the_languages.widthProperty(),scrollBar.widthProperty(), padding_property);
             }
-        }
+
+            @Override
+            protected double computeValue() {
+                double left_padding = 0;
+                double right_padding = 0;
+                Insets insets = padding_property.get();
+                if(insets!=null){
+                    left_padding = insets.getLeft();
+                    right_padding = insets.getRight();
+                }
+                return helloController.list_view_with_all_of_the_languages.getWidth() - scrollBar.getWidth() - left_padding- right_padding - list_view_languages_border_width*2;
+            }
+        };
+        root.minWidthProperty().bind(double_binding);
+        root.prefWidthProperty().bind(double_binding);
+        root.maxWidthProperty().bind(double_binding);
     }
 
-    private void bind_the_min_pref_max_to_a_width_property(Region child_bind, ReadOnlyDoubleProperty parent_property, Resize_bind_type resize_bind_type) {
-        if (resize_bind_type == Resize_bind_type.WIDTH_AND_HEIGHT || resize_bind_type == Resize_bind_type.WIDTH) {
-            child_bind.minWidthProperty().bind(parent_property);
-            child_bind.prefWidthProperty().bind(parent_property);
-            child_bind.maxWidthProperty().bind(parent_property);
-        }
-        if (resize_bind_type == Resize_bind_type.WIDTH_AND_HEIGHT || resize_bind_type == Resize_bind_type.HEIGHT) {
-            child_bind.minHeightProperty().bind(parent_property);
-            child_bind.prefHeightProperty().bind(parent_property);
-            child_bind.maxHeightProperty().bind(parent_property);
-        }
+    private void set_the_border_width_of_list_view_languages(HelloController helloController) {
+        String new_style = helloController.list_view_with_all_of_the_languages.getStyle() + "-fx-border-width: " + list_view_languages_border_width;
+        helloController.list_view_with_all_of_the_languages.setStyle(new_style);
     }
 }
