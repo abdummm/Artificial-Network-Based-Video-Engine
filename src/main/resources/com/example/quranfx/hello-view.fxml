@@ -361,8 +361,11 @@
                     <!-- RIGHT -->
                     <HBox HBox.hgrow="ALWAYS">
                         <StackPane fx:id="right_stack_pane_in_grid_pane">
-                            <ListView fx:id="list_view_with_all_of_the_languages" prefHeight="450" prefWidth="400"
-                                      maxHeight="450" maxWidth="400" focusTraversable="false"/>
+                            <ListView fx:id="list_view_with_all_of_the_languages" focusTraversable="false" prefHeight="400" maxHeight="400">
+                                <StackPane.margin>
+                                    <Insets top="15.0" left="15.0" right="15.0"/>
+                                </StackPane.margin>
+                            </ListView>
                         </StackPane>
                     </HBox>
                 </HBox>

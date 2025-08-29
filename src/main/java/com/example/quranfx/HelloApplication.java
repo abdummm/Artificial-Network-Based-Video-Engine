@@ -79,6 +79,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.io.FileUtils;
 import org.imgscalr.Scalr;
 import org.jetbrains.annotations.NotNull;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import javax.imageio.ImageIO;
 
@@ -132,7 +134,7 @@ public class HelloApplication extends Application {
     private final static String clientSecret_pre_live = Quran_api_secrets.clientSecret_pre_live;
     private final static String clientId_live = Quran_api_secrets.clientId_live;
     private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
-    private final static Live_mode live_or_pre_live_quran_api = Live_mode.PRE_LIVE;
+    private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
     private final static String app_name = "Sabrly";
     private final static double screen_width_multiplier = 0.55D;
     private final static double screen_height_multiplier = 0.55D;
@@ -187,7 +189,6 @@ public class HelloApplication extends Application {
         set_up_the_quality_spinner(helloController);
         set_the_width_of_the_quality_spinner(helloController);
         set_the_height_of_text_prompt_text_area(helloController);
-        set_the_height_of_text_prompt_text_area(helloController);
         next_photo_click_listen(helloController);
         previous_photo_click_listen(helloController);
         listen_to_play(helloController);
@@ -235,6 +236,7 @@ public class HelloApplication extends Application {
         make_list_view_selection_model_null(helloController);
         add_the_css_files_at_the_start(scene);
         set_the_border_width_of_list_view_languages(helloController);
+        //bind_the_languages_list_view_to_the_right_border_pane(helloController);
     }
 
     public static void main(String[] args) {
@@ -243,8 +245,6 @@ public class HelloApplication extends Application {
 
 
     private Request call_chapters_api(HelloController helloController, Scene scene) {
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
         Request request;
         if (live_or_pre_live_quran_api.equals(Live_mode.LIVE)) {
             request = new Request.Builder()
@@ -2416,6 +2416,12 @@ public class HelloApplication extends Application {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
                 reseize_the_image_view(helloController, new_number.doubleValue());
+            }
+        });
+        scene.widthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                reseize_the_image_view(helloController, scene.getHeight());
             }
         });
     }
@@ -4781,9 +4787,7 @@ public class HelloApplication extends Application {
                         set_pref_min_max(stackPane_of_the_top, 40, Resize_bind_type.HEIGHT);
 
                         //jfxButton
-                        jfxButton.prefWidthProperty().bind(stackPane_of_the_top.widthProperty());
-                        jfxButton.minWidthProperty().bind(stackPane_of_the_top.widthProperty());
-                        jfxButton.maxWidthProperty().bind(stackPane_of_the_top.widthProperty());
+                        bind_an_item_to_a_property(jfxButton,root.widthProperty());
                         set_pref_min_max(jfxButton, 40, Resize_bind_type.HEIGHT);
 
                         //lnaguage_name
@@ -4816,9 +4820,7 @@ public class HelloApplication extends Application {
                         //hbox_for_x_and_y_positions
                         hbox_for_x_and_y_positions.setAlignment(Pos.CENTER);
                         VBox.setMargin(hbox_for_x_and_y_positions, new Insets(10, 0, 0, 0));
-                        hbox_for_x_and_y_positions.minWidthProperty().bind(root.widthProperty());
-                        hbox_for_x_and_y_positions.prefWidthProperty().bind(root.widthProperty());
-                        hbox_for_x_and_y_positions.maxWidthProperty().bind(root.widthProperty());
+                        bind_an_item_to_a_property(hbox_for_x_and_y_positions,root.widthProperty());
 
                         //x_position_of_text
                         format_the_text_filed_to_only_accept_positive_integers(x_position_of_text);
@@ -4932,8 +4934,14 @@ public class HelloApplication extends Application {
         for (int i = 0; i < arrayList_from_the_list.size(); i++) {
             Language_info languageInfo = arrayList_from_the_list.get(i);
             String language_name = languageInfo.getLanguage_name();
-            if (hash_map_with_allf_of_the_verses.containsKey(language_name)) {
-                languageInfo.setArrayList_of_all_of_the_translations(hash_map_with_allf_of_the_verses.get(language_name));
+            ArrayList<String> array_list_with_verses = hash_map_with_allf_of_the_verses.get(language_name);
+            if (array_list_with_verses!=null) {
+                ArrayList<Text_item> array_list_with_text_items = new ArrayList<>(array_list_with_verses.size());
+                for(int j = 0;j<array_list_with_verses.size();j++){
+                    Text_item text_item = new Text_item(edit_the_verses_before_adding_them(array_list_with_verses.get(j)),ayats_processed[j].getStart_millisecond(),ayats_processed[j].getStart_millisecond()+ayats_processed[j].getDuration());
+                    array_list_with_text_items.add(text_item);
+                }
+                languageInfo.setArrayList_of_all_of_the_translations(array_list_with_text_items);
             } else {
                 System.err.println("A translation wasn't found in the hash map. The language is: " + language_name);
             }
@@ -5144,5 +5152,26 @@ public class HelloApplication extends Application {
     private void set_the_border_width_of_list_view_languages(HelloController helloController) {
         String new_style = helloController.list_view_with_all_of_the_languages.getStyle() + "-fx-border-width: " + list_view_languages_border_width;
         helloController.list_view_with_all_of_the_languages.setStyle(new_style);
+    }
+
+    /*private void bind_the_languages_list_view_to_the_right_border_pane(HelloController helloController){
+        helloController.list_view_with_all_of_the_languages.minWidthProperty().bind(helloController.right_stack_pane_in_grid_pane.widthProperty().subtract(20));
+        helloController.list_view_with_all_of_the_languages.prefWidthProperty().bind(helloController.right_stack_pane_in_grid_pane.widthProperty().subtract(20));
+        helloController.list_view_with_all_of_the_languages.maxWidthProperty().bind(helloController.right_stack_pane_in_grid_pane.widthProperty().subtract(20));
+    }*/
+
+    private void bind_an_item_to_a_property(Region child, ObservableValue<? extends java.lang.Number> observableValue){
+        child.minWidthProperty().bind(observableValue);
+        child.prefWidthProperty().bind(observableValue);
+        child.maxWidthProperty().bind(observableValue);
+    }
+
+    private String edit_the_verses_before_adding_them(String verse_text) {
+        Document doc = Jsoup.parse(verse_text);
+        doc.select("script, style, noscript, sup, sub").remove(); // drop entire elements incl. text
+        String cleaned_html = doc.text().trim();
+        cleaned_html = cleaned_html.replaceAll("::\\{\\d+}", "");
+        cleaned_html = cleaned_html.replace("\"", "");
+        return cleaned_html;
     }
 }

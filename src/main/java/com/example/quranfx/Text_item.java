@@ -3,24 +3,56 @@ package com.example.quranfx;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 public class Text_item {
     private String verse_text;
     private Point2D point2D;
+    private double text_size;
     private Font font;
     private Color color;
-    private double text_size;
     private long start_time;
     private long end_time;
     private double width;
     private double height;
     private Text_on_canvas_mode text_on_canvas_mode;
+    private static final double video_height = 1920;
+    private static final double video_width = 1080;
 
-    public Text_item(String verse_text) {
+    public Text_item(String verse_text, Point2D point2D, double text_size, Font font, Color color, long start_time, long end_time, double width, double height, Text_on_canvas_mode text_on_canvas_mode) {
         this.verse_text = verse_text;
+        this.point2D = point2D;
+        this.text_size = text_size;
+        this.font = font;
+        this.color = color;
+        this.start_time = start_time;
+        this.end_time = end_time;
+        this.width = width;
+        this.height = height;
+        this.text_on_canvas_mode = text_on_canvas_mode;
+    }
+
+    public Text_item(String verse_text, long start_time, long end_time) {
+        this.verse_text = verse_text;
+        this.point2D = new Point2D(video_width/2D, video_height/2D);
+        this.text_size = 36;
+        this.font = new Font(this.text_size);
+        this.color = Color.WHITE;
+        this.start_time = start_time;
+        this.end_time = end_time;
+        double[] width_and_height_of_text = get_width_and_height_of_string(verse_text,this.font);
+        this.width = width_and_height_of_text[0];
+        this.height = width_and_height_of_text[1];
+        text_on_canvas_mode = Text_on_canvas_mode.TOP_RIGHT;
     }
 
     public String getVerse_text() {
         return verse_text;
+    }
+
+    private double[] get_width_and_height_of_string(String verse_text,Font font) {
+        Text textNode = new Text(verse_text);
+        textNode.setFont(font);
+        return new double[]{textNode.getLayoutBounds().getWidth(), textNode.getLayoutBounds().getHeight()};
     }
 }
