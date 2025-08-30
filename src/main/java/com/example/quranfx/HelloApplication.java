@@ -16,7 +16,6 @@ import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -37,7 +36,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
-import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
@@ -232,7 +230,6 @@ public class HelloApplication extends Application {
         clip_the_over_the_over_laying_pane(helloController);
         listen_to_pane_over_time_line_being_resized(helloController);
         ignore_scroll_for_overlaying_pane_for_time_line(helloController);
-        set_up_the_languages(helloController);
         make_list_view_selection_model_null(helloController);
         add_the_css_files_at_the_start(scene);
         set_the_border_width_of_list_view_languages(helloController);
@@ -506,7 +503,8 @@ public class HelloApplication extends Application {
                 for (int i = start_ayat_section; i <= end_ayat_section; i++) {
                     call_verses_api(helloController, id, i, hashMap_with_all_of_the_translations_of_verses);
                 }
-                update_the_translations(helloController, hashMap_with_all_of_the_translations_of_verses);
+                set_up_the_languages(helloController, hashMap_with_all_of_the_translations_of_verses);
+                //update_the_translations(helloController, hashMap_with_all_of_the_translations_of_verses);
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
@@ -4724,11 +4722,11 @@ public class HelloApplication extends Application {
         return hash_map_with_each_language_ranking;
     }
 
-    private void set_up_the_languages(HelloController helloController) {
+    private void set_up_the_languages(HelloController helloController, HashMap<String, ArrayList<String>> hashMap_with_all_of_the_translations_of_verses) {
         ObservableList<Language_info> items = FXCollections.observableArrayList();
         for (String key : hash_map_with_the_translations.keySet()) {
             if (!key.equals("english")) {
-                items.add(new Language_info(key));
+                items.add(new Language_info(key, return_the_formatted_text_item_from_array_list(hashMap_with_all_of_the_translations_of_verses.get(key))));
             }
         }
         //HashMap<String, Integer> ranking_languages_hash_map = get_the_language_ranking();
@@ -4741,8 +4739,8 @@ public class HelloApplication extends Application {
                 return o1.getLanguage_name().compareTo(o2.getLanguage_name());
             }
         });
-        items.add(0, new Language_info("arabic"));
-        items.add(1, new Language_info("english"));
+        items.add(0, new Language_info("arabic", return_the_formatted_text_item_from_array_list(hashMap_with_all_of_the_translations_of_verses.get("arabic"))));
+        items.add(1, new Language_info("english", return_the_formatted_text_item_from_array_list(hashMap_with_all_of_the_translations_of_verses.get("english"))));
         helloController.list_view_with_all_of_the_languages.setItems(items);
         helloController.list_view_with_all_of_the_languages.setCellFactory(new javafx.util.Callback<ListView<Language_info>, ListCell<Language_info>>() {
             @Override
@@ -4763,6 +4761,7 @@ public class HelloApplication extends Application {
                     private Label x_label_beside_x_pos;
                     private Label y_label_beside_y_pos;
                     private VBox v_box_with_all_of_the_controls_except_check_box;
+                    private ColorPicker color_picker_font;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -4780,14 +4779,18 @@ public class HelloApplication extends Application {
                         x_label_beside_x_pos = new Label();
                         y_label_beside_y_pos = new Label();
                         v_box_with_all_of_the_controls_except_check_box = new VBox();
+                        color_picker_font = new ColorPicker(javafx.scene.paint.Color.WHITE);
+
+                        final int top_margin_in_vbox_control = 10;
+
                         //root
-                        bind_the_root_to_list_view(helloController, root,paddingProperty());
+                        bind_the_root_to_list_view(helloController, root, paddingProperty());
 
                         //stackPane_of_the_top
                         set_pref_min_max(stackPane_of_the_top, 40, Resize_bind_type.HEIGHT);
 
                         //jfxButton
-                        bind_an_item_to_a_property(jfxButton,root.widthProperty());
+                        bind_an_item_to_a_property(jfxButton, root.widthProperty());
                         set_pref_min_max(jfxButton, 40, Resize_bind_type.HEIGHT);
 
                         //lnaguage_name
@@ -4808,7 +4811,7 @@ public class HelloApplication extends Application {
                         StackPane.setAlignment(v_box_inside_the_stack_pane, Pos.BOTTOM_CENTER);
 
                         //separator_between_check_box_and_everything
-                        VBox.setMargin(separator_between_check_box_and_everything, new Insets(10, 5, 0, 5));
+                        VBox.setMargin(separator_between_check_box_and_everything, new Insets(top_margin_in_vbox_control, 5, 0, 5));
                         //separator_between_check_box_and_everything.getStyleClass().add("my-separator");
 
                         //down_or_left_image_view
@@ -4819,8 +4822,8 @@ public class HelloApplication extends Application {
 
                         //hbox_for_x_and_y_positions
                         hbox_for_x_and_y_positions.setAlignment(Pos.CENTER);
-                        VBox.setMargin(hbox_for_x_and_y_positions, new Insets(10, 0, 0, 0));
-                        bind_an_item_to_a_property(hbox_for_x_and_y_positions,root.widthProperty());
+                        VBox.setMargin(hbox_for_x_and_y_positions, new Insets(top_margin_in_vbox_control, 0, 0, 0));
+                        bind_an_item_to_a_property(hbox_for_x_and_y_positions, root.widthProperty());
 
                         //x_position_of_text
                         format_the_text_filed_to_only_accept_positive_integers(x_position_of_text);
@@ -4846,6 +4849,10 @@ public class HelloApplication extends Application {
 
                         //v_box_with_all_of_the_controls_except_check_box
                         v_box_with_all_of_the_controls_except_check_box.setDisable(true);
+                        v_box_with_all_of_the_controls_except_check_box.setAlignment(Pos.CENTER);
+
+                        //color_picker_font
+                        VBox.setMargin(color_picker_font,new Insets(top_margin_in_vbox_control,0,0,0));
 
 
 
@@ -4863,6 +4870,7 @@ public class HelloApplication extends Application {
 
 
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_for_x_and_y_positions);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(color_picker_font);
 
                         v_box_inside_the_stack_pane.getChildren().add(v_box_with_all_of_the_controls_except_check_box);
 
@@ -4878,6 +4886,7 @@ public class HelloApplication extends Application {
                             setText(null);
                             setGraphic(null);
                         } else {
+                            Text_item text_item_of_the_selected_verse = item.getArrayList_of_all_of_the_translations().get(selected_verse);
                             make_the_language_translation_extended(stackPane_extended_with_all_of_the_info, down_or_left_image_view, item, item.isItem_extended());
                             jfxButton.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
@@ -4891,14 +4900,13 @@ public class HelloApplication extends Application {
                                     }
                                 }
                             });
-                            select_or_un_select_the_language(item, jfxButton, language_name, check_box_is_the_langauge_enabled, down_or_left_image_view, helloController);
+                            select_or_un_select_the_language(item, jfxButton, language_name, check_box_is_the_langauge_enabled, down_or_left_image_view, helloController, v_box_with_all_of_the_controls_except_check_box);
                             check_box_is_the_langauge_enabled.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
                                     item.setVisible_check_mark_checked(check_box_is_the_langauge_enabled.isSelected());
-                                    select_or_un_select_the_language(item, jfxButton, language_name, check_box_is_the_langauge_enabled, down_or_left_image_view, helloController);
+                                    select_or_un_select_the_language(item, jfxButton, language_name, check_box_is_the_langauge_enabled, down_or_left_image_view, helloController, v_box_with_all_of_the_controls_except_check_box);
                                     set_up_or_hide_the_canvas(helloController, item);
-                                    v_box_with_all_of_the_controls_except_check_box.setDisable(!check_box_is_the_langauge_enabled.isSelected());
                                 }
                             });
                             if (item.getLanguage_name().equals("arabic")) {
@@ -4906,6 +4914,9 @@ public class HelloApplication extends Application {
                             } else {
                                 check_box_is_the_langauge_enabled.setText("Show translation");
                             }
+                            Point2D point2D_of_the_text = text_item_of_the_selected_verse.getPoint2D();
+                            x_position_of_text.setText(String.valueOf((int) point2D_of_the_text.getX()));
+                            y_position_of_text.setText(String.valueOf((int) point2D_of_the_text.getY()));
                             setGraphic(root);
                         }
 
@@ -4935,10 +4946,10 @@ public class HelloApplication extends Application {
             Language_info languageInfo = arrayList_from_the_list.get(i);
             String language_name = languageInfo.getLanguage_name();
             ArrayList<String> array_list_with_verses = hash_map_with_allf_of_the_verses.get(language_name);
-            if (array_list_with_verses!=null) {
+            if (array_list_with_verses != null) {
                 ArrayList<Text_item> array_list_with_text_items = new ArrayList<>(array_list_with_verses.size());
-                for(int j = 0;j<array_list_with_verses.size();j++){
-                    Text_item text_item = new Text_item(edit_the_verses_before_adding_them(array_list_with_verses.get(j)),ayats_processed[j].getStart_millisecond(),ayats_processed[j].getStart_millisecond()+ayats_processed[j].getDuration());
+                for (int j = 0; j < array_list_with_verses.size(); j++) {
+                    Text_item text_item = new Text_item(edit_the_verses_before_adding_them(array_list_with_verses.get(j)), ayats_processed[j].getStart_millisecond(), ayats_processed[j].getStart_millisecond() + ayats_processed[j].getDuration());
                     array_list_with_text_items.add(text_item);
                 }
                 languageInfo.setArrayList_of_all_of_the_translations(array_list_with_text_items);
@@ -4964,19 +4975,21 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void select_or_un_select_the_language(Language_info item, JFXButton jfxButton, Label language_name, CheckBox check_box_is_the_langauge_enabled, ImageView down_or_left_image_view, HelloController helloController) {
+    private void select_or_un_select_the_language(Language_info item, JFXButton jfxButton, Label language_name, CheckBox check_box_is_the_langauge_enabled, ImageView down_or_left_image_view, HelloController helloController, VBox v_box_with_all_of_the_controls_except_check_box) {
         if (item.isVisible_check_mark_checked()) {
             language_name.setText(item.getDisplayed_language_name());
             language_name.setTextFill(javafx.scene.paint.Color.WHITE);
             jfxButton.setStyle("-fx-background-color: #000000; -fx-text-fill: #FFFFFF;");
             check_box_is_the_langauge_enabled.setSelected(true);
             down_or_left_image_view.setImage(return_white_logo_from_black("arrow_forward_ios", (int) down_or_left_image_view.getFitWidth(), (int) down_or_left_image_view.getFitHeight()));
+            v_box_with_all_of_the_controls_except_check_box.setDisable(false);
         } else {
             language_name.setText(item.getDisplayed_language_name());
             language_name.setTextFill(javafx.scene.paint.Color.BLACK);
             jfxButton.setStyle("-fx-background-color: #00000000;");
             check_box_is_the_langauge_enabled.setSelected(false);
             down_or_left_image_view.setImage(return_the_image_to_be_the_icon("arrow_forward_ios", (int) down_or_left_image_view.getFitWidth(), (int) down_or_left_image_view.getFitHeight()));
+            v_box_with_all_of_the_controls_except_check_box.setDisable(true);
         }
     }
 
@@ -5125,11 +5138,11 @@ public class HelloApplication extends Application {
         textField.setTextFormatter(textFormatter);
     }
 
-    private void bind_the_root_to_list_view(HelloController helloController, Region root,ObjectProperty<Insets> padding_property) {
+    private void bind_the_root_to_list_view(HelloController helloController, Region root, ObjectProperty<Insets> padding_property) {
         ScrollBar scrollBar = (ScrollBar) helloController.list_view_with_all_of_the_languages.lookup(".scroll-bar:vertical");
         DoubleBinding double_binding = new DoubleBinding() {
             {
-                super.bind(helloController.list_view_with_all_of_the_languages.widthProperty(),scrollBar.widthProperty(), padding_property);
+                super.bind(helloController.list_view_with_all_of_the_languages.widthProperty(), scrollBar.widthProperty(), padding_property);
             }
 
             @Override
@@ -5137,11 +5150,11 @@ public class HelloApplication extends Application {
                 double left_padding = 0;
                 double right_padding = 0;
                 Insets insets = padding_property.get();
-                if(insets!=null){
+                if (insets != null) {
                     left_padding = insets.getLeft();
                     right_padding = insets.getRight();
                 }
-                return helloController.list_view_with_all_of_the_languages.getWidth() - scrollBar.getWidth() - left_padding- right_padding - list_view_languages_border_width*2;
+                return helloController.list_view_with_all_of_the_languages.getWidth() - scrollBar.getWidth() - left_padding - right_padding - list_view_languages_border_width * 2;
             }
         };
         root.minWidthProperty().bind(double_binding);
@@ -5160,7 +5173,7 @@ public class HelloApplication extends Application {
         helloController.list_view_with_all_of_the_languages.maxWidthProperty().bind(helloController.right_stack_pane_in_grid_pane.widthProperty().subtract(20));
     }*/
 
-    private void bind_an_item_to_a_property(Region child, ObservableValue<? extends java.lang.Number> observableValue){
+    private void bind_an_item_to_a_property(Region child, ObservableValue<? extends java.lang.Number> observableValue) {
         child.minWidthProperty().bind(observableValue);
         child.prefWidthProperty().bind(observableValue);
         child.maxWidthProperty().bind(observableValue);
@@ -5173,5 +5186,14 @@ public class HelloApplication extends Application {
         cleaned_html = cleaned_html.replaceAll("::\\{\\d+}", "");
         cleaned_html = cleaned_html.replace("\"", "");
         return cleaned_html;
+    }
+
+    private ArrayList<Text_item> return_the_formatted_text_item_from_array_list(ArrayList<String> arrayList_of_strings) {
+        ArrayList<Text_item> array_list_to_be_returned = new ArrayList<>(arrayList_of_strings.size());
+        for (int i = 0; i < arrayList_of_strings.size(); i++) {
+            Text_item text_item = new Text_item(edit_the_verses_before_adding_them(arrayList_of_strings.get(i)), ayats_processed[i].getStart_millisecond(), ayats_processed[i].getStart_millisecond() + ayats_processed[i].getDuration());
+            array_list_to_be_returned.add(text_item);
+        }
+        return array_list_to_be_returned;
     }
 }

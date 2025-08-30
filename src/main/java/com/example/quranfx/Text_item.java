@@ -50,7 +50,15 @@ public class Text_item {
         return verse_text;
     }
 
-    private double[] get_width_and_height_of_string(String verse_text,Font font) {
+    public Point2D getPoint2D() {
+        return point2D;
+    }
+
+    public void setPoint2D(Point2D point2D) {
+        this.point2D = point2D;
+    }
+
+    private double[] get_width_and_height_of_string(String verse_text, Font font) {
         Text textNode = new Text(verse_text);
         textNode.setFont(font);
         return new double[]{textNode.getLayoutBounds().getWidth(), textNode.getLayoutBounds().getHeight()};

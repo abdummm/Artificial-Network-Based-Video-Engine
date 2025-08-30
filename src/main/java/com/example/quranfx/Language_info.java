@@ -18,10 +18,10 @@ public class Language_info {
     private boolean item_extended;
     private Canvas language_canvas;
 
-    public Language_info(String language_name) {
+    public Language_info(String language_name, ArrayList<Text_item> arrayList_of_all_of_the_translations) {
         this.language_name = language_name;
         this.visible_check_mark_checked = false;
-        this.arrayList_of_all_of_the_translations = new ArrayList<>();
+        this.arrayList_of_all_of_the_translations = arrayList_of_all_of_the_translations;
         this.displayed_language_name = edit_displayed_language_name(language_name);
         this.item_extended = false;
         this.language_canvas = null;
