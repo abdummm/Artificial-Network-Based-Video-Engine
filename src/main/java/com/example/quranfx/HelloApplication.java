@@ -4762,6 +4762,10 @@ public class HelloApplication extends Application {
                     private Label y_label_beside_y_pos;
                     private VBox v_box_with_all_of_the_controls_except_check_box;
                     private ColorPicker color_picker_font;
+                    private HBox hbox_containing_the_font_size;
+                    private Label label_beside_the_font_size;
+                    private TextField text_field_for_font_size;
+                    private Region item_at_the_bottom_of_extended_pane;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -4780,6 +4784,10 @@ public class HelloApplication extends Application {
                         y_label_beside_y_pos = new Label();
                         v_box_with_all_of_the_controls_except_check_box = new VBox();
                         color_picker_font = new ColorPicker(javafx.scene.paint.Color.WHITE);
+                        hbox_containing_the_font_size = new HBox();
+                        label_beside_the_font_size = new Label();
+                        text_field_for_font_size = new TextField();
+                        item_at_the_bottom_of_extended_pane = new Region();
 
                         final int top_margin_in_vbox_control = 10;
 
@@ -4802,13 +4810,14 @@ public class HelloApplication extends Application {
                         check_box_is_the_langauge_enabled.setText("Show Text");
 
                         //stackPane_extended_with_all_of_the_info
-                        set_pref_min_max(stackPane_extended_with_all_of_the_info, 120, Resize_bind_type.HEIGHT);
+                        //set_pref_min_max(stackPane_extended_with_all_of_the_info, 120, Resize_bind_type.HEIGHT);
                         stackPane_extended_with_all_of_the_info.setVisible(false);
                         stackPane_extended_with_all_of_the_info.setManaged(false);
 
                         //v_box_inside_the_stack_pane
                         v_box_inside_the_stack_pane.setAlignment(Pos.CENTER);
                         StackPane.setAlignment(v_box_inside_the_stack_pane, Pos.BOTTOM_CENTER);
+                        StackPane.setMargin(v_box_inside_the_stack_pane,new Insets(10, 0, 0, 0));
 
                         //separator_between_check_box_and_everything
                         VBox.setMargin(separator_between_check_box_and_everything, new Insets(top_margin_in_vbox_control, 5, 0, 5));
@@ -4854,7 +4863,29 @@ public class HelloApplication extends Application {
                         //color_picker_font
                         VBox.setMargin(color_picker_font,new Insets(top_margin_in_vbox_control,0,0,0));
 
+                        //hbox_containing_the_font_size
+                        hbox_containing_the_font_size.setAlignment(Pos.CENTER);
+                        VBox.setMargin(hbox_containing_the_font_size,new Insets(top_margin_in_vbox_control,0,0,0));
 
+                        //label_beside_the_font_size
+                        label_beside_the_font_size.setText("Font Size:");
+
+                        //text_field_for_font_size
+                        format_the_text_filed_to_only_accept_positive_integers(text_field_for_font_size);
+                        HBox.setMargin(text_field_for_font_size,new Insets(0,0,0,10));
+
+                        //item_at_the_bottom_of_extended_pane
+                        item_at_the_bottom_of_extended_pane.setPrefSize(0, 0);
+                        item_at_the_bottom_of_extended_pane.setMinSize(0, 0);
+                        item_at_the_bottom_of_extended_pane.setMaxSize(0, 0);
+                        item_at_the_bottom_of_extended_pane.setVisible(false);
+                        item_at_the_bottom_of_extended_pane.setManaged(true);
+                        VBox.setMargin(item_at_the_bottom_of_extended_pane,new Insets(5,0,0,0));
+
+
+
+                        hbox_containing_the_font_size.getChildren().add(label_beside_the_font_size);
+                        hbox_containing_the_font_size.getChildren().add(text_field_for_font_size);
 
                         hbox_for_x_and_y_positions.getChildren().add(x_label_beside_x_pos);
                         hbox_for_x_and_y_positions.getChildren().add(x_position_of_text);
@@ -4871,6 +4902,8 @@ public class HelloApplication extends Application {
 
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_for_x_and_y_positions);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(color_picker_font);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_containing_the_font_size);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(item_at_the_bottom_of_extended_pane);
 
                         v_box_inside_the_stack_pane.getChildren().add(v_box_with_all_of_the_controls_except_check_box);
 
