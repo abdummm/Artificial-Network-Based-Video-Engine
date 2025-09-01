@@ -4761,11 +4761,17 @@ public class HelloApplication extends Application {
                     private Label x_label_beside_x_pos;
                     private Label y_label_beside_y_pos;
                     private VBox v_box_with_all_of_the_controls_except_check_box;
-                    private ColorPicker color_picker_font;
+                    private ColorPicker color_picker;
                     private HBox hbox_containing_the_font_size;
                     private Label label_beside_the_font_size;
                     private TextField text_field_for_font_size;
                     private Region item_at_the_bottom_of_extended_pane;
+                    private Label text_saying_position_above_position;
+                    private HBox hbox_hosting_the_position_label;
+                    private Label label_saying_color;
+                    private HBox hbox_containing_the_text_color_label;
+                    private Separator separator_under_position;
+                    private Separator separator_under_color_picker;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -4783,13 +4789,21 @@ public class HelloApplication extends Application {
                         x_label_beside_x_pos = new Label();
                         y_label_beside_y_pos = new Label();
                         v_box_with_all_of_the_controls_except_check_box = new VBox();
-                        color_picker_font = new ColorPicker(javafx.scene.paint.Color.WHITE);
+                        color_picker = new ColorPicker(javafx.scene.paint.Color.WHITE);
                         hbox_containing_the_font_size = new HBox();
                         label_beside_the_font_size = new Label();
                         text_field_for_font_size = new TextField();
                         item_at_the_bottom_of_extended_pane = new Region();
+                        text_saying_position_above_position = new Label();
+                        hbox_hosting_the_position_label = new HBox();
+                        label_saying_color = new Label();
+                        hbox_containing_the_text_color_label = new HBox();
+                        separator_under_position = new Separator();
+                        separator_under_color_picker = new Separator();
 
-                        final int top_margin_in_vbox_control = 10;
+                        final double top_margin_in_vbox_control = 10;
+                        final double half_top_margin_in_vbox_control = 5;
+                        final double three_quarters_margin_in_vbox_control = 7.5;
 
                         //root
                         bind_the_root_to_list_view(helloController, root, paddingProperty());
@@ -4817,7 +4831,7 @@ public class HelloApplication extends Application {
                         //v_box_inside_the_stack_pane
                         v_box_inside_the_stack_pane.setAlignment(Pos.CENTER);
                         StackPane.setAlignment(v_box_inside_the_stack_pane, Pos.BOTTOM_CENTER);
-                        StackPane.setMargin(v_box_inside_the_stack_pane,new Insets(10, 0, 0, 0));
+                        StackPane.setMargin(v_box_inside_the_stack_pane, new Insets(10, 0, 0, 0));
 
                         //separator_between_check_box_and_everything
                         VBox.setMargin(separator_between_check_box_and_everything, new Insets(top_margin_in_vbox_control, 5, 0, 5));
@@ -4831,7 +4845,7 @@ public class HelloApplication extends Application {
 
                         //hbox_for_x_and_y_positions
                         hbox_for_x_and_y_positions.setAlignment(Pos.CENTER);
-                        VBox.setMargin(hbox_for_x_and_y_positions, new Insets(top_margin_in_vbox_control, 0, 0, 0));
+                        VBox.setMargin(hbox_for_x_and_y_positions, new Insets(half_top_margin_in_vbox_control, 0, 0, 0));
                         bind_an_item_to_a_property(hbox_for_x_and_y_positions, root.widthProperty());
 
                         //x_position_of_text
@@ -4860,19 +4874,20 @@ public class HelloApplication extends Application {
                         v_box_with_all_of_the_controls_except_check_box.setDisable(true);
                         v_box_with_all_of_the_controls_except_check_box.setAlignment(Pos.CENTER);
 
-                        //color_picker_font
-                        VBox.setMargin(color_picker_font,new Insets(top_margin_in_vbox_control,0,0,0));
+                        //color_picker
+                        VBox.setMargin(color_picker, new Insets(half_top_margin_in_vbox_control, 0, 0, 0));
+                        color_picker.setMaxWidth(Double.MAX_VALUE);
 
                         //hbox_containing_the_font_size
                         hbox_containing_the_font_size.setAlignment(Pos.CENTER);
-                        VBox.setMargin(hbox_containing_the_font_size,new Insets(top_margin_in_vbox_control,0,0,0));
+                        VBox.setMargin(hbox_containing_the_font_size, new Insets(top_margin_in_vbox_control, 0, 0, 0));
 
                         //label_beside_the_font_size
                         label_beside_the_font_size.setText("Font Size:");
 
                         //text_field_for_font_size
                         format_the_text_filed_to_only_accept_positive_integers(text_field_for_font_size);
-                        HBox.setMargin(text_field_for_font_size,new Insets(0,0,0,10));
+                        HBox.setMargin(text_field_for_font_size, new Insets(0, 0, 0, 10));
 
                         //item_at_the_bottom_of_extended_pane
                         item_at_the_bottom_of_extended_pane.setPrefSize(0, 0);
@@ -4880,9 +4895,32 @@ public class HelloApplication extends Application {
                         item_at_the_bottom_of_extended_pane.setMaxSize(0, 0);
                         item_at_the_bottom_of_extended_pane.setVisible(false);
                         item_at_the_bottom_of_extended_pane.setManaged(true);
-                        VBox.setMargin(item_at_the_bottom_of_extended_pane,new Insets(5,0,0,0));
+                        VBox.setMargin(item_at_the_bottom_of_extended_pane, new Insets(5, 0, 0, 0));
+
+                        //text_saying_position_above_position
+                        text_saying_position_above_position.setText("Position");
+
+                        //hbox_hosting_the_position_label
+                        hbox_hosting_the_position_label.setAlignment(Pos.CENTER_LEFT);
+                        VBox.setMargin(hbox_hosting_the_position_label, new Insets(top_margin_in_vbox_control, 0, 0, 0));
+
+                        //label_saying_color
+                        label_saying_color.setText("Color");
+
+                        //hbox_containing_the_text_color_label
+                        hbox_containing_the_text_color_label.setAlignment(Pos.CENTER_LEFT);
+                        VBox.setMargin(hbox_containing_the_text_color_label, new Insets(top_margin_in_vbox_control, 0, 0, 0));
+
+                        //separator_under_position
+                        VBox.setMargin(separator_under_position, new Insets(top_margin_in_vbox_control, 5, 0, 5));
+
+                        //separator_under_color_picker
+                        VBox.setMargin(separator_under_color_picker, new Insets(top_margin_in_vbox_control, 5, 0, 5));
 
 
+                        hbox_containing_the_text_color_label.getChildren().add(label_saying_color);
+
+                        hbox_hosting_the_position_label.getChildren().add(text_saying_position_above_position);
 
                         hbox_containing_the_font_size.getChildren().add(label_beside_the_font_size);
                         hbox_containing_the_font_size.getChildren().add(text_field_for_font_size);
@@ -4899,9 +4937,12 @@ public class HelloApplication extends Application {
                         v_box_inside_the_stack_pane.getChildren().add(check_box_is_the_langauge_enabled);
                         v_box_inside_the_stack_pane.getChildren().add(separator_between_check_box_and_everything);
 
-
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_hosting_the_position_label);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_for_x_and_y_positions);
-                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(color_picker_font);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_position);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_containing_the_text_color_label);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(color_picker);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_color_picker);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_containing_the_font_size);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(item_at_the_bottom_of_extended_pane);
 
