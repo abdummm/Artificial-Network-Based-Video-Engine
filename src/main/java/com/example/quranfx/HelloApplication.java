@@ -4957,6 +4957,23 @@ public class HelloApplication extends Application {
                         stackPane_extended_with_all_of_the_info.getChildren().add(v_box_inside_the_stack_pane);
                         root.getChildren().add(stackPane_of_the_top);
                         root.getChildren().add(stackPane_extended_with_all_of_the_info);
+
+                        itemProperty().addListener(new ChangeListener<Language_info>() {
+                            @Override
+                            public void changed(ObservableValue<? extends Language_info> observableValue, Language_info old_languageInfo, Language_info new_languageInfo) {
+                                if(old_languageInfo!=null){
+                                    if(old_languageInfo.getX_position_change_listener() !=null){
+                                        x_position_of_text.textProperty().removeListener(old_languageInfo.getX_position_change_listener());
+                                    }
+                                    if(old_languageInfo.getY_position_change_listener() !=null){
+                                        y_position_of_text.textProperty().removeListener(old_languageInfo.getY_position_change_listener());
+                                    }
+                                    if(old_languageInfo.getColor_change_listener()!=null){
+                                        color_picker.valueProperty().removeListener(old_languageInfo.getColor_change_listener());
+                                    }
+                                }
+                            }
+                        });
                     }
 
                     @Override
@@ -4999,6 +5016,52 @@ public class HelloApplication extends Application {
                             y_position_of_text.setText(String.valueOf((int) point2D_of_the_text.getY()));
                             text_field_for_font_size.setText(String.valueOf((int) text_item_of_the_selected_verse.getFont_size()));
                             color_picker.setValue(text_item_of_the_selected_verse.getColor());
+                            if(item.getX_position_change_listener() == null){
+                                ChangeListener<String> x_position_string_listener = new ChangeListener<String>() {
+                                    @Override
+                                    public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                                        Point2D old_point_2d = text_item_of_the_selected_verse.getPoint2D();
+                                        double new_x_value = 0;
+                                        if(!t1.isEmpty()){
+                                            new_x_value = Double.parseDouble(t1);
+                                        }
+                                        text_item_of_the_selected_verse.setPoint2D(new Point2D(new_x_value, old_point_2d.getY()));
+                                    }
+                                };
+                                x_position_of_text.textProperty().addListener(x_position_string_listener);
+                                item.setX_position_change_listener(x_position_string_listener);
+                            } else {
+                                x_position_of_text.textProperty().addListener(item.getX_position_change_listener());
+                            }
+                            if(item.getY_position_change_listener() ==null){
+                                ChangeListener<String> y_position_change_listener = new ChangeListener<String>() {
+                                    @Override
+                                    public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                                        Point2D old_point_2d = text_item_of_the_selected_verse.getPoint2D();
+                                        double new_y_value = 0;
+                                        if(!t1.isEmpty()){
+                                            new_y_value = Double.parseDouble(t1);
+                                        }
+                                        text_item_of_the_selected_verse.setPoint2D(new Point2D(old_point_2d.getX(), new_y_value));
+                                    }
+                                };
+                                y_position_of_text.textProperty().addListener(y_position_change_listener);
+                                item.setY_position_change_listener(y_position_change_listener);
+                            } else {
+                                y_position_of_text.textProperty().addListener(item.getY_position_change_listener());
+                            }
+                            if(item.getColor_change_listener() == null){
+                                ChangeListener<? super javafx.scene.paint.Color> color_change_listener = new ChangeListener<javafx.scene.paint.Color>() {
+                                    @Override
+                                    public void changed(ObservableValue<? extends javafx.scene.paint.Color> observableValue, javafx.scene.paint.Color old_color, javafx.scene.paint.Color new_color) {
+                                        text_item_of_the_selected_verse.setColor(new_color);
+                                    }
+                                };
+                                color_picker.valueProperty().addListener(color_change_listener);
+                                item.setColor_change_listener(color_change_listener);
+                            } else {
+                                color_picker.valueProperty().addListener(item.getColor_change_listener());
+                            }
                             setGraphic(root);
                         }
                     }
@@ -5277,6 +5340,4 @@ public class HelloApplication extends Application {
         }
         return array_list_to_be_returned;
     }
-
-    
 }

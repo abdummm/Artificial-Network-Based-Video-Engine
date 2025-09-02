@@ -3,7 +3,9 @@ package com.example.quranfx;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.paint.Color;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -17,6 +19,9 @@ public class Language_info {
     private ArrayList<Text_item> arrayList_of_all_of_the_translations;
     private boolean item_extended;
     private Canvas language_canvas;
+    private ChangeListener<String> x_position_change_listener;
+    private ChangeListener<String> y_position_change_listener;
+    private ChangeListener<? super Color>  color_change_listener;
 
     public Language_info(String language_name, ArrayList<Text_item> arrayList_of_all_of_the_translations) {
         this.language_name = language_name;
@@ -99,5 +104,27 @@ public class Language_info {
         this.language_canvas = language_canvas;
     }
 
+    public ChangeListener<String> getX_position_change_listener() {
+        return x_position_change_listener;
+    }
 
+    public void setX_position_change_listener(ChangeListener<String> x_position_change_listener) {
+        this.x_position_change_listener = x_position_change_listener;
+    }
+
+    public ChangeListener<String> getY_position_change_listener() {
+        return y_position_change_listener;
+    }
+
+    public void setY_position_change_listener(ChangeListener<String> y_position_change_listener) {
+        this.y_position_change_listener = y_position_change_listener;
+    }
+
+    public ChangeListener<? super Color> getColor_change_listener() {
+        return color_change_listener;
+    }
+
+    public void setColor_change_listener(ChangeListener<? super Color> color_change_listener) {
+        this.color_change_listener = color_change_listener;
+    }
 }
