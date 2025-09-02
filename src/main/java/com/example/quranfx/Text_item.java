@@ -8,7 +8,7 @@ import javafx.scene.text.Text;
 public class Text_item {
     private String verse_text;
     private Point2D point2D;
-    private double text_size;
+    private double font_size;
     private Font font;
     private Color color;
     private long start_time;
@@ -19,10 +19,10 @@ public class Text_item {
     private static final double video_height = 1920;
     private static final double video_width = 1080;
 
-    public Text_item(String verse_text, Point2D point2D, double text_size, Font font, Color color, long start_time, long end_time, double width, double height, Text_on_canvas_mode text_on_canvas_mode) {
+    public Text_item(String verse_text, Point2D point2D, double font_size, Font font, Color color, long start_time, long end_time, double width, double height, Text_on_canvas_mode text_on_canvas_mode) {
         this.verse_text = verse_text;
         this.point2D = point2D;
-        this.text_size = text_size;
+        this.font_size = font_size;
         this.font = font;
         this.color = color;
         this.start_time = start_time;
@@ -35,15 +35,15 @@ public class Text_item {
     public Text_item(String verse_text, long start_time, long end_time) {
         this.verse_text = verse_text;
         this.point2D = new Point2D(video_width/2D, video_height/2D);
-        this.text_size = 36;
-        this.font = new Font(this.text_size);
+        this.font_size = 36;
+        this.font = new Font(this.font_size);
         this.color = Color.WHITE;
         this.start_time = start_time;
         this.end_time = end_time;
         double[] width_and_height_of_text = get_width_and_height_of_string(verse_text,this.font);
         this.width = width_and_height_of_text[0];
         this.height = width_and_height_of_text[1];
-        text_on_canvas_mode = Text_on_canvas_mode.TOP_RIGHT;
+        text_on_canvas_mode = Text_on_canvas_mode.CENTER;
     }
 
     public String getVerse_text() {
@@ -62,5 +62,21 @@ public class Text_item {
         Text textNode = new Text(verse_text);
         textNode.setFont(font);
         return new double[]{textNode.getLayoutBounds().getWidth(), textNode.getLayoutBounds().getHeight()};
+    }
+
+    public double getFont_size() {
+        return font_size;
+    }
+
+    public void setFont_size(double font_size) {
+        this.font_size = font_size;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 }

@@ -13,9 +13,11 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -4804,6 +4806,7 @@ public class HelloApplication extends Application {
                         final double top_margin_in_vbox_control = 10;
                         final double half_top_margin_in_vbox_control = 5;
                         final double three_quarters_margin_in_vbox_control = 7.5;
+                        final double start_and_end_margin = 8.5;
 
                         //root
                         bind_the_root_to_list_view(helloController, root, paddingProperty());
@@ -4812,7 +4815,7 @@ public class HelloApplication extends Application {
                         set_pref_min_max(stackPane_of_the_top, 40, Resize_bind_type.HEIGHT);
 
                         //jfxButton
-                        bind_an_item_to_a_property(jfxButton, root.widthProperty());
+                        bind_an_item_to_a_property(jfxButton, root.widthProperty(),0);
                         set_pref_min_max(jfxButton, 40, Resize_bind_type.HEIGHT);
 
                         //lnaguage_name
@@ -4845,8 +4848,8 @@ public class HelloApplication extends Application {
 
                         //hbox_for_x_and_y_positions
                         hbox_for_x_and_y_positions.setAlignment(Pos.CENTER);
-                        VBox.setMargin(hbox_for_x_and_y_positions, new Insets(half_top_margin_in_vbox_control, 0, 0, 0));
-                        bind_an_item_to_a_property(hbox_for_x_and_y_positions, root.widthProperty());
+                        VBox.setMargin(hbox_for_x_and_y_positions, new Insets(half_top_margin_in_vbox_control,start_and_end_margin , 0, start_and_end_margin));
+                        bind_an_item_to_a_property(hbox_for_x_and_y_positions, root.widthProperty(),start_and_end_margin*2);
 
                         //x_position_of_text
                         format_the_text_filed_to_only_accept_positive_integers(x_position_of_text);
@@ -4875,12 +4878,13 @@ public class HelloApplication extends Application {
                         v_box_with_all_of_the_controls_except_check_box.setAlignment(Pos.CENTER);
 
                         //color_picker
-                        VBox.setMargin(color_picker, new Insets(half_top_margin_in_vbox_control, 0, 0, 0));
-                        color_picker.setMaxWidth(Double.MAX_VALUE);
+                        VBox.setMargin(color_picker, new Insets(half_top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+                        bind_an_item_to_a_property(color_picker, root.widthProperty(),start_and_end_margin*2);
 
                         //hbox_containing_the_font_size
                         hbox_containing_the_font_size.setAlignment(Pos.CENTER);
-                        VBox.setMargin(hbox_containing_the_font_size, new Insets(top_margin_in_vbox_control, 0, 0, 0));
+                        VBox.setMargin(hbox_containing_the_font_size, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+                        bind_an_item_to_a_property(hbox_containing_the_font_size,root.widthProperty(),start_and_end_margin*2);
 
                         //label_beside_the_font_size
                         label_beside_the_font_size.setText("Font Size:");
@@ -4888,6 +4892,8 @@ public class HelloApplication extends Application {
                         //text_field_for_font_size
                         format_the_text_filed_to_only_accept_positive_integers(text_field_for_font_size);
                         HBox.setMargin(text_field_for_font_size, new Insets(0, 0, 0, 10));
+                        HBox.setHgrow(text_field_for_font_size,Priority.ALWAYS);
+                        text_field_for_font_size.setMaxWidth(Double.MAX_VALUE);
 
                         //item_at_the_bottom_of_extended_pane
                         item_at_the_bottom_of_extended_pane.setPrefSize(0, 0);
@@ -4902,14 +4908,14 @@ public class HelloApplication extends Application {
 
                         //hbox_hosting_the_position_label
                         hbox_hosting_the_position_label.setAlignment(Pos.CENTER_LEFT);
-                        VBox.setMargin(hbox_hosting_the_position_label, new Insets(top_margin_in_vbox_control, 0, 0, 0));
+                        VBox.setMargin(hbox_hosting_the_position_label, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
 
                         //label_saying_color
                         label_saying_color.setText("Color");
 
                         //hbox_containing_the_text_color_label
                         hbox_containing_the_text_color_label.setAlignment(Pos.CENTER_LEFT);
-                        VBox.setMargin(hbox_containing_the_text_color_label, new Insets(top_margin_in_vbox_control, 0, 0, 0));
+                        VBox.setMargin(hbox_containing_the_text_color_label, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
 
                         //separator_under_position
                         VBox.setMargin(separator_under_position, new Insets(top_margin_in_vbox_control, 5, 0, 5));
@@ -4991,9 +4997,10 @@ public class HelloApplication extends Application {
                             Point2D point2D_of_the_text = text_item_of_the_selected_verse.getPoint2D();
                             x_position_of_text.setText(String.valueOf((int) point2D_of_the_text.getX()));
                             y_position_of_text.setText(String.valueOf((int) point2D_of_the_text.getY()));
+                            text_field_for_font_size.setText(String.valueOf((int) text_item_of_the_selected_verse.getFont_size()));
+                            color_picker.setValue(text_item_of_the_selected_verse.getColor());
                             setGraphic(root);
                         }
-
                     }
                 };
             }
@@ -5247,10 +5254,10 @@ public class HelloApplication extends Application {
         helloController.list_view_with_all_of_the_languages.maxWidthProperty().bind(helloController.right_stack_pane_in_grid_pane.widthProperty().subtract(20));
     }*/
 
-    private void bind_an_item_to_a_property(Region child, ObservableValue<? extends java.lang.Number> observableValue) {
-        child.minWidthProperty().bind(observableValue);
-        child.prefWidthProperty().bind(observableValue);
-        child.maxWidthProperty().bind(observableValue);
+    private void bind_an_item_to_a_property(Region child, ObservableDoubleValue observableValue, double substracted_value) {
+        child.minWidthProperty().bind(Bindings.subtract(observableValue,substracted_value));
+        child.prefWidthProperty().bind(Bindings.subtract(observableValue,substracted_value));
+        child.maxWidthProperty().bind(Bindings.subtract(observableValue,substracted_value));
     }
 
     private String edit_the_verses_before_adding_them(String verse_text) {
@@ -5270,4 +5277,6 @@ public class HelloApplication extends Application {
         }
         return array_list_to_be_returned;
     }
+
+    
 }
