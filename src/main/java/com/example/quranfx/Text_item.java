@@ -79,4 +79,28 @@ public class Text_item {
     public void setColor(Color color) {
         this.color = color;
     }
+
+    public Text_on_canvas_mode getText_on_canvas_mode() {
+        return text_on_canvas_mode;
+    }
+
+    public void setText_on_canvas_mode(Text_on_canvas_mode text_on_canvas_mode) { // will not be used now
+        this.text_on_canvas_mode = text_on_canvas_mode;
+    }
+
+    public double get_x_position(){
+        return point2D.getX();
+    }
+
+    public void set_x_position(double x_position){
+        this.point2D = new Point2D(x_position,this.point2D.getY());
+    }
+
+    public double get_y_position(){
+        return point2D.getY();
+    }
+
+    public void set_y_position(double y_position){
+        this.point2D = new Point2D(this.point2D.getX(),y_position);
+    }
 }

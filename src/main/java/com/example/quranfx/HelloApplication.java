@@ -782,6 +782,7 @@ public class HelloApplication extends Application {
                 the_verse_changed(helloController, selected_verse);
                 scroll_to_specific_verse_time(helloController);
                 set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, ayats_processed[selected_verse].getStart_millisecond()), Type_of_Image.FULL_QUALITY);
+                helloController.list_view_with_all_of_the_languages.refresh();
             }
         });
     }
@@ -794,6 +795,7 @@ public class HelloApplication extends Application {
                 the_verse_changed(helloController, selected_verse);
                 scroll_to_specific_verse_time(helloController);
                 set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, ayats_processed[selected_verse].getStart_millisecond()), Type_of_Image.FULL_QUALITY);
+                helloController.list_view_with_all_of_the_languages.refresh();
             }
         });
     }
@@ -4731,7 +4733,7 @@ public class HelloApplication extends Application {
                 items.add(new Language_info(key, return_the_formatted_text_item_from_array_list(hashMap_with_all_of_the_translations_of_verses.get(key))));
             }
         }
-        //HashMap<String, Integer> ranking_languages_hash_map = get_the_language_ranking();
+        HashMap<String, Integer> ranking_languages_hash_map = get_the_language_ranking();
         items.sort(new Comparator<Language_info>() {
             @Override
             public int compare(Language_info o1, Language_info o2) {
@@ -4815,7 +4817,7 @@ public class HelloApplication extends Application {
                         set_pref_min_max(stackPane_of_the_top, 40, Resize_bind_type.HEIGHT);
 
                         //jfxButton
-                        bind_an_item_to_a_property(jfxButton, root.widthProperty(),0);
+                        bind_an_item_to_a_property(jfxButton, root.widthProperty(), 0);
                         set_pref_min_max(jfxButton, 40, Resize_bind_type.HEIGHT);
 
                         //lnaguage_name
@@ -4848,8 +4850,8 @@ public class HelloApplication extends Application {
 
                         //hbox_for_x_and_y_positions
                         hbox_for_x_and_y_positions.setAlignment(Pos.CENTER);
-                        VBox.setMargin(hbox_for_x_and_y_positions, new Insets(half_top_margin_in_vbox_control,start_and_end_margin , 0, start_and_end_margin));
-                        bind_an_item_to_a_property(hbox_for_x_and_y_positions, root.widthProperty(),start_and_end_margin*2);
+                        VBox.setMargin(hbox_for_x_and_y_positions, new Insets(half_top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+                        bind_an_item_to_a_property(hbox_for_x_and_y_positions, root.widthProperty(), start_and_end_margin * 2);
 
                         //x_position_of_text
                         format_the_text_filed_to_only_accept_positive_integers(x_position_of_text);
@@ -4879,12 +4881,18 @@ public class HelloApplication extends Application {
 
                         //color_picker
                         VBox.setMargin(color_picker, new Insets(half_top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
-                        bind_an_item_to_a_property(color_picker, root.widthProperty(),start_and_end_margin*2);
+                        bind_an_item_to_a_property(color_picker, root.widthProperty(), start_and_end_margin * 2);
+                        color_picker.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                            @Override
+                            public void handle(MouseEvent mouseEvent) {
+                                color_picker.show();
+                            }
+                        });
 
                         //hbox_containing_the_font_size
                         hbox_containing_the_font_size.setAlignment(Pos.CENTER);
                         VBox.setMargin(hbox_containing_the_font_size, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
-                        bind_an_item_to_a_property(hbox_containing_the_font_size,root.widthProperty(),start_and_end_margin*2);
+                        bind_an_item_to_a_property(hbox_containing_the_font_size, root.widthProperty(), start_and_end_margin * 2);
 
                         //label_beside_the_font_size
                         label_beside_the_font_size.setText("Font Size:");
@@ -4892,7 +4900,7 @@ public class HelloApplication extends Application {
                         //text_field_for_font_size
                         format_the_text_filed_to_only_accept_positive_integers(text_field_for_font_size);
                         HBox.setMargin(text_field_for_font_size, new Insets(0, 0, 0, 10));
-                        HBox.setHgrow(text_field_for_font_size,Priority.ALWAYS);
+                        HBox.setHgrow(text_field_for_font_size, Priority.ALWAYS);
                         text_field_for_font_size.setMaxWidth(Double.MAX_VALUE);
 
                         //item_at_the_bottom_of_extended_pane
@@ -4960,16 +4968,23 @@ public class HelloApplication extends Application {
 
                         itemProperty().addListener(new ChangeListener<Language_info>() {
                             @Override
-                            public void changed(ObservableValue<? extends Language_info> observableValue, Language_info old_languageInfo, Language_info new_languageInfo) {
-                                if(old_languageInfo!=null){
-                                    if(old_languageInfo.getX_position_change_listener() !=null){
-                                        x_position_of_text.textProperty().removeListener(old_languageInfo.getX_position_change_listener());
+                            public void changed(ObservableValue<? extends Language_info> observableValue, Language_info old_language_info, Language_info new_language_info) {
+                                if (old_language_info != null) {
+                                    if (old_language_info.getX_position_change_listener() != null) {
+                                        x_position_of_text.textProperty().removeListener(old_language_info.getX_position_change_listener());
+                                        old_language_info.setX_position_change_listener(null);
                                     }
-                                    if(old_languageInfo.getY_position_change_listener() !=null){
-                                        y_position_of_text.textProperty().removeListener(old_languageInfo.getY_position_change_listener());
+                                    if (old_language_info.getY_position_change_listener() != null) {
+                                        y_position_of_text.textProperty().removeListener(old_language_info.getY_position_change_listener());
+                                        old_language_info.setY_position_change_listener(null);
                                     }
-                                    if(old_languageInfo.getColor_change_listener()!=null){
-                                        color_picker.valueProperty().removeListener(old_languageInfo.getColor_change_listener());
+                                    if (old_language_info.getColor_change_listener() != null) {
+                                        color_picker.valueProperty().removeListener(old_language_info.getColor_change_listener());
+                                        old_language_info.setColor_change_listener(null);
+                                    }
+                                    if (old_language_info.getFont_size_change_listener() != null) {
+                                        text_field_for_font_size.textProperty().removeListener(old_language_info.getFont_size_change_listener());
+                                        old_language_info.setFont_size_change_listener(null);
                                     }
                                 }
                             }
@@ -5016,52 +5031,65 @@ public class HelloApplication extends Application {
                             y_position_of_text.setText(String.valueOf((int) point2D_of_the_text.getY()));
                             text_field_for_font_size.setText(String.valueOf((int) text_item_of_the_selected_verse.getFont_size()));
                             color_picker.setValue(text_item_of_the_selected_verse.getColor());
-                            if(item.getX_position_change_listener() == null){
-                                ChangeListener<String> x_position_string_listener = new ChangeListener<String>() {
-                                    @Override
-                                    public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                                        Point2D old_point_2d = text_item_of_the_selected_verse.getPoint2D();
-                                        double new_x_value = 0;
-                                        if(!t1.isEmpty()){
-                                            new_x_value = Double.parseDouble(t1);
-                                        }
-                                        text_item_of_the_selected_verse.setPoint2D(new Point2D(new_x_value, old_point_2d.getY()));
-                                    }
-                                };
-                                x_position_of_text.textProperty().addListener(x_position_string_listener);
-                                item.setX_position_change_listener(x_position_string_listener);
-                            } else {
-                                x_position_of_text.textProperty().addListener(item.getX_position_change_listener());
+                            if (check_box_is_the_langauge_enabled.isSelected()) {
+                                place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                             }
-                            if(item.getY_position_change_listener() ==null){
-                                ChangeListener<String> y_position_change_listener = new ChangeListener<String>() {
-                                    @Override
-                                    public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                                        Point2D old_point_2d = text_item_of_the_selected_verse.getPoint2D();
-                                        double new_y_value = 0;
-                                        if(!t1.isEmpty()){
-                                            new_y_value = Double.parseDouble(t1);
-                                        }
-                                        text_item_of_the_selected_verse.setPoint2D(new Point2D(old_point_2d.getX(), new_y_value));
+
+                            //x_position_text_field_listener
+                            ChangeListener<String> x_pos_text_feild_change_listener = new ChangeListener<String>() {
+                                @Override
+                                public void changed(ObservableValue<? extends String> observableValue, String old_string, String new_string) {
+                                    double new_x_pos = 0;
+                                    if (!new_string.isEmpty()) {
+                                        new_x_pos = Double.parseDouble(new_string);
                                     }
-                                };
-                                y_position_of_text.textProperty().addListener(y_position_change_listener);
-                                item.setY_position_change_listener(y_position_change_listener);
-                            } else {
-                                y_position_of_text.textProperty().addListener(item.getY_position_change_listener());
-                            }
-                            if(item.getColor_change_listener() == null){
-                                ChangeListener<? super javafx.scene.paint.Color> color_change_listener = new ChangeListener<javafx.scene.paint.Color>() {
-                                    @Override
-                                    public void changed(ObservableValue<? extends javafx.scene.paint.Color> observableValue, javafx.scene.paint.Color old_color, javafx.scene.paint.Color new_color) {
-                                        text_item_of_the_selected_verse.setColor(new_color);
+                                    text_item_of_the_selected_verse.set_x_position(new_x_pos);
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                }
+                            };
+                            x_position_of_text.textProperty().addListener(x_pos_text_feild_change_listener);
+                            item.setX_position_change_listener(x_pos_text_feild_change_listener);
+
+                            //y_position_text_field_listener
+                            ChangeListener<String> y_pos_text_feild_change_listener = new ChangeListener<String>() {
+                                @Override
+                                public void changed(ObservableValue<? extends String> observableValue, String old_string, String new_string) {
+                                    double new_y_pos = 0;
+                                    if (!new_string.isEmpty()) {
+                                        new_y_pos = Double.parseDouble(new_string);
                                     }
-                                };
-                                color_picker.valueProperty().addListener(color_change_listener);
-                                item.setColor_change_listener(color_change_listener);
-                            } else {
-                                color_picker.valueProperty().addListener(item.getColor_change_listener());
-                            }
+                                    text_item_of_the_selected_verse.set_y_position(new_y_pos);
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                }
+                            };
+                            y_position_of_text.textProperty().addListener(y_pos_text_feild_change_listener);
+                            item.setY_position_change_listener(y_pos_text_feild_change_listener);
+
+                            //color_picker_change_listen
+                            ChangeListener<? super javafx.scene.paint.Color> color_picker_change_listener = new ChangeListener<javafx.scene.paint.Color>() {
+                                @Override
+                                public void changed(ObservableValue<? extends javafx.scene.paint.Color> observableValue, javafx.scene.paint.Color old_color, javafx.scene.paint.Color new_color) {
+                                    text_item_of_the_selected_verse.setColor(new_color);
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                }
+                            };
+                            color_picker.valueProperty().addListener(color_picker_change_listener);
+                            item.setColor_change_listener(color_picker_change_listener);
+
+                            //font size change listeners
+                            ChangeListener<String> font_size_change_listen = new ChangeListener<String>() {
+                                @Override
+                                public void changed(ObservableValue<? extends String> observableValue, String old_string, String new_string) {
+                                    double font_size = 0;
+                                    if (!new_string.isEmpty()) {
+                                        font_size = Double.parseDouble(new_string);
+                                    }
+                                    text_item_of_the_selected_verse.setFont_size(font_size);
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                }
+                            };
+                            text_field_for_font_size.textProperty().addListener(font_size_change_listen);
+                            item.setFont_size_change_listener(font_size_change_listen);
                             setGraphic(root);
                         }
                     }
@@ -5071,9 +5099,10 @@ public class HelloApplication extends Application {
     }
 
     private void set_up_or_hide_the_canvas(HelloController helloController, Language_info language_info) {
+        Text_item text_item = language_info.getArrayList_of_all_of_the_translations().get(selected_verse);
         if (language_info.isVisible_check_mark_checked()) {
             Canvas canvas = create_the_translation_canvas();
-            add_the_text_to_the_canvas_initially(canvas, language_info);
+            place_the_canvas_text(canvas, text_item);
             bind_the_canvas_to_the_image_view(helloController, canvas);
             set_the_canvas_data(canvas, language_info);
             add_the_canvas_to_the_main_pane(helloController, canvas);
@@ -5191,14 +5220,24 @@ public class HelloApplication extends Application {
         return canvas;
     }
 
-    private void add_the_text_to_the_canvas_initially(Canvas canvas, Language_info language_info) {
-        Text_item text_item = language_info.getArrayList_of_all_of_the_translations().get(selected_verse);
+    private void place_the_canvas_text(Canvas canvas, Text_item text_item) {
+        //Text_item text_item = language_info.getArrayList_of_all_of_the_translations().get(selected_verse);
+        Point2D point2D_of_the_text = text_item.getPoint2D();
+        double font_size = text_item.getFont_size();
+        javafx.scene.paint.Color color_of_text = text_item.getColor();
+        Text_on_canvas_mode text_on_canvas_mode = text_item.getText_on_canvas_mode();
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.setFill(javafx.scene.paint.Color.WHITE);
-        gc.setFont(new Font(32)); // pick a font that supports Arabic
-        gc.setTextAlign(TextAlignment.CENTER);   // x = left edge
-        gc.setTextBaseline(VPos.CENTER);          // y = top edge
-        gc.fillText(text_item.getVerse_text(), 1080 / 2D, 1920 / 2D);
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.setFill(color_of_text);
+        gc.setFont(new Font(font_size)); // pick a font that supports Arabic
+        if (text_on_canvas_mode == Text_on_canvas_mode.CENTER) {
+            gc.setTextAlign(TextAlignment.CENTER);
+            gc.setTextBaseline(VPos.CENTER);
+        } else if (text_on_canvas_mode == Text_on_canvas_mode.TOP_LEFT) {
+            gc.setTextAlign(TextAlignment.LEFT);   // horizontal: left edge
+            gc.setTextBaseline(VPos.TOP);          // vertical: top edge
+        }
+        gc.fillText(text_item.getVerse_text(), point2D_of_the_text.getX(), point2D_of_the_text.getY());
     }
 
     private void bind_the_canvas_to_the_image_view(HelloController helloController, Canvas canvas) {
@@ -5286,7 +5325,7 @@ public class HelloApplication extends Application {
         ScrollBar scrollBar = (ScrollBar) helloController.list_view_with_all_of_the_languages.lookup(".scroll-bar:vertical");
         DoubleBinding double_binding = new DoubleBinding() {
             {
-                super.bind(helloController.list_view_with_all_of_the_languages.widthProperty(), scrollBar.widthProperty(), padding_property);
+                super.bind(helloController.list_view_with_all_of_the_languages.widthProperty(), scrollBar.widthProperty(), padding_property,scrollBar.visibleProperty());
             }
 
             @Override
@@ -5298,7 +5337,14 @@ public class HelloApplication extends Application {
                     left_padding = insets.getLeft();
                     right_padding = insets.getRight();
                 }
-                return helloController.list_view_with_all_of_the_languages.getWidth() - scrollBar.getWidth() - left_padding - right_padding - list_view_languages_border_width * 2;
+
+                double scroll_bar_width;
+                if(scrollBar.visibleProperty().get()){
+                    scroll_bar_width = scrollBar.widthProperty().get();
+                } else {
+                    scroll_bar_width = 0;
+                }
+                return helloController.list_view_with_all_of_the_languages.getWidth() - scroll_bar_width - left_padding - right_padding - list_view_languages_border_width * 2;
             }
         };
         root.minWidthProperty().bind(double_binding);
@@ -5318,9 +5364,9 @@ public class HelloApplication extends Application {
     }*/
 
     private void bind_an_item_to_a_property(Region child, ObservableDoubleValue observableValue, double substracted_value) {
-        child.minWidthProperty().bind(Bindings.subtract(observableValue,substracted_value));
-        child.prefWidthProperty().bind(Bindings.subtract(observableValue,substracted_value));
-        child.maxWidthProperty().bind(Bindings.subtract(observableValue,substracted_value));
+        child.minWidthProperty().bind(Bindings.subtract(observableValue, substracted_value));
+        child.prefWidthProperty().bind(Bindings.subtract(observableValue, substracted_value));
+        child.maxWidthProperty().bind(Bindings.subtract(observableValue, substracted_value));
     }
 
     private String edit_the_verses_before_adding_them(String verse_text) {

@@ -1,5 +1,6 @@
 package com.example.quranfx;
 
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -21,7 +22,9 @@ public class Language_info {
     private Canvas language_canvas;
     private ChangeListener<String> x_position_change_listener;
     private ChangeListener<String> y_position_change_listener;
-    private ChangeListener<? super Color>  color_change_listener;
+    private ChangeListener<? super Color> color_change_listener;
+    private ChangeListener<String> font_size_change_listener;
+
 
     public Language_info(String language_name, ArrayList<Text_item> arrayList_of_all_of_the_translations) {
         this.language_name = language_name;
@@ -52,17 +55,6 @@ public class Language_info {
         }
         return string.substring(0, 1).toUpperCase() + string.substring(1);
     }
-
-    /*private void edit_the_verses_before_adding_them(ArrayList<String> arrayList_of_all_of_the_translations) {
-        for (int i = 0; i < arrayList_of_all_of_the_translations.size(); i++) {
-            Document doc = Jsoup.parse(arrayList_of_all_of_the_translations.get(i));
-            doc.select("script, style, noscript, sup, sub").remove(); // drop entire elements incl. text
-            String cleaned_html = doc.text().trim();
-            cleaned_html = cleaned_html.replaceAll("::\\{\\d+}", "");
-            cleaned_html = cleaned_html.replace("\"", "");
-            arrayList_of_all_of_the_translations.set(i, cleaned_html);
-        }
-    }*/
 
     public String getLanguage_name() {
         return language_name;
@@ -112,12 +104,12 @@ public class Language_info {
         this.x_position_change_listener = x_position_change_listener;
     }
 
-    public ChangeListener<String> getY_position_change_listener() {
-        return y_position_change_listener;
+    public ChangeListener<String> getFont_size_change_listener() {
+        return font_size_change_listener;
     }
 
-    public void setY_position_change_listener(ChangeListener<String> y_position_change_listener) {
-        this.y_position_change_listener = y_position_change_listener;
+    public void setFont_size_change_listener(ChangeListener<String> font_size_change_listener) {
+        this.font_size_change_listener = font_size_change_listener;
     }
 
     public ChangeListener<? super Color> getColor_change_listener() {
@@ -126,5 +118,29 @@ public class Language_info {
 
     public void setColor_change_listener(ChangeListener<? super Color> color_change_listener) {
         this.color_change_listener = color_change_listener;
+    }
+
+    public ChangeListener<String> getY_position_change_listener() {
+        return y_position_change_listener;
+    }
+
+    public void setY_position_change_listener(ChangeListener<String> y_position_change_listener) {
+        this.y_position_change_listener = y_position_change_listener;
+    }
+
+    @Override
+    public String toString() {
+        return "Language_info{" +
+                "language_name='" + language_name + '\'' +
+                ", displayed_language_name='" + displayed_language_name + '\'' +
+                ", visible_check_mark_checked=" + visible_check_mark_checked +
+                ", arrayList_of_all_of_the_translations=" + arrayList_of_all_of_the_translations +
+                ", item_extended=" + item_extended +
+                ", language_canvas=" + language_canvas +
+                ", x_position_change_listener=" + x_position_change_listener +
+                ", y_position_change_listener=" + y_position_change_listener +
+                ", color_change_listener=" + color_change_listener +
+                ", font_size_change_listener=" + font_size_change_listener +
+                '}';
     }
 }
