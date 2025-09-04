@@ -1,5 +1,7 @@
 package com.example.quranfx;
 
+import atlantafx.base.theme.PrimerDark;
+import atlantafx.base.theme.PrimerLight;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Metadata;
@@ -49,9 +51,8 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.*;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.*;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.*;
 
 import java.awt.*;
@@ -69,6 +70,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import javafx.util.Duration;
 import net.coobird.thumbnailator.Thumbnails;
@@ -120,6 +122,7 @@ public class HelloApplication extends Application {
     private HashMap<Integer, String> hashMap_id_to_language_name_text = new HashMap<>();
     private Sound_mode sound_mode;
     private long[] start_millisecond_of_each_verse;
+    private HashMap<String,ArrayList<String>> hashMap_with_all_the_font_families_and_names;
 
     private final static int image_view_in_tile_pane_width = 90;
     private final static int image_view_in_tile_pane_height = 160;
@@ -236,6 +239,8 @@ public class HelloApplication extends Application {
         add_the_css_files_at_the_start(scene);
         set_the_border_width_of_list_view_languages(helloController);
         //bind_the_languages_list_view_to_the_right_border_pane(helloController);
+        //test();
+        set_up_the_fonts();
     }
 
     public static void main(String[] args) {
@@ -4776,6 +4781,11 @@ public class HelloApplication extends Application {
                     private HBox hbox_containing_the_text_color_label;
                     private Separator separator_under_position;
                     private Separator separator_under_color_picker;
+                    private ComboBox<String> combox_of_all_of_fonts;
+                    private Label label_saying_fonts;
+                    private HBox hbox_hosting_the_fonts_label;
+                    private Separator separator_under_font_picker;
+
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -4804,11 +4814,16 @@ public class HelloApplication extends Application {
                         hbox_containing_the_text_color_label = new HBox();
                         separator_under_position = new Separator();
                         separator_under_color_picker = new Separator();
+                        combox_of_all_of_fonts = new ComboBox<>();
+                        label_saying_fonts = new Label();
+                        hbox_hosting_the_fonts_label = new HBox();
+                        separator_under_font_picker = new Separator();
 
                         final double top_margin_in_vbox_control = 10;
                         final double half_top_margin_in_vbox_control = 5;
                         final double three_quarters_margin_in_vbox_control = 7.5;
                         final double start_and_end_margin = 8.5;
+                        final double separator_start_end = 5;
 
                         //root
                         bind_the_root_to_list_view(helloController, root, paddingProperty());
@@ -4839,7 +4854,7 @@ public class HelloApplication extends Application {
                         StackPane.setMargin(v_box_inside_the_stack_pane, new Insets(10, 0, 0, 0));
 
                         //separator_between_check_box_and_everything
-                        VBox.setMargin(separator_between_check_box_and_everything, new Insets(top_margin_in_vbox_control, 5, 0, 5));
+                        VBox.setMargin(separator_between_check_box_and_everything, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
                         //separator_between_check_box_and_everything.getStyleClass().add("my-separator");
 
                         //down_or_left_image_view
@@ -4926,13 +4941,31 @@ public class HelloApplication extends Application {
                         VBox.setMargin(hbox_containing_the_text_color_label, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
 
                         //separator_under_position
-                        VBox.setMargin(separator_under_position, new Insets(top_margin_in_vbox_control, 5, 0, 5));
+                        VBox.setMargin(separator_under_position, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
 
                         //separator_under_color_picker
-                        VBox.setMargin(separator_under_color_picker, new Insets(top_margin_in_vbox_control, 5, 0, 5));
+                        VBox.setMargin(separator_under_color_picker, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
+
+                        //combox_of_all_of_fonts
+                        add_the_fonts_to_the_combo_box(combox_of_all_of_fonts);
+                        bind_an_item_to_a_property(combox_of_all_of_fonts, root.widthProperty(), start_and_end_margin * 2);
+                        combox_of_all_of_fonts.getSelectionModel().select(0);
+
+                        //label_saying_fonts
+                        label_saying_fonts.setText("Font");
+
+
+                        //hbox_hosting_the_fonts_label
+                        hbox_hosting_the_fonts_label.setAlignment(Pos.CENTER_LEFT);
+                        VBox.setMargin(hbox_hosting_the_fonts_label, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+
+                        //separator_under_font_picker
+                        VBox.setMargin(separator_between_check_box_and_everything, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
 
 
                         hbox_containing_the_text_color_label.getChildren().add(label_saying_color);
+
+                        hbox_hosting_the_fonts_label.getChildren().add(label_saying_fonts);
 
                         hbox_hosting_the_position_label.getChildren().add(text_saying_position_above_position);
 
@@ -4957,6 +4990,8 @@ public class HelloApplication extends Application {
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_containing_the_text_color_label);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(color_picker);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_color_picker);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_hosting_the_fonts_label);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(combox_of_all_of_fonts);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_containing_the_font_size);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(item_at_the_bottom_of_extended_pane);
 
@@ -4999,6 +5034,7 @@ public class HelloApplication extends Application {
                             setGraphic(null);
                         } else {
                             Text_item text_item_of_the_selected_verse = item.getArrayList_of_all_of_the_translations().get(selected_verse);
+                            text_item_of_the_selected_verse.setFont(new Font("SF Arabic Rounded Regular",text_item_of_the_selected_verse.getFont_size()));
                             make_the_language_translation_extended(stackPane_extended_with_all_of_the_info, down_or_left_image_view, item, item.isItem_extended());
                             jfxButton.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
@@ -5090,6 +5126,13 @@ public class HelloApplication extends Application {
                             };
                             text_field_for_font_size.textProperty().addListener(font_size_change_listen);
                             item.setFont_size_change_listener(font_size_change_listen);
+
+                            combox_of_all_of_fonts.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    System.out.println(text_item_of_the_selected_verse.getFont().getFamily());
+                                }
+                            });
                             setGraphic(root);
                         }
                     }
@@ -5222,14 +5265,16 @@ public class HelloApplication extends Application {
 
     private void place_the_canvas_text(Canvas canvas, Text_item text_item) {
         //Text_item text_item = language_info.getArrayList_of_all_of_the_translations().get(selected_verse);
+
         Point2D point2D_of_the_text = text_item.getPoint2D();
-        double font_size = text_item.getFont_size();
         javafx.scene.paint.Color color_of_text = text_item.getColor();
         Text_on_canvas_mode text_on_canvas_mode = text_item.getText_on_canvas_mode();
+        Font font_for_verse = text_item.getFont();
+
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.setFill(color_of_text);
-        gc.setFont(new Font(font_size)); // pick a font that supports Arabic
+        gc.setFont(font_for_verse);
         if (text_on_canvas_mode == Text_on_canvas_mode.CENTER) {
             gc.setTextAlign(TextAlignment.CENTER);
             gc.setTextBaseline(VPos.CENTER);
@@ -5325,7 +5370,7 @@ public class HelloApplication extends Application {
         ScrollBar scrollBar = (ScrollBar) helloController.list_view_with_all_of_the_languages.lookup(".scroll-bar:vertical");
         DoubleBinding double_binding = new DoubleBinding() {
             {
-                super.bind(helloController.list_view_with_all_of_the_languages.widthProperty(), scrollBar.widthProperty(), padding_property,scrollBar.visibleProperty());
+                super.bind(helloController.list_view_with_all_of_the_languages.widthProperty(), scrollBar.widthProperty(), padding_property, scrollBar.visibleProperty());
             }
 
             @Override
@@ -5339,7 +5384,7 @@ public class HelloApplication extends Application {
                 }
 
                 double scroll_bar_width;
-                if(scrollBar.visibleProperty().get()){
+                if (scrollBar.visibleProperty().get()) {
                     scroll_bar_width = scrollBar.widthProperty().get();
                 } else {
                     scroll_bar_width = 0;
@@ -5386,4 +5431,37 @@ public class HelloApplication extends Application {
         }
         return array_list_to_be_returned;
     }
+
+    private void add_the_fonts_to_the_combo_box(ComboBox<String> comboBox) {
+        comboBox.getItems().addAll(Font.getFamilies());
+    }
+
+    /*private void test() {
+        System.out.println("total number of fonts: " + Font.getFamilies().size());
+        System.out.println(Font.getFamilies());
+        ArrayList<String> arrayList = new ArrayList<>();
+        for (int i = 0; i < Font.getFamilies().size(); i++) {
+            Font font = Font.font(Font.getFamilies().get(i), FontWeight.NORMAL, FontPosture.REGULAR,10);
+            if(font.getFamily().equals(Font.getFamilies().get(i))){
+                arrayList.add(font.getFamily());
+            }
+        }
+        System.out.println("total number of rendered fonts: " + arrayList.size());
+        System.out.println(arrayList);
+        System.out.println(Font.getFontNames());
+        Font font = new Font("SF Pro Compressed Black",10);
+        System.out.println(font.getFamily());
+    }*/
+
+    private void set_up_the_fonts(){
+        hashMap_with_all_the_font_families_and_names = new HashMap<>();
+        ArrayList<String> family_names = new ArrayList<>(Font.getFamilies());
+        for(String family_name :  family_names){
+            ArrayList<String> arrayList_with_font_names = new ArrayList<>(Font.getFontNames(family_name));
+            hashMap_with_all_the_font_families_and_names.put(family_name,arrayList_with_font_names);
+        }
+        System.out.println(hashMap_with_all_the_font_families_and_names.get("SF Arabic Rounded"));
+    }
+
+
 }

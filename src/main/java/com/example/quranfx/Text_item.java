@@ -69,6 +69,7 @@ public class Text_item {
     }
 
     public void setFont_size(double font_size) {
+        this.font = new  Font(font.getName(),font_size);
         this.font_size = font_size;
     }
 
@@ -102,5 +103,13 @@ public class Text_item {
 
     public void set_y_position(double y_position){
         this.point2D = new Point2D(this.point2D.getX(),y_position);
+    }
+
+    public Font getFont() {
+        return font;
+    }
+
+    public void setFont(Font font) {
+        this.font = font;
     }
 }
