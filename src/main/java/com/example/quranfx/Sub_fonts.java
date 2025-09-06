@@ -9,6 +9,7 @@ public class Sub_fonts {
     public Sub_fonts(List<String> font_names_string, String family_name) {
         make_the_array_list_of_strings_fonts_and_names(font_names_string, font_names, family_name);
         sort_the_font_names(font_names);
+        set_the_regular_position(font_names);
     }
 
     private void sort_the_font_names(ArrayList<Font_name_and_displayed_name> font_names) {
@@ -31,11 +32,16 @@ public class Sub_fonts {
                 displayed_name = "Regular";
             }
             displayed_name = make_the_first_letter_capital(displayed_name);
-            if (displayed_name.equals("Regular")) {
-                regular_position = i;
-            }
             Font_name_and_displayed_name font_name_and_displayed_name = new Font_name_and_displayed_name(font_names_string.get(i), displayed_name);
             font_name_and_displayed_names.add(font_name_and_displayed_name);
+        }
+    }
+
+    private void set_the_regular_position(ArrayList<Font_name_and_displayed_name> font_names) {
+        for(int i = 0;i<font_names.size();i++) {
+            if(font_names.get(i).getDisplayed_name().equals("Regular")) {
+                regular_position = i;
+            }
         }
     }
 
