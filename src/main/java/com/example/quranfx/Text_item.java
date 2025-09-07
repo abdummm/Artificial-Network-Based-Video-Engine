@@ -5,6 +5,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+import java.util.ArrayList;
+
 public class Text_item {
     private String verse_text;
     private Point2D point2D;
@@ -36,7 +38,7 @@ public class Text_item {
         this.verse_text = verse_text;
         this.point2D = new Point2D(video_width/2D, video_height/2D);
         this.font_size = 36;
-        this.font = new Font(this.font_size);
+        this.font = return_first_font(font_size);
         this.color = Color.WHITE;
         this.start_time = start_time;
         this.end_time = end_time;
@@ -44,6 +46,14 @@ public class Text_item {
         this.width = width_and_height_of_text[0];
         this.height = width_and_height_of_text[1];
         text_on_canvas_mode = Text_on_canvas_mode.CENTER;
+    }
+
+    private Font return_first_font(double font_size){
+        String first_family_in_fonts = Font.getFamilies().getFirst();
+        Sub_fonts sub_fonts = new Sub_fonts(Font.getFontNames(first_family_in_fonts), first_family_in_fonts);
+        ArrayList<Font_name_and_displayed_name> sorted_fonts = sub_fonts.getFont_names();
+        int font_position = sub_fonts.getRegular_position();
+        return new Font(sorted_fonts.get(font_position).getFont_name(),font_size);
     }
 
     public String getVerse_text() {
