@@ -4819,7 +4819,6 @@ public class HelloApplication extends Application {
                         hbox_hosting_the_fonts_label = new HBox();
                         separator_under_font_picker = new Separator();
                         combox_of_all_of_fonts_sub_choices = new ComboBox<>();
-
                         final double top_margin_in_vbox_control = 10;
                         final double half_top_margin_in_vbox_control = 5;
                         final double three_quarters_margin_in_vbox_control = 7.5;
@@ -5192,10 +5191,6 @@ public class HelloApplication extends Application {
                                         double font_size = text_item_of_the_selected_verse.getFont_size();
                                         text_item_of_the_selected_verse.setFont(new Font(new_font_name_and_displayed_name.getFont_name(), font_size));
                                         place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
-                                        Label test = new Label("test");
-                                        test.setFont(new Font(new_font_name_and_displayed_name.getFont_name(), font_size));
-                                        System.out.println(test.getFont());
-                                        System.out.println(new_font_name_and_displayed_name.toString());
                                     }
                                 }
                             };
