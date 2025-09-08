@@ -4786,7 +4786,6 @@ public class HelloApplication extends Application {
                     private Separator separator_under_font_picker;
                     private ComboBox<Font_name_and_displayed_name> combox_of_all_of_fonts_sub_choices;
 
-
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                         root = new VBox(0);
@@ -4827,7 +4826,6 @@ public class HelloApplication extends Application {
 
                         //root
                         bind_the_root_to_list_view(helloController, root, paddingProperty());
-
                         //stackPane_of_the_top
                         set_pref_min_max(stackPane_of_the_top, 40, Resize_bind_type.HEIGHT);
 
@@ -4992,7 +4990,7 @@ public class HelloApplication extends Application {
                                 }
                             }
                         });
-                        combox_of_all_of_fonts_sub_choices.getItems().addAll(hashMap_with_all_the_font_families_and_names.get(combox_of_all_of_fonts.getSelectionModel().getSelectedItem()).getFont_names());
+                        combox_of_all_of_fonts_sub_choices.setItems(FXCollections.observableArrayList(hashMap_with_all_the_font_families_and_names.get(combox_of_all_of_fonts.getSelectionModel().getSelectedItem()).getFont_names()));
                         combox_of_all_of_fonts_sub_choices.getSelectionModel().select(0);
 
                         hbox_containing_the_text_color_label.getChildren().add(label_saying_color);
@@ -5076,7 +5074,6 @@ public class HelloApplication extends Application {
                             setGraphic(null);
                         } else {
                             Text_item text_item_of_the_selected_verse = item.getArrayList_of_all_of_the_translations().get(selected_verse);
-                            text_item_of_the_selected_verse.setFont(new Font("SF Arabic Rounded Regular", text_item_of_the_selected_verse.getFont_size()));
                             make_the_language_translation_extended(stackPane_extended_with_all_of_the_info, down_or_left_image_view, item, item.isItem_extended());
                             jfxButton.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
@@ -5175,8 +5172,9 @@ public class HelloApplication extends Application {
                                 public void changed(ObservableValue<? extends String> observableValue, String old_font, String new_font) {
                                     Sub_fonts sub_fonts = hashMap_with_all_the_font_families_and_names.get(new_font);
                                     combox_of_all_of_fonts_sub_choices.getItems().clear();
-                                    combox_of_all_of_fonts_sub_choices.getItems().addAll(sub_fonts.getFont_names());
+                                    combox_of_all_of_fonts_sub_choices.setItems(FXCollections.observableArrayList(sub_fonts.getFont_names()));
                                     combox_of_all_of_fonts_sub_choices.getSelectionModel().select(sub_fonts.getRegular_position());
+
                                     //combox_of_all_of_fonts_sub_choices.setVisibleRowCount(sub_fonts.getFont_names().size());
                                 }
                             };
@@ -5333,7 +5331,6 @@ public class HelloApplication extends Application {
         javafx.scene.paint.Color color_of_text = text_item.getColor();
         Text_on_canvas_mode text_on_canvas_mode = text_item.getText_on_canvas_mode();
         Font font_for_verse = text_item.getFont();
-
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.setFill(color_of_text);
@@ -5430,10 +5427,21 @@ public class HelloApplication extends Application {
     }
 
     private void bind_the_root_to_list_view(HelloController helloController, Region root, ObjectProperty<Insets> padding_property) {
-        ScrollBar scrollBar = (ScrollBar) helloController.list_view_with_all_of_the_languages.lookup(".scroll-bar:vertical");
+        ScrollBar scrollBar = null;
+        Set<Node> set_of_scroll_bars = helloController.list_view_with_all_of_the_languages.lookupAll(".scroll-bar:vertical");
+        for (Node node : set_of_scroll_bars) {
+            if (scrollBar == null) {
+                scrollBar = (ScrollBar) node;
+            } else {
+                if (((ScrollBar) node).getWidth() > scrollBar.getWidth()) {
+                    scrollBar = (ScrollBar) node;
+                }
+            }
+        } // TODO this code needs to be looked at
+        ScrollBar finalScrollBar = scrollBar;
         DoubleBinding double_binding = new DoubleBinding() {
             {
-                super.bind(helloController.list_view_with_all_of_the_languages.widthProperty(), scrollBar.widthProperty(), padding_property);
+                super.bind(helloController.list_view_with_all_of_the_languages.widthProperty(), finalScrollBar.widthProperty(), padding_property);
             }
 
             @Override
@@ -5445,14 +5453,14 @@ public class HelloApplication extends Application {
                     left_padding = insets.getLeft();
                     right_padding = insets.getRight();
                 }
-
-                double scroll_bar_width;
-                /*if (scrollBar.visibleProperty().get()) {
-                    scroll_bar_width = scrollBar.widthProperty().get();
-                } else {
-                    scroll_bar_width = 0;
-                }*/
-                return helloController.list_view_with_all_of_the_languages.getWidth() - scrollBar.widthProperty().get() - left_padding - right_padding - list_view_languages_border_width * 2;
+                System.out.println("width of listview: " + helloController.list_view_with_all_of_the_languages.widthProperty().get());
+                System.out.println("scroll bar width: " + finalScrollBar.widthProperty().get());
+                System.out.println("left padding: " + left_padding);
+                System.out.println("right padding: " + right_padding);
+                System.out.println("list_view_languages_border_width: " + list_view_languages_border_width);
+                System.out.println(helloController.list_view_with_all_of_the_languages.widthProperty().get() /*- finalScrollBar.widthProperty().get()*/ - 15 - left_padding - right_padding - list_view_languages_border_width * 2);
+                System.out.println();
+                return helloController.list_view_with_all_of_the_languages.widthProperty().get() /*- finalScrollBar.widthProperty().get()*/ - 15 - left_padding - right_padding - list_view_languages_border_width * 2;
             }
         };
         root.minWidthProperty().bind(double_binding);
@@ -5507,5 +5515,4 @@ public class HelloApplication extends Application {
             hashMap_with_all_the_font_families_and_names.put(family_name, sub_fonts);
         }
     }
-
 }
