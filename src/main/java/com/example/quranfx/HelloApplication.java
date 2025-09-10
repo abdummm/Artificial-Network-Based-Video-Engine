@@ -5515,4 +5515,8 @@ public class HelloApplication extends Application {
             hashMap_with_all_the_font_families_and_names.put(family_name, sub_fonts);
         }
     }
+
+    private void sort_the_translations(){
+
+    }
 }
