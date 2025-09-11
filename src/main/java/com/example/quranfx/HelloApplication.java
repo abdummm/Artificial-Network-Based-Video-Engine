@@ -4785,6 +4785,7 @@ public class HelloApplication extends Application {
                     private HBox hbox_hosting_the_fonts_label;
                     private Separator separator_under_font_picker;
                     private ComboBox<Font_name_and_displayed_name> combox_of_all_of_fonts_sub_choices;
+                    private JFXButton reset_prefrence_button;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -4818,6 +4819,9 @@ public class HelloApplication extends Application {
                         hbox_hosting_the_fonts_label = new HBox();
                         separator_under_font_picker = new Separator();
                         combox_of_all_of_fonts_sub_choices = new ComboBox<>();
+                        reset_prefrence_button = new JFXButton();
+
+
                         final double top_margin_in_vbox_control = 10;
                         final double half_top_margin_in_vbox_control = 5;
                         final double three_quarters_margin_in_vbox_control = 7.5;
@@ -5514,9 +5518,5 @@ public class HelloApplication extends Application {
             Sub_fonts sub_fonts = new Sub_fonts(Font.getFontNames(family_name), family_name);
             hashMap_with_all_the_font_families_and_names.put(family_name, sub_fonts);
         }
-    }
-
-    private void sort_the_translations(){
-
     }
 }
