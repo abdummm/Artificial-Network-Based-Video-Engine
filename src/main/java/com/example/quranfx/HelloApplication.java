@@ -5457,14 +5457,7 @@ public class HelloApplication extends Application {
                     left_padding = insets.getLeft();
                     right_padding = insets.getRight();
                 }
-                System.out.println("width of listview: " + helloController.list_view_with_all_of_the_languages.widthProperty().get());
-                System.out.println("scroll bar width: " + finalScrollBar.widthProperty().get());
-                System.out.println("left padding: " + left_padding);
-                System.out.println("right padding: " + right_padding);
-                System.out.println("list_view_languages_border_width: " + list_view_languages_border_width);
-                System.out.println(helloController.list_view_with_all_of_the_languages.widthProperty().get() /*- finalScrollBar.widthProperty().get()*/ - 15 - left_padding - right_padding - list_view_languages_border_width * 2);
-                System.out.println();
-                return helloController.list_view_with_all_of_the_languages.widthProperty().get() /*- finalScrollBar.widthProperty().get()*/ - 15 - left_padding - right_padding - list_view_languages_border_width * 2;
+                return helloController.list_view_with_all_of_the_languages.widthProperty().get() /*- finalScrollBar.widthProperty().get()*/ - 15 - left_padding - right_padding - list_view_languages_border_width * 2; // TODO its very important to look at the width of scroll bar.
             }
         };
         root.minWidthProperty().bind(double_binding);
