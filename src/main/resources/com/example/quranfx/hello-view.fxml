@@ -308,6 +308,7 @@
                                     <JFXButton fx:id="add_media_button" text="Upload media"
                                                style="-fx-background-color: #000000; -fx-text-fill: #FFFFFF;"/>
                                 </VBox>
+                                <VBox alignment="BOTTOM_LEFT"></VBox> <!-- for the vid control-->
                             </VBox>
                         </StackPane>
                     </HBox>
