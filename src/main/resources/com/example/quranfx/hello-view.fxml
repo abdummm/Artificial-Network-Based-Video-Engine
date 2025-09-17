@@ -308,7 +308,15 @@
                                     <JFXButton fx:id="add_media_button" text="Upload media"
                                                style="-fx-background-color: #000000; -fx-text-fill: #FFFFFF;"/>
                                 </VBox>
-                                <VBox alignment="BOTTOM_LEFT"></VBox> <!-- for the vid control-->
+                                <VBox>
+                                    <HBox>
+                                        <JFXButton fx:id="double_rewind_button"/>
+                                        <JFXButton fx:id="rewind_button"/>
+                                        <JFXButton fx:id="play_pause_button"/>
+                                        <JFXButton fx:id="forward_button"/>
+                                        <JFXButton fx:id="double_forward_button"/>
+                                    </HBox>
+                                </VBox> <!-- for the vid control-->
                             </VBox>
                         </StackPane>
                     </HBox>
