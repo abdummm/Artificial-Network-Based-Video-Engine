@@ -28,6 +28,7 @@ module com.example.quranfx {
     requires annotations;
     requires javafx.base;
 
+
     opens com.example.quranfx to javafx.fxml;
     exports com.example.quranfx;
 }

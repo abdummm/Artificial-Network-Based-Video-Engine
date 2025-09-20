@@ -80,8 +80,8 @@ public class HelloController {
     @FXML
     public Label what_verse_is_this;
 
-    @FXML
-    public JFXButton play_sound;
+    /*@FXML
+    public JFXButton play_sound;*/
 
     @FXML
     public JFXButton full_screen_button_fourth_screen;
@@ -161,8 +161,8 @@ public class HelloController {
     @FXML
     public StackPane show_the_result_screen_stack_pane;
 
-    @FXML
-    public ImageView blurry_chatgpt_image_view;
+    /*@FXML
+    public ImageView blurry_chatgpt_image_view;*/
 
     @FXML
     public ImageView logo_at_the_start_of_the_app;
@@ -181,4 +181,19 @@ public class HelloController {
 
     @FXML
     public ListView<Language_info> list_view_with_all_of_the_languages;
+
+    @FXML
+    public JFXButton fast_rewind_button;
+
+    @FXML
+    public JFXButton rewind_button;
+
+    @FXML
+    public JFXButton play_pause_button;
+
+    @FXML
+    public JFXButton forward_button;
+
+    @FXML
+    public JFXButton fast_forward_button;
 }

@@ -308,13 +308,17 @@
                                     <JFXButton fx:id="add_media_button" text="Upload media"
                                                style="-fx-background-color: #000000; -fx-text-fill: #FFFFFF;"/>
                                 </VBox>
+                                <VBox VBox.vgrow="ALWAYS"/>
                                 <VBox>
+                                    <VBox.margin>
+                                        <Insets left="20.0"/>
+                                    </VBox.margin>
                                     <HBox>
-                                        <JFXButton fx:id="double_rewind_button"/>
-                                        <JFXButton fx:id="rewind_button"/>
-                                        <JFXButton fx:id="play_pause_button"/>
-                                        <JFXButton fx:id="forward_button"/>
-                                        <JFXButton fx:id="double_forward_button"/>
+                                        <JFXButton fx:id="fast_rewind_button" focusTraversable="false"/>
+                                        <JFXButton fx:id="rewind_button" focusTraversable="false"/>
+                                        <JFXButton fx:id="play_pause_button" focusTraversable="false"/>
+                                        <JFXButton fx:id="forward_button" focusTraversable="false"/>
+                                        <JFXButton fx:id="fast_forward_button" focusTraversable="false"/>
                                     </HBox>
                                 </VBox> <!-- for the vid control-->
                             </VBox>
@@ -326,7 +330,7 @@
                         <StackPane fx:id="center_group_grid_pane">
                             <VBox alignment="CENTER">
                                 <HBox alignment="CENTER">
-                                    <VBox alignment="CENTER">
+                                    <VBox alignment="CENTER" visible="false" managed="false">
                                         <JFXButton fx:id="previous_photo_chat_gpt_result" focusTraversable="false"/>
                                     </VBox>
                                     <Pane fx:id="stack_pane_of_image_view_and_text">
@@ -334,11 +338,11 @@
                                             <Insets left="5.0"/>
                                         </HBox.margin>
                                         <ImageView fx:id="chatgpt_image_view" preserveRatio="true"/>
-                                        <ImageView fx:id="blurry_chatgpt_image_view" preserveRatio="true"
-                                                   visible="false"/>
-                                        <JFXButton fx:id="play_sound" visible="false"/>
+                                        <!--<ImageView fx:id="blurry_chatgpt_image_view" preserveRatio="true"
+                                                   visible="false"/>-->
+                                        <!--<JFXButton fx:id="play_sound" visible="false"/>-->
                                     </Pane>
-                                    <VBox alignment="CENTER">
+                                    <VBox alignment="CENTER" visible="false" managed="false">
                                         <HBox.margin>
                                             <Insets left="5.0"/>
                                         </HBox.margin>
@@ -370,11 +374,21 @@
                     <!-- RIGHT -->
                     <HBox HBox.hgrow="ALWAYS">
                         <StackPane fx:id="right_stack_pane_in_grid_pane">
-                            <ListView fx:id="list_view_with_all_of_the_languages" focusTraversable="false" prefHeight="400" maxHeight="400">
+                            <VBox alignment="CENTER">
                                 <StackPane.margin>
                                     <Insets top="15.0" left="15.0" right="15.0"/>
                                 </StackPane.margin>
-                            </ListView>
+                                <HBox alignment="CENTER_LEFT">
+                                    <Label text="Text" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+                                </HBox>
+                                <ListView fx:id="list_view_with_all_of_the_languages" focusTraversable="false"
+                                          prefHeight="300" maxHeight="300">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </ListView>
+
+                            </VBox>
                         </StackPane>
                     </HBox>
                 </HBox>
