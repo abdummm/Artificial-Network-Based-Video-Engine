@@ -1387,6 +1387,12 @@ public class HelloApplication extends Application {
                         Request request = new Request.Builder().url(verse_url).build();
                         try (Response response = client.newCall(request).execute()) {
                             if (!response.isSuccessful()) {
+                                Platform.runLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        show_alert("There was an error getting the recitation, please try a different recitation or try again later.");
+                                    }
+                                });
                                 System.err.println("code" + response.code());
                                 continue;
                             }
@@ -5579,7 +5585,13 @@ public class HelloApplication extends Application {
         helloController.fast_rewind_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-
+                long new_time = TimeUnit.MILLISECONDS.toNanos((long) mediaPlayer.getCurrentTime().toMillis()) - TimeUnit.MINUTES.toNanos(1);
+                new_time = make_sure_time_does_not_exceed_min_max(new_time);
+                which_verse_am_i_on_milliseconds(helloController, new_time);
+                the_verse_changed(helloController, selected_verse);
+                media_has_been_rewinded_or_forwaded(helloController, new_time);
+                set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, new_time), Type_of_Image.FULL_QUALITY);
+                helloController.list_view_with_all_of_the_languages.refresh();
             }
         });
     }
@@ -5588,11 +5600,13 @@ public class HelloApplication extends Application {
         helloController.rewind_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                selected_verse--;
-                the_verse_changed(helloController, selected_verse);
-                scroll_to_specific_verse_time(helloController);
-                set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, ayats_processed[selected_verse].getStart_millisecond()), Type_of_Image.FULL_QUALITY);
-                helloController.list_view_with_all_of_the_languages.refresh();
+                if (selected_verse > 0) {
+                    selected_verse--;
+                    the_verse_changed(helloController, selected_verse);
+                    scroll_to_specific_verse_time(helloController);
+                    set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, ayats_processed[selected_verse].getStart_millisecond()), Type_of_Image.FULL_QUALITY);
+                    helloController.list_view_with_all_of_the_languages.refresh();
+                }
             }
         });
     }
@@ -5610,11 +5624,13 @@ public class HelloApplication extends Application {
         helloController.forward_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                selected_verse++;
-                the_verse_changed(helloController, selected_verse);
-                scroll_to_specific_verse_time(helloController);
-                set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, ayats_processed[selected_verse].getStart_millisecond()), Type_of_Image.FULL_QUALITY);
-                helloController.list_view_with_all_of_the_languages.refresh();
+                if (selected_verse < ayats_processed.length - 1) {
+                    selected_verse++;
+                    the_verse_changed(helloController, selected_verse);
+                    scroll_to_specific_verse_time(helloController);
+                    set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, ayats_processed[selected_verse].getStart_millisecond()), Type_of_Image.FULL_QUALITY);
+                    helloController.list_view_with_all_of_the_languages.refresh();
+                }
             }
         });
     }
@@ -5623,8 +5639,31 @@ public class HelloApplication extends Application {
         helloController.fast_forward_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-
+                long new_time = TimeUnit.MILLISECONDS.toNanos((long) mediaPlayer.getCurrentTime().toMillis()) + TimeUnit.MINUTES.toNanos(1);
+                new_time = make_sure_time_does_not_exceed_min_max(new_time);
+                which_verse_am_i_on_milliseconds(helloController, new_time);
+                the_verse_changed(helloController, selected_verse);
+                media_has_been_rewinded_or_forwaded(helloController, new_time);
+                set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, new_time), Type_of_Image.FULL_QUALITY);
+                helloController.list_view_with_all_of_the_languages.refresh();
             }
         });
+    }
+
+    private void media_has_been_rewinded_or_forwaded(HelloController helloController, long time_in_nanoSeconds) {
+        Polygon polygon = get_the_polygon_from_the_time_line_over_lay(helloController);
+        Polygon_data polygon_data = (Polygon_data) polygon.getUserData();
+        if (!polygon_data.isShould_the_polygon_be_fixed_in_the_middle()) {
+            set_the_scroll_pane_h_value_auto_scroll(helloController, return_the_real_x_position_based_on_time(helloController, time_in_nanoSeconds));
+            update_the_time_line_indicator(helloController, time_in_nanoSeconds);
+        }
+        mediaPlayer.seek(Duration.millis(TimeUnit.NANOSECONDS.toMillis(time_in_nanoSeconds)));
+        lastKnownSystemTime = 0;
+    }
+
+    private long make_sure_time_does_not_exceed_min_max(long time_in_nanoSeconds) {
+        time_in_nanoSeconds = Math.max(time_in_nanoSeconds, 0);
+        time_in_nanoSeconds = Math.min(time_in_nanoSeconds, get_duration());
+        return time_in_nanoSeconds;
     }
 }
