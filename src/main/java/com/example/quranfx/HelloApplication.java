@@ -135,7 +135,7 @@ public class HelloApplication extends Application {
     private final static String clientSecret_pre_live = Quran_api_secrets.clientSecret_pre_live;
     private final static String clientId_live = Quran_api_secrets.clientId_live;
     private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
-    private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
+    private final static Live_mode live_or_pre_live_quran_api = Live_mode.PRE_LIVE;
     private final static String app_name = "Sabrly";
     private final static double screen_width_multiplier = 0.55D;
     private final static double screen_height_multiplier = 0.55D;
@@ -146,6 +146,8 @@ public class HelloApplication extends Application {
     private final static int width_and_height_of_arrow_image_view_translation = 20;
     private final static int width_and_height_of_the_control_buttons = 20;
     private final static double multiplier_for_the_icons_inside_the_buttons_audio_control = 1.25D;
+    private final static double plus_minus_font_increments = 1;
+    private final static String hex_ripple_coulour_for_jfx_buttons = "#808080";
 
     //private final static double circle_button_radius = 20D;
 
@@ -755,7 +757,7 @@ public class HelloApplication extends Application {
         //helloController.show_the_result_screen.setVisible(true);
         //helloController.pane_holding_the_fourth_screen.setVisible(true);
         helloController.show_the_result_screen_stack_pane.setVisible(true);
-        set_the_image_fourth_screen(helloController, 0);
+//        set_the_image_fourth_screen(helloController, 0);
         set_the_visibility_of_the_buttons(helloController, 0);
         set_selected_verse_text(helloController, 0);
         //set_the_english_text_of_the_ayat_in_the_image_view(helloController, 0);
@@ -780,9 +782,9 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void set_the_image_fourth_screen(HelloController helloController, int position) {
+    /*private void set_the_image_fourth_screen(HelloController helloController, int position) {
 
-    }
+    }*/
 
     private void next_photo_click_listen(HelloController helloController) {
         helloController.next_photo_chat_gpt_result.setOnAction(new EventHandler<ActionEvent>() {
@@ -822,8 +824,9 @@ public class HelloApplication extends Application {
     private void the_verse_changed(HelloController helloController, int selected_verse) {
         set_the_visibility_of_the_buttons(helloController, selected_verse);
         //add_the_text_to_the_photo(helloController, chatgpt_responses.get(selected_verse).getAyatSettings(), selected_verse);
-        set_the_image_fourth_screen(helloController, selected_verse);
+//        set_the_image_fourth_screen(helloController, selected_verse);
         set_selected_verse_text(helloController, selected_verse);
+        helloController.list_view_with_all_of_the_languages.refresh();
     }
 
     private void set_up_the_media(HelloController helloController) {
@@ -4834,6 +4837,9 @@ public class HelloApplication extends Application {
                     private Separator separator_under_font_picker;
                     private ComboBox<Font_name_and_displayed_name> combox_of_all_of_fonts_sub_choices;
                     private JFXButton reset_prefrence_button;
+                    private JFXButton increase_font_size_button;
+                    private JFXButton decrease_font_size_button;
+                    private HBox hbox_for_plus_and_minus;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -4868,6 +4874,9 @@ public class HelloApplication extends Application {
                         separator_under_font_picker = new Separator();
                         combox_of_all_of_fonts_sub_choices = new ComboBox<>();
                         reset_prefrence_button = new JFXButton();
+                        increase_font_size_button = new JFXButton();
+                        decrease_font_size_button = new JFXButton();
+                        hbox_for_plus_and_minus = new HBox();
 
 
                         final double top_margin_in_vbox_control = 10;
@@ -5045,6 +5054,47 @@ public class HelloApplication extends Application {
                         combox_of_all_of_fonts_sub_choices.setItems(FXCollections.observableArrayList(hashMap_with_all_the_font_families_and_names.get(combox_of_all_of_fonts.getSelectionModel().getSelectedItem()).getFont_names()));
                         combox_of_all_of_fonts_sub_choices.getSelectionModel().select(0);
 
+                        //increase_font_size_button
+                        increase_font_size_button.setFocusTraversable(false);
+                        increase_font_size_button.setRipplerFill(javafx.scene.paint.Color.web(hex_ripple_coulour_for_jfx_buttons));
+                        increase_font_size_button.prefHeightProperty().bind(text_field_for_font_size.heightProperty());
+                        increase_font_size_button.minHeightProperty().bind(text_field_for_font_size.heightProperty());
+                        increase_font_size_button.maxHeightProperty().bind(text_field_for_font_size.heightProperty());
+                        increase_font_size_button.heightProperty().addListener(new ChangeListener<Number>() {
+                            @Override
+                            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                                increase_font_size_button.setGraphic(return_the_icon("plus", (int) (t1.doubleValue() * 2D/3D), (int) (t1.doubleValue() * 2D/3D)));
+                                increase_font_size_button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                                increase_font_size_button.setAlignment(Pos.CENTER);
+                            }
+                        });
+
+                        //decrease_font_size_button
+                        decrease_font_size_button.setFocusTraversable(false);
+                        decrease_font_size_button.setRipplerFill(javafx.scene.paint.Color.web(hex_ripple_coulour_for_jfx_buttons));
+                        decrease_font_size_button.prefHeightProperty().bind(text_field_for_font_size.heightProperty());
+                        decrease_font_size_button.minHeightProperty().bind(text_field_for_font_size.heightProperty());
+                        decrease_font_size_button.maxHeightProperty().bind(text_field_for_font_size.heightProperty());
+                        decrease_font_size_button.heightProperty().addListener(new ChangeListener<Number>() {
+                            @Override
+                            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                                decrease_font_size_button.setGraphic(return_the_icon("minus", (int) (t1.doubleValue() * 2D/3D), (int) (t1.doubleValue() * 2D/3D)));
+                                decrease_font_size_button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                                decrease_font_size_button.setAlignment(Pos.CENTER);
+                            }
+                        });
+                        /*decrease_font_size_button.setShape(new Rectangle(25,25));
+                        decrease_font_size_button.setGraphic(return_the_icon("minus", 25, 25));
+                        decrease_font_size_button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                        decrease_font_size_button.setAlignment(Pos.CENTER);*/
+
+                        //hbox_for_plus_and_minus
+                        HBox.setMargin(hbox_for_plus_and_minus, new Insets(0, 0, 0, 10));
+                        hbox_for_plus_and_minus.setStyle("-fx-border-color: #F3F3F3; -fx-border-width: 1;");
+
+                        hbox_for_plus_and_minus.getChildren().add(increase_font_size_button);
+                        hbox_for_plus_and_minus.getChildren().add(decrease_font_size_button);
+
                         hbox_containing_the_text_color_label.getChildren().add(label_saying_color);
 
                         hbox_hosting_the_fonts_label.getChildren().add(label_saying_fonts);
@@ -5053,6 +5103,8 @@ public class HelloApplication extends Application {
 
                         hbox_containing_the_font_size.getChildren().add(label_beside_the_font_size);
                         hbox_containing_the_font_size.getChildren().add(text_field_for_font_size);
+                        hbox_containing_the_font_size.getChildren().add(hbox_for_plus_and_minus);
+
 
                         hbox_for_x_and_y_positions.getChildren().add(x_label_beside_x_pos);
                         hbox_for_x_and_y_positions.getChildren().add(x_position_of_text);
@@ -5246,6 +5298,40 @@ public class HelloApplication extends Application {
                             };
                             combox_of_all_of_fonts_sub_choices.valueProperty().addListener(change_listener_for_sub_font);
                             item.setSub_font_change_listener(change_listener_for_sub_font);
+
+                            increase_font_size_button.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    int caret_position = text_field_for_font_size.getCaretPosition();
+                                    String font_text_field_input = text_field_for_font_size.getText();
+                                    double font_size = 0;
+                                    if (!font_text_field_input.isEmpty()) {
+                                        font_size = Double.parseDouble(font_text_field_input);
+                                    }
+                                    font_size = font_size + plus_minus_font_increments;
+                                    text_field_for_font_size.setText(remove_trailing_zeroes_from_number(font_size));
+                                    text_item_of_the_selected_verse.setFont_size(font_size);
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    text_field_for_font_size.positionCaret(Math.min(caret_position, text_field_for_font_size.getText().length()));
+                                }
+                            });
+
+                            decrease_font_size_button.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    int caret_position = text_field_for_font_size.getCaretPosition();
+                                    String font_text_field_input = text_field_for_font_size.getText();
+                                    double font_size = 0;
+                                    if (!font_text_field_input.isEmpty()) {
+                                        font_size = Double.parseDouble(font_text_field_input);
+                                    }
+                                    font_size = font_size - plus_minus_font_increments;
+                                    text_field_for_font_size.setText(remove_trailing_zeroes_from_number(font_size));
+                                    text_item_of_the_selected_verse.setFont_size(font_size);
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    text_field_for_font_size.positionCaret(Math.min(caret_position, text_field_for_font_size.getText().length()));
+                                }
+                            });
                             setGraphic(root);
                         }
                     }
@@ -5581,7 +5667,7 @@ public class HelloApplication extends Application {
         return makeSquirclePath(400, 4.0);
     }
 
-    private void listen_to_fast_rewind_button_click(HelloController helloController) {
+    private void listen_to_fast_rewind_button_click(HelloController helloController) { // TODO make these buttons become disabled when it amkes sense for them to be so(start,end etc....)
         helloController.fast_rewind_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -5638,7 +5724,7 @@ public class HelloApplication extends Application {
     private void fast_forward_button_click(HelloController helloController) {
         helloController.fast_forward_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent actionEvent) {
+            public void handle(ActionEvent actionEvent) { // TODO make these buttons become disabled when it amkes sense for them to be so(start,end etc....)
                 long new_time = TimeUnit.MILLISECONDS.toNanos((long) mediaPlayer.getCurrentTime().toMillis()) + TimeUnit.MINUTES.toNanos(1);
                 new_time = make_sure_time_does_not_exceed_min_max(new_time);
                 which_verse_am_i_on_milliseconds(helloController, new_time);
@@ -5665,5 +5751,13 @@ public class HelloApplication extends Application {
         time_in_nanoSeconds = Math.max(time_in_nanoSeconds, 0);
         time_in_nanoSeconds = Math.min(time_in_nanoSeconds, get_duration());
         return time_in_nanoSeconds;
+    }
+
+    private String remove_trailing_zeroes_from_number(double number) {
+        if (number == (long) number) {
+            return String.format("%d", (long) number);
+        } else {
+            return String.format("%s", number);
+        }
     }
 }
