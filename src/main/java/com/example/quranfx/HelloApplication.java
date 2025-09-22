@@ -38,7 +38,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
-import javafx.scene.effect.BoxBlur;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
@@ -247,7 +246,6 @@ public class HelloApplication extends Application {
         play_pause_button_click_listen(helloController);
         listen_to_forward_button_click(helloController);
         fast_forward_button_click(helloController);
-
     }
 
     /*public static void main(String[] args) {
@@ -4840,6 +4838,11 @@ public class HelloApplication extends Application {
                     private JFXButton increase_font_size_button;
                     private JFXButton decrease_font_size_button;
                     private HBox hbox_for_plus_and_minus;
+                    private Separator separator_under_font_size;
+                    private Label label_saying_stroke;
+                    private HBox hbox_hosting_the_stroke_label;
+                    private CheckBox stroke_check_box;
+                    private Region region_in_the_middle_of_stuff_horizontal;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -4877,6 +4880,11 @@ public class HelloApplication extends Application {
                         increase_font_size_button = new JFXButton();
                         decrease_font_size_button = new JFXButton();
                         hbox_for_plus_and_minus = new HBox();
+                        separator_under_font_size = new Separator();
+                        label_saying_stroke = new Label();
+                        hbox_hosting_the_stroke_label = new HBox();
+                        stroke_check_box = new CheckBox();
+                        region_in_the_middle_of_stuff_horizontal = new Region();
 
 
                         final double top_margin_in_vbox_control = 10;
@@ -5092,10 +5100,31 @@ public class HelloApplication extends Application {
                         HBox.setMargin(hbox_for_plus_and_minus, new Insets(0, 0, 0, 10));
                         hbox_for_plus_and_minus.setStyle("-fx-border-color: #F3F3F3; -fx-border-width: 1;");
 
+                        //separator_under_font_size
+                        VBox.setMargin(separator_under_font_size, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
+
+                        //label_saying_stroke
+                        label_saying_stroke.setText("Stroke");
+
+                        //hbox_hosting_the_stroke_label
+                        hbox_hosting_the_stroke_label.setAlignment(Pos.CENTER_LEFT);
+                        VBox.setMargin(hbox_hosting_the_stroke_label, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+
+                        //region_in_the_middle_of_stuff_horizontal
+                        HBox.setHgrow(region_in_the_middle_of_stuff_horizontal, Priority.ALWAYS);
+
+                        //stroke_check_box
+
+
+
                         hbox_for_plus_and_minus.getChildren().add(increase_font_size_button);
                         hbox_for_plus_and_minus.getChildren().add(decrease_font_size_button);
 
                         hbox_containing_the_text_color_label.getChildren().add(label_saying_color);
+
+                        hbox_hosting_the_stroke_label.getChildren().add(label_saying_stroke);
+                        hbox_hosting_the_stroke_label.getChildren().add(region_in_the_middle_of_stuff_horizontal);
+                        hbox_hosting_the_stroke_label.getChildren().add(stroke_check_box);
 
                         hbox_hosting_the_fonts_label.getChildren().add(label_saying_fonts);
 
@@ -5104,7 +5133,6 @@ public class HelloApplication extends Application {
                         hbox_containing_the_font_size.getChildren().add(label_beside_the_font_size);
                         hbox_containing_the_font_size.getChildren().add(text_field_for_font_size);
                         hbox_containing_the_font_size.getChildren().add(hbox_for_plus_and_minus);
-
 
                         hbox_for_x_and_y_positions.getChildren().add(x_label_beside_x_pos);
                         hbox_for_x_and_y_positions.getChildren().add(x_position_of_text);
@@ -5129,6 +5157,8 @@ public class HelloApplication extends Application {
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(combox_of_all_of_fonts_sub_choices);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_font_picker);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_containing_the_font_size);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_font_size);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_hosting_the_stroke_label);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(item_at_the_bottom_of_extended_pane);
 
                         v_box_inside_the_stack_pane.getChildren().add(v_box_with_all_of_the_controls_except_check_box);
@@ -5302,34 +5332,14 @@ public class HelloApplication extends Application {
                             increase_font_size_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    int caret_position = text_field_for_font_size.getCaretPosition();
-                                    String font_text_field_input = text_field_for_font_size.getText();
-                                    double font_size = 0;
-                                    if (!font_text_field_input.isEmpty()) {
-                                        font_size = Double.parseDouble(font_text_field_input);
-                                    }
-                                    font_size = font_size + plus_minus_font_increments;
-                                    text_field_for_font_size.setText(remove_trailing_zeroes_from_number(font_size));
-                                    text_item_of_the_selected_verse.setFont_size(font_size);
-                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
-                                    text_field_for_font_size.positionCaret(Math.min(caret_position, text_field_for_font_size.getText().length()));
+                                    change_text_size_by_increment(text_field_for_font_size,text_item_of_the_selected_verse,item,plus_minus_font_increments);
                                 }
                             });
 
                             decrease_font_size_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    int caret_position = text_field_for_font_size.getCaretPosition();
-                                    String font_text_field_input = text_field_for_font_size.getText();
-                                    double font_size = 0;
-                                    if (!font_text_field_input.isEmpty()) {
-                                        font_size = Double.parseDouble(font_text_field_input);
-                                    }
-                                    font_size = font_size - plus_minus_font_increments;
-                                    text_field_for_font_size.setText(remove_trailing_zeroes_from_number(font_size));
-                                    text_item_of_the_selected_verse.setFont_size(font_size);
-                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
-                                    text_field_for_font_size.positionCaret(Math.min(caret_position, text_field_for_font_size.getText().length()));
+                                    change_text_size_by_increment(text_field_for_font_size,text_item_of_the_selected_verse,item,-plus_minus_font_increments);
                                 }
                             });
                             setGraphic(root);
@@ -5338,6 +5348,20 @@ public class HelloApplication extends Application {
                 };
             }
         });
+    }
+
+    private void change_text_size_by_increment(TextField text_field_for_font_size,Text_item text_item_of_the_selected_verse,Language_info item,double plus_minus_font_increments_local){
+        int caret_position = text_field_for_font_size.getCaretPosition();
+        String font_text_field_input = text_field_for_font_size.getText();
+        double font_size = 0;
+        if (!font_text_field_input.isEmpty()) {
+            font_size = Double.parseDouble(font_text_field_input);
+        }
+        font_size = font_size + plus_minus_font_increments_local;
+        text_field_for_font_size.setText(remove_trailing_zeroes_from_number(font_size));
+        text_item_of_the_selected_verse.setFont_size(font_size);
+        place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+        text_field_for_font_size.positionCaret(Math.min(caret_position, text_field_for_font_size.getText().length()));
     }
 
     private void set_up_or_hide_the_canvas(HelloController helloController, Language_info language_info) {

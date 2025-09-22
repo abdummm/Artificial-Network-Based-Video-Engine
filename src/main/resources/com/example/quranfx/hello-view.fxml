@@ -38,6 +38,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import com.jfoenix.controls.JFXProgressBar?>
 <?import javafx.scene.canvas.Canvas?>
+<?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
 <StackPane prefHeight="365.0" prefWidth="366.0" xmlns="http://javafx.com/javafx/23.0.1"
            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.quranfx.HelloController"
            style="-fx-background-color: #FFFFFF;" fx:id="parent_stack_pane">
@@ -379,7 +380,7 @@
                                     <Insets top="15.0" left="15.0" right="15.0"/>
                                 </StackPane.margin>
                                 <HBox alignment="CENTER_LEFT">
-                                    <Label text="Text" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+                                    <Label text="Text" style="-fx-font-size: 16px;"/>
                                 </HBox>
                                 <ListView fx:id="list_view_with_all_of_the_languages" focusTraversable="false"
                                           prefHeight="300" maxHeight="300">
@@ -387,6 +388,15 @@
                                         <Insets top="10.0"/>
                                     </VBox.margin>
                                 </ListView>
+                                <HBox alignment="CENTER_LEFT">
+                                    <Label text="Image Controls" style="-fx-font-size: 16px;"/>
+                                    <VBox.margin>
+                                        <Insets top="15.0"/>
+                                    </VBox.margin>
+                                </HBox>
+                                <StackPane>
+
+                                </StackPane>
 
                             </VBox>
                         </StackPane>
