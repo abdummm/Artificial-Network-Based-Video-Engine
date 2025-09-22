@@ -4843,6 +4843,11 @@ public class HelloApplication extends Application {
                     private HBox hbox_hosting_the_stroke_label;
                     private CheckBox stroke_check_box;
                     private Region region_in_the_middle_of_stuff_horizontal;
+                    private VBox vbox_carrying_the_stroke_stuff;
+                    private ColorPicker stroke_color_picker;
+                    private Slider stroke_weight_slider;
+                    private Label label_saying_wieght_beside_slider;
+                    private HBox hbox_hosting_the_weight_label_and_the_slider;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -4885,6 +4890,11 @@ public class HelloApplication extends Application {
                         hbox_hosting_the_stroke_label = new HBox();
                         stroke_check_box = new CheckBox();
                         region_in_the_middle_of_stuff_horizontal = new Region();
+                        vbox_carrying_the_stroke_stuff = new VBox();
+                        stroke_color_picker = new ColorPicker();
+                        stroke_weight_slider = new Slider();
+                        label_saying_wieght_beside_slider = new Label();
+                        hbox_hosting_the_weight_label_and_the_slider = new HBox();
 
 
                         final double top_margin_in_vbox_control = 10;
@@ -5115,6 +5125,39 @@ public class HelloApplication extends Application {
 
                         //stroke_check_box
 
+                        //vbox_carrying_the_stroke_stuff
+                        vbox_carrying_the_stroke_stuff.setDisable(true);
+
+
+                        //stroke_color_picker
+                        VBox.setMargin(stroke_color_picker, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+                        bind_an_item_to_a_property(stroke_color_picker, root.widthProperty(), start_and_end_margin * 2);
+                        stroke_color_picker.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                            @Override
+                            public void handle(MouseEvent mouseEvent) {
+                                stroke_color_picker.show();
+                            }
+                        });
+
+                        //label_saying_wieght_beside_slider
+                        label_saying_wieght_beside_slider.setText("Weight: ");
+
+                        //stroke_weight_slider
+                        HBox.setMargin(stroke_weight_slider, new Insets(0, 0, 0,10));
+                        HBox.setHgrow(stroke_weight_slider, Priority.ALWAYS);
+                        stroke_weight_slider.setMaxWidth(Double.MAX_VALUE);
+
+                        //hbox_hosting_the_weight_label_and_the_slider
+                        VBox.setMargin(hbox_hosting_the_weight_label_and_the_slider, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+                        bind_an_item_to_a_property(hbox_hosting_the_weight_label_and_the_slider, root.widthProperty(), start_and_end_margin * 2);
+
+
+                        hbox_hosting_the_weight_label_and_the_slider.getChildren().add(label_saying_wieght_beside_slider);
+                        hbox_hosting_the_weight_label_and_the_slider.getChildren().add(stroke_weight_slider);
+
+
+                        vbox_carrying_the_stroke_stuff.getChildren().add(stroke_color_picker);
+                        vbox_carrying_the_stroke_stuff.getChildren().add(hbox_hosting_the_weight_label_and_the_slider);
 
 
                         hbox_for_plus_and_minus.getChildren().add(increase_font_size_button);
@@ -5159,6 +5202,7 @@ public class HelloApplication extends Application {
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_containing_the_font_size);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_font_size);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_hosting_the_stroke_label);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(vbox_carrying_the_stroke_stuff);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(item_at_the_bottom_of_extended_pane);
 
                         v_box_inside_the_stack_pane.getChildren().add(v_box_with_all_of_the_controls_except_check_box);
@@ -5340,6 +5384,13 @@ public class HelloApplication extends Application {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
                                     change_text_size_by_increment(text_field_for_font_size,text_item_of_the_selected_verse,item,-plus_minus_font_increments);
+                                }
+                            });
+
+                            stroke_check_box.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    vbox_carrying_the_stroke_stuff.setDisable(!stroke_check_box.isSelected());
                                 }
                             });
                             setGraphic(root);
