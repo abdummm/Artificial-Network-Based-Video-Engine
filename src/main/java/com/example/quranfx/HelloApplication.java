@@ -1965,7 +1965,7 @@ public class HelloApplication extends Application {
         helloController.fast_forward_button.setAlignment(Pos.CENTER);
     }
 
-    private void set_pref_min_max(Region region, int value, Resize_bind_type resizeType) {
+    private void set_pref_min_max(Region region, double value, Resize_bind_type resizeType) {
         if (resizeType == Resize_bind_type.WIDTH_AND_HEIGHT || resizeType == Resize_bind_type.HEIGHT) {
             region.setPrefHeight(value);
             region.setMinHeight(value);
@@ -4848,6 +4848,11 @@ public class HelloApplication extends Application {
                     private Slider stroke_weight_slider;
                     private Label label_saying_wieght_beside_slider;
                     private HBox hbox_hosting_the_weight_label_and_the_slider;
+                    private Separator separator_under_stroke;
+                    private JFXButton reset_everything_button;
+                    private Separator separator_between_reset_and_apply_to_all_button;
+                    private JFXButton apply_to_all_verses_button;
+                    private HBox hbox_hosting_reset_and_apply_to_all;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -4895,6 +4900,12 @@ public class HelloApplication extends Application {
                         stroke_weight_slider = new Slider();
                         label_saying_wieght_beside_slider = new Label();
                         hbox_hosting_the_weight_label_and_the_slider = new HBox();
+                        separator_under_stroke = new Separator();
+                        reset_everything_button = new  JFXButton();
+                        separator_between_reset_and_apply_to_all_button = new Separator();
+                        apply_to_all_verses_button = new JFXButton();
+                        hbox_hosting_reset_and_apply_to_all = new HBox();
+
 
 
                         final double top_margin_in_vbox_control = 10;
@@ -4902,6 +4913,9 @@ public class HelloApplication extends Application {
                         final double three_quarters_margin_in_vbox_control = 7.5;
                         final double start_and_end_margin = 8.5;
                         final double separator_start_end = 5;
+                        final double min_stroke_weight = 0;
+                        final double max_stroke_weight = 10;
+                        final double buttons_at_the_bottom_height = 32.5;
 
                         //root
                         bind_the_root_to_list_view(helloController, root, paddingProperty());
@@ -5146,10 +5160,41 @@ public class HelloApplication extends Application {
                         HBox.setMargin(stroke_weight_slider, new Insets(0, 0, 0,10));
                         HBox.setHgrow(stroke_weight_slider, Priority.ALWAYS);
                         stroke_weight_slider.setMaxWidth(Double.MAX_VALUE);
+                        stroke_weight_slider.setMin(min_stroke_weight);
+                        stroke_weight_slider.setMax(max_stroke_weight);
+
 
                         //hbox_hosting_the_weight_label_and_the_slider
                         VBox.setMargin(hbox_hosting_the_weight_label_and_the_slider, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
                         bind_an_item_to_a_property(hbox_hosting_the_weight_label_and_the_slider, root.widthProperty(), start_and_end_margin * 2);
+
+                        //separator_under_stroke
+                        VBox.setMargin(separator_under_stroke, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
+
+                        //hbox_hosting_reset_and_apply_to_all
+                        VBox.setMargin(hbox_hosting_reset_and_apply_to_all, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+                        bind_an_item_to_a_property(hbox_hosting_the_weight_label_and_the_slider, root.widthProperty(), start_and_end_margin * 2);
+
+                        //reset_everything_button
+                        reset_everything_button.setText("Reset");
+                        HBox.setHgrow(reset_everything_button, Priority.ALWAYS);
+                        reset_everything_button.setMaxWidth(Double.MAX_VALUE);
+                        set_pref_min_max(reset_everything_button,(int) buttons_at_the_bottom_height,Resize_bind_type.HEIGHT);
+
+                        //separator_between_reset_and_apply_to_all_button
+                        HBox.setMargin(separator_between_reset_and_apply_to_all_button, new Insets(2.5,0, 2.5, 10));
+                        separator_between_reset_and_apply_to_all_button.setOrientation(Orientation.VERTICAL);
+
+                        //apply_to_all_versees_button
+                        apply_to_all_verses_button.setText("Apply to All");
+                        HBox.setMargin(apply_to_all_verses_button, new Insets(0,0, 0, 10));
+                        HBox.setHgrow(apply_to_all_verses_button, Priority.ALWAYS);
+                        apply_to_all_verses_button.setMaxWidth(Double.MAX_VALUE);
+                        set_pref_min_max(apply_to_all_verses_button, buttons_at_the_bottom_height,Resize_bind_type.HEIGHT);
+
+                        hbox_hosting_reset_and_apply_to_all.getChildren().add(reset_everything_button);
+                        hbox_hosting_reset_and_apply_to_all.getChildren().add(separator_between_reset_and_apply_to_all_button);
+                        hbox_hosting_reset_and_apply_to_all.getChildren().add(apply_to_all_verses_button);
 
 
                         hbox_hosting_the_weight_label_and_the_slider.getChildren().add(label_saying_wieght_beside_slider);
@@ -5203,6 +5248,8 @@ public class HelloApplication extends Application {
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_font_size);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_hosting_the_stroke_label);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(vbox_carrying_the_stroke_stuff);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_stroke);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_hosting_reset_and_apply_to_all);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(item_at_the_bottom_of_extended_pane);
 
                         v_box_inside_the_stack_pane.getChildren().add(v_box_with_all_of_the_controls_except_check_box);
@@ -5238,6 +5285,14 @@ public class HelloApplication extends Application {
                                     if (old_language_info.getSub_font_change_listener() != null) {
                                         combox_of_all_of_fonts_sub_choices.valueProperty().removeListener(old_language_info.getSub_font_change_listener());
                                         old_language_info.setSub_font_change_listener(null);
+                                    }
+                                    if(old_language_info.getStroke_color_change_listener()!=null){
+                                        stroke_color_picker.valueProperty().removeListener(old_language_info.getStroke_color_change_listener());
+                                        old_language_info.setStroke_color_change_listener(null);
+                                    }
+                                    if (old_language_info.getStroke_weight_change_listener() != null) {
+                                        stroke_weight_slider.valueProperty().removeListener(old_language_info.getStroke_weight_change_listener());
+                                        old_language_info.setStroke_weight_change_listener(null);
                                     }
                                 }
                             }
@@ -5287,6 +5342,10 @@ public class HelloApplication extends Application {
                             if (check_box_is_the_langauge_enabled.isSelected()) {
                                 place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                             }
+                            Stroke_text strokeText = text_item_of_the_selected_verse.getStrokeText();
+                            vbox_carrying_the_stroke_stuff.setDisable(!strokeText.isIs_the_stroke_on());
+                            stroke_color_picker.setValue(strokeText.getStroke_color());
+                            stroke_weight_slider.setValue(strokeText.getStroke_weight());
 
                             //x_position_text_field_listener
                             ChangeListener<String> x_pos_text_feild_change_listener = new ChangeListener<String>() {
@@ -5373,6 +5432,28 @@ public class HelloApplication extends Application {
                             combox_of_all_of_fonts_sub_choices.valueProperty().addListener(change_listener_for_sub_font);
                             item.setSub_font_change_listener(change_listener_for_sub_font);
 
+                            //stroke_color_change_listener
+                            ChangeListener<? super javafx.scene.paint.Color> change_listener_for_stroke_color = new ChangeListener<javafx.scene.paint.Color>() {
+                                @Override
+                                public void changed(ObservableValue<? extends javafx.scene.paint.Color> observableValue, javafx.scene.paint.Color old_color, javafx.scene.paint.Color new_color) {
+                                    text_item_of_the_selected_verse.getStrokeText().setStroke_color(new_color);
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                }
+                            };
+                            stroke_color_picker.valueProperty().addListener(change_listener_for_stroke_color);
+                            item.setStroke_color_change_listener(change_listener_for_stroke_color);
+
+                            //stroke_weight_change_listener
+                            ChangeListener<? super Number> change_listener_for_stroke_weight = new ChangeListener<Number>() {
+                                @Override
+                                public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
+                                    text_item_of_the_selected_verse.getStrokeText().setStroke_weight(new_number.doubleValue());
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                }
+                            };
+                            stroke_weight_slider.valueProperty().addListener(change_listener_for_stroke_weight);
+                            item.setStroke_weight_change_listener(change_listener_for_stroke_weight);
+
                             increase_font_size_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
@@ -5391,6 +5472,22 @@ public class HelloApplication extends Application {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
                                     vbox_carrying_the_stroke_stuff.setDisable(!stroke_check_box.isSelected());
+                                    text_item_of_the_selected_verse.getStrokeText().setIs_the_stroke_on(stroke_check_box.isSelected());
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                }
+                            });
+
+                            reset_everything_button.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+
+                                }
+                            });
+
+                            apply_to_all_verses_button.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+
                                 }
                             });
                             setGraphic(root);
@@ -5544,10 +5641,12 @@ public class HelloApplication extends Application {
         javafx.scene.paint.Color color_of_text = text_item.getColor();
         Text_on_canvas_mode text_on_canvas_mode = text_item.getText_on_canvas_mode();
         Font font_for_verse = text_item.getFont();
+        Stroke_text strokeText = text_item.getStrokeText();
+        boolean is_stroke_enabled = strokeText.isIs_the_stroke_on();
+        javafx.scene.paint.Color stroke_color = strokeText.getStroke_color();
+        double stroke_weight = strokeText.getStroke_weight();
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.setFill(color_of_text);
-        gc.setFont(font_for_verse);
         if (text_on_canvas_mode == Text_on_canvas_mode.CENTER) {
             gc.setTextAlign(TextAlignment.CENTER);
             gc.setTextBaseline(VPos.CENTER);
@@ -5555,6 +5654,13 @@ public class HelloApplication extends Application {
             gc.setTextAlign(TextAlignment.LEFT);   // horizontal: left edge
             gc.setTextBaseline(VPos.TOP);          // vertical: top edge
         }
+        if(is_stroke_enabled){
+            gc.setStroke(stroke_color);
+            gc.setLineWidth(stroke_weight);
+        }
+        gc.setFill(color_of_text);
+        gc.setFont(font_for_verse);
+        gc.strokeText(text_item.getVerse_text(), point2D_of_the_text.getX(), point2D_of_the_text.getY());
         gc.fillText(text_item.getVerse_text(), point2D_of_the_text.getX(), point2D_of_the_text.getY());
     }
 
