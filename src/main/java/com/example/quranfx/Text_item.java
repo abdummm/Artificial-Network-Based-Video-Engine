@@ -18,10 +18,11 @@ public class Text_item {
     private double width;
     private double height;
     private Text_on_canvas_mode text_on_canvas_mode;
+    private Stroke_text strokeText;
     private static final double video_height = 1920;
     private static final double video_width = 1080;
 
-    public Text_item(String verse_text, Point2D point2D, double font_size, Font font, Color color, long start_time, long end_time, double width, double height, Text_on_canvas_mode text_on_canvas_mode) {
+    public Text_item(String verse_text, Point2D point2D, double font_size, Font font, Color color, long start_time, long end_time, double width, double height, Text_on_canvas_mode text_on_canvas_mode, Stroke_text strokeText) {
         this.verse_text = verse_text;
         this.point2D = point2D;
         this.font_size = font_size;
@@ -32,28 +33,30 @@ public class Text_item {
         this.width = width;
         this.height = height;
         this.text_on_canvas_mode = text_on_canvas_mode;
+        this.strokeText = strokeText;
     }
 
     public Text_item(String verse_text, long start_time, long end_time) {
         this.verse_text = verse_text;
-        this.point2D = new Point2D(video_width/2D, video_height/2D);
+        this.point2D = new Point2D(video_width / 2D, video_height / 2D);
         this.font_size = 36;
         this.font = return_first_font(font_size);
         this.color = Color.WHITE;
         this.start_time = start_time;
         this.end_time = end_time;
-        double[] width_and_height_of_text = get_width_and_height_of_string(verse_text,this.font);
+        double[] width_and_height_of_text = get_width_and_height_of_string(verse_text, this.font);
         this.width = width_and_height_of_text[0];
         this.height = width_and_height_of_text[1];
         text_on_canvas_mode = Text_on_canvas_mode.CENTER;
+        this.strokeText = new Stroke_text();
     }
 
-    private Font return_first_font(double font_size){
+    private Font return_first_font(double font_size) {
         String first_family_in_fonts = Font.getFamilies().getFirst();
         Sub_fonts sub_fonts = new Sub_fonts(Font.getFontNames(first_family_in_fonts), first_family_in_fonts);
         ArrayList<Font_name_and_displayed_name> sorted_fonts = sub_fonts.getFont_names();
         int font_position = sub_fonts.getRegular_position();
-        return new Font(sorted_fonts.get(font_position).getFont_name(),font_size);
+        return new Font(sorted_fonts.get(font_position).getFont_name(), font_size);
     }
 
     public String getVerse_text() {
@@ -79,7 +82,7 @@ public class Text_item {
     }
 
     public void setFont_size(double font_size) {
-        this.font = new  Font(font.getName(),font_size);
+        this.font = new Font(font.getName(), font_size);
         this.font_size = font_size;
     }
 
@@ -99,20 +102,20 @@ public class Text_item {
         this.text_on_canvas_mode = text_on_canvas_mode;
     }
 
-    public double get_x_position(){
+    public double get_x_position() {
         return point2D.getX();
     }
 
-    public void set_x_position(double x_position){
-        this.point2D = new Point2D(x_position,this.point2D.getY());
+    public void set_x_position(double x_position) {
+        this.point2D = new Point2D(x_position, this.point2D.getY());
     }
 
-    public double get_y_position(){
+    public double get_y_position() {
         return point2D.getY();
     }
 
-    public void set_y_position(double y_position){
-        this.point2D = new Point2D(this.point2D.getX(),y_position);
+    public void set_y_position(double y_position) {
+        this.point2D = new Point2D(this.point2D.getX(), y_position);
     }
 
     public Font getFont() {
@@ -121,5 +124,13 @@ public class Text_item {
 
     public void setFont(Font font) {
         this.font = font;
+    }
+
+    public Stroke_text getStrokeText() {
+        return strokeText;
+    }
+
+    public void setStrokeText(Stroke_text strokeText) {
+        this.strokeText = strokeText;
     }
 }
