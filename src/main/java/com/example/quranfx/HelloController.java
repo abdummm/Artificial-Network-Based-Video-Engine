@@ -8,6 +8,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Rectangle;
 
 public class HelloController {
 
@@ -196,4 +197,27 @@ public class HelloController {
 
     @FXML
     public JFXButton fast_forward_button;
+
+    @FXML
+    public CheckBox check_box_saying_help_spread_the_app;
+
+    @FXML
+    public JFXButton question_mark_beside_help_spread_the_app;
+
+    @FXML
+    public Rectangle rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint;
+
+    @FXML
+    public Slider slider_to_control_the_opacity_of_an_image;
+
+    @FXML
+    public Slider slider_to_control_fade_in_of_image;
+
+    @FXML
+    public Slider slider_to_control_fade_out_of_image;
+
+    @FXML
+    public StackPane image_controls_stack_pane;
+
+
 }

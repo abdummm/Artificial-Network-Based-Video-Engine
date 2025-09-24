@@ -39,6 +39,8 @@
 <?import com.jfoenix.controls.JFXProgressBar?>
 <?import javafx.scene.canvas.Canvas?>
 <?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.shape.Rectangle?>
 <StackPane prefHeight="365.0" prefWidth="366.0" xmlns="http://javafx.com/javafx/23.0.1"
            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.quranfx.HelloController"
            style="-fx-background-color: #FFFFFF;" fx:id="parent_stack_pane">
@@ -53,6 +55,7 @@
     <BorderPane fx:id="choose_surat_screen" visible="false">
         <top>
             <VBox alignment="CENTER">
+                <!--                TODO take a look at the fake invisible thing below-->
                 <JFXButton fx:id="fake_invisible_button_for_margin" visible="false" text="Give Feedback"
                            style="-fx-background-color: #000000; -fx-text-fill: #FFFFFF;">
                     <VBox.margin>
@@ -339,6 +342,8 @@
                                             <Insets left="5.0"/>
                                         </HBox.margin>
                                         <ImageView fx:id="chatgpt_image_view" preserveRatio="true"/>
+                                        <Rectangle fx:id="rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint"
+                                                   mouseTransparent="true" fill="black" opacity="0.0"/>
                                         <!--<ImageView fx:id="blurry_chatgpt_image_view" preserveRatio="true"
                                                    visible="false"/>-->
                                         <!--<JFXButton fx:id="play_sound" visible="false"/>-->
@@ -394,9 +399,52 @@
                                         <Insets top="15.0"/>
                                     </VBox.margin>
                                 </HBox>
-                                <StackPane>
+                                <StackPane fx:id="image_controls_stack_pane">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                    <GridPane hgap="12" vgap="10">
+                                        <StackPane.margin>
+                                            <Insets top="12.5" right="12.5" bottom="12.5" left="12.5"/>
+                                        </StackPane.margin>
+                                        <columnConstraints>
+                                            <!-- col 0: just wide enough for the longest label -->
+                                            <ColumnConstraints halignment="LEFT"/>
+                                            <!-- col 1: grows to take remaining width -->
+                                            <ColumnConstraints hgrow="ALWAYS"/>
+                                            <!-- col 2: grows to take remaining width -->
+                                            <ColumnConstraints halignment="LEFT"/>
+                                        </columnConstraints>
 
+                                        <!-- Row 1 -->
+                                        <Label text="Opacity: " GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                        <Slider fx:id="slider_to_control_the_opacity_of_an_image" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                                                maxWidth="Infinity"/>
+
+                                        <!-- Row 2 -->
+                                        <Label text="Fade in: " GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                        <Slider fx:id="slider_to_control_fade_in_of_image" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                                                maxWidth="Infinity"/>
+
+                                        <!-- Row 3 -->
+                                        <Label text="Fade out: " GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                        <Slider fx:id="slider_to_control_fade_out_of_image" GridPane.columnIndex="1" GridPane.rowIndex="2"
+                                                maxWidth="Infinity"/>
+                                    </GridPane>
                                 </StackPane>
+
+                                <HBox alignment="CENTER">
+                                    <VBox.margin>
+                                        <Insets top="15.0"/>
+                                    </VBox.margin>
+                                    <CheckBox fx:id="check_box_saying_help_spread_the_app" text="Help spread Sabrly"/>
+                                    <JFXButton fx:id="question_mark_beside_help_spread_the_app"
+                                               focusTraversable="false">
+                                        <HBox.margin>
+                                            <Insets left="5.0"/>
+                                        </HBox.margin>
+                                    </JFXButton>
+                                </HBox>
 
                             </VBox>
                         </StackPane>
