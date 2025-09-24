@@ -246,6 +246,13 @@ public class HelloApplication extends Application {
         play_pause_button_click_listen(helloController);
         listen_to_forward_button_click(helloController);
         fast_forward_button_click(helloController);
+        bind_question_mark_beside_check_box_image(helloController);
+        set_up_help_spread_app_learn_more_button(helloController);
+        listen_to_learn_more_spread_app_button(helloController);
+        set_the_cursor_of_help_spread_app_button(helloController);
+        bind_the_opacaity_canvas_to_image_view(helloController);
+        listen_to_control_opacity_slider(helloController);
+        set_the_width_and_color_of_image_control_stack_pane(helloController);
     }
 
     /*public static void main(String[] args) {
@@ -4901,11 +4908,10 @@ public class HelloApplication extends Application {
                         label_saying_wieght_beside_slider = new Label();
                         hbox_hosting_the_weight_label_and_the_slider = new HBox();
                         separator_under_stroke = new Separator();
-                        reset_everything_button = new  JFXButton();
+                        reset_everything_button = new JFXButton();
                         separator_between_reset_and_apply_to_all_button = new Separator();
                         apply_to_all_verses_button = new JFXButton();
                         hbox_hosting_reset_and_apply_to_all = new HBox();
-
 
 
                         final double top_margin_in_vbox_control = 10;
@@ -5095,7 +5101,7 @@ public class HelloApplication extends Application {
                         increase_font_size_button.heightProperty().addListener(new ChangeListener<Number>() {
                             @Override
                             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                                increase_font_size_button.setGraphic(return_the_icon("plus", (int) (t1.doubleValue() * 2D/3D), (int) (t1.doubleValue() * 2D/3D)));
+                                increase_font_size_button.setGraphic(return_the_icon("plus", (int) (t1.doubleValue() * 2D / 3D), (int) (t1.doubleValue() * 2D / 3D)));
                                 increase_font_size_button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                                 increase_font_size_button.setAlignment(Pos.CENTER);
                             }
@@ -5110,7 +5116,7 @@ public class HelloApplication extends Application {
                         decrease_font_size_button.heightProperty().addListener(new ChangeListener<Number>() {
                             @Override
                             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                                decrease_font_size_button.setGraphic(return_the_icon("minus", (int) (t1.doubleValue() * 2D/3D), (int) (t1.doubleValue() * 2D/3D)));
+                                decrease_font_size_button.setGraphic(return_the_icon("minus", (int) (t1.doubleValue() * 2D / 3D), (int) (t1.doubleValue() * 2D / 3D)));
                                 decrease_font_size_button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                                 decrease_font_size_button.setAlignment(Pos.CENTER);
                             }
@@ -5152,12 +5158,13 @@ public class HelloApplication extends Application {
                                 stroke_color_picker.show();
                             }
                         });
+                        stroke_color_picker.setValue(javafx.scene.paint.Color.BLACK);
 
                         //label_saying_wieght_beside_slider
                         label_saying_wieght_beside_slider.setText("Weight: ");
 
                         //stroke_weight_slider
-                        HBox.setMargin(stroke_weight_slider, new Insets(0, 0, 0,10));
+                        HBox.setMargin(stroke_weight_slider, new Insets(0, 0, 0, 10));
                         HBox.setHgrow(stroke_weight_slider, Priority.ALWAYS);
                         stroke_weight_slider.setMaxWidth(Double.MAX_VALUE);
                         stroke_weight_slider.setMin(min_stroke_weight);
@@ -5179,18 +5186,18 @@ public class HelloApplication extends Application {
                         reset_everything_button.setText("Reset");
                         HBox.setHgrow(reset_everything_button, Priority.ALWAYS);
                         reset_everything_button.setMaxWidth(Double.MAX_VALUE);
-                        set_pref_min_max(reset_everything_button,(int) buttons_at_the_bottom_height,Resize_bind_type.HEIGHT);
+                        set_pref_min_max(reset_everything_button, (int) buttons_at_the_bottom_height, Resize_bind_type.HEIGHT);
 
                         //separator_between_reset_and_apply_to_all_button
-                        HBox.setMargin(separator_between_reset_and_apply_to_all_button, new Insets(2.5,0, 2.5, 10));
+                        HBox.setMargin(separator_between_reset_and_apply_to_all_button, new Insets(2.5, 0, 2.5, 10));
                         separator_between_reset_and_apply_to_all_button.setOrientation(Orientation.VERTICAL);
 
                         //apply_to_all_versees_button
                         apply_to_all_verses_button.setText("Apply to All");
-                        HBox.setMargin(apply_to_all_verses_button, new Insets(0,0, 0, 10));
+                        HBox.setMargin(apply_to_all_verses_button, new Insets(0, 0, 0, 10));
                         HBox.setHgrow(apply_to_all_verses_button, Priority.ALWAYS);
                         apply_to_all_verses_button.setMaxWidth(Double.MAX_VALUE);
-                        set_pref_min_max(apply_to_all_verses_button, buttons_at_the_bottom_height,Resize_bind_type.HEIGHT);
+                        set_pref_min_max(apply_to_all_verses_button, buttons_at_the_bottom_height, Resize_bind_type.HEIGHT);
 
                         hbox_hosting_reset_and_apply_to_all.getChildren().add(reset_everything_button);
                         hbox_hosting_reset_and_apply_to_all.getChildren().add(separator_between_reset_and_apply_to_all_button);
@@ -5286,7 +5293,7 @@ public class HelloApplication extends Application {
                                         combox_of_all_of_fonts_sub_choices.valueProperty().removeListener(old_language_info.getSub_font_change_listener());
                                         old_language_info.setSub_font_change_listener(null);
                                     }
-                                    if(old_language_info.getStroke_color_change_listener()!=null){
+                                    if (old_language_info.getStroke_color_change_listener() != null) {
                                         stroke_color_picker.valueProperty().removeListener(old_language_info.getStroke_color_change_listener());
                                         old_language_info.setStroke_color_change_listener(null);
                                     }
@@ -5457,14 +5464,14 @@ public class HelloApplication extends Application {
                             increase_font_size_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    change_text_size_by_increment(text_field_for_font_size,text_item_of_the_selected_verse,item,plus_minus_font_increments);
+                                    change_text_size_by_increment(text_field_for_font_size, text_item_of_the_selected_verse, item, plus_minus_font_increments);
                                 }
                             });
 
                             decrease_font_size_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    change_text_size_by_increment(text_field_for_font_size,text_item_of_the_selected_verse,item,-plus_minus_font_increments);
+                                    change_text_size_by_increment(text_field_for_font_size, text_item_of_the_selected_verse, item, -plus_minus_font_increments);
                                 }
                             });
 
@@ -5498,7 +5505,7 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void change_text_size_by_increment(TextField text_field_for_font_size,Text_item text_item_of_the_selected_verse,Language_info item,double plus_minus_font_increments_local){
+    private void change_text_size_by_increment(TextField text_field_for_font_size, Text_item text_item_of_the_selected_verse, Language_info item, double plus_minus_font_increments_local) {
         int caret_position = text_field_for_font_size.getCaretPosition();
         String font_text_field_input = text_field_for_font_size.getText();
         double font_size = 0;
@@ -5654,13 +5661,13 @@ public class HelloApplication extends Application {
             gc.setTextAlign(TextAlignment.LEFT);   // horizontal: left edge
             gc.setTextBaseline(VPos.TOP);          // vertical: top edge
         }
-        if(is_stroke_enabled){
-            gc.setStroke(stroke_color);
+        gc.setFont(font_for_verse);
+        if (is_stroke_enabled && stroke_weight > 0) {
+            gc.setStroke(stroke_color); // TODO fix the stroke lines going out of stroke, get back to chatgpt
             gc.setLineWidth(stroke_weight);
+            gc.strokeText(text_item.getVerse_text(), point2D_of_the_text.getX(), point2D_of_the_text.getY());
         }
         gc.setFill(color_of_text);
-        gc.setFont(font_for_verse);
-        gc.strokeText(text_item.getVerse_text(), point2D_of_the_text.getX(), point2D_of_the_text.getY());
         gc.fillText(text_item.getVerse_text(), point2D_of_the_text.getX(), point2D_of_the_text.getY());
     }
 
@@ -5940,5 +5947,91 @@ public class HelloApplication extends Application {
         } else {
             return String.format("%s", number);
         }
+    }
+
+    private void bind_question_mark_beside_check_box_image(HelloController helloController) {
+        final double add_width_and_height_to_button_size = 5;
+        final int minus_from_logo_button = 4;
+        helloController.question_mark_beside_help_spread_the_app.heightProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
+                helloController.question_mark_beside_help_spread_the_app.setGraphic(return_the_icon("question_mark", new_number.intValue() - minus_from_logo_button, new_number.intValue() - minus_from_logo_button));
+            }
+        });
+        helloController.question_mark_beside_help_spread_the_app.minHeightProperty().bind(helloController.check_box_saying_help_spread_the_app.heightProperty().add(add_width_and_height_to_button_size));
+        helloController.question_mark_beside_help_spread_the_app.prefHeightProperty().bind(helloController.check_box_saying_help_spread_the_app.heightProperty().add(add_width_and_height_to_button_size));
+        helloController.question_mark_beside_help_spread_the_app.maxHeightProperty().bind(helloController.check_box_saying_help_spread_the_app.heightProperty().add(add_width_and_height_to_button_size));
+        helloController.question_mark_beside_help_spread_the_app.minWidthProperty().bind(helloController.check_box_saying_help_spread_the_app.heightProperty().add(add_width_and_height_to_button_size));
+        helloController.question_mark_beside_help_spread_the_app.prefWidthProperty().bind(helloController.check_box_saying_help_spread_the_app.heightProperty().add(add_width_and_height_to_button_size));
+        helloController.question_mark_beside_help_spread_the_app.maxWidthProperty().bind(helloController.check_box_saying_help_spread_the_app.heightProperty().add(add_width_and_height_to_button_size));
+    }
+
+    private void set_up_help_spread_app_learn_more_button(HelloController helloController) {
+        helloController.question_mark_beside_help_spread_the_app.setShape(return_default_squircle());
+        helloController.question_mark_beside_help_spread_the_app.setGraphic(return_the_icon("question_mark", 20, 20));
+        helloController.question_mark_beside_help_spread_the_app.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        helloController.question_mark_beside_help_spread_the_app.setAlignment(Pos.CENTER);
+    }
+
+    private void listen_to_learn_more_spread_app_button(HelloController helloController) {
+        helloController.question_mark_beside_help_spread_the_app.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                learn_more_about_spreading_the_app_dialog();
+            }
+        });
+    }
+
+    private void learn_more_about_spreading_the_app_dialog() { // TODO change how this dialog looks
+        Stage feedbackStage = new Stage();
+        feedbackStage.initOwner(main_stage);
+        feedbackStage.initStyle(StageStyle.DECORATED);
+        //feedbackStage.initModality(Modality.WINDOW_MODAL); // optional
+        VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
+        Label main_text = new Label("If you’d like, you can leave a small " + app_name + " watermark on your video. It’s not required, but it will help spread " + app_name + " and it would be a source of ajr and sadaqah jariyah for you.");
+        JFXButton got_it_button = new JFXButton("Got it");
+        got_it_button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                feedbackStage.close();
+            }
+        });
+
+        VBox.setMargin(main_text, new Insets(0, 10, 0, 10));
+        VBox.setMargin(got_it_button, new Insets(25, 10, 0, 10));
+        main_text.setAlignment(Pos.CENTER);
+        main_text.setTextAlignment(TextAlignment.CENTER); // center each line of text
+        main_text.setWrapText(true);
+        got_it_button.setStyle("-fx-background-color: #000000; -fx-text-fill: #FFFFFF;");
+        got_it_button.setFocusTraversable(false);
+        vBox.getChildren().addAll(main_text, got_it_button);
+        Scene scene = new Scene(vBox, 450, 225);
+        feedbackStage.setScene(scene);
+        feedbackStage.setTitle("Help spread " + app_name);
+        feedbackStage.show();
+    }
+
+    private void set_the_cursor_of_help_spread_app_button(HelloController helloController) {
+        helloController.question_mark_beside_help_spread_the_app.setCursor(Cursor.HAND);
+    }
+
+    private void bind_the_opacaity_canvas_to_image_view(HelloController helloController) {
+        helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.heightProperty().bind(helloController.chatgpt_image_view.fitHeightProperty());
+        helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.widthProperty().bind(helloController.chatgpt_image_view.fitWidthProperty());
+    }
+
+    private void listen_to_control_opacity_slider(HelloController helloController) {
+        helloController.slider_to_control_the_opacity_of_an_image.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
+                double percent = new_number.doubleValue() / 100D;
+                helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.setOpacity(1 - percent);
+            }
+        });
+    }
+
+    private void set_the_width_and_color_of_image_control_stack_pane(HelloController helloController) {
+        helloController.image_controls_stack_pane.setStyle("-fx-border-color: #bcbcbc; -fx-border-width: 0.5;");
     }
 }
