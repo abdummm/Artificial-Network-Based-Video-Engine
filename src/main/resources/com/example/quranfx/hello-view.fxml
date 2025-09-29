@@ -260,87 +260,75 @@
         <BorderPane fx:id="show_the_result_screen">
             <!-- Top -->
             <top>
-                <StackPane fx:id="top_pane_fourth_screen">
-                    <HBox alignment="CENTER">
-                        <StackPane.margin>
-                            <Insets top="17.5" left="10" right="10"/>
-                        </StackPane.margin>
-                        <JFXButton fx:id="cancel_video" focusTraversable="false"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <JFXButton fx:id="create_video_final" focusTraversable="false"/>
-                    </HBox>
-                </StackPane>
+
             </top>
 
             <center>
-                <HBox>
-                    <!-- left -->
-                    <HBox HBox.hgrow="ALWAYS">
-                        <StackPane fx:id="left_stack_pane_in_grid_pane">
-                            <VBox>
-                                <VBox alignment="TOP_CENTER">
-                                    <StackPane fx:id="stack_pane_hosting_the_scroll_pane_and_the_tile_pane"
-                                               style="-fx-background-color: #F5F5F5; -fx-border-color: black; -fx-border-width: 2;">
-                                        <VBox.margin>
-                                            <Insets top="15.0" left="15.0" right="15.0"/>
-                                        </VBox.margin>
-                                        <ScrollPane fx:id="scroll_pane_hosting_tile_pane_media_pool"
-                                                    fitToWidth="true"
-                                                    focusTraversable="false"
-                                                    style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
-                                            <TilePane fx:id="tile_pane_media_pool" maxHeight="400.0"
-                                                      prefHeight="400"
-                                                      focusTraversable="false"
-                                                      style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
-                                            </TilePane>
-                                        </ScrollPane>
-                                        <Label fx:id="upload_media_text" text="Media pool" textFill="#B9B9B9">
-                                            <font>
-                                                <Font size="20.0"/>
-                                            </font>
-                                        </Label>
-                                        <MFXProgressSpinner fx:id="progress_indicator_media_pool" visible="false"
-                                                            prefWidth="30" prefHeight="30"
-                                                            stylesheets="@mfx_spinner_style.css">
-                                        </MFXProgressSpinner>
-                                    </StackPane>
-                                </VBox>
-                                <VBox alignment="CENTER_RIGHT">
-                                    <VBox.margin>
-                                        <Insets top="15.0" right="15.0"/>
-                                    </VBox.margin>
-                                    <JFXButton fx:id="add_media_button" text="Upload media"
-                                               style="-fx-background-color: #000000; -fx-text-fill: #FFFFFF;"/>
-                                </VBox>
-                                <VBox VBox.vgrow="ALWAYS"/>
+                <StackPane>
+                    <HBox>
+                        <StackPane.margin>
+                            <Insets top="10.0"/>
+                        </StackPane.margin>
+                        <!-- left -->
+                        <HBox HBox.hgrow="ALWAYS">
+                            <StackPane fx:id="left_stack_pane_in_grid_pane">
                                 <VBox>
-                                    <VBox.margin>
-                                        <Insets left="20.0"/>
-                                    </VBox.margin>
-                                    <HBox>
-                                        <JFXButton fx:id="fast_rewind_button" focusTraversable="false"/>
-                                        <JFXButton fx:id="rewind_button" focusTraversable="false"/>
-                                        <JFXButton fx:id="play_pause_button" focusTraversable="false"/>
-                                        <JFXButton fx:id="forward_button" focusTraversable="false"/>
-                                        <JFXButton fx:id="fast_forward_button" focusTraversable="false"/>
-                                    </HBox>
-                                </VBox> <!-- for the vid control-->
-                            </VBox>
-                        </StackPane>
-                    </HBox>
-
-                    <!-- CENTER -->
-                    <HBox HBox.hgrow="NEVER">
-                        <StackPane fx:id="center_group_grid_pane">
-                            <VBox alignment="CENTER">
-                                <HBox alignment="CENTER">
-                                    <VBox alignment="CENTER" visible="false" managed="false">
-                                        <JFXButton fx:id="previous_photo_chat_gpt_result" focusTraversable="false"/>
+                                    <VBox alignment="TOP_CENTER">
+                                        <StackPane fx:id="stack_pane_hosting_the_scroll_pane_and_the_tile_pane"
+                                                   style="-fx-background-color: #F5F5F5; -fx-border-color: black; -fx-border-width: 2;">
+                                            <VBox.margin>
+                                                <Insets top="15.0" left="15.0" right="15.0"/>
+                                            </VBox.margin>
+                                            <ScrollPane fx:id="scroll_pane_hosting_tile_pane_media_pool"
+                                                        fitToWidth="true"
+                                                        focusTraversable="false"
+                                                        style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
+                                                <TilePane fx:id="tile_pane_media_pool" maxHeight="400.0"
+                                                          prefHeight="400"
+                                                          focusTraversable="false"
+                                                          style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
+                                                </TilePane>
+                                            </ScrollPane>
+                                            <Label fx:id="upload_media_text" text="Media pool" textFill="#B9B9B9">
+                                                <font>
+                                                    <Font size="20.0"/>
+                                                </font>
+                                            </Label>
+                                            <MFXProgressSpinner fx:id="progress_indicator_media_pool" visible="false"
+                                                                prefWidth="30" prefHeight="30"
+                                                                stylesheets="@mfx_spinner_style.css">
+                                            </MFXProgressSpinner>
+                                        </StackPane>
                                     </VBox>
+                                    <VBox alignment="CENTER_RIGHT">
+                                        <VBox.margin>
+                                            <Insets top="15.0" right="15.0"/>
+                                        </VBox.margin>
+                                        <JFXButton fx:id="add_media_button" text="Upload media"
+                                                   style="-fx-background-color: #000000; -fx-text-fill: #FFFFFF;"/>
+                                    </VBox>
+                                    <VBox VBox.vgrow="ALWAYS"/>
+                                    <VBox>
+                                        <VBox.margin>
+                                            <Insets left="20.0"/>
+                                        </VBox.margin>
+                                        <HBox>
+                                            <JFXButton fx:id="fast_rewind_button" focusTraversable="false"/>
+                                            <JFXButton fx:id="rewind_button" focusTraversable="false"/>
+                                            <JFXButton fx:id="play_pause_button" focusTraversable="false"/>
+                                            <JFXButton fx:id="forward_button" focusTraversable="false"/>
+                                            <JFXButton fx:id="fast_forward_button" focusTraversable="false"/>
+                                        </HBox>
+                                    </VBox> <!-- for the vid control-->
+                                </VBox>
+                            </StackPane>
+                        </HBox>
+
+                        <!-- CENTER -->
+                        <HBox HBox.hgrow="NEVER">
+                            <StackPane fx:id="center_group_grid_pane">
+                                <VBox alignment="CENTER">
                                     <Pane fx:id="stack_pane_of_image_view_and_text">
-                                        <HBox.margin>
-                                            <Insets left="5.0"/>
-                                        </HBox.margin>
                                         <ImageView fx:id="chatgpt_image_view" preserveRatio="true"/>
                                         <Rectangle fx:id="rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint"
                                                    mouseTransparent="true" fill="black" opacity="0.0"/>
@@ -348,108 +336,94 @@
                                                    visible="false"/>-->
                                         <!--<JFXButton fx:id="play_sound" visible="false"/>-->
                                     </Pane>
-                                    <VBox alignment="CENTER" visible="false" managed="false">
-                                        <HBox.margin>
-                                            <Insets left="5.0"/>
-                                        </HBox.margin>
-                                        <Pane VBox.vgrow="ALWAYS"/>
-                                        <JFXButton fx:id="next_photo_chat_gpt_result"
+                                    <Label fx:id="what_verse_is_this" text="Surat Maryam verse 59" visible="false"
+                                           managed="false">
+                                        <font>
+                                            <Font size="16.0"/>
+                                        </font>
+                                    </Label>
+                                </VBox>
+                            </StackPane>
+                        </HBox>
+
+                        <!-- RIGHT -->
+                        <HBox HBox.hgrow="ALWAYS">
+                            <StackPane fx:id="right_stack_pane_in_grid_pane">
+                                <VBox alignment="CENTER">
+                                    <StackPane.margin>
+                                        <Insets top="15.0" left="15.0" right="15.0"/>
+                                    </StackPane.margin>
+                                    <HBox alignment="CENTER_LEFT">
+                                        <Label text="Text" style="-fx-font-size: 16px;"/>
+                                    </HBox>
+                                    <ListView fx:id="list_view_with_all_of_the_languages" focusTraversable="false"
+                                              prefHeight="300" maxHeight="300">
+                                        <VBox.margin>
+                                            <Insets top="10.0"/>
+                                        </VBox.margin>
+                                    </ListView>
+                                    <HBox alignment="CENTER_LEFT">
+                                        <Label text="Image Controls" style="-fx-font-size: 16px;"/>
+                                        <VBox.margin>
+                                            <Insets top="15.0"/>
+                                        </VBox.margin>
+                                    </HBox>
+                                    <StackPane fx:id="image_controls_stack_pane" disable="true">
+                                        <VBox.margin>
+                                            <Insets top="10.0"/>
+                                        </VBox.margin>
+                                        <GridPane hgap="12" vgap="10">
+                                            <StackPane.margin>
+                                                <Insets top="12.5" right="12.5" bottom="12.5" left="12.5"/>
+                                            </StackPane.margin>
+                                            <columnConstraints>
+                                                <!-- col 0: just wide enough for the longest label -->
+                                                <ColumnConstraints halignment="LEFT"/>
+                                                <!-- col 1: grows to take remaining width -->
+                                                <ColumnConstraints hgrow="ALWAYS"/>
+                                                <!-- col 2: grows to take remaining width -->
+                                                <ColumnConstraints halignment="LEFT"/>
+                                            </columnConstraints>
+
+                                            <!-- Row 1 -->
+                                            <Label text="Opacity: " GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                            <Slider fx:id="slider_to_control_the_opacity_of_an_image" value="100"
+                                                    GridPane.columnIndex="1" GridPane.rowIndex="0"
+                                                    maxWidth="Infinity"/>
+
+                                            <!-- Row 2 -->
+                                            <Label text="Fade in: " GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                            <Slider fx:id="slider_to_control_fade_in_of_image" GridPane.columnIndex="1"
+                                                    GridPane.rowIndex="1"
+                                                    maxWidth="Infinity"/>
+
+                                            <!-- Row 3 -->
+                                            <Label text="Fade out: " GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                            <Slider fx:id="slider_to_control_fade_out_of_image" GridPane.columnIndex="1"
+                                                    GridPane.rowIndex="2"
+                                                    maxWidth="Infinity"/>
+                                        </GridPane>
+                                    </StackPane>
+
+                                    <HBox alignment="CENTER">
+                                        <VBox.margin>
+                                            <Insets top="15.0"/>
+                                        </VBox.margin>
+                                        <CheckBox fx:id="check_box_saying_help_spread_the_app"
+                                                  text="Help spread Sabrly"/>
+                                        <JFXButton fx:id="question_mark_beside_help_spread_the_app"
                                                    focusTraversable="false">
-                                            <VBox.margin>
-                                                <Insets top="26.0"/>
-                                            </VBox.margin>
+                                            <HBox.margin>
+                                                <Insets left="5.0"/>
+                                            </HBox.margin>
                                         </JFXButton>
-                                        <Pane VBox.vgrow="ALWAYS"/>
-                                        <JFXButton fx:id="full_screen_button_fourth_screen"
-                                                   focusTraversable="false" visible="false"/>
-                                    </VBox>
-                                </HBox>
-                                <Label fx:id="what_verse_is_this" text="Surat Maryam verse 59" visible="false"
-                                       managed="false">
-                                    <font>
-                                        <Font size="16.0"/>
-                                    </font>
-                                    <VBox.margin>
-                                        <Insets top="15.0"/>
-                                    </VBox.margin>
-                                </Label>
-                            </VBox>
-                        </StackPane>
+                                    </HBox>
+
+                                </VBox>
+                            </StackPane>
+                        </HBox>
                     </HBox>
-
-                    <!-- RIGHT -->
-                    <HBox HBox.hgrow="ALWAYS">
-                        <StackPane fx:id="right_stack_pane_in_grid_pane">
-                            <VBox alignment="CENTER">
-                                <StackPane.margin>
-                                    <Insets top="15.0" left="15.0" right="15.0"/>
-                                </StackPane.margin>
-                                <HBox alignment="CENTER_LEFT">
-                                    <Label text="Text" style="-fx-font-size: 16px;"/>
-                                </HBox>
-                                <ListView fx:id="list_view_with_all_of_the_languages" focusTraversable="false"
-                                          prefHeight="300" maxHeight="300">
-                                    <VBox.margin>
-                                        <Insets top="10.0"/>
-                                    </VBox.margin>
-                                </ListView>
-                                <HBox alignment="CENTER_LEFT">
-                                    <Label text="Image Controls" style="-fx-font-size: 16px;"/>
-                                    <VBox.margin>
-                                        <Insets top="15.0"/>
-                                    </VBox.margin>
-                                </HBox>
-                                <StackPane fx:id="image_controls_stack_pane">
-                                    <VBox.margin>
-                                        <Insets top="10.0"/>
-                                    </VBox.margin>
-                                    <GridPane hgap="12" vgap="10">
-                                        <StackPane.margin>
-                                            <Insets top="12.5" right="12.5" bottom="12.5" left="12.5"/>
-                                        </StackPane.margin>
-                                        <columnConstraints>
-                                            <!-- col 0: just wide enough for the longest label -->
-                                            <ColumnConstraints halignment="LEFT"/>
-                                            <!-- col 1: grows to take remaining width -->
-                                            <ColumnConstraints hgrow="ALWAYS"/>
-                                            <!-- col 2: grows to take remaining width -->
-                                            <ColumnConstraints halignment="LEFT"/>
-                                        </columnConstraints>
-
-                                        <!-- Row 1 -->
-                                        <Label text="Opacity: " GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                                        <Slider fx:id="slider_to_control_the_opacity_of_an_image" GridPane.columnIndex="1" GridPane.rowIndex="0"
-                                                maxWidth="Infinity"/>
-
-                                        <!-- Row 2 -->
-                                        <Label text="Fade in: " GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                                        <Slider fx:id="slider_to_control_fade_in_of_image" GridPane.columnIndex="1" GridPane.rowIndex="1"
-                                                maxWidth="Infinity"/>
-
-                                        <!-- Row 3 -->
-                                        <Label text="Fade out: " GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                                        <Slider fx:id="slider_to_control_fade_out_of_image" GridPane.columnIndex="1" GridPane.rowIndex="2"
-                                                maxWidth="Infinity"/>
-                                    </GridPane>
-                                </StackPane>
-
-                                <HBox alignment="CENTER">
-                                    <VBox.margin>
-                                        <Insets top="15.0"/>
-                                    </VBox.margin>
-                                    <CheckBox fx:id="check_box_saying_help_spread_the_app" text="Help spread Sabrly"/>
-                                    <JFXButton fx:id="question_mark_beside_help_spread_the_app"
-                                               focusTraversable="false">
-                                        <HBox.margin>
-                                            <Insets left="5.0"/>
-                                        </HBox.margin>
-                                    </JFXButton>
-                                </HBox>
-
-                            </VBox>
-                        </StackPane>
-                    </HBox>
-                </HBox>
+                </StackPane>
             </center>
 
             <!-- BOTTOM -->
