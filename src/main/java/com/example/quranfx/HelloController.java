@@ -73,19 +73,10 @@ public class HelloController {
     public ImageView chatgpt_image_view;
 
     @FXML
-    public JFXButton next_photo_chat_gpt_result;
-
-    @FXML
-    public JFXButton previous_photo_chat_gpt_result;
-
-    @FXML
     public Label what_verse_is_this;
 
     /*@FXML
     public JFXButton play_sound;*/
-
-    @FXML
-    public JFXButton full_screen_button_fourth_screen;
 
     @FXML
     public CheckBox generate_chat_gpt_images;
@@ -94,13 +85,7 @@ public class HelloController {
     public JFXButton choose_sound_third_screen;
 
     @FXML
-    public Button create_video_final;
-
-    @FXML
     public Pane stack_pane_of_image_view_and_text;
-
-    @FXML
-    public JFXButton cancel_video;
 
     @FXML
     public ListView<Reciters_info> list_view_with_the_recitors;
@@ -125,9 +110,6 @@ public class HelloController {
 
     @FXML
     public StackPane center_group_grid_pane;
-
-    @FXML
-    public StackPane top_pane_fourth_screen;
 
     @FXML
     public StackPane bottom_stack_pane_fourth_screen;
