@@ -134,7 +134,7 @@ public class HelloApplication extends Application {
     private final static String clientSecret_pre_live = Quran_api_secrets.clientSecret_pre_live;
     private final static String clientId_live = Quran_api_secrets.clientId_live;
     private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
-    private final static Live_mode live_or_pre_live_quran_api = Live_mode.PRE_LIVE;
+    private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
     private final static String app_name = "Sabrly";
     private final static double screen_width_multiplier = 0.55D;
     private final static double screen_height_multiplier = 0.55D;
