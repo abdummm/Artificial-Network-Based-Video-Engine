@@ -40,7 +40,7 @@ public class Text_item {
         this.verse_text = verse_text;
         this.point2D = new Point2D(video_width / 2D, video_height / 2D);
         this.font_size = 36;
-        this.font = return_first_font(font_size);
+        this.font = return_default_font(font_size);
         this.color = Color.WHITE;
         this.start_time = start_time;
         this.end_time = end_time;
@@ -57,6 +57,18 @@ public class Text_item {
         ArrayList<Font_name_and_displayed_name> sorted_fonts = sub_fonts.getFont_names();
         int font_position = sub_fonts.getRegular_position();
         return new Font(sorted_fonts.get(font_position).getFont_name(), font_size);
+    }
+
+    private Font return_default_font(double font_size) {
+        String font_name = "System";
+        if(Font.getFamilies().contains(font_name)){
+            Sub_fonts sub_fonts = new Sub_fonts(Font.getFontNames(font_name), font_name);
+            ArrayList<Font_name_and_displayed_name> sorted_fonts = sub_fonts.getFont_names();
+            int font_position = sub_fonts.getRegular_position();
+            return new Font(sorted_fonts.get(font_position).getFont_name(), font_size);
+        } else {
+            return return_first_font(font_size);
+        }
     }
 
     public String getVerse_text() {
