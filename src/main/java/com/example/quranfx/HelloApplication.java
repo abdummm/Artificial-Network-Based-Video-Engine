@@ -4837,6 +4837,9 @@ public class HelloApplication extends Application {
                     private Separator separator_between_reset_and_apply_to_all_button;
                     private JFXButton apply_to_all_verses_button;
                     private HBox hbox_hosting_reset_and_apply_to_all;
+                    private Label label_hosting_the_percentage_of_weight;
+                    private Label fake_label_for_stroke_weight_space;
+                    private StackPane stack_pane_holding_the_stroke_weights;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -4889,6 +4892,10 @@ public class HelloApplication extends Application {
                         separator_between_reset_and_apply_to_all_button = new Separator();
                         apply_to_all_verses_button = new JFXButton();
                         hbox_hosting_reset_and_apply_to_all = new HBox();
+                        label_hosting_the_percentage_of_weight = new  Label();
+                        fake_label_for_stroke_weight_space = new Label();
+                        stack_pane_holding_the_stroke_weights = new StackPane();
+
 
 
                         final double top_margin_in_vbox_control = 10;
@@ -4899,6 +4906,7 @@ public class HelloApplication extends Application {
                         final double min_stroke_weight = 0;
                         final double max_stroke_weight = 15;
                         final double buttons_at_the_bottom_height = 32.5;
+                        final double left_margin_at_the_start_of_stroke_weight = 5;
 
                         //root
                         bind_the_root_to_list_view(helloController, root, paddingProperty());
@@ -5177,6 +5185,22 @@ public class HelloApplication extends Application {
                         apply_to_all_verses_button.setMaxWidth(Double.MAX_VALUE);
                         set_pref_min_max(apply_to_all_verses_button, buttons_at_the_bottom_height, Resize_bind_type.HEIGHT);
 
+                        //label_hosting_the_percentage_of_weight
+                        //HBox.setMargin(label_hosting_the_percentage_of_weight, new Insets(0, 0, 0, left_margin_at_the_start_of_stroke_weight));
+                        //label_hosting_the_percentage_of_weight.setText(String.valueOf(return_percentage_based_on_value(Global_default_values.stroke_weight,stroke_weight_slider.getMax())) + "%");
+                        label_hosting_the_percentage_of_weight.setText(return_formatted_string_to_1_decimal_place_always(Global_default_values.stroke_weight));
+
+                        //fake_label_for_stroke_weight_space
+                        //HBox.setMargin(fake_label_for_stroke_weight_space, new Insets(0, 0, 0, left_margin_at_the_start_of_stroke_weight));
+                        fake_label_for_stroke_weight_space.setText(return_formatted_string_to_1_decimal_place_always(stroke_weight_slider.getMax()));
+                        fake_label_for_stroke_weight_space.setVisible(false);
+
+                        //stack_pane_holding_the_stroke_weights
+                        HBox.setMargin(stack_pane_holding_the_stroke_weights, new Insets(0, 0, 0, left_margin_at_the_start_of_stroke_weight));
+
+                        stack_pane_holding_the_stroke_weights.getChildren().add(fake_label_for_stroke_weight_space);
+                        stack_pane_holding_the_stroke_weights.getChildren().add(label_hosting_the_percentage_of_weight);
+
                         hbox_hosting_reset_and_apply_to_all.getChildren().add(reset_everything_button);
                         hbox_hosting_reset_and_apply_to_all.getChildren().add(separator_between_reset_and_apply_to_all_button);
                         hbox_hosting_reset_and_apply_to_all.getChildren().add(apply_to_all_verses_button);
@@ -5184,6 +5208,7 @@ public class HelloApplication extends Application {
 
                         hbox_hosting_the_weight_label_and_the_slider.getChildren().add(label_saying_wieght_beside_slider);
                         hbox_hosting_the_weight_label_and_the_slider.getChildren().add(stroke_weight_slider);
+                        hbox_hosting_the_weight_label_and_the_slider.getChildren().add(stack_pane_holding_the_stroke_weights);
 
 
                         vbox_carrying_the_stroke_stuff.getChildren().add(stroke_color_picker);
@@ -5435,6 +5460,7 @@ public class HelloApplication extends Application {
                                 public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
                                     text_item_of_the_selected_verse.getStrokeText().setStroke_weight(new_number.doubleValue());
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    label_hosting_the_percentage_of_weight.setText(return_formatted_string_to_1_decimal_place_always(stroke_weight_slider.getValue()));
                                 }
                             };
                             stroke_weight_slider.valueProperty().addListener(change_listener_for_stroke_weight);
@@ -6105,5 +6131,13 @@ public class HelloApplication extends Application {
             string_builder_for_final_string.append(current_line);
         }
         return string_builder_for_final_string.toString();
+    }
+
+    private int return_percentage_based_on_value(double value,double max_value){
+        return (int) ((100*value)/max_value);
+    }
+
+    private String return_formatted_string_to_1_decimal_place_always(double value){
+        return String.format("%.1f", value);
     }
 }
