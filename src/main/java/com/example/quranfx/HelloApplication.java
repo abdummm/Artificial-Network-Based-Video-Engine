@@ -134,7 +134,7 @@ public class HelloApplication extends Application {
     private final static String clientSecret_pre_live = Quran_api_secrets.clientSecret_pre_live;
     private final static String clientId_live = Quran_api_secrets.clientId_live;
     private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
-    private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
+    private final static Live_mode live_or_pre_live_quran_api = Live_mode.PRE_LIVE;
     private final static String app_name = "Sabrly";
     private final static double screen_width_multiplier = 0.55D;
     private final static double screen_height_multiplier = 0.55D;
@@ -2923,7 +2923,7 @@ public class HelloApplication extends Application {
                     which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, x_position - time_line_pane_data.getTime_line_base_line()));
                 }
                 set_the_chatgpt_image_view(helloController, return_the_image_on_click(pane, x_position), Type_of_Image.THUMBNAIL_QUALITY);
-                enable_or_disable_the_image_control_menu(helloController,return_the_shape_on_click(pane, x_position));
+                enable_or_disable_the_image_control_menu(helloController, return_the_shape_on_click(pane, x_position));
             }
         });
     }
@@ -3439,10 +3439,10 @@ public class HelloApplication extends Application {
                         if (rectangle.getX() <= polygon_pos && rectangle.getX() + rectangle.getWidth() >= polygon_pos) {
                             set_the_chatgpt_image_view(helloController, rectangleChangedInfo.getImage_id(), Type_of_Image.THUMBNAIL_QUALITY);
                             rectangleChangedInfo.setDid_we_ever_change_the_photo(true);
-                            enable_or_disable_the_image_control_menu(helloController,shapeObjectTimeLine);
+                            enable_or_disable_the_image_control_menu(helloController, shapeObjectTimeLine);
                         } else if (rectangleChangedInfo.isDid_we_ever_change_the_photo()) {
                             set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.THUMBNAIL_QUALITY);
-                            enable_or_disable_the_image_control_menu(helloController,null);
+                            enable_or_disable_the_image_control_menu(helloController, null);
                         }
                     } else if (rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE) {
                         if (mouse_scene_x_translated - local_x >= time_line_pane_data.getTime_line_base_line() && mouse_scene_x_translated - local_x + rectangle.getWidth() <= time_line_pane_data.getTime_line_end_base_line()) {
@@ -3480,10 +3480,10 @@ public class HelloApplication extends Application {
                         if (rectangle.getX() <= polygon_pos && rectangle.getX() + rectangle.getWidth() >= polygon_pos) {
                             set_the_chatgpt_image_view(helloController, rectangleChangedInfo.getImage_id(), Type_of_Image.THUMBNAIL_QUALITY);
                             rectangleChangedInfo.setDid_we_ever_change_the_photo(true);
-                            enable_or_disable_the_image_control_menu(helloController,shapeObjectTimeLine);
+                            enable_or_disable_the_image_control_menu(helloController, shapeObjectTimeLine);
                         } else if (rectangleChangedInfo.isDid_we_ever_change_the_photo()) {
                             set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.THUMBNAIL_QUALITY);
-                            enable_or_disable_the_image_control_menu(helloController,null);
+                            enable_or_disable_the_image_control_menu(helloController, null);
                         }
                     } else if (rectangleChangedInfo.getType_of_movement() == MovementType.END) {
                         double original_width = rectangleChangedInfo.getOriginal_end_rectangle() - rectangleChangedInfo.getOriginal_start_rectangle();
@@ -3506,10 +3506,10 @@ public class HelloApplication extends Application {
                         if (rectangle.getX() <= polygon_pos && rectangle.getX() + rectangle.getWidth() >= polygon_pos) {
                             set_the_chatgpt_image_view(helloController, rectangleChangedInfo.getImage_id(), Type_of_Image.THUMBNAIL_QUALITY);
                             rectangleChangedInfo.setDid_we_ever_change_the_photo(true);
-                            enable_or_disable_the_image_control_menu(helloController,shapeObjectTimeLine);
+                            enable_or_disable_the_image_control_menu(helloController, shapeObjectTimeLine);
                         } else if (rectangleChangedInfo.isDid_we_ever_change_the_photo()) {
                             set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.THUMBNAIL_QUALITY);
-                            enable_or_disable_the_image_control_menu(helloController,null);
+                            enable_or_disable_the_image_control_menu(helloController, null);
                         }
                     }
                 }
@@ -3542,10 +3542,10 @@ public class HelloApplication extends Application {
                         double polygon_x_pos = return_polygon_middle_position(time_line_pane_data);
                         if (polygon_x_pos >= shapeObjectTimeLine.getStart() && polygon_x_pos <= shapeObjectTimeLine.getEnd()) {
                             set_the_chatgpt_image_view(helloController, shapeObjectTimeLine.getImage_id(), Type_of_Image.FULL_QUALITY);
-                            enable_or_disable_the_image_control_menu(helloController,shapeObjectTimeLine);
+                            enable_or_disable_the_image_control_menu(helloController, shapeObjectTimeLine);
                         } else {
                             set_the_chatgpt_image_view(helloController, return_the_image_on_click(helloController.time_line_pane, polygon_x_pos), Type_of_Image.FULL_QUALITY);
-                            enable_or_disable_the_image_control_menu(helloController,return_the_shape_on_click(helloController.time_line_pane, polygon_x_pos));
+                            enable_or_disable_the_image_control_menu(helloController, return_the_shape_on_click(helloController.time_line_pane, polygon_x_pos));
                         }
                         rectangle.setUserData(null);
                     }
@@ -3953,6 +3953,12 @@ public class HelloApplication extends Application {
         } else {
             return floored_item;
         }
+    }
+
+    private Shape_object_time_line return_the_current_shape(Pane pane) {
+        Time_line_pane_data timeLinePaneData = (Time_line_pane_data) pane.getUserData();
+        double polygon_x_pos = return_polygon_middle_position(timeLinePaneData);
+        return return_the_shape_on_click(pane, polygon_x_pos);
     }
 
     private String return_the_image_from_time(Pane pane, long nano_seconds) {
@@ -4891,7 +4897,7 @@ public class HelloApplication extends Application {
                         final double start_and_end_margin = 8.5;
                         final double separator_start_end = 5;
                         final double min_stroke_weight = 0;
-                        final double max_stroke_weight = 10;
+                        final double max_stroke_weight = 15;
                         final double buttons_at_the_bottom_height = 32.5;
 
                         //root
@@ -5017,8 +5023,8 @@ public class HelloApplication extends Application {
                         //combox_of_all_of_fonts
                         add_the_fonts_to_the_combo_box(combox_of_all_of_fonts);
                         bind_an_item_to_a_property(combox_of_all_of_fonts, root.widthProperty(), start_and_end_margin * 2);
-                        combox_of_all_of_fonts.getSelectionModel().select(0);
                         VBox.setMargin(combox_of_all_of_fonts, new Insets(half_top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+                        combox_of_all_of_fonts.getSelectionModel().select("System");
 
                         //label_saying_fonts
                         label_saying_fonts.setText("Typography");
@@ -5061,7 +5067,8 @@ public class HelloApplication extends Application {
                             }
                         });
                         combox_of_all_of_fonts_sub_choices.setItems(FXCollections.observableArrayList(hashMap_with_all_the_font_families_and_names.get(combox_of_all_of_fonts.getSelectionModel().getSelectedItem()).getFont_names()));
-                        combox_of_all_of_fonts_sub_choices.getSelectionModel().select(0);
+                        Sub_fonts sub_fonts = hashMap_with_all_the_font_families_and_names.get(combox_of_all_of_fonts.getSelectionModel().getSelectedItem());
+                        combox_of_all_of_fonts_sub_choices.getSelectionModel().select(sub_fonts.getRegular_position());
 
                         //increase_font_size_button
                         increase_font_size_button.setFocusTraversable(false);
@@ -5375,6 +5382,7 @@ public class HelloApplication extends Application {
                                         font_size = Double.parseDouble(new_string);
                                     }
                                     text_item_of_the_selected_verse.setFont_size(font_size);
+                                    text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             };
@@ -5477,6 +5485,7 @@ public class HelloApplication extends Application {
     }
 
     private void change_text_size_by_increment(TextField text_field_for_font_size, Text_item text_item_of_the_selected_verse, Language_info item, double plus_minus_font_increments_local) {
+        String verse_text = text_item_of_the_selected_verse.getVerse_text();
         int caret_position = text_field_for_font_size.getCaretPosition();
         String font_text_field_input = text_field_for_font_size.getText();
         double font_size = 0;
@@ -5486,6 +5495,7 @@ public class HelloApplication extends Application {
         font_size = font_size + plus_minus_font_increments_local;
         text_field_for_font_size.setText(remove_trailing_zeroes_from_number(font_size));
         text_item_of_the_selected_verse.setFont_size(font_size);
+        text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(verse_text, text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
         place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
         text_field_for_font_size.positionCaret(Math.min(caret_position, text_field_for_font_size.getText().length()));
     }
@@ -5613,8 +5623,7 @@ public class HelloApplication extends Application {
     }
 
     private void place_the_canvas_text(Canvas canvas, Text_item text_item) {
-        //Text_item text_item = language_info.getArrayList_of_all_of_the_translations().get(selected_verse);
-
+        String adjusted_verse_text = text_item.getAdjusted_verse_text();
         Point2D point2D_of_the_text = text_item.getPoint2D();
         javafx.scene.paint.Color color_of_text = text_item.getColor();
         Text_on_canvas_mode text_on_canvas_mode = text_item.getText_on_canvas_mode();
@@ -5634,12 +5643,15 @@ public class HelloApplication extends Application {
         }
         gc.setFont(font_for_verse);
         if (is_stroke_enabled && stroke_weight > 0) {
+            gc.setLineJoin(StrokeLineJoin.ROUND);
+            gc.setMiterLimit(1.0);
+            gc.setLineCap(StrokeLineCap.ROUND);
             gc.setStroke(stroke_color); // TODO fix the stroke lines going out of stroke, get back to chatgpt
             gc.setLineWidth(stroke_weight);
-            gc.strokeText(text_item.getVerse_text(), point2D_of_the_text.getX(), point2D_of_the_text.getY());
+            gc.strokeText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());
         }
         gc.setFill(color_of_text);
-        gc.fillText(text_item.getVerse_text(), point2D_of_the_text.getX(), point2D_of_the_text.getY());
+        gc.fillText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());
     }
 
     private void bind_the_canvas_to_the_image_view(HelloController helloController, Canvas canvas) {
@@ -5996,8 +6008,12 @@ public class HelloApplication extends Application {
         helloController.slider_to_control_the_opacity_of_an_image.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
-                double opacity = return_opacaity_in_zero_to_one_format(new_number.doubleValue());
-                helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.setOpacity(opacity);
+                Shape_object_time_line shapeObjectTimeLine = return_the_current_shape(helloController.time_line_pane);
+                if (shapeObjectTimeLine != null) {
+                    double opacity = return_opacaity_in_zero_to_one_format(new_number.doubleValue());
+                    helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.setOpacity(opacity);
+                    shapeObjectTimeLine.setOpacity(new_number.doubleValue());
+                }
             }
         });
     }
@@ -6052,5 +6068,42 @@ public class HelloApplication extends Application {
     private double return_opacaity_in_zero_to_one_format(double value) {
         double percent = value / 100D;
         return 1 - percent;
+    }
+
+    private String do_i_need_to_resize_the_verse_text(String verse_text, Font font, double allowed_width, double left_margin, double right_margin) {
+        allowed_width = allowed_width - left_margin - right_margin;
+        String[] split_verse_into_words = verse_text.split(" ");
+        StringBuilder string_builder_for_final_string = new StringBuilder();
+        StringBuilder current_line = new StringBuilder();
+        for (String current_word : split_verse_into_words) {
+            Text current_line_text_item = new Text(current_line.toString());
+            Text current_word_text_item = new Text(current_word.concat(" "));
+            current_line_text_item.setFont(font);
+            current_word_text_item.setFont(font);
+
+            double current_line_width = current_line_text_item.getLayoutBounds().getWidth();
+            double curren_word_width = current_word_text_item.getLayoutBounds().getWidth();
+            if (current_line.isEmpty()) {
+                if (curren_word_width >= allowed_width) {
+                    string_builder_for_final_string.append(current_word);
+                    string_builder_for_final_string.append("\n");
+                } else {
+                    current_line.append(current_word).append(" ");
+                }
+            } else {
+                if (current_line_width + curren_word_width >= allowed_width) {
+                    current_line.deleteCharAt(current_line.length() - 1);
+                    string_builder_for_final_string.append(current_line.toString());
+                    string_builder_for_final_string.append("\n");
+                    current_line = new StringBuilder(current_word).append(" ");
+                } else {
+                    current_line.append(current_word).append(" ");
+                }
+            }
+        }
+        if (!current_line.isEmpty()) {
+            string_builder_for_final_string.append(current_line);
+        }
+        return string_builder_for_final_string.toString();
     }
 }
