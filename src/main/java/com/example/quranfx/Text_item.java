@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 public class Text_item {
     private String verse_text;
+    private String adjusted_verse_text;
     private Point2D point2D;
     private double font_size;
     private Font font;
@@ -19,11 +20,14 @@ public class Text_item {
     private double height;
     private Text_on_canvas_mode text_on_canvas_mode;
     private Stroke_text strokeText;
+    private double left_margin;
+    private double right_margin;
     private static final double video_height = 1920;
     private static final double video_width = 1080;
 
-    public Text_item(String verse_text, Point2D point2D, double font_size, Font font, Color color, long start_time, long end_time, double width, double height, Text_on_canvas_mode text_on_canvas_mode, Stroke_text strokeText) {
+    public Text_item(String verse_text,String adjusted_verse_text, Point2D point2D, double font_size, Font font, Color color, long start_time, long end_time, double width, double height, Text_on_canvas_mode text_on_canvas_mode, Stroke_text strokeText, double left_margin, double right_margin) {
         this.verse_text = verse_text;
+        this.adjusted_verse_text = adjusted_verse_text;
         this.point2D = point2D;
         this.font_size = font_size;
         this.font = font;
@@ -34,10 +38,13 @@ public class Text_item {
         this.height = height;
         this.text_on_canvas_mode = text_on_canvas_mode;
         this.strokeText = strokeText;
+        this.left_margin = left_margin;
+        this.right_margin = right_margin;
     }
 
     public Text_item(String verse_text, long start_time, long end_time) {
         this.verse_text = verse_text;
+        this.adjusted_verse_text = verse_text;
         this.point2D = new Point2D(video_width / 2D, video_height / 2D);
         this.font_size = 36;
         this.font = return_default_font(font_size);
@@ -49,6 +56,8 @@ public class Text_item {
         this.height = width_and_height_of_text[1];
         text_on_canvas_mode = Text_on_canvas_mode.CENTER;
         this.strokeText = new Stroke_text();
+        this.left_margin = 0;
+        this.right_margin = 0;
     }
 
     private Font return_first_font(double font_size) {
@@ -144,5 +153,29 @@ public class Text_item {
 
     public void setStrokeText(Stroke_text strokeText) {
         this.strokeText = strokeText;
+    }
+
+    public String getAdjusted_verse_text() {
+        return adjusted_verse_text;
+    }
+
+    public void setAdjusted_verse_text(String adjusted_verse_text) {
+        this.adjusted_verse_text = adjusted_verse_text;
+    }
+
+    public double getRight_margin() {
+        return right_margin;
+    }
+
+    public void setRight_margin(double right_margin) {
+        this.right_margin = right_margin;
+    }
+
+    public double getLeft_margin() {
+        return left_margin;
+    }
+
+    public void setLeft_margin(double left_margin) {
+        this.left_margin = left_margin;
     }
 }
