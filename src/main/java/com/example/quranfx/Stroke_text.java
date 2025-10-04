@@ -10,7 +10,7 @@ public class Stroke_text {
     public Stroke_text() {
         this.is_the_stroke_on = false;
         this.stroke_color = Color.BLACK;
-        this.stroke_weight = 1;
+        this.stroke_weight = Global_default_values.stroke_weight;
     }
 
     public boolean isIs_the_stroke_on() {
