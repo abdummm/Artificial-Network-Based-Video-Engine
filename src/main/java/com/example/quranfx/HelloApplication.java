@@ -4892,10 +4892,9 @@ public class HelloApplication extends Application {
                         separator_between_reset_and_apply_to_all_button = new Separator();
                         apply_to_all_verses_button = new JFXButton();
                         hbox_hosting_reset_and_apply_to_all = new HBox();
-                        label_hosting_the_percentage_of_weight = new  Label();
+                        label_hosting_the_percentage_of_weight = new Label();
                         fake_label_for_stroke_weight_space = new Label();
                         stack_pane_holding_the_stroke_weights = new StackPane();
-
 
 
                         final double top_margin_in_vbox_control = 10;
@@ -5192,8 +5191,11 @@ public class HelloApplication extends Application {
 
                         //fake_label_for_stroke_weight_space
                         //HBox.setMargin(fake_label_for_stroke_weight_space, new Insets(0, 0, 0, left_margin_at_the_start_of_stroke_weight));
+                        String widest_text = find_the_widest_text(0, stroke_weight_slider.getMax(), 0.1);
+                        System.out.println(widest_text);
                         fake_label_for_stroke_weight_space.setText(return_formatted_string_to_1_decimal_place_always(stroke_weight_slider.getMax()));
                         fake_label_for_stroke_weight_space.setVisible(false);
+                        fake_label_for_stroke_weight_space.setText(widest_text);
 
                         //stack_pane_holding_the_stroke_weights
                         HBox.setMargin(stack_pane_holding_the_stroke_weights, new Insets(0, 0, 0, left_margin_at_the_start_of_stroke_weight));
@@ -6133,11 +6135,25 @@ public class HelloApplication extends Application {
         return string_builder_for_final_string.toString();
     }
 
-    private int return_percentage_based_on_value(double value,double max_value){
-        return (int) ((100*value)/max_value);
+    private int return_percentage_based_on_value(double value, double max_value) {
+        return (int) ((100 * value) / max_value);
     }
 
-    private String return_formatted_string_to_1_decimal_place_always(double value){
+    private String return_formatted_string_to_1_decimal_place_always(double value) {
         return String.format("%.1f", value);
+    }
+
+    private String find_the_widest_text(double min, double max, double increment) {
+        Text test_to_find_widest_text = new Text(return_formatted_string_to_1_decimal_place_always(min));
+        double widest_width = test_to_find_widest_text.getLayoutBounds().getWidth();
+        String widest_text = return_formatted_string_to_1_decimal_place_always(min);
+        for (double i = min; i <= max; i += increment) {
+            test_to_find_widest_text.setText(return_formatted_string_to_1_decimal_place_always(i));
+            if (test_to_find_widest_text.getLayoutBounds().getWidth() > widest_width) {
+                widest_text = return_formatted_string_to_1_decimal_place_always(i);
+                widest_width = test_to_find_widest_text.getLayoutBounds().getWidth();
+            }
+        }
+        return widest_text;
     }
 }
