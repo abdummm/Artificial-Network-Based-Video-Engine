@@ -390,18 +390,33 @@
                                             <Slider fx:id="slider_to_control_the_opacity_of_an_image" value="100"
                                                     GridPane.columnIndex="1" GridPane.rowIndex="0"
                                                     maxWidth="Infinity"/>
+                                            <StackPane GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                                <Label fx:id="label_holding_the_opacity_percentage"/>
+                                                <Label fx:id="fake_label_holding_the_opacity_percentage"
+                                                       visible="false"/>
+                                            </StackPane>
 
                                             <!-- Row 2 -->
                                             <Label text="Fade in: " GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                                            <Slider fx:id="slider_to_control_fade_in_of_image" GridPane.columnIndex="1"
+                                            <Slider fx:id="slider_to_control_fade_in_of_image" max="2" GridPane.columnIndex="1"
                                                     GridPane.rowIndex="1"
                                                     maxWidth="Infinity"/>
+                                            <StackPane GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                                <Label fx:id="fake_label_holding_the_fade_in"
+                                                       visible="false"/>
+                                                <Label fx:id="label_holding_the_fade_in"/>
+                                            </StackPane>
 
                                             <!-- Row 3 -->
                                             <Label text="Fade out: " GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                                            <Slider fx:id="slider_to_control_fade_out_of_image" GridPane.columnIndex="1"
+                                            <Slider fx:id="slider_to_control_fade_out_of_image" max="2" GridPane.columnIndex="1"
                                                     GridPane.rowIndex="2"
                                                     maxWidth="Infinity"/>
+                                            <StackPane GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                                <Label fx:id="fake_label_holding_the_fade_out"
+                                                       visible="false"/>
+                                                <Label fx:id="label_holding_the_fade_out"/>
+                                            </StackPane>
                                         </GridPane>
                                     </StackPane>
 
