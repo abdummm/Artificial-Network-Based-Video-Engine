@@ -201,5 +201,26 @@ public class HelloController {
     @FXML
     public StackPane image_controls_stack_pane;
 
+    @FXML
+    public Label label_holding_the_opacity_percentage;
+
+    @FXML
+    public Label label_holding_the_fade_in;
+
+    @FXML
+    public Label label_holding_the_fade_out;
+
+    @FXML
+    public Label fake_label_holding_the_opacity_percentage;
+
+    @FXML
+    public Label fake_label_holding_the_fade_in;
+
+    @FXML
+    public Label fake_label_holding_the_fade_out;
+
+    @FXML
+    public Rectangle black_rectangle_behind_image_view;
+
 
 }
