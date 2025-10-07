@@ -219,8 +219,8 @@ public class HelloController {
     @FXML
     public Label fake_label_holding_the_fade_out;
 
-    @FXML
-    public Rectangle black_rectangle_behind_image_view;
+   /* @FXML
+    public Rectangle black_rectangle_behind_image_view;*/
 
 
 }
