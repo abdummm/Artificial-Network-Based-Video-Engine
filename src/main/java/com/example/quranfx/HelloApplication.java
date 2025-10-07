@@ -134,7 +134,7 @@ public class HelloApplication extends Application {
     private final static String clientSecret_pre_live = Quran_api_secrets.clientSecret_pre_live;
     private final static String clientId_live = Quran_api_secrets.clientId_live;
     private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
-    private final static Live_mode live_or_pre_live_quran_api = Live_mode.PRE_LIVE;
+    private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
     private final static String app_name = "Sabrly";
     private final static double screen_width_multiplier = 0.55D;
     private final static double screen_height_multiplier = 0.55D;
@@ -148,6 +148,8 @@ public class HelloApplication extends Application {
     private final static double plus_minus_font_increments = 1;
     private final static String hex_ripple_coulour_for_jfx_buttons = "#808080";
     private final static String no_image_found = "black";
+    private final static String unit_sign_beside_opacity = "%";
+    private final static String unit_sign_beside_fade_in_fade_out = "s";
 
     //private final static double circle_button_radius = 20D;
 
@@ -256,6 +258,9 @@ public class HelloApplication extends Application {
         listen_to_fade_out_slider(helloController);
         set_the_fake_width_opacity(helloController);
         set_the_fake_width_in_image_controls(helloController);
+        set_the_opacity_initially(helloController);
+        set_the_fade_in_fade_out_initially(helloController);
+        set_the_fade_in_fade_in_initially(helloController);
     }
 
     /*public static void main(String[] args) {
@@ -6031,6 +6036,8 @@ public class HelloApplication extends Application {
     private void bind_the_opacaity_canvas_to_image_view(HelloController helloController) {
         helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.heightProperty().bind(helloController.chatgpt_image_view.fitHeightProperty());
         helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.widthProperty().bind(helloController.chatgpt_image_view.fitWidthProperty());
+        /*helloController.black_rectangle_behind_image_view.heightProperty().bind(helloController.chatgpt_image_view.fitHeightProperty());
+        helloController.black_rectangle_behind_image_view.widthProperty().bind(helloController.chatgpt_image_view.fitWidthProperty());*/
     }
 
     private void listen_to_control_opacity_slider(HelloController helloController) {
@@ -6041,6 +6048,7 @@ public class HelloApplication extends Application {
                 if (shapeObjectTimeLine != null) {
                     double opacity = return_opacaity_in_zero_to_one_format(new_number.doubleValue());
                     helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.setOpacity(opacity);
+                    //helloController.chatgpt_image_view.setOpacity(1-opacity);
                     shapeObjectTimeLine.setOpacity(new_number.doubleValue());
                     helloController.label_holding_the_opacity_percentage.setText(String.valueOf(new_number.intValue()) + "%");
                 }
@@ -6051,8 +6059,12 @@ public class HelloApplication extends Application {
     private void listen_to_fade_in_slider(HelloController helloController) {
         helloController.slider_to_control_fade_in_of_image.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-
+            public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
+                Shape_object_time_line shapeObjectTimeLine = return_the_current_shape(helloController.time_line_pane);
+                if (shapeObjectTimeLine != null) {
+                    helloController.label_holding_the_fade_in.setText(return_formatted_string_to_1_decimal_place_always(new_number.doubleValue()) + unit_sign_beside_fade_in_fade_out);
+                    shapeObjectTimeLine.setFade_in(new_number.doubleValue());
+                }
             }
         });
     }
@@ -6060,8 +6072,12 @@ public class HelloApplication extends Application {
     private void listen_to_fade_out_slider(HelloController helloController) {
         helloController.slider_to_control_fade_out_of_image.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-
+            public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
+                Shape_object_time_line shapeObjectTimeLine = return_the_current_shape(helloController.time_line_pane);
+                if (shapeObjectTimeLine != null) {
+                    helloController.label_holding_the_fade_out.setText(return_formatted_string_to_1_decimal_place_always(new_number.doubleValue()) + unit_sign_beside_fade_in_fade_out);
+                    shapeObjectTimeLine.setFade_out(new_number.doubleValue());
+                }
             }
         });
     }
@@ -6086,12 +6102,18 @@ public class HelloApplication extends Application {
             helloController.slider_to_control_the_opacity_of_an_image.setValue(100);
             helloController.slider_to_control_fade_in_of_image.setValue(0);
             helloController.slider_to_control_fade_out_of_image.setValue(0);
+            helloController.label_holding_the_opacity_percentage.setText("100" + unit_sign_beside_opacity);
+            helloController.label_holding_the_fade_in.setText(return_formatted_string_to_1_decimal_place_always(helloController.slider_to_control_fade_in_of_image.getMin()) + unit_sign_beside_fade_in_fade_out);
+            helloController.label_holding_the_fade_out.setText(return_formatted_string_to_1_decimal_place_always(helloController.slider_to_control_fade_out_of_image.getMin()) + unit_sign_beside_fade_in_fade_out);
         } else {
             helloController.image_controls_stack_pane.setDisable(false);
             helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.setOpacity(return_opacaity_in_zero_to_one_format(shape_object_found.getOpacity()));
             helloController.slider_to_control_the_opacity_of_an_image.setValue(shape_object_found.getOpacity());
             helloController.slider_to_control_fade_in_of_image.setValue(shape_object_found.getFade_in());
             helloController.slider_to_control_fade_out_of_image.setValue(shape_object_found.getFade_out());
+            helloController.label_holding_the_opacity_percentage.setText((int) shape_object_found.getOpacity() + unit_sign_beside_opacity);
+            helloController.label_holding_the_fade_in.setText(return_formatted_string_to_1_decimal_place_always(shape_object_found.getFade_in()) + unit_sign_beside_fade_in_fade_out);
+            helloController.label_holding_the_fade_out.setText(return_formatted_string_to_1_decimal_place_always(shape_object_found.getFade_out()) + unit_sign_beside_fade_in_fade_out);
         }
     }
 
@@ -6160,49 +6182,55 @@ public class HelloApplication extends Application {
     }
 
     private String return_the_widest_text_for_opacity(int min_percentage, int max_percentage, int percentage_increment) {
-        Text text_to_measure_length = new Text(String.valueOf(min_percentage) + "%");
+        Text text_to_measure_length = new Text(String.valueOf(min_percentage) + unit_sign_beside_opacity);
         double max_width = text_to_measure_length.getLayoutBounds().getWidth();
-        String max_percentage_width = String.valueOf(min_percentage) + "%";
+        String max_percentage_width = String.valueOf(min_percentage) + unit_sign_beside_opacity;
         for (int i = min_percentage; i <= max_percentage; i += percentage_increment) {
-            text_to_measure_length.setText(String.valueOf(i) + "%");
-            if(text_to_measure_length.getLayoutBounds().getWidth()>max_width){
-                max_percentage_width = String.valueOf(i) + "%";
+            text_to_measure_length.setText(String.valueOf(i) + unit_sign_beside_opacity);
+            if (text_to_measure_length.getLayoutBounds().getWidth() > max_width) {
+                max_percentage_width = String.valueOf(i) + unit_sign_beside_opacity;
                 max_width = text_to_measure_length.getLayoutBounds().getWidth();
             }
         }
         return max_percentage_width;
     }
 
-    private String return_the_widest_text_for_fade_in_and_fade_out(double min_time,double max_time,double increment){
-        Text text_to_measure_length = new Text(String.valueOf(min_time) + "S");
+    private String return_the_widest_text_for_fade_in_and_fade_out(double min_time, double max_time, double increment) {
+        Text text_to_measure_length = new Text(String.valueOf(min_time) + unit_sign_beside_fade_in_fade_out);
         double max_width = text_to_measure_length.getLayoutBounds().getWidth();
-        String max_percentage_width = return_formatted_string_to_1_decimal_place_always(min_time) + "S";
+        String max_percentage_width = return_formatted_string_to_1_decimal_place_always(min_time) + unit_sign_beside_fade_in_fade_out;
         for (double i = min_time; i <= max_time; i += increment) {
-            text_to_measure_length.setText(return_formatted_string_to_1_decimal_place_always(i) + "S");
-            if(text_to_measure_length.getLayoutBounds().getWidth()>max_width){
-                max_percentage_width = return_formatted_string_to_1_decimal_place_always(i) + "S";
+            text_to_measure_length.setText(return_formatted_string_to_1_decimal_place_always(i) + unit_sign_beside_fade_in_fade_out);
+            if (text_to_measure_length.getLayoutBounds().getWidth() > max_width) {
+                max_percentage_width = return_formatted_string_to_1_decimal_place_always(i) + unit_sign_beside_fade_in_fade_out;
                 max_width = text_to_measure_length.getLayoutBounds().getWidth();
             }
         }
         return max_percentage_width;
     }
 
-    private void set_the_fake_width_opacity(HelloController helloController){
-        String widest_text = return_the_widest_text_for_opacity(0,100,1);
+    private void set_the_fake_width_opacity(HelloController helloController) {
+        String widest_text = return_the_widest_text_for_opacity(0, 100, 1);
         helloController.fake_label_holding_the_opacity_percentage.setText(widest_text);
     }
 
-    private void set_the_fake_width_in_image_controls(HelloController helloController){
-        String widest_text = return_the_widest_text_for_fade_in_and_fade_out(0,2,0.1);
+    private void set_the_fake_width_in_image_controls(HelloController helloController) {
+        String widest_text = return_the_widest_text_for_fade_in_and_fade_out(0, 2, 0.1);
         helloController.fake_label_holding_the_fade_in.setText(widest_text);
         helloController.fake_label_holding_the_fade_out.setText(widest_text);
     }
 
-    private void set_the_opacity_initially(HelloController helloController){
-        helloController.fake_label_holding_the_opacity_percentage.setText(((int) helloController.slider_to_control_the_opacity_of_an_image.getMax()) + "%");
+    private void set_the_opacity_initially(HelloController helloController) {
+        helloController.label_holding_the_opacity_percentage.setText(((int) helloController.slider_to_control_the_opacity_of_an_image.getMax()) + unit_sign_beside_opacity);
     }
 
-    private void set_the_fade_in_fade_out_initially(HelloController helloController){
-        helloController.fake_label_holding_the_fade_in.setText();
+    private void set_the_fade_in_fade_out_initially(HelloController helloController) {
+        String min_fade_out = return_formatted_string_to_1_decimal_place_always(helloController.slider_to_control_fade_out_of_image.getMin());
+        helloController.label_holding_the_fade_out.setText(min_fade_out + unit_sign_beside_fade_in_fade_out);
+    }
+
+    private void set_the_fade_in_fade_in_initially(HelloController helloController) {
+        String min_fade_out = return_formatted_string_to_1_decimal_place_always(helloController.slider_to_control_fade_in_of_image.getMin());
+        helloController.label_holding_the_fade_in.setText(min_fade_out + unit_sign_beside_fade_in_fade_out);
     }
 }
