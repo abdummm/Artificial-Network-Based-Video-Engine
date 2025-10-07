@@ -4829,7 +4829,7 @@ public class HelloApplication extends Application {
                     private JFXButton increase_font_size_button;
                     private JFXButton decrease_font_size_button;
                     private HBox hbox_for_plus_and_minus;
-                    private Separator separator_under_font_size;
+                    private Separator separator_under_margin;
                     private Label label_saying_stroke;
                     private HBox hbox_hosting_the_stroke_label;
                     private CheckBox stroke_check_box;
@@ -4847,6 +4847,21 @@ public class HelloApplication extends Application {
                     private Label label_hosting_the_percentage_of_weight;
                     private Label fake_label_for_stroke_weight_space;
                     private StackPane stack_pane_holding_the_stroke_weights;
+                    private Separator separator_under_font_size;
+                    private HBox hbox_holding_the_margin_label;
+                    private Label margin_label;
+                    private HBox hbox_hosting_the_left_margin;
+                    private Label label_saying_left_margin;
+                    private TextField left_margin_input_field;
+                    private HBox hbox_containing_the_plus_minus_for_left_margin;
+                    private JFXButton increase_left_margin_button;
+                    private JFXButton decrease_left_margin_button;
+                    private HBox hbox_hosting_the_right_margin;
+                    private Label label_saying_right_margin;
+                    private TextField right_margin_input_field;
+                    private HBox hbox_containing_the_plus_minus_for_right_margin;
+                    private JFXButton increase_right_margin_button;
+                    private JFXButton decrease_right_margin_button;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -4884,7 +4899,7 @@ public class HelloApplication extends Application {
                         increase_font_size_button = new JFXButton();
                         decrease_font_size_button = new JFXButton();
                         hbox_for_plus_and_minus = new HBox();
-                        separator_under_font_size = new Separator();
+                        separator_under_margin = new Separator();
                         label_saying_stroke = new Label();
                         hbox_hosting_the_stroke_label = new HBox();
                         stroke_check_box = new CheckBox();
@@ -4902,6 +4917,22 @@ public class HelloApplication extends Application {
                         label_hosting_the_percentage_of_weight = new Label();
                         fake_label_for_stroke_weight_space = new Label();
                         stack_pane_holding_the_stroke_weights = new StackPane();
+                        separator_under_font_size = new Separator();
+                        hbox_holding_the_margin_label = new HBox();
+                        margin_label = new Label();
+                        hbox_hosting_the_left_margin = new HBox();
+                        label_saying_left_margin = new Label();
+                        left_margin_input_field = new  TextField();
+                        hbox_containing_the_plus_minus_for_left_margin = new HBox();
+                        increase_left_margin_button = new JFXButton();
+                        decrease_left_margin_button = new JFXButton();
+                        hbox_hosting_the_right_margin = new HBox();
+                        label_saying_right_margin = new Label();
+                        right_margin_input_field =  new  TextField();
+                        hbox_containing_the_plus_minus_for_right_margin = new HBox();
+                        increase_right_margin_button =  new JFXButton();
+                        decrease_right_margin_button = new JFXButton();
+
 
 
                         final double top_margin_in_vbox_control = 10;
@@ -5122,8 +5153,8 @@ public class HelloApplication extends Application {
                         HBox.setMargin(hbox_for_plus_and_minus, new Insets(0, 0, 0, 10));
                         hbox_for_plus_and_minus.setStyle("-fx-border-color: #F3F3F3; -fx-border-width: 1;");
 
-                        //separator_under_font_size
-                        VBox.setMargin(separator_under_font_size, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
+                        //separator_under_margin
+                        VBox.setMargin(separator_under_margin, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
 
                         //label_saying_stroke
                         label_saying_stroke.setText("Stroke");
@@ -5206,6 +5237,76 @@ public class HelloApplication extends Application {
                         //stack_pane_holding_the_stroke_weights
                         HBox.setMargin(stack_pane_holding_the_stroke_weights, new Insets(0, 0, 0, left_margin_at_the_start_of_stroke_weight));
 
+                        //separator_under_font_size
+                        VBox.setMargin(separator_under_font_size, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
+
+                        //hbox_holding_the_margin_label
+                        hbox_holding_the_margin_label.setAlignment(Pos.CENTER_LEFT);
+                        VBox.setMargin(hbox_holding_the_margin_label, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+
+                        //margin_label
+                        margin_label.setText("Margin");
+
+                        //hbox_hosting_the_left_margin
+                        hbox_hosting_the_left_margin.setAlignment(Pos.CENTER);
+                        VBox.setMargin(hbox_hosting_the_left_margin, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+                        bind_an_item_to_a_property(hbox_hosting_the_left_margin, root.widthProperty(), start_and_end_margin * 2);
+
+                        //label_saying_left_margin
+                        label_saying_left_margin.setText("Left Margin: ");
+
+                        //left_margin_input_field
+                        format_the_text_filed_to_only_accept_positive_integers(left_margin_input_field);
+                        HBox.setMargin(left_margin_input_field, new Insets(0, 0, 0, 10));
+                        HBox.setHgrow(left_margin_input_field, Priority.ALWAYS);
+                        left_margin_input_field.setMaxWidth(Double.MAX_VALUE);
+                        left_margin_input_field.setText("0");
+
+                        //hbox_containing_the_plus_minus_for_left_margin
+                        HBox.setMargin(hbox_containing_the_plus_minus_for_left_margin, new Insets(0, 0, 0, 10));
+                        hbox_containing_the_plus_minus_for_left_margin.setStyle("-fx-border-color: #F3F3F3; -fx-border-width: 1;");
+
+                        //increase_left_margin_button
+                        increase_left_margin_button.setFocusTraversable(false);
+                        increase_left_margin_button.setRipplerFill(javafx.scene.paint.Color.web(hex_ripple_coulour_for_jfx_buttons));
+                        increase_left_margin_button.prefHeightProperty().bind(left_margin_input_field.heightProperty());
+                        increase_left_margin_button.minHeightProperty().bind(left_margin_input_field.heightProperty());
+                        increase_left_margin_button.maxHeightProperty().bind(left_margin_input_field.heightProperty());
+                        increase_left_margin_button.heightProperty().addListener(new ChangeListener<Number>() {
+                            @Override
+                            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                                increase_left_margin_button.setGraphic(return_the_icon("plus", (int) (t1.doubleValue() * 2D / 3D), (int) (t1.doubleValue() * 2D / 3D)));
+                                increase_left_margin_button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                                increase_left_margin_button.setAlignment(Pos.CENTER);
+                            }
+                        });
+
+                        //decrease_left_margin_button
+                        decrease_left_margin_button.setFocusTraversable(false);
+                        decrease_left_margin_button.setRipplerFill(javafx.scene.paint.Color.web(hex_ripple_coulour_for_jfx_buttons));
+                        decrease_left_margin_button.prefHeightProperty().bind(left_margin_input_field.heightProperty());
+                        decrease_left_margin_button.minHeightProperty().bind(left_margin_input_field.heightProperty());
+                        decrease_left_margin_button.maxHeightProperty().bind(left_margin_input_field.heightProperty());
+                        decrease_left_margin_button.heightProperty().addListener(new ChangeListener<Number>() {
+                            @Override
+                            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                                decrease_left_margin_button.setGraphic(return_the_icon("minus", (int) (t1.doubleValue() * 2D / 3D), (int) (t1.doubleValue() * 2D / 3D)));
+                                decrease_left_margin_button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                                decrease_left_margin_button.setAlignment(Pos.CENTER);
+                            }
+                        });
+
+                        hbox_containing_the_plus_minus_for_left_margin.getChildren().add(increase_left_margin_button);
+                        hbox_containing_the_plus_minus_for_left_margin.getChildren().add(decrease_left_margin_button);
+
+                        hbox_hosting_the_left_margin.getChildren().add(label_saying_left_margin);
+                        hbox_hosting_the_left_margin.getChildren().add(left_margin_input_field);
+                        hbox_hosting_the_left_margin.getChildren().add(hbox_containing_the_plus_minus_for_left_margin);
+
+
+                        hbox_holding_the_margin_label.getChildren().add(margin_label);
+
+
                         stack_pane_holding_the_stroke_weights.getChildren().add(fake_label_for_stroke_weight_space);
                         stack_pane_holding_the_stroke_weights.getChildren().add(label_hosting_the_percentage_of_weight);
 
@@ -5264,6 +5365,9 @@ public class HelloApplication extends Application {
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_font_picker);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_containing_the_font_size);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_font_size);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_holding_the_margin_label);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_hosting_the_left_margin);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_margin);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_hosting_the_stroke_label);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(vbox_carrying_the_stroke_stuff);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_stroke);
@@ -5430,7 +5534,8 @@ public class HelloApplication extends Application {
                                     combox_of_all_of_fonts_sub_choices.getItems().clear();
                                     combox_of_all_of_fonts_sub_choices.setItems(FXCollections.observableArrayList(sub_fonts.getFont_names()));
                                     combox_of_all_of_fonts_sub_choices.getSelectionModel().select(sub_fonts.getRegular_position());
-
+                                    text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     //combox_of_all_of_fonts_sub_choices.setVisibleRowCount(sub_fonts.getFont_names().size());
                                 }
                             };
@@ -5444,6 +5549,7 @@ public class HelloApplication extends Application {
                                     if (new_font_name_and_displayed_name != null) {
                                         double font_size = text_item_of_the_selected_verse.getFont_size();
                                         text_item_of_the_selected_verse.setFont(new Font(new_font_name_and_displayed_name.getFont_name(), font_size));
+                                        text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
                                         place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     }
                                 }
@@ -5497,6 +5603,20 @@ public class HelloApplication extends Application {
                                 }
                             });
 
+                            increase_left_margin_button.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+
+                                }
+                            });
+
+                            decrease_left_margin_button.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+
+                                }
+                            });
+
                             reset_everything_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
@@ -5538,6 +5658,7 @@ public class HelloApplication extends Application {
         Text_item text_item = language_info.getArrayList_of_all_of_the_translations().get(selected_verse);
         if (language_info.isVisible_check_mark_checked()) {
             Canvas canvas = create_the_translation_canvas();
+            set_up_the_adjusted_text(text_item,canvas);
             place_the_canvas_text(canvas, text_item);
             bind_the_canvas_to_the_image_view(helloController, canvas);
             set_the_canvas_data(canvas, language_info);
@@ -5547,6 +5668,10 @@ public class HelloApplication extends Application {
             hide_the_language_canvas(helloController, language_info.getLanguage_canvas());
             language_info.setLanguage_canvas(null);
         }
+    }
+
+    private void set_up_the_adjusted_text(Text_item text_item_of_the_selected_verse, Canvas language_canvas){
+        text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), language_canvas.getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
     }
 
     private void update_the_translations(HelloController helloController, HashMap<String, ArrayList<String>> hash_map_with_allf_of_the_verses) {
