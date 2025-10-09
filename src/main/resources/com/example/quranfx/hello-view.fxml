@@ -329,7 +329,8 @@
                             <StackPane fx:id="center_group_grid_pane">
                                 <VBox alignment="CENTER">
                                     <Pane fx:id="stack_pane_of_image_view_and_text">
-                                        <ImageView fx:id="chatgpt_image_view" preserveRatio="true"/>
+<!--                                        <Rectangle fx:id="black_rectangle_behind_image_view" mouseTransparent="true" fill="black" />-->
+                                        <ImageView fx:id="chatgpt_image_view" preserveRatio="true" opacity="1"/>
                                         <Rectangle fx:id="rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint"
                                                    mouseTransparent="true" fill="black" opacity="0.0"/>
                                         <!--<ImageView fx:id="blurry_chatgpt_image_view" preserveRatio="true"
@@ -398,7 +399,8 @@
 
                                             <!-- Row 2 -->
                                             <Label text="Fade in: " GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                                            <Slider fx:id="slider_to_control_fade_in_of_image" max="2" GridPane.columnIndex="1"
+                                            <Slider fx:id="slider_to_control_fade_in_of_image" max="2"
+                                                    GridPane.columnIndex="1"
                                                     GridPane.rowIndex="1"
                                                     maxWidth="Infinity"/>
                                             <StackPane GridPane.columnIndex="2" GridPane.rowIndex="1">
@@ -409,7 +411,8 @@
 
                                             <!-- Row 3 -->
                                             <Label text="Fade out: " GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                                            <Slider fx:id="slider_to_control_fade_out_of_image" max="2" GridPane.columnIndex="1"
+                                            <Slider fx:id="slider_to_control_fade_out_of_image" max="2"
+                                                    GridPane.columnIndex="1"
                                                     GridPane.rowIndex="2"
                                                     maxWidth="Infinity"/>
                                             <StackPane GridPane.columnIndex="2" GridPane.rowIndex="2">
