@@ -4862,6 +4862,10 @@ public class HelloApplication extends Application {
                     private HBox hbox_containing_the_plus_minus_for_right_margin;
                     private JFXButton increase_right_margin_button;
                     private JFXButton decrease_right_margin_button;
+                    private Label fake_left_margin_label;
+                    private Label fake_right_margin_label;
+                    private StackPane pane_holding_left_margin_label;
+                    private StackPane pane_holding_right_margin_label;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -4932,6 +4936,10 @@ public class HelloApplication extends Application {
                         hbox_containing_the_plus_minus_for_right_margin = new HBox();
                         increase_right_margin_button =  new JFXButton();
                         decrease_right_margin_button = new JFXButton();
+                        fake_left_margin_label = new Label();
+                        fake_right_margin_label = new Label();
+                        pane_holding_left_margin_label = new StackPane();
+                        pane_holding_right_margin_label = new StackPane();
 
 
 
@@ -5296,12 +5304,88 @@ public class HelloApplication extends Application {
                             }
                         });
 
+                        //hbox_hosting_the_right_margin
+                        hbox_hosting_the_right_margin.setAlignment(Pos.CENTER);
+                        VBox.setMargin(hbox_hosting_the_right_margin, new Insets(half_top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+                        bind_an_item_to_a_property(hbox_hosting_the_right_margin, root.widthProperty(), start_and_end_margin * 2);
+
+                        //label_saying_right_margin
+                        label_saying_right_margin.setText("Right Margin: ");
+
+                        //right_margin_input_field
+                        format_the_text_filed_to_only_accept_positive_integers(right_margin_input_field);
+                        HBox.setMargin(right_margin_input_field, new Insets(0, 0, 0, 10));
+                        HBox.setHgrow(right_margin_input_field, Priority.ALWAYS);
+                        right_margin_input_field.setMaxWidth(Double.MAX_VALUE);
+                        right_margin_input_field.setText("0");
+
+                        //hbox_containing_the_plus_minus_for_right_margin
+                        HBox.setMargin(hbox_containing_the_plus_minus_for_right_margin, new Insets(0, 0, 0, 10));
+                        hbox_containing_the_plus_minus_for_right_margin.setStyle("-fx-border-color: #F3F3F3; -fx-border-width: 1;");
+
+                        //increase_right_margin_button
+                        increase_right_margin_button.setFocusTraversable(false);
+                        increase_right_margin_button.setRipplerFill(javafx.scene.paint.Color.web(hex_ripple_coulour_for_jfx_buttons));
+                        increase_right_margin_button.prefHeightProperty().bind(left_margin_input_field.heightProperty());
+                        increase_right_margin_button.minHeightProperty().bind(left_margin_input_field.heightProperty());
+                        increase_right_margin_button.maxHeightProperty().bind(left_margin_input_field.heightProperty());
+                        increase_right_margin_button.heightProperty().addListener(new ChangeListener<Number>() {
+                            @Override
+                            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                                increase_right_margin_button.setGraphic(return_the_icon("plus", (int) (t1.doubleValue() * 2D / 3D), (int) (t1.doubleValue() * 2D / 3D)));
+                                increase_right_margin_button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                                increase_right_margin_button.setAlignment(Pos.CENTER);
+                            }
+                        });
+
+                        //decrease_right_margin_button
+                        decrease_right_margin_button.setFocusTraversable(false);
+                        decrease_right_margin_button.setRipplerFill(javafx.scene.paint.Color.web(hex_ripple_coulour_for_jfx_buttons));
+                        decrease_right_margin_button.prefHeightProperty().bind(left_margin_input_field.heightProperty());
+                        decrease_right_margin_button.minHeightProperty().bind(left_margin_input_field.heightProperty());
+                        decrease_right_margin_button.maxHeightProperty().bind(left_margin_input_field.heightProperty());
+                        decrease_right_margin_button.heightProperty().addListener(new ChangeListener<Number>() {
+                            @Override
+                            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                                decrease_right_margin_button.setGraphic(return_the_icon("minus", (int) (t1.doubleValue() * 2D / 3D), (int) (t1.doubleValue() * 2D / 3D)));
+                                decrease_right_margin_button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                                decrease_right_margin_button.setAlignment(Pos.CENTER);
+                            }
+                        });
+
+                        //fake_left_margin_label
+                        fake_left_margin_label.setText("Left Margin: ");
+                        fake_left_margin_label.setVisible(false);
+
+                        //fake_right_margin_label
+                        fake_right_margin_label.setText("Right Margin: ");
+                        fake_right_margin_label.setVisible(false);
+
+                        //pane_holding_left_margin_label
+                        pane_holding_left_margin_label.setAlignment(Pos.CENTER);
+                        pane_holding_left_margin_label.getChildren().add(label_saying_left_margin);
+                        pane_holding_left_margin_label.getChildren().add(fake_right_margin_label);
+
+
+                        //pane_holding_right_margin_label
+                        pane_holding_left_margin_label.setAlignment(Pos.CENTER);
+                        pane_holding_right_margin_label.getChildren().add(label_saying_right_margin);
+                        pane_holding_right_margin_label.getChildren().add(fake_left_margin_label);
+
+
                         hbox_containing_the_plus_minus_for_left_margin.getChildren().add(increase_left_margin_button);
                         hbox_containing_the_plus_minus_for_left_margin.getChildren().add(decrease_left_margin_button);
 
-                        hbox_hosting_the_left_margin.getChildren().add(label_saying_left_margin);
+                        hbox_containing_the_plus_minus_for_right_margin.getChildren().add(increase_right_margin_button);
+                        hbox_containing_the_plus_minus_for_right_margin.getChildren().add(decrease_right_margin_button);
+
+                        hbox_hosting_the_left_margin.getChildren().add(pane_holding_left_margin_label);
                         hbox_hosting_the_left_margin.getChildren().add(left_margin_input_field);
                         hbox_hosting_the_left_margin.getChildren().add(hbox_containing_the_plus_minus_for_left_margin);
+
+                        hbox_hosting_the_right_margin.getChildren().add(pane_holding_right_margin_label);
+                        hbox_hosting_the_right_margin.getChildren().add(right_margin_input_field);
+                        hbox_hosting_the_right_margin.getChildren().add(hbox_containing_the_plus_minus_for_right_margin);
 
 
                         hbox_holding_the_margin_label.getChildren().add(margin_label);
@@ -5367,6 +5451,7 @@ public class HelloApplication extends Application {
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_font_size);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_holding_the_margin_label);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_hosting_the_left_margin);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_hosting_the_right_margin);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_margin);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_hosting_the_stroke_label);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(vbox_carrying_the_stroke_stuff);
@@ -5606,11 +5691,25 @@ public class HelloApplication extends Application {
                             increase_left_margin_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-
+                                    change_margin_by_increment(left_margin_input_field,text_item_of_the_selected_verse,item,plus_minus_font_increments,Margin_type.LEFT_MARGIN);
                                 }
                             });
 
                             decrease_left_margin_button.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    change_margin_by_increment(left_margin_input_field,text_item_of_the_selected_verse,item,-plus_minus_font_increments,Margin_type.LEFT_MARGIN);
+                                }
+                            });
+
+                            increase_right_margin_button.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    change_margin_by_increment(left_margin_input_field,text_item_of_the_selected_verse,item,plus_minus_font_increments,Margin_type.RIGHT_MARGIN);
+                                }
+                            });
+
+                            decrease_right_margin_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
 
@@ -5652,6 +5751,26 @@ public class HelloApplication extends Application {
         text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(verse_text, text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
         place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
         text_field_for_font_size.positionCaret(Math.min(caret_position, text_field_for_font_size.getText().length()));
+    }
+
+    private void change_margin_by_increment(TextField text_field_for_left_margin, Text_item text_item_of_the_selected_verse, Language_info item, double plus_minus_font_increments_local, Margin_type margin_type) {
+        String verse_text = text_item_of_the_selected_verse.getVerse_text();
+        int caret_position = text_field_for_left_margin.getCaretPosition();
+        String font_text_field_input = text_field_for_left_margin.getText();
+        double margin = 0;
+        if (!font_text_field_input.isEmpty()) {
+            margin = Double.parseDouble(font_text_field_input);
+        }
+        margin = margin + plus_minus_font_increments_local;
+        text_field_for_left_margin.setText(remove_trailing_zeroes_from_number(margin));
+        if(margin_type == Margin_type.LEFT_MARGIN){
+            text_item_of_the_selected_verse.setLeft_margin(margin);
+        } else if(margin_type == Margin_type.RIGHT_MARGIN){
+            text_item_of_the_selected_verse.setRight_margin(margin);
+        }
+        text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(verse_text, text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
+        place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+        text_field_for_left_margin.positionCaret(Math.min(caret_position, text_field_for_left_margin.getText().length()));
     }
 
     private void set_up_or_hide_the_canvas(HelloController helloController, Language_info language_info) {
