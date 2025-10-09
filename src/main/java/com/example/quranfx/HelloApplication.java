@@ -5712,7 +5712,7 @@ public class HelloApplication extends Application {
                             decrease_right_margin_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-
+                                    change_margin_by_increment(left_margin_input_field,text_item_of_the_selected_verse,item,-plus_minus_font_increments,Margin_type.RIGHT_MARGIN);
                                 }
                             });
 
