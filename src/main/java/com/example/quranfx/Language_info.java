@@ -28,6 +28,7 @@ public class Language_info {
     private ChangeListener<Font_name_and_displayed_name> sub_font_change_listener;
     private ChangeListener<? super Color> stroke_color_change_listener;
     private ChangeListener<? super Number> stroke_weight_change_listener;
+    private ChangeListener<? super Boolean> advanced_options_change_listener;
 
 
     public Language_info(String language_name, ArrayList<Text_item> arrayList_of_all_of_the_translations) {
@@ -178,5 +179,13 @@ public class Language_info {
 
     public void setStroke_weight_change_listener(ChangeListener<? super Number> stroke_weight_change_listener) {
         this.stroke_weight_change_listener = stroke_weight_change_listener;
+    }
+
+    public ChangeListener<? super Boolean> getAdvanced_options_change_listener() {
+        return advanced_options_change_listener;
+    }
+
+    public void setAdvanced_options_change_listener(ChangeListener<? super Boolean> advanced_options_change_listener) {
+        this.advanced_options_change_listener = advanced_options_change_listener;
     }
 }
