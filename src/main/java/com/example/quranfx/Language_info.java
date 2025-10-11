@@ -29,6 +29,8 @@ public class Language_info {
     private ChangeListener<? super Color> stroke_color_change_listener;
     private ChangeListener<? super Number> stroke_weight_change_listener;
     private ChangeListener<? super Boolean> advanced_options_change_listener;
+    private ChangeListener<String> left_margin_text_change_listener;
+    private ChangeListener<String> right_margin_text_change_listener;
 
 
     public Language_info(String language_name, ArrayList<Text_item> arrayList_of_all_of_the_translations) {
@@ -187,5 +189,21 @@ public class Language_info {
 
     public void setAdvanced_options_change_listener(ChangeListener<? super Boolean> advanced_options_change_listener) {
         this.advanced_options_change_listener = advanced_options_change_listener;
+    }
+
+    public ChangeListener<String> getLeft_margin_text_change_listener() {
+        return left_margin_text_change_listener;
+    }
+
+    public void setLeft_margin_text_change_listener(ChangeListener<String> left_margin_text_change_listener) {
+        this.left_margin_text_change_listener = left_margin_text_change_listener;
+    }
+
+    public ChangeListener<String> getRight_margin_text_change_listener() {
+        return right_margin_text_change_listener;
+    }
+
+    public void setRight_margin_text_change_listener(ChangeListener<String> right_margin_text_change_listener) {
+        this.right_margin_text_change_listener = right_margin_text_change_listener;
     }
 }
