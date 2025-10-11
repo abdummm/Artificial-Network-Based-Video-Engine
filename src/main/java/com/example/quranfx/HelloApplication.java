@@ -76,6 +76,7 @@ import okhttp3.*;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.io.FileUtils;
+import org.controlsfx.control.ToggleSwitch;
 import org.imgscalr.Scalr;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
@@ -4839,7 +4840,7 @@ public class HelloApplication extends Application {
                     private Slider stroke_weight_slider;
                     private Label label_saying_wieght_beside_slider;
                     private HBox hbox_hosting_the_weight_label_and_the_slider;
-                    private Separator separator_under_stroke;
+                    private Separator separator_under_advanced_options;
                     private JFXButton reset_everything_button;
                     private Separator separator_between_reset_and_apply_to_all_button;
                     private JFXButton apply_to_all_verses_button;
@@ -4866,6 +4867,10 @@ public class HelloApplication extends Application {
                     private Label fake_right_margin_label;
                     private StackPane pane_holding_left_margin_label;
                     private StackPane pane_holding_right_margin_label;
+                    private HBox hbox_holding_the_advanced_options_toggle;
+                    private Label label_holding_advanced_options;
+                    private ToggleSwitch toggle_switch_for_advanced_options;
+                    private VBox holds_advnaced_options;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -4913,7 +4918,7 @@ public class HelloApplication extends Application {
                         stroke_weight_slider = new Slider();
                         label_saying_wieght_beside_slider = new Label();
                         hbox_hosting_the_weight_label_and_the_slider = new HBox();
-                        separator_under_stroke = new Separator();
+                        separator_under_advanced_options = new Separator();
                         reset_everything_button = new JFXButton();
                         separator_between_reset_and_apply_to_all_button = new Separator();
                         apply_to_all_verses_button = new JFXButton();
@@ -4940,6 +4945,10 @@ public class HelloApplication extends Application {
                         fake_right_margin_label = new Label();
                         pane_holding_left_margin_label = new StackPane();
                         pane_holding_right_margin_label = new StackPane();
+                        hbox_holding_the_advanced_options_toggle = new HBox();
+                        label_holding_advanced_options = new Label();
+                        toggle_switch_for_advanced_options = new ToggleSwitch();
+                        holds_advnaced_options = new VBox();
 
 
 
@@ -5206,8 +5215,8 @@ public class HelloApplication extends Application {
                         VBox.setMargin(hbox_hosting_the_weight_label_and_the_slider, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
                         bind_an_item_to_a_property(hbox_hosting_the_weight_label_and_the_slider, root.widthProperty(), start_and_end_margin * 2);
 
-                        //separator_under_stroke
-                        VBox.setMargin(separator_under_stroke, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
+                        //separator_under_advanced_options
+                        VBox.setMargin(separator_under_advanced_options, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
 
                         //hbox_hosting_reset_and_apply_to_all
                         VBox.setMargin(hbox_hosting_reset_and_apply_to_all, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
@@ -5372,6 +5381,25 @@ public class HelloApplication extends Application {
                         pane_holding_right_margin_label.getChildren().add(label_saying_right_margin);
                         pane_holding_right_margin_label.getChildren().add(fake_left_margin_label);
 
+                        //hbox_holding_the_advanced_options_toggle
+                        hbox_holding_the_advanced_options_toggle.setAlignment(Pos.CENTER);
+
+                        //label_holding_advanced_options
+                        label_holding_advanced_options.setText("Advanced Options");
+
+                        //toggle_switch_for_advanced_options
+                        toggle_switch_for_advanced_options.getStyleClass().add("toggle_switch_style");
+
+                        //holds_advnaced_options
+                        holds_advnaced_options.setAlignment(Pos.CENTER);
+                        holds_advnaced_options.setVisible(false);
+                        holds_advnaced_options.setManaged(false);
+
+
+                        hbox_holding_the_advanced_options_toggle.getChildren().add(label_holding_advanced_options);
+                        hbox_holding_the_advanced_options_toggle.getChildren().add(toggle_switch_for_advanced_options);
+
+
 
                         hbox_containing_the_plus_minus_for_left_margin.getChildren().add(increase_left_margin_button);
                         hbox_containing_the_plus_minus_for_left_margin.getChildren().add(decrease_left_margin_button);
@@ -5437,9 +5465,6 @@ public class HelloApplication extends Application {
                         v_box_inside_the_stack_pane.getChildren().add(check_box_is_the_langauge_enabled);
                         v_box_inside_the_stack_pane.getChildren().add(separator_between_check_box_and_everything);
 
-                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_hosting_the_position_label);
-                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_for_x_and_y_positions);
-                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_position);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_containing_the_text_color_label);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(color_picker);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_color_picker);
@@ -5449,17 +5474,24 @@ public class HelloApplication extends Application {
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_font_picker);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_containing_the_font_size);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_font_size);
-                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_holding_the_margin_label);
-                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_hosting_the_left_margin);
-                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_hosting_the_right_margin);
-                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_margin);
-                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_hosting_the_stroke_label);
-                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(vbox_carrying_the_stroke_stuff);
-                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_stroke);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_holding_the_advanced_options_toggle);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(holds_advnaced_options);
+
+                        holds_advnaced_options.getChildren().add(hbox_hosting_the_position_label);
+                        holds_advnaced_options.getChildren().add(hbox_for_x_and_y_positions);
+                        holds_advnaced_options.getChildren().add(separator_under_position);
+                        holds_advnaced_options.getChildren().add(hbox_holding_the_margin_label);
+                        holds_advnaced_options.getChildren().add(hbox_hosting_the_left_margin);
+                        holds_advnaced_options.getChildren().add(hbox_hosting_the_right_margin);
+                        holds_advnaced_options.getChildren().add(separator_under_margin);
+                        holds_advnaced_options.getChildren().add(hbox_hosting_the_stroke_label);
+                        holds_advnaced_options.getChildren().add(vbox_carrying_the_stroke_stuff);
+                        v_box_inside_the_stack_pane.getChildren().add(v_box_with_all_of_the_controls_except_check_box);
+
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_advanced_options);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_hosting_reset_and_apply_to_all);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(item_at_the_bottom_of_extended_pane);
 
-                        v_box_inside_the_stack_pane.getChildren().add(v_box_with_all_of_the_controls_except_check_box);
 
                         stackPane_extended_with_all_of_the_info.getChildren().add(v_box_inside_the_stack_pane);
                         root.getChildren().add(stackPane_of_the_top);
@@ -5500,6 +5532,10 @@ public class HelloApplication extends Application {
                                     if (old_language_info.getStroke_weight_change_listener() != null) {
                                         stroke_weight_slider.valueProperty().removeListener(old_language_info.getStroke_weight_change_listener());
                                         old_language_info.setStroke_weight_change_listener(null);
+                                    }
+                                    if(old_language_info.getAdvanced_options_change_listener()!=null){
+                                        toggle_switch_for_advanced_options.selectedProperty().removeListener(old_language_info.getAdvanced_options_change_listener());
+                                        old_language_info.setAdvanced_options_change_listener(null);
                                     }
                                 }
                             }
@@ -5665,6 +5701,16 @@ public class HelloApplication extends Application {
                             stroke_weight_slider.valueProperty().addListener(change_listener_for_stroke_weight);
                             item.setStroke_weight_change_listener(change_listener_for_stroke_weight);
 
+                            ChangeListener<? super Boolean> change_listener_for_advanced_options = new ChangeListener<Boolean>() {
+                                @Override
+                                public void changed(ObservableValue<? extends Boolean> observableValue, Boolean old_value, Boolean new_value) {
+                                    holds_advnaced_options.setVisible(new_value);
+                                    holds_advnaced_options.setManaged(new_value);
+                                }
+                            };
+                            toggle_switch_for_advanced_options.selectedProperty().addListener(change_listener_for_advanced_options);
+                            item.setAdvanced_options_change_listener(change_listener_for_advanced_options);
+
                             increase_font_size_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
@@ -5729,6 +5775,7 @@ public class HelloApplication extends Application {
 
                                 }
                             });
+
                             setGraphic(root);
                         }
                     }
@@ -5932,6 +5979,38 @@ public class HelloApplication extends Application {
         gc.fillText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());
     }
 
+    private void place_the_box_surrounding_the_text(Canvas canvas, Text_item text_item) {
+        String adjusted_verse_text = text_item.getAdjusted_verse_text();
+        Point2D point2D_of_the_text = text_item.getPoint2D();
+        javafx.scene.paint.Color color_of_text = text_item.getColor();
+        Text_on_canvas_mode text_on_canvas_mode = text_item.getText_on_canvas_mode();
+        Font font_for_verse = text_item.getFont();
+        Stroke_text strokeText = text_item.getStrokeText();
+        boolean is_stroke_enabled = strokeText.isIs_the_stroke_on();
+        javafx.scene.paint.Color stroke_color = strokeText.getStroke_color();
+        double stroke_weight = strokeText.getStroke_weight();
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        if (text_on_canvas_mode == Text_on_canvas_mode.CENTER) {
+            gc.setTextAlign(TextAlignment.CENTER);
+            gc.setTextBaseline(VPos.CENTER);
+        } else if (text_on_canvas_mode == Text_on_canvas_mode.TOP_LEFT) {
+            gc.setTextAlign(TextAlignment.LEFT);   // horizontal: left edge
+            gc.setTextBaseline(VPos.TOP);          // vertical: top edge
+        }
+        gc.setFont(font_for_verse);
+        if (is_stroke_enabled && stroke_weight > 0) {
+            gc.setLineJoin(StrokeLineJoin.ROUND);
+            gc.setMiterLimit(1.0);
+            gc.setLineCap(StrokeLineCap.ROUND);
+            gc.setStroke(stroke_color); // TODO fix the stroke lines going out of stroke, get back to chatgpt
+            gc.setLineWidth(stroke_weight);
+            gc.strokeText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());
+        }
+        gc.setFill(color_of_text);
+        gc.fillText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());
+    }
+
     private void bind_the_canvas_to_the_image_view(HelloController helloController, Canvas canvas) {
         DoubleBinding x_binding = new DoubleBinding() {
             {
@@ -5991,6 +6070,7 @@ public class HelloApplication extends Application {
 
     private void add_the_css_files_at_the_start(Scene scene) {
         add_style_sheet_to_the_scene(scene, "my-separator.css");
+        add_style_sheet_to_the_scene(scene, "toggle_switch_style.css");
     }
 
     private void format_the_text_filed_to_only_accept_positive_integers(TextField textField) {
