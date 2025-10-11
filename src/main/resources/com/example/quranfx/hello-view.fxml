@@ -358,7 +358,7 @@
                                         <Label text="Text" style="-fx-font-size: 16px;"/>
                                     </HBox>
                                     <ListView fx:id="list_view_with_all_of_the_languages" focusTraversable="false"
-                                              prefHeight="300" maxHeight="300">
+                                              VBox.vgrow="ALWAYS">
                                         <VBox.margin>
                                             <Insets top="10.0"/>
                                         </VBox.margin>
