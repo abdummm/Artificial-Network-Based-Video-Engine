@@ -81,6 +81,7 @@ import org.imgscalr.Scalr;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.kordamp.ikonli.FontLoader;
 
 import javax.imageio.ImageIO;
 
@@ -5591,6 +5592,7 @@ public class HelloApplication extends Application {
                             color_picker.setValue(text_item_of_the_selected_verse.getColor());
                             if (check_box_is_the_langauge_enabled.isSelected()) {
                                 place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                             }
                             Stroke_text strokeText = text_item_of_the_selected_verse.getStrokeText();
                             vbox_carrying_the_stroke_stuff.setDisable(!strokeText.isIs_the_stroke_on());
@@ -5607,6 +5609,7 @@ public class HelloApplication extends Application {
                                     }
                                     text_item_of_the_selected_verse.set_x_position(new_x_pos);
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             };
                             x_position_of_text.textProperty().addListener(x_pos_text_feild_change_listener);
@@ -5622,6 +5625,7 @@ public class HelloApplication extends Application {
                                     }
                                     text_item_of_the_selected_verse.set_y_position(new_y_pos);
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             };
                             y_position_of_text.textProperty().addListener(y_pos_text_feild_change_listener);
@@ -5633,6 +5637,7 @@ public class HelloApplication extends Application {
                                 public void changed(ObservableValue<? extends javafx.scene.paint.Color> observableValue, javafx.scene.paint.Color old_color, javafx.scene.paint.Color new_color) {
                                     text_item_of_the_selected_verse.setColor(new_color);
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             };
                             color_picker.valueProperty().addListener(color_picker_change_listener);
@@ -5649,6 +5654,7 @@ public class HelloApplication extends Application {
                                     text_item_of_the_selected_verse.setFont_size(font_size);
                                     text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             };
                             text_field_for_font_size.textProperty().addListener(font_size_change_listen);
@@ -5664,6 +5670,7 @@ public class HelloApplication extends Application {
                                     combox_of_all_of_fonts_sub_choices.getSelectionModel().select(sub_fonts.getRegular_position());
                                     text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     //combox_of_all_of_fonts_sub_choices.setVisibleRowCount(sub_fonts.getFont_names().size());
                                 }
                             };
@@ -5679,6 +5686,7 @@ public class HelloApplication extends Application {
                                         text_item_of_the_selected_verse.setFont(new Font(new_font_name_and_displayed_name.getFont_name(), font_size));
                                         text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
                                         place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                        place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     }
                                 }
                             };
@@ -5691,6 +5699,7 @@ public class HelloApplication extends Application {
                                 public void changed(ObservableValue<? extends javafx.scene.paint.Color> observableValue, javafx.scene.paint.Color old_color, javafx.scene.paint.Color new_color) {
                                     text_item_of_the_selected_verse.getStrokeText().setStroke_color(new_color);
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             };
                             stroke_color_picker.valueProperty().addListener(change_listener_for_stroke_color);
@@ -5702,6 +5711,7 @@ public class HelloApplication extends Application {
                                 public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
                                     text_item_of_the_selected_verse.getStrokeText().setStroke_weight(new_number.doubleValue());
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     label_hosting_the_percentage_of_weight.setText(return_formatted_string_to_1_decimal_place_always(stroke_weight_slider.getValue()));
                                 }
                             };
@@ -5725,6 +5735,9 @@ public class HelloApplication extends Application {
                                     if (!new_string.isEmpty()) {
                                         left_margin = Double.parseDouble(new_string);
                                     }
+                                    text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), left_margin, text_item_of_the_selected_verse.getRight_margin()));
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             };
                             left_margin_input_field.textProperty().addListener(change_listener_for_left_margin_text);
@@ -5738,6 +5751,9 @@ public class HelloApplication extends Application {
                                     if (!new_string.isEmpty()) {
                                         right_margin = Double.parseDouble(new_string);
                                     }
+                                    text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), right_margin));
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             };
                             right_margin_input_field.textProperty().addListener(change_listener_for_right_margin_text);
@@ -5764,6 +5780,7 @@ public class HelloApplication extends Application {
                                     vbox_carrying_the_stroke_stuff.setDisable(!stroke_check_box.isSelected());
                                     text_item_of_the_selected_verse.getStrokeText().setIs_the_stroke_on(stroke_check_box.isSelected());
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             });
 
@@ -5773,6 +5790,7 @@ public class HelloApplication extends Application {
                                     change_margin_by_increment(left_margin_input_field, text_item_of_the_selected_verse, item, plus_minus_font_increments, Margin_type.LEFT_MARGIN);
                                     text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             });
 
@@ -5782,6 +5800,7 @@ public class HelloApplication extends Application {
                                     change_margin_by_increment(left_margin_input_field, text_item_of_the_selected_verse, item, -plus_minus_font_increments, Margin_type.LEFT_MARGIN);
                                     text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             });
 
@@ -5791,6 +5810,7 @@ public class HelloApplication extends Application {
                                     change_margin_by_increment(right_margin_input_field, text_item_of_the_selected_verse, item, plus_minus_font_increments, Margin_type.RIGHT_MARGIN);
                                     text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             });
 
@@ -5800,6 +5820,7 @@ public class HelloApplication extends Application {
                                     change_margin_by_increment(right_margin_input_field, text_item_of_the_selected_verse, item, -plus_minus_font_increments, Margin_type.RIGHT_MARGIN);
                                     text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             });
 
@@ -5839,6 +5860,7 @@ public class HelloApplication extends Application {
         text_item_of_the_selected_verse.setFont_size(font_size);
         text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(verse_text, text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
         place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+        place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
         text_field_for_font_size.positionCaret(Math.min(caret_position, text_field_for_font_size.getText().length()));
     }
 
@@ -5859,6 +5881,7 @@ public class HelloApplication extends Application {
         }
         text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(verse_text, text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
         place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+        place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
         text_field_for_left_margin.positionCaret(Math.min(caret_position, text_field_for_left_margin.getText().length()));
     }
 
@@ -5868,6 +5891,7 @@ public class HelloApplication extends Application {
             Canvas canvas = create_the_translation_canvas();
             set_up_the_adjusted_text(text_item, canvas);
             place_the_canvas_text(canvas, text_item);
+            place_the_box_surrounding_the_text(canvas, text_item);
             bind_the_canvas_to_the_image_view(helloController, canvas);
             set_the_canvas_data(canvas, language_info);
             add_the_canvas_to_the_main_pane(helloController, canvas);
@@ -6018,7 +6042,7 @@ public class HelloApplication extends Application {
             gc.strokeText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());
         }
         gc.setFill(color_of_text);
-        gc.fillText(adjusted_verse_text, point2D_of_the_text.getX() + text_item.getLeft_margin() - text_item.getRight_margin(), point2D_of_the_text.getY());
+        gc.fillText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());
     }
 
     private void place_the_box_surrounding_the_text(Canvas canvas, Text_item text_item) {
@@ -6027,30 +6051,17 @@ public class HelloApplication extends Application {
         javafx.scene.paint.Color color_of_text = text_item.getColor();
         Text_on_canvas_mode text_on_canvas_mode = text_item.getText_on_canvas_mode();
         Font font_for_verse = text_item.getFont();
-        Stroke_text strokeText = text_item.getStrokeText();
-        boolean is_stroke_enabled = strokeText.isIs_the_stroke_on();
-        javafx.scene.paint.Color stroke_color = strokeText.getStroke_color();
-        double stroke_weight = strokeText.getStroke_weight();
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        if (text_on_canvas_mode == Text_on_canvas_mode.CENTER) {
-            gc.setTextAlign(TextAlignment.CENTER);
-            gc.setTextBaseline(VPos.CENTER);
-        } else if (text_on_canvas_mode == Text_on_canvas_mode.TOP_LEFT) {
-            gc.setTextAlign(TextAlignment.LEFT);   // horizontal: left edge
-            gc.setTextBaseline(VPos.TOP);          // vertical: top edge
-        }
-        gc.setFont(font_for_verse);
-        if (is_stroke_enabled && stroke_weight > 0) {
-            gc.setLineJoin(StrokeLineJoin.ROUND);
-            gc.setMiterLimit(1.0);
-            gc.setLineCap(StrokeLineCap.ROUND);
-            gc.setStroke(stroke_color); // TODO fix the stroke lines going out of stroke, get back to chatgpt
-            gc.setLineWidth(stroke_weight);
-            gc.strokeText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());
-        }
-        gc.setFill(color_of_text);
-        gc.fillText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());
+        Text text = new Text(adjusted_verse_text);
+        text.setFont(text_item.getFont());
+        double width = text.getLayoutBounds().getWidth();
+        double height = text.getLayoutBounds().getHeight();
+        Point2D top_left_point = new Point2D(text_item.getPoint2D().getX() - width/2,text_item.getPoint2D().getY()-height/2);
+        gc.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        gc.setStroke(javafx.scene.paint.Color.RED);
+        gc.setLineWidth(2);
+        gc.fillRect(top_left_point.getX(), top_left_point.getY(), width, height);
+        gc.strokeRect(top_left_point.getX(), top_left_point.getY(), width, height);
     }
 
     private void bind_the_canvas_to_the_image_view(HelloController helloController, Canvas canvas) {
