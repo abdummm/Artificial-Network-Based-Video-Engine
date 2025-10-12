@@ -4931,15 +4931,15 @@ public class HelloApplication extends Application {
                         margin_label = new Label();
                         hbox_hosting_the_left_margin = new HBox();
                         label_saying_left_margin = new Label();
-                        left_margin_input_field = new  TextField();
+                        left_margin_input_field = new TextField();
                         hbox_containing_the_plus_minus_for_left_margin = new HBox();
                         increase_left_margin_button = new JFXButton();
                         decrease_left_margin_button = new JFXButton();
                         hbox_hosting_the_right_margin = new HBox();
                         label_saying_right_margin = new Label();
-                        right_margin_input_field =  new  TextField();
+                        right_margin_input_field = new TextField();
                         hbox_containing_the_plus_minus_for_right_margin = new HBox();
-                        increase_right_margin_button =  new JFXButton();
+                        increase_right_margin_button = new JFXButton();
                         decrease_right_margin_button = new JFXButton();
                         fake_left_margin_label = new Label();
                         fake_right_margin_label = new Label();
@@ -4949,7 +4949,6 @@ public class HelloApplication extends Application {
                         label_holding_advanced_options = new Label();
                         toggle_switch_for_advanced_options = new ToggleSwitch();
                         holds_advnaced_options = new VBox();
-
 
 
                         final double top_margin_in_vbox_control = 10;
@@ -5383,6 +5382,7 @@ public class HelloApplication extends Application {
 
                         //hbox_holding_the_advanced_options_toggle
                         hbox_holding_the_advanced_options_toggle.setAlignment(Pos.CENTER);
+                        VBox.setMargin(hbox_holding_the_advanced_options_toggle, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
 
                         //label_holding_advanced_options
                         label_holding_advanced_options.setText("Advanced Options");
@@ -5398,7 +5398,6 @@ public class HelloApplication extends Application {
 
                         hbox_holding_the_advanced_options_toggle.getChildren().add(label_holding_advanced_options);
                         hbox_holding_the_advanced_options_toggle.getChildren().add(toggle_switch_for_advanced_options);
-
 
 
                         hbox_containing_the_plus_minus_for_left_margin.getChildren().add(increase_left_margin_button);
@@ -5533,9 +5532,17 @@ public class HelloApplication extends Application {
                                         stroke_weight_slider.valueProperty().removeListener(old_language_info.getStroke_weight_change_listener());
                                         old_language_info.setStroke_weight_change_listener(null);
                                     }
-                                    if(old_language_info.getAdvanced_options_change_listener()!=null){
+                                    if (old_language_info.getAdvanced_options_change_listener() != null) {
                                         toggle_switch_for_advanced_options.selectedProperty().removeListener(old_language_info.getAdvanced_options_change_listener());
                                         old_language_info.setAdvanced_options_change_listener(null);
+                                    }
+                                    if (old_language_info.getLeft_margin_text_change_listener() != null) {
+                                        left_margin_input_field.textProperty().removeListener(old_language_info.getLeft_margin_text_change_listener());
+                                        old_language_info.setLeft_margin_text_change_listener(null);
+                                    }
+                                    if (old_language_info.getRight_margin_text_change_listener() != null) {
+                                        right_margin_input_field.textProperty().removeListener(old_language_info.getRight_margin_text_change_listener());
+                                        old_language_info.setRight_margin_text_change_listener(null);
                                     }
                                 }
                             }
@@ -5711,6 +5718,32 @@ public class HelloApplication extends Application {
                             toggle_switch_for_advanced_options.selectedProperty().addListener(change_listener_for_advanced_options);
                             item.setAdvanced_options_change_listener(change_listener_for_advanced_options);
 
+                            ChangeListener<String> change_listener_for_left_margin_text = new ChangeListener<String>() {
+                                @Override
+                                public void changed(ObservableValue<? extends String> observableValue, String old_string, String new_string) {
+                                    double left_margin = 0;
+                                    if (!new_string.isEmpty()) {
+                                        left_margin = Double.parseDouble(new_string);
+                                    }
+                                }
+                            };
+                            left_margin_input_field.textProperty().addListener(change_listener_for_left_margin_text);
+                            item.setLeft_margin_text_change_listener(change_listener_for_left_margin_text);
+
+
+                            ChangeListener<String> change_listener_for_right_margin_text = new ChangeListener<String>() {
+                                @Override
+                                public void changed(ObservableValue<? extends String> observableValue, String old_string, String new_string) {
+                                    double right_margin = 0;
+                                    if (!new_string.isEmpty()) {
+                                        right_margin = Double.parseDouble(new_string);
+                                    }
+                                }
+                            };
+                            right_margin_input_field.textProperty().addListener(change_listener_for_right_margin_text);
+                            item.setRight_margin_text_change_listener(change_listener_for_right_margin_text);
+
+
                             increase_font_size_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
@@ -5737,30 +5770,39 @@ public class HelloApplication extends Application {
                             increase_left_margin_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    change_margin_by_increment(left_margin_input_field,text_item_of_the_selected_verse,item,plus_minus_font_increments,Margin_type.LEFT_MARGIN);
+                                    change_margin_by_increment(left_margin_input_field, text_item_of_the_selected_verse, item, plus_minus_font_increments, Margin_type.LEFT_MARGIN);
+                                    text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             });
 
                             decrease_left_margin_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    change_margin_by_increment(left_margin_input_field,text_item_of_the_selected_verse,item,-plus_minus_font_increments,Margin_type.LEFT_MARGIN);
+                                    change_margin_by_increment(left_margin_input_field, text_item_of_the_selected_verse, item, -plus_minus_font_increments, Margin_type.LEFT_MARGIN);
+                                    text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             });
 
                             increase_right_margin_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    change_margin_by_increment(right_margin_input_field,text_item_of_the_selected_verse,item,plus_minus_font_increments,Margin_type.RIGHT_MARGIN);
+                                    change_margin_by_increment(right_margin_input_field, text_item_of_the_selected_verse, item, plus_minus_font_increments, Margin_type.RIGHT_MARGIN);
+                                    text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             });
 
                             decrease_right_margin_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    change_margin_by_increment(right_margin_input_field,text_item_of_the_selected_verse,item,-plus_minus_font_increments,Margin_type.RIGHT_MARGIN); // decrease margin by 1
+                                    change_margin_by_increment(right_margin_input_field, text_item_of_the_selected_verse, item, -plus_minus_font_increments, Margin_type.RIGHT_MARGIN);
+                                    text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             });
+
 
                             reset_everything_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
@@ -5810,9 +5852,9 @@ public class HelloApplication extends Application {
         }
         margin = margin + plus_minus_font_increments_local;
         text_field_for_left_margin.setText(remove_trailing_zeroes_from_number(margin));
-        if(margin_type == Margin_type.LEFT_MARGIN){
+        if (margin_type == Margin_type.LEFT_MARGIN) {
             text_item_of_the_selected_verse.setLeft_margin(margin);
-        } else if(margin_type == Margin_type.RIGHT_MARGIN){
+        } else if (margin_type == Margin_type.RIGHT_MARGIN) {
             text_item_of_the_selected_verse.setRight_margin(margin);
         }
         text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(verse_text, text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
@@ -5824,7 +5866,7 @@ public class HelloApplication extends Application {
         Text_item text_item = language_info.getArrayList_of_all_of_the_translations().get(selected_verse);
         if (language_info.isVisible_check_mark_checked()) {
             Canvas canvas = create_the_translation_canvas();
-            set_up_the_adjusted_text(text_item,canvas);
+            set_up_the_adjusted_text(text_item, canvas);
             place_the_canvas_text(canvas, text_item);
             bind_the_canvas_to_the_image_view(helloController, canvas);
             set_the_canvas_data(canvas, language_info);
@@ -5836,7 +5878,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void set_up_the_adjusted_text(Text_item text_item_of_the_selected_verse, Canvas language_canvas){
+    private void set_up_the_adjusted_text(Text_item text_item_of_the_selected_verse, Canvas language_canvas) {
         text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), language_canvas.getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
     }
 
@@ -5976,7 +6018,7 @@ public class HelloApplication extends Application {
             gc.strokeText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());
         }
         gc.setFill(color_of_text);
-        gc.fillText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());
+        gc.fillText(adjusted_verse_text, point2D_of_the_text.getX() + text_item.getLeft_margin() - text_item.getRight_margin(), point2D_of_the_text.getY());
     }
 
     private void place_the_box_surrounding_the_text(Canvas canvas, Text_item text_item) {
@@ -6447,7 +6489,7 @@ public class HelloApplication extends Application {
     }
 
     private String do_i_need_to_resize_the_verse_text(String verse_text, Font font, double allowed_width, double left_margin, double right_margin) {
-        allowed_width = allowed_width - left_margin - right_margin;
+        allowed_width = allowed_width - 2 * left_margin - 2 * right_margin;
         String[] split_verse_into_words = verse_text.split(" ");
         StringBuilder string_builder_for_final_string = new StringBuilder();
         StringBuilder current_line = new StringBuilder();
