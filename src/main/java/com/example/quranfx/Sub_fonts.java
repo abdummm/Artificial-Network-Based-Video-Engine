@@ -52,4 +52,13 @@ public class Sub_fonts {
     public ArrayList<Font_name_and_displayed_name> getFont_names() {
         return font_names;
     }
+
+    public Font_name_and_displayed_name return_the_font_name_and_displayed_name_based_on_font_name(String font_name){
+        for(int i = 0;i<font_names.size();i++) {
+            if(font_name.equals(font_names.get(i).getFont_name())) {
+                return font_names.get(i);
+            }
+        }
+        return font_names.get(regular_position);
+    }
 }
