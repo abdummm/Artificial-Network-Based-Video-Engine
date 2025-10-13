@@ -5559,6 +5559,32 @@ public class HelloApplication extends Application {
                         } else {
                             Text_item text_item_of_the_selected_verse = item.getArrayList_of_all_of_the_translations().get(selected_verse);
                             make_the_language_translation_extended(stackPane_extended_with_all_of_the_info, down_or_left_image_view, item, item.isItem_extended());
+                            if (item.getLanguage_name().equals("arabic")) {
+                                check_box_is_the_langauge_enabled.setText("Show text");
+                            } else {
+                                check_box_is_the_langauge_enabled.setText("Show translation");
+                            }
+                            select_or_un_select_the_language(item, jfxButton, language_name, check_box_is_the_langauge_enabled, down_or_left_image_view, helloController, v_box_with_all_of_the_controls_except_check_box);
+                            color_picker.setValue(text_item_of_the_selected_verse.getColor());
+                            String main_font_name = text_item_of_the_selected_verse.getFont().getFamily();
+                            String sub_font_name = text_item_of_the_selected_verse.getFont().getName();
+                            combox_of_all_of_fonts.setValue(main_font_name);
+                            Sub_fonts sub_fonts = hashMap_with_all_the_font_families_and_names.get(main_font_name);
+                            combox_of_all_of_fonts_sub_choices.getItems().clear();
+                            combox_of_all_of_fonts_sub_choices.setItems(FXCollections.observableArrayList(sub_fonts.getFont_names()));
+                            combox_of_all_of_fonts_sub_choices.setValue(sub_fonts.return_the_font_name_and_displayed_name_based_on_font_name(sub_font_name));
+                            Point2D point2D_of_the_text = text_item_of_the_selected_verse.getPoint2D();
+                            x_position_of_text.setText(String.valueOf((int) point2D_of_the_text.getX()));
+                            y_position_of_text.setText(String.valueOf((int) point2D_of_the_text.getY()));
+                            text_field_for_font_size.setText(String.valueOf((int) text_item_of_the_selected_verse.getFont_size()));
+                            if (check_box_is_the_langauge_enabled.isSelected()) {
+                                place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                            }
+                            Stroke_text strokeText = text_item_of_the_selected_verse.getStrokeText();
+                            vbox_carrying_the_stroke_stuff.setDisable(!strokeText.isIs_the_stroke_on());
+                            stroke_color_picker.setValue(strokeText.getStroke_color());
+                            stroke_weight_slider.setValue(strokeText.getStroke_weight());
                             jfxButton.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
@@ -5571,7 +5597,6 @@ public class HelloApplication extends Application {
                                     }
                                 }
                             });
-                            select_or_un_select_the_language(item, jfxButton, language_name, check_box_is_the_langauge_enabled, down_or_left_image_view, helloController, v_box_with_all_of_the_controls_except_check_box);
                             check_box_is_the_langauge_enabled.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
@@ -5580,24 +5605,85 @@ public class HelloApplication extends Application {
                                     set_up_or_hide_the_canvas(helloController, item);
                                 }
                             });
-                            if (item.getLanguage_name().equals("arabic")) {
-                                check_box_is_the_langauge_enabled.setText("Show text");
-                            } else {
-                                check_box_is_the_langauge_enabled.setText("Show translation");
-                            }
-                            Point2D point2D_of_the_text = text_item_of_the_selected_verse.getPoint2D();
-                            x_position_of_text.setText(String.valueOf((int) point2D_of_the_text.getX()));
-                            y_position_of_text.setText(String.valueOf((int) point2D_of_the_text.getY()));
-                            text_field_for_font_size.setText(String.valueOf((int) text_item_of_the_selected_verse.getFont_size()));
-                            color_picker.setValue(text_item_of_the_selected_verse.getColor());
-                            if (check_box_is_the_langauge_enabled.isSelected()) {
-                                place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
-                                place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
-                            }
-                            Stroke_text strokeText = text_item_of_the_selected_verse.getStrokeText();
-                            vbox_carrying_the_stroke_stuff.setDisable(!strokeText.isIs_the_stroke_on());
-                            stroke_color_picker.setValue(strokeText.getStroke_color());
-                            stroke_weight_slider.setValue(strokeText.getStroke_weight());
+
+                            increase_font_size_button.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    change_text_size_by_increment(text_field_for_font_size, text_item_of_the_selected_verse, item, plus_minus_font_increments);
+                                }
+                            });
+
+                            decrease_font_size_button.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    change_text_size_by_increment(text_field_for_font_size, text_item_of_the_selected_verse, item, -plus_minus_font_increments);
+                                }
+                            });
+
+                            stroke_check_box.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    vbox_carrying_the_stroke_stuff.setDisable(!stroke_check_box.isSelected());
+                                    text_item_of_the_selected_verse.getStrokeText().setIs_the_stroke_on(stroke_check_box.isSelected());
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                }
+                            });
+
+                            increase_left_margin_button.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    change_margin_by_increment(left_margin_input_field, text_item_of_the_selected_verse, item, plus_minus_font_increments, Margin_type.LEFT_MARGIN);
+                                    text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                }
+                            });
+
+                            decrease_left_margin_button.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    change_margin_by_increment(left_margin_input_field, text_item_of_the_selected_verse, item, -plus_minus_font_increments, Margin_type.LEFT_MARGIN);
+                                    text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                }
+                            });
+
+                            increase_right_margin_button.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    change_margin_by_increment(right_margin_input_field, text_item_of_the_selected_verse, item, plus_minus_font_increments, Margin_type.RIGHT_MARGIN);
+                                    text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                }
+                            });
+
+                            decrease_right_margin_button.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    change_margin_by_increment(right_margin_input_field, text_item_of_the_selected_verse, item, -plus_minus_font_increments, Margin_type.RIGHT_MARGIN);
+                                    text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                }
+                            });
+
+
+                            reset_everything_button.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+
+                                }
+                            });
+
+                            apply_to_all_verses_button.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+
+                                }
+                            });
 
                             //x_position_text_field_listener
                             ChangeListener<String> x_pos_text_feild_change_listener = new ChangeListener<String>() {
@@ -5758,86 +5844,6 @@ public class HelloApplication extends Application {
                             };
                             right_margin_input_field.textProperty().addListener(change_listener_for_right_margin_text);
                             item.setRight_margin_text_change_listener(change_listener_for_right_margin_text);
-
-
-                            increase_font_size_button.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent actionEvent) {
-                                    change_text_size_by_increment(text_field_for_font_size, text_item_of_the_selected_verse, item, plus_minus_font_increments);
-                                }
-                            });
-
-                            decrease_font_size_button.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent actionEvent) {
-                                    change_text_size_by_increment(text_field_for_font_size, text_item_of_the_selected_verse, item, -plus_minus_font_increments);
-                                }
-                            });
-
-                            stroke_check_box.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent actionEvent) {
-                                    vbox_carrying_the_stroke_stuff.setDisable(!stroke_check_box.isSelected());
-                                    text_item_of_the_selected_verse.getStrokeText().setIs_the_stroke_on(stroke_check_box.isSelected());
-                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
-                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
-                                }
-                            });
-
-                            increase_left_margin_button.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent actionEvent) {
-                                    change_margin_by_increment(left_margin_input_field, text_item_of_the_selected_verse, item, plus_minus_font_increments, Margin_type.LEFT_MARGIN);
-                                    text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
-                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
-                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
-                                }
-                            });
-
-                            decrease_left_margin_button.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent actionEvent) {
-                                    change_margin_by_increment(left_margin_input_field, text_item_of_the_selected_verse, item, -plus_minus_font_increments, Margin_type.LEFT_MARGIN);
-                                    text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
-                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
-                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
-                                }
-                            });
-
-                            increase_right_margin_button.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent actionEvent) {
-                                    change_margin_by_increment(right_margin_input_field, text_item_of_the_selected_verse, item, plus_minus_font_increments, Margin_type.RIGHT_MARGIN);
-                                    text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
-                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
-                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
-                                }
-                            });
-
-                            decrease_right_margin_button.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent actionEvent) {
-                                    change_margin_by_increment(right_margin_input_field, text_item_of_the_selected_verse, item, -plus_minus_font_increments, Margin_type.RIGHT_MARGIN);
-                                    text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
-                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
-                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
-                                }
-                            });
-
-
-                            reset_everything_button.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent actionEvent) {
-
-                                }
-                            });
-
-                            apply_to_all_verses_button.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent actionEvent) {
-
-                                }
-                            });
 
                             setGraphic(root);
                         }
@@ -6056,12 +6062,13 @@ public class HelloApplication extends Application {
         text.setFont(text_item.getFont());
         double width = text.getLayoutBounds().getWidth();
         double height = text.getLayoutBounds().getHeight();
-        Point2D top_left_point = new Point2D(text_item.getPoint2D().getX() - width/2,text_item.getPoint2D().getY()-height/2);
+        Text_box_info text_box_info = new Text_box_info(point2D_of_the_text, width, height);
+        text_item.setText_box_info(text_box_info);
         gc.setFill(javafx.scene.paint.Color.TRANSPARENT);
         gc.setStroke(javafx.scene.paint.Color.RED);
         gc.setLineWidth(2);
-        gc.fillRect(top_left_point.getX(), top_left_point.getY(), width, height);
-        gc.strokeRect(top_left_point.getX(), top_left_point.getY(), width, height);
+        gc.fillRect(point2D_of_the_text.getX() - width / 2, point2D_of_the_text.getY() - height / 2, text_item.getText_box_info().getText_box_width(), height);
+        gc.strokeRect(point2D_of_the_text.getX() - width / 2, point2D_of_the_text.getY() - height / 2, text_item.getText_box_info().getText_box_width(), height);
     }
 
     private void bind_the_canvas_to_the_image_view(HelloController helloController, Canvas canvas) {
