@@ -27,6 +27,7 @@ module com.example.quranfx {
     requires jdk.compiler;
     requires annotations;
     requires javafx.base;
+    requires javafx.graphics;
 
 
     opens com.example.quranfx to javafx.fxml;
