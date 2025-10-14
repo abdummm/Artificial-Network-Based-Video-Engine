@@ -60,7 +60,7 @@ public class Text_item {
         this.stroke_info = new Stroke_info();
         this.left_margin = 0;
         this.right_margin = 0;
-        this.text_box_info = new Text_box_info(new Point2D(0,0),0,0);
+        this.text_box_info = new Text_box_info();
     }
 
     private Font return_first_font(double font_size) {
