@@ -31,6 +31,8 @@ public class Language_info {
     private ChangeListener<? super Boolean> advanced_options_change_listener;
     private ChangeListener<String> left_margin_text_change_listener;
     private ChangeListener<String> right_margin_text_change_listener;
+    private boolean advanced_options_selected;
+
 
 
     public Language_info(String language_name, ArrayList<Text_item> arrayList_of_all_of_the_translations) {
@@ -40,6 +42,7 @@ public class Language_info {
         this.displayed_language_name = edit_displayed_language_name(language_name);
         this.item_extended = false;
         this.language_canvas = null;
+        this.advanced_options_selected = false;
     }
 
     private String edit_displayed_language_name(String language_name) {
@@ -205,5 +208,13 @@ public class Language_info {
 
     public void setRight_margin_text_change_listener(ChangeListener<String> right_margin_text_change_listener) {
         this.right_margin_text_change_listener = right_margin_text_change_listener;
+    }
+
+    public boolean isAdvanced_options_selected() {
+        return advanced_options_selected;
+    }
+
+    public void setAdvanced_options_selected(boolean advanced_options_selected) {
+        this.advanced_options_selected = advanced_options_selected;
     }
 }
