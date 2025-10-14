@@ -121,6 +121,7 @@ public class HelloApplication extends Application {
     private Sound_mode sound_mode;
     private long[] start_millisecond_of_each_verse;
     private HashMap<String, Sub_fonts> hashMap_with_all_the_font_families_and_names;
+    private ArrayList<Canvas> array_list_of_all_canvases = new ArrayList<>();
 
     private final static int image_view_in_tile_pane_width = 90;
     private final static int image_view_in_tile_pane_height = 160;
@@ -262,6 +263,7 @@ public class HelloApplication extends Application {
         set_the_opacity_initially(helloController);
         set_the_fade_in_fade_out_initially(helloController);
         set_the_fade_in_fade_in_initially(helloController);
+        listen_to_mouse_clicked_inside_image_view_pane(helloController);
     }
 
     /*public static void main(String[] args) {
@@ -5573,7 +5575,7 @@ public class HelloApplication extends Application {
                             combox_of_all_of_fonts_sub_choices.setItems(FXCollections.observableArrayList(sub_fonts.getFont_names()));
                             combox_of_all_of_fonts_sub_choices.setValue(sub_fonts.return_the_font_name_and_displayed_name_based_on_font_name(sub_font_name));
                             text_field_for_font_size.setText(String.valueOf((int) text_item_of_the_selected_verse.getFont_size()));
-                            if(item.isAdvanced_options_selected()){
+                            if (item.isAdvanced_options_selected()) {
                                 holds_advnaced_options.setVisible(true);
                                 holds_advnaced_options.setManaged(true);
                                 toggle_switch_for_advanced_options.setSelected(true);
@@ -5588,7 +5590,7 @@ public class HelloApplication extends Application {
                             left_margin_input_field.setText(remove_trailing_zeroes_from_number(text_item_of_the_selected_verse.getLeft_margin()));
                             right_margin_input_field.setText(remove_trailing_zeroes_from_number(text_item_of_the_selected_verse.getRight_margin()));
                             Stroke_info stroke_info = text_item_of_the_selected_verse.getStroke_info();
-                            if(stroke_info.isIs_the_stroke_on()){
+                            if (stroke_info.isIs_the_stroke_on()) {
                                 vbox_carrying_the_stroke_stuff.setDisable(false);
                                 stroke_check_box.setSelected(true);
                             } else {
@@ -6083,7 +6085,7 @@ public class HelloApplication extends Application {
         text.setFont(text_item.getFont());
         double width = text.getLayoutBounds().getWidth();
         double height = text.getLayoutBounds().getHeight();
-        Text_box_info text_box_info = new Text_box_info(point2D_of_the_text, width, height);
+        Text_box_info text_box_info = new Text_box_info(point2D_of_the_text, width, height, true);
         text_item.setText_box_info(text_box_info);
         gc.setFill(javafx.scene.paint.Color.TRANSPARENT);
         gc.setStroke(javafx.scene.paint.Color.RED);
@@ -6637,5 +6639,80 @@ public class HelloApplication extends Application {
     private void set_the_fade_in_fade_in_initially(HelloController helloController) {
         String min_fade_out = return_formatted_string_to_1_decimal_place_always(helloController.slider_to_control_fade_in_of_image.getMin());
         helloController.label_holding_the_fade_in.setText(min_fade_out + unit_sign_beside_fade_in_fade_out);
+    }
+
+    private void listen_to_mouse_clicked_inside_image_view_pane(HelloController helloController) {
+        Text_on_canvas_dragged text_on_canvas_dragged = new Text_on_canvas_dragged();
+        helloController.stack_pane_of_image_view_and_text.setOnMouseMoved(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                ObservableList<Language_info> all_of_the_languages = helloController.list_view_with_all_of_the_languages.getItems();
+                set_the_cursor_of_image_view_for_text_holding(helloController, all_of_the_languages, mouseEvent);
+            }
+        });
+
+        helloController.stack_pane_of_image_view_and_text.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                ObservableList<Language_info> all_of_the_languages = helloController.list_view_with_all_of_the_languages.getItems();
+                for (Language_info language_info : all_of_the_languages) {
+                    if (language_info.getLanguage_canvas() != null) {
+                        Point2D canvas_relative_x_and_y = new Point2D(mouseEvent.getX() / language_info.getLanguage_canvas().getScaleX(), mouseEvent.getY() / language_info.getLanguage_canvas().getScaleY());
+                        Text_box_info text_box_info = language_info.getArrayList_of_all_of_the_translations().get(selected_verse).getText_box_info();
+                        if (text_box_info.isVisible()) {
+                            if (canvas_relative_x_and_y.getX() >= text_box_info.getMin_x_point() && canvas_relative_x_and_y.getX() <= text_box_info.getMax_x_point() && canvas_relative_x_and_y.getY() >= text_box_info.getMin_y_point() && canvas_relative_x_and_y.getY() <= text_box_info.getMax_y_point()) {
+                                helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.CLOSED_HAND);
+                                text_on_canvas_dragged.setLanguage_info(language_info);
+                                text_on_canvas_dragged.setOriginal_point2D_of_mouse_event(new Point2D(mouseEvent.getX(),mouseEvent.getY()));
+                                text_on_canvas_dragged.setOriginal_point2D_of_text(new Point2D(language_info.getArrayList_of_all_of_the_translations().get(selected_verse).getPoint2D().getX(),language_info.getArrayList_of_all_of_the_translations().get(selected_verse).getPoint2D().getY()));
+                                text_on_canvas_dragged.setData_set(true);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        helloController.stack_pane_of_image_view_and_text.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if(text_on_canvas_dragged.isData_set()){
+                    Text_item text_item = text_on_canvas_dragged.getLanguage_info().getArrayList_of_all_of_the_translations().get(selected_verse);
+                    double x_pos_difference = mouseEvent.getX() - text_on_canvas_dragged.original_point2D_of_mouse_event.getX();
+                    double y_pos_difference = mouseEvent.getY() - text_on_canvas_dragged.original_point2D_of_mouse_event.getY();
+                    x_pos_difference = x_pos_difference/text_on_canvas_dragged.getLanguage_info().getLanguage_canvas().getScaleX();
+                    y_pos_difference = y_pos_difference/text_on_canvas_dragged.getLanguage_info().getLanguage_canvas().getScaleY();
+                    text_item.setPoint2D(new Point2D(text_on_canvas_dragged.getOriginal_point2D_of_text().getX() + x_pos_difference,text_on_canvas_dragged.getOriginal_point2D_of_text().getY() + y_pos_difference));
+                    place_the_canvas_text(text_on_canvas_dragged.getLanguage_info().getLanguage_canvas(),text_item);
+                    place_the_box_surrounding_the_text(text_on_canvas_dragged.getLanguage_info().getLanguage_canvas(),text_item);
+                    helloController.list_view_with_all_of_the_languages.refresh();
+                }
+            }
+        });
+        helloController.stack_pane_of_image_view_and_text.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                ObservableList<Language_info> all_of_the_languages = helloController.list_view_with_all_of_the_languages.getItems();
+                set_the_cursor_of_image_view_for_text_holding(helloController, all_of_the_languages, mouseEvent);
+                text_on_canvas_dragged.setData_set(false);
+            }
+        });
+    }
+
+    private void set_the_cursor_of_image_view_for_text_holding(HelloController helloController, ObservableList<Language_info> all_of_the_languages, MouseEvent mouseEvent) {
+        for (Language_info language_info : all_of_the_languages) {
+            if (language_info.getLanguage_canvas() != null) {
+                Point2D canvas_relative_x_and_y = new Point2D(mouseEvent.getX() / language_info.getLanguage_canvas().getScaleX(), mouseEvent.getY() / language_info.getLanguage_canvas().getScaleY());
+                Text_box_info text_box_info = language_info.getArrayList_of_all_of_the_translations().get(selected_verse).getText_box_info();
+                if (text_box_info.isVisible()) {
+                    if (canvas_relative_x_and_y.getX() >= text_box_info.getMin_x_point() && canvas_relative_x_and_y.getX() <= text_box_info.getMax_x_point() && canvas_relative_x_and_y.getY() >= text_box_info.getMin_y_point() && canvas_relative_x_and_y.getY() <= text_box_info.getMax_y_point()) {
+                        helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.OPEN_HAND);
+                        break;
+                    } else {
+                        helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.DEFAULT);
+                    }
+                }
+            }
+        }
     }
 }
