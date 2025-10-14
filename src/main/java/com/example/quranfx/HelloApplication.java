@@ -81,7 +81,6 @@ import org.imgscalr.Scalr;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.kordamp.ikonli.FontLoader;
 
 import javax.imageio.ImageIO;
 
@@ -5573,18 +5572,37 @@ public class HelloApplication extends Application {
                             combox_of_all_of_fonts_sub_choices.getItems().clear();
                             combox_of_all_of_fonts_sub_choices.setItems(FXCollections.observableArrayList(sub_fonts.getFont_names()));
                             combox_of_all_of_fonts_sub_choices.setValue(sub_fonts.return_the_font_name_and_displayed_name_based_on_font_name(sub_font_name));
+                            text_field_for_font_size.setText(String.valueOf((int) text_item_of_the_selected_verse.getFont_size()));
+                            if(item.isAdvanced_options_selected()){
+                                holds_advnaced_options.setVisible(true);
+                                holds_advnaced_options.setManaged(true);
+                                toggle_switch_for_advanced_options.setSelected(true);
+                            } else {
+                                holds_advnaced_options.setVisible(false);
+                                holds_advnaced_options.setManaged(false);
+                                toggle_switch_for_advanced_options.setSelected(false);
+                            }
                             Point2D point2D_of_the_text = text_item_of_the_selected_verse.getPoint2D();
                             x_position_of_text.setText(String.valueOf((int) point2D_of_the_text.getX()));
                             y_position_of_text.setText(String.valueOf((int) point2D_of_the_text.getY()));
-                            text_field_for_font_size.setText(String.valueOf((int) text_item_of_the_selected_verse.getFont_size()));
+                            left_margin_input_field.setText(remove_trailing_zeroes_from_number(text_item_of_the_selected_verse.getLeft_margin()));
+                            right_margin_input_field.setText(remove_trailing_zeroes_from_number(text_item_of_the_selected_verse.getRight_margin()));
+                            Stroke_info stroke_info = text_item_of_the_selected_verse.getStroke_info();
+                            if(stroke_info.isIs_the_stroke_on()){
+                                vbox_carrying_the_stroke_stuff.setDisable(false);
+                                stroke_check_box.setSelected(true);
+                            } else {
+                                vbox_carrying_the_stroke_stuff.setDisable(true);
+                                stroke_check_box.setSelected(false);
+                            }
+                            stroke_color_picker.setValue(stroke_info.getStroke_color());
+                            stroke_weight_slider.setValue(stroke_info.getStroke_weight());
+                            label_hosting_the_percentage_of_weight.setText(return_formatted_string_to_1_decimal_place_always(stroke_info.getStroke_weight()));
+
                             if (check_box_is_the_langauge_enabled.isSelected()) {
                                 place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                             }
-                            Stroke_text strokeText = text_item_of_the_selected_verse.getStrokeText();
-                            vbox_carrying_the_stroke_stuff.setDisable(!strokeText.isIs_the_stroke_on());
-                            stroke_color_picker.setValue(strokeText.getStroke_color());
-                            stroke_weight_slider.setValue(strokeText.getStroke_weight());
                             jfxButton.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
@@ -5624,7 +5642,7 @@ public class HelloApplication extends Application {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
                                     vbox_carrying_the_stroke_stuff.setDisable(!stroke_check_box.isSelected());
-                                    text_item_of_the_selected_verse.getStrokeText().setIs_the_stroke_on(stroke_check_box.isSelected());
+                                    text_item_of_the_selected_verse.getStroke_info().setIs_the_stroke_on(stroke_check_box.isSelected());
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
@@ -5783,7 +5801,7 @@ public class HelloApplication extends Application {
                             ChangeListener<? super javafx.scene.paint.Color> change_listener_for_stroke_color = new ChangeListener<javafx.scene.paint.Color>() {
                                 @Override
                                 public void changed(ObservableValue<? extends javafx.scene.paint.Color> observableValue, javafx.scene.paint.Color old_color, javafx.scene.paint.Color new_color) {
-                                    text_item_of_the_selected_verse.getStrokeText().setStroke_color(new_color);
+                                    text_item_of_the_selected_verse.getStroke_info().setStroke_color(new_color);
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
@@ -5795,7 +5813,7 @@ public class HelloApplication extends Application {
                             ChangeListener<? super Number> change_listener_for_stroke_weight = new ChangeListener<Number>() {
                                 @Override
                                 public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
-                                    text_item_of_the_selected_verse.getStrokeText().setStroke_weight(new_number.doubleValue());
+                                    text_item_of_the_selected_verse.getStroke_info().setStroke_weight(new_number.doubleValue());
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     label_hosting_the_percentage_of_weight.setText(return_formatted_string_to_1_decimal_place_always(stroke_weight_slider.getValue()));
@@ -5809,6 +5827,7 @@ public class HelloApplication extends Application {
                                 public void changed(ObservableValue<? extends Boolean> observableValue, Boolean old_value, Boolean new_value) {
                                     holds_advnaced_options.setVisible(new_value);
                                     holds_advnaced_options.setManaged(new_value);
+                                    item.setAdvanced_options_selected(new_value);
                                 }
                             };
                             toggle_switch_for_advanced_options.selectedProperty().addListener(change_listener_for_advanced_options);
@@ -5821,6 +5840,7 @@ public class HelloApplication extends Application {
                                     if (!new_string.isEmpty()) {
                                         left_margin = Double.parseDouble(new_string);
                                     }
+                                    text_item_of_the_selected_verse.setRight_margin(left_margin);
                                     text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), left_margin, text_item_of_the_selected_verse.getRight_margin()));
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
@@ -5837,6 +5857,7 @@ public class HelloApplication extends Application {
                                     if (!new_string.isEmpty()) {
                                         right_margin = Double.parseDouble(new_string);
                                     }
+                                    text_item_of_the_selected_verse.setRight_margin(right_margin);
                                     text_item_of_the_selected_verse.setAdjusted_verse_text(do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), right_margin));
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
@@ -6025,7 +6046,7 @@ public class HelloApplication extends Application {
         javafx.scene.paint.Color color_of_text = text_item.getColor();
         Text_on_canvas_mode text_on_canvas_mode = text_item.getText_on_canvas_mode();
         Font font_for_verse = text_item.getFont();
-        Stroke_text strokeText = text_item.getStrokeText();
+        Stroke_info strokeText = text_item.getStroke_info();
         boolean is_stroke_enabled = strokeText.isIs_the_stroke_on();
         javafx.scene.paint.Color stroke_color = strokeText.getStroke_color();
         double stroke_weight = strokeText.getStroke_weight();
