@@ -2,12 +2,12 @@ package com.example.quranfx;
 
 import javafx.scene.paint.Color;
 
-public class Stroke_text {
+public class Stroke_info {
     private boolean is_the_stroke_on;
     private Color stroke_color;
     private double stroke_weight;
 
-    public Stroke_text() {
+    public Stroke_info() {
         this.is_the_stroke_on = false;
         this.stroke_color = Color.BLACK;
         this.stroke_weight = Global_default_values.stroke_weight;
