@@ -4832,7 +4832,7 @@ public class HelloApplication extends Application {
                     private JFXButton increase_font_size_button;
                     private JFXButton decrease_font_size_button;
                     private HBox hbox_for_plus_and_minus;
-                    private Separator separator_under_margin;
+                    private Separator separator_under_stroke;
                     private Label label_saying_stroke;
                     private HBox hbox_hosting_the_stroke_label;
                     private CheckBox stroke_check_box;
@@ -4873,6 +4873,8 @@ public class HelloApplication extends Application {
                     private Label label_holding_advanced_options;
                     private ToggleSwitch toggle_switch_for_advanced_options;
                     private VBox holds_advnaced_options;
+                    private JFXButton center_button_x_pos;
+                    private JFXButton center_button_y_pos;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -4910,7 +4912,7 @@ public class HelloApplication extends Application {
                         increase_font_size_button = new JFXButton();
                         decrease_font_size_button = new JFXButton();
                         hbox_for_plus_and_minus = new HBox();
-                        separator_under_margin = new Separator();
+                        separator_under_stroke = new Separator();
                         label_saying_stroke = new Label();
                         hbox_hosting_the_stroke_label = new HBox();
                         stroke_check_box = new CheckBox();
@@ -4951,6 +4953,8 @@ public class HelloApplication extends Application {
                         label_holding_advanced_options = new Label();
                         toggle_switch_for_advanced_options = new ToggleSwitch();
                         holds_advnaced_options = new VBox();
+                        center_button_x_pos = new JFXButton();
+                        center_button_y_pos = new JFXButton();
 
 
                         final double top_margin_in_vbox_control = 10;
@@ -5171,8 +5175,8 @@ public class HelloApplication extends Application {
                         HBox.setMargin(hbox_for_plus_and_minus, new Insets(0, 0, 0, 10));
                         hbox_for_plus_and_minus.setStyle("-fx-border-color: #F3F3F3; -fx-border-width: 1;");
 
-                        //separator_under_margin
-                        VBox.setMargin(separator_under_margin, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
+                        //separator_under_stroke
+                        VBox.setMargin(separator_under_stroke, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
 
                         //label_saying_stroke
                         label_saying_stroke.setText("Stroke");
@@ -5397,6 +5401,42 @@ public class HelloApplication extends Application {
                         holds_advnaced_options.setVisible(false);
                         holds_advnaced_options.setManaged(false);
 
+                        //center_button_x_pos
+                        HBox.setMargin(center_button_x_pos, new Insets(0,0,0,2));
+                        center_button_x_pos.setFocusTraversable(false);
+                        center_button_x_pos.setRipplerFill(javafx.scene.paint.Color.web(hex_ripple_coulour_for_jfx_buttons));
+                        center_button_x_pos.minHeightProperty().bind(x_position_of_text.heightProperty());
+                        center_button_x_pos.prefHeightProperty().bind(x_position_of_text.heightProperty());
+                        center_button_x_pos.maxHeightProperty().bind(x_position_of_text.heightProperty());
+                        /*center_button_x_pos.minWidthProperty().bind(x_position_of_text.heightProperty());
+                        center_button_x_pos.prefWidthProperty().bind(x_position_of_text.heightProperty());
+                        center_button_x_pos.maxWidthProperty().bind(x_position_of_text.heightProperty());*/
+                        center_button_x_pos.heightProperty().addListener(new ChangeListener<Number>() {
+                            @Override
+                            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                                center_button_x_pos.setGraphic(return_the_icon("center", (int) (t1.doubleValue() * 2D / 3D), (int) (t1.doubleValue() * 2D / 3D)));
+                                center_button_x_pos.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                                center_button_x_pos.setAlignment(Pos.CENTER);
+                            }
+                        });
+
+
+                        //center_button_y_pos
+                        HBox.setMargin(center_button_y_pos, new Insets(0,0,0,2));
+                        center_button_y_pos.setFocusTraversable(false);
+                        center_button_y_pos.setRipplerFill(javafx.scene.paint.Color.web(hex_ripple_coulour_for_jfx_buttons));
+                        center_button_y_pos.prefHeightProperty().bind(y_position_of_text.heightProperty());
+                        center_button_y_pos.minHeightProperty().bind(y_position_of_text.heightProperty());
+                        center_button_y_pos.maxHeightProperty().bind(y_position_of_text.heightProperty());
+                        center_button_y_pos.heightProperty().addListener(new ChangeListener<Number>() {
+                            @Override
+                            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                                center_button_y_pos.setGraphic(return_the_icon("center", (int) (t1.doubleValue() * 2D / 3D), (int) (t1.doubleValue() * 2D / 3D)));
+                                center_button_y_pos.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                                center_button_y_pos.setAlignment(Pos.CENTER);
+                            }
+                        });
+
 
                         hbox_holding_the_advanced_options_toggle.getChildren().add(label_holding_advanced_options);
                         hbox_holding_the_advanced_options_toggle.getChildren().add(toggle_switch_for_advanced_options);
@@ -5456,8 +5496,10 @@ public class HelloApplication extends Application {
 
                         hbox_for_x_and_y_positions.getChildren().add(x_label_beside_x_pos);
                         hbox_for_x_and_y_positions.getChildren().add(x_position_of_text);
+                        hbox_for_x_and_y_positions.getChildren().add(center_button_x_pos);
                         hbox_for_x_and_y_positions.getChildren().add(y_label_beside_y_pos);
                         hbox_for_x_and_y_positions.getChildren().add(y_position_of_text);
+                        hbox_for_x_and_y_positions.getChildren().add(center_button_y_pos);
 
                         stackPane_of_the_top.getChildren().add(jfxButton);
                         stackPane_of_the_top.getChildren().add(down_or_left_image_view);
@@ -5481,12 +5523,12 @@ public class HelloApplication extends Application {
                         holds_advnaced_options.getChildren().add(hbox_hosting_the_position_label);
                         holds_advnaced_options.getChildren().add(hbox_for_x_and_y_positions);
                         holds_advnaced_options.getChildren().add(separator_under_position);
+                        holds_advnaced_options.getChildren().add(hbox_hosting_the_stroke_label);
+                        holds_advnaced_options.getChildren().add(vbox_carrying_the_stroke_stuff);
+                        holds_advnaced_options.getChildren().add(separator_under_stroke);
                         holds_advnaced_options.getChildren().add(hbox_holding_the_margin_label);
                         holds_advnaced_options.getChildren().add(hbox_hosting_the_left_margin);
                         holds_advnaced_options.getChildren().add(hbox_hosting_the_right_margin);
-                        holds_advnaced_options.getChildren().add(separator_under_margin);
-                        holds_advnaced_options.getChildren().add(hbox_hosting_the_stroke_label);
-                        holds_advnaced_options.getChildren().add(vbox_carrying_the_stroke_stuff);
                         v_box_inside_the_stack_pane.getChildren().add(v_box_with_all_of_the_controls_except_check_box);
 
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_advanced_options);
@@ -5559,51 +5601,53 @@ public class HelloApplication extends Application {
                             setGraphic(null);
                         } else {
                             Text_item text_item_of_the_selected_verse = item.getArrayList_of_all_of_the_translations().get(selected_verse);
-                            make_the_language_translation_extended(stackPane_extended_with_all_of_the_info, down_or_left_image_view, item, item.isItem_extended());
-                            if (item.getLanguage_name().equals("arabic")) {
-                                check_box_is_the_langauge_enabled.setText("Show text");
-                            } else {
-                                check_box_is_the_langauge_enabled.setText("Show translation");
-                            }
-                            select_or_un_select_the_language(item, jfxButton, language_name, check_box_is_the_langauge_enabled, down_or_left_image_view, helloController, v_box_with_all_of_the_controls_except_check_box);
-                            color_picker.setValue(text_item_of_the_selected_verse.getColor());
-                            String main_font_name = text_item_of_the_selected_verse.getFont().getFamily();
-                            String sub_font_name = text_item_of_the_selected_verse.getFont().getName();
-                            combox_of_all_of_fonts.setValue(main_font_name);
-                            Sub_fonts sub_fonts = hashMap_with_all_the_font_families_and_names.get(main_font_name);
-                            combox_of_all_of_fonts_sub_choices.getItems().clear();
-                            combox_of_all_of_fonts_sub_choices.setItems(FXCollections.observableArrayList(sub_fonts.getFont_names()));
-                            combox_of_all_of_fonts_sub_choices.setValue(sub_fonts.return_the_font_name_and_displayed_name_based_on_font_name(sub_font_name));
-                            text_field_for_font_size.setText(String.valueOf((int) text_item_of_the_selected_verse.getFont_size()));
-                            if (item.isAdvanced_options_selected()) {
-                                holds_advnaced_options.setVisible(true);
-                                holds_advnaced_options.setManaged(true);
-                                toggle_switch_for_advanced_options.setSelected(true);
-                            } else {
-                                holds_advnaced_options.setVisible(false);
-                                holds_advnaced_options.setManaged(false);
-                                toggle_switch_for_advanced_options.setSelected(false);
-                            }
-                            Point2D point2D_of_the_text = text_item_of_the_selected_verse.getPoint2D();
-                            x_position_of_text.setText(String.valueOf((int) point2D_of_the_text.getX()));
-                            y_position_of_text.setText(String.valueOf((int) point2D_of_the_text.getY()));
-                            left_margin_input_field.setText(remove_trailing_zeroes_from_number(text_item_of_the_selected_verse.getLeft_margin()));
-                            right_margin_input_field.setText(remove_trailing_zeroes_from_number(text_item_of_the_selected_verse.getRight_margin()));
-                            Stroke_info stroke_info = text_item_of_the_selected_verse.getStroke_info();
-                            if (stroke_info.isIs_the_stroke_on()) {
-                                vbox_carrying_the_stroke_stuff.setDisable(false);
-                                stroke_check_box.setSelected(true);
-                            } else {
-                                vbox_carrying_the_stroke_stuff.setDisable(true);
-                                stroke_check_box.setSelected(false);
-                            }
-                            stroke_color_picker.setValue(stroke_info.getStroke_color());
-                            stroke_weight_slider.setValue(stroke_info.getStroke_weight());
-                            label_hosting_the_percentage_of_weight.setText(return_formatted_string_to_1_decimal_place_always(stroke_info.getStroke_weight()));
+                            {
+                                make_the_language_translation_extended(stackPane_extended_with_all_of_the_info, down_or_left_image_view, item, item.isItem_extended());
+                                if (item.getLanguage_name().equals("arabic")) {
+                                    check_box_is_the_langauge_enabled.setText("Show text");
+                                } else {
+                                    check_box_is_the_langauge_enabled.setText("Show translation");
+                                }
+                                select_or_un_select_the_language(item, jfxButton, language_name, check_box_is_the_langauge_enabled, down_or_left_image_view, helloController, v_box_with_all_of_the_controls_except_check_box);
+                                color_picker.setValue(text_item_of_the_selected_verse.getColor());
+                                String main_font_name = text_item_of_the_selected_verse.getFont().getFamily();
+                                String sub_font_name = text_item_of_the_selected_verse.getFont().getName();
+                                combox_of_all_of_fonts.setValue(main_font_name);
+                                Sub_fonts sub_fonts = hashMap_with_all_the_font_families_and_names.get(main_font_name);
+                                combox_of_all_of_fonts_sub_choices.getItems().clear();
+                                combox_of_all_of_fonts_sub_choices.setItems(FXCollections.observableArrayList(sub_fonts.getFont_names()));
+                                combox_of_all_of_fonts_sub_choices.setValue(sub_fonts.return_the_font_name_and_displayed_name_based_on_font_name(sub_font_name));
+                                text_field_for_font_size.setText(String.valueOf((int) text_item_of_the_selected_verse.getFont_size()));
+                                if (item.isAdvanced_options_selected()) {
+                                    holds_advnaced_options.setVisible(true);
+                                    holds_advnaced_options.setManaged(true);
+                                    toggle_switch_for_advanced_options.setSelected(true);
+                                } else {
+                                    holds_advnaced_options.setVisible(false);
+                                    holds_advnaced_options.setManaged(false);
+                                    toggle_switch_for_advanced_options.setSelected(false);
+                                }
+                                Point2D point2D_of_the_text = text_item_of_the_selected_verse.getPoint2D();
+                                x_position_of_text.setText(String.valueOf((int) point2D_of_the_text.getX()));
+                                y_position_of_text.setText(String.valueOf((int) point2D_of_the_text.getY()));
+                                left_margin_input_field.setText(remove_trailing_zeroes_from_number(text_item_of_the_selected_verse.getLeft_margin()));
+                                right_margin_input_field.setText(remove_trailing_zeroes_from_number(text_item_of_the_selected_verse.getRight_margin()));
+                                Stroke_info stroke_info = text_item_of_the_selected_verse.getStroke_info();
+                                if (stroke_info.isIs_the_stroke_on()) {
+                                    vbox_carrying_the_stroke_stuff.setDisable(false);
+                                    stroke_check_box.setSelected(true);
+                                } else {
+                                    vbox_carrying_the_stroke_stuff.setDisable(true);
+                                    stroke_check_box.setSelected(false);
+                                }
+                                stroke_color_picker.setValue(stroke_info.getStroke_color());
+                                stroke_weight_slider.setValue(stroke_info.getStroke_weight());
+                                label_hosting_the_percentage_of_weight.setText(return_formatted_string_to_1_decimal_place_always(stroke_info.getStroke_weight()));
 
-                            if (check_box_is_the_langauge_enabled.isSelected()) {
-                                place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
-                                place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                if (check_box_is_the_langauge_enabled.isSelected()) {
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                }
                             }
                             jfxButton.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
@@ -5617,6 +5661,7 @@ public class HelloApplication extends Application {
                                     }
                                 }
                             });
+
                             check_box_is_the_langauge_enabled.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
@@ -5690,6 +5735,29 @@ public class HelloApplication extends Application {
                                 }
                             });
 
+                            center_button_x_pos.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    double y_pos = text_item_of_the_selected_verse.getPoint2D().getY();
+                                    double x_pos = item.getLanguage_canvas().getWidth()/2D;
+                                    text_item_of_the_selected_verse.setPoint2D(new Point2D(x_pos,y_pos));
+                                    place_the_canvas_text(item.getLanguage_canvas(),text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(),text_item_of_the_selected_verse);
+                                    x_position_of_text.setText(String.valueOf((int) x_pos));
+                                }
+                            });
+
+                            center_button_y_pos.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    double x_pos = text_item_of_the_selected_verse.getPoint2D().getX();
+                                    double y_pos = item.getLanguage_canvas().getHeight()/2D;
+                                    text_item_of_the_selected_verse.setPoint2D(new Point2D(x_pos,y_pos));
+                                    place_the_canvas_text(item.getLanguage_canvas(),text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(),text_item_of_the_selected_verse);
+                                    y_position_of_text.setText(String.valueOf((int) y_pos));
+                                }
+                            });
 
                             reset_everything_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
