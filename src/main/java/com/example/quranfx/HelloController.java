@@ -219,6 +219,9 @@ public class HelloController {
     @FXML
     public Label fake_label_holding_the_fade_out;
 
+    @FXML
+    public JFXButton render_video;
+
    /* @FXML
     public Rectangle black_rectangle_behind_image_view;*/
 
