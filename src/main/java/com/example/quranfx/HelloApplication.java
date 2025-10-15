@@ -264,6 +264,7 @@ public class HelloApplication extends Application {
         set_the_fade_in_fade_out_initially(helloController);
         set_the_fade_in_fade_in_initially(helloController);
         listen_to_mouse_clicked_inside_image_view_pane(helloController);
+        listen_to_render_video_button_clicked(helloController);
     }
 
     /*public static void main(String[] args) {
@@ -6715,7 +6716,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 ObservableList<Language_info> all_of_the_languages = helloController.list_view_with_all_of_the_languages.getItems();
-                set_the_cursor_of_image_view_for_text_holding(helloController, all_of_the_languages, mouseEvent);
+                set_the_holding_cursor_of_image_view_for_text(helloController, all_of_the_languages, mouseEvent);
             }
         });
 
@@ -6761,13 +6762,13 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 ObservableList<Language_info> all_of_the_languages = helloController.list_view_with_all_of_the_languages.getItems();
-                set_the_cursor_of_image_view_for_text_holding(helloController, all_of_the_languages, mouseEvent);
+                set_the_holding_cursor_of_image_view_for_text(helloController, all_of_the_languages, mouseEvent);
                 text_on_canvas_dragged.setData_set(false);
             }
         });
     }
 
-    private void set_the_cursor_of_image_view_for_text_holding(HelloController helloController, ObservableList<Language_info> all_of_the_languages, MouseEvent mouseEvent) {
+    private void set_the_holding_cursor_of_image_view_for_text(HelloController helloController, ObservableList<Language_info> all_of_the_languages, MouseEvent mouseEvent) {
         for (Language_info language_info : all_of_the_languages) {
             if (language_info.getLanguage_canvas() != null) {
                 Point2D canvas_relative_x_and_y = new Point2D(mouseEvent.getX() / language_info.getLanguage_canvas().getScaleX(), mouseEvent.getY() / language_info.getLanguage_canvas().getScaleY());
@@ -6782,5 +6783,14 @@ public class HelloApplication extends Application {
                 }
             }
         }
+    }
+
+    private void listen_to_render_video_button_clicked(HelloController helloController){
+        helloController.render_video.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+
+            }
+        });
     }
 }
