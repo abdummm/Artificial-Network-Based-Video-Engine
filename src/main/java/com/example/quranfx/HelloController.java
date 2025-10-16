@@ -222,6 +222,9 @@ public class HelloController {
     @FXML
     public JFXButton render_video;
 
+    @FXML
+    public JFXButton setting_beside_help_spread_the_app;
+
    /* @FXML
     public Rectangle black_rectangle_behind_image_view;*/
 
