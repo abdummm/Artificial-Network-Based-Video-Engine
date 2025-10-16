@@ -441,6 +441,12 @@
                                                 <Insets left="5.0"/>
                                             </HBox.margin>
                                         </JFXButton>
+                                        <JFXButton fx:id="setting_beside_help_spread_the_app"
+                                                   focusTraversable="false">
+                                            <HBox.margin>
+                                                <Insets left="5.0"/>
+                                            </HBox.margin>
+                                        </JFXButton>
                                     </HBox>
 
                                 </VBox>
