@@ -28,6 +28,7 @@ module com.example.quranfx {
     requires annotations;
     requires javafx.base;
     requires javafx.graphics;
+    requires org.checkerframework.checker.qual;
 
 
     opens com.example.quranfx to javafx.fxml;
