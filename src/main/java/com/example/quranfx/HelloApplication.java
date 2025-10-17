@@ -2347,15 +2347,21 @@ public class HelloApplication extends Application {
                             if (polygon_x_pos >= min_x_pos_local && polygon_x_pos <= max_x_pos_local) {
                                 set_the_chatgpt_image_view(helloController, media_pool_item_dragged.getImage_key_uuid(), Type_of_Image.THUMBNAIL_QUALITY);
                                 media_pool_item_dragged.setDid_this_change_the_image(true);
+                                create_and_attach_all_the_image_listeners(helloController, shapeObjectTimeLine);
+                                enable_the_image_control_panel(helloController,shapeObjectTimeLine);
                             } else if (media_pool_item_dragged.isDid_this_change_the_image()) {
                                 set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.FULL_QUALITY);
                                 if (media_pool_item_dragged.isDid_this_change_the_image()) {
+                                    detach_all_the_image_control_listeners(helloController,shapeObjectTimeLine);
+                                    disable_the_image_control_panel(helloController);
                                 }
                             }
                         } else {
                             set_the_opacity_of_the_rectangle_in_time_line_pane((Rectangle) shapeObjectTimeLine.getShape(), 0.4D);
                             if (media_pool_item_dragged.isDid_this_change_the_image()) {
                                 set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.FULL_QUALITY);
+                                detach_all_the_image_control_listeners(helloController,shapeObjectTimeLine);
+                                disable_the_image_control_panel(helloController);
                             }
                         }
                     }
@@ -3453,11 +3459,11 @@ public class HelloApplication extends Application {
                         if (rectangle.getX() <= polygon_pos && rectangle.getX() + rectangle.getWidth() >= polygon_pos) {
                             set_the_chatgpt_image_view(helloController, rectangleChangedInfo.getImage_id(), Type_of_Image.THUMBNAIL_QUALITY);
                             rectangleChangedInfo.setDid_we_ever_change_the_photo(true);
-                            create_and_attach_the_opacity_listener(helloController, shapeObjectTimeLine);
+                            create_and_attach_all_the_image_listeners(helloController, shapeObjectTimeLine);
                             enable_the_image_control_panel(helloController, shapeObjectTimeLine);
                         } else if (rectangleChangedInfo.isDid_we_ever_change_the_photo()) {
                             set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.THUMBNAIL_QUALITY);
-                            detach_the_opacity_listener(helloController, shapeObjectTimeLine);
+                            detach_all_the_image_control_listeners(helloController,shapeObjectTimeLine);
                             disable_the_image_control_panel(helloController);
                         }
                     } else if (rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE) {
@@ -3496,11 +3502,11 @@ public class HelloApplication extends Application {
                         if (rectangle.getX() <= polygon_pos && rectangle.getX() + rectangle.getWidth() >= polygon_pos) {
                             set_the_chatgpt_image_view(helloController, rectangleChangedInfo.getImage_id(), Type_of_Image.THUMBNAIL_QUALITY);
                             rectangleChangedInfo.setDid_we_ever_change_the_photo(true);
-                            create_and_attach_the_opacity_listener(helloController, shapeObjectTimeLine);
+                            create_and_attach_all_the_image_listeners(helloController, shapeObjectTimeLine);
                             enable_the_image_control_panel(helloController, shapeObjectTimeLine);
                         } else if (rectangleChangedInfo.isDid_we_ever_change_the_photo()) {
                             set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.THUMBNAIL_QUALITY);
-                            detach_the_opacity_listener(helloController, shapeObjectTimeLine);
+                            detach_all_the_image_control_listeners(helloController,shapeObjectTimeLine);
                             disable_the_image_control_panel(helloController);
                         }
                     } else if (rectangleChangedInfo.getType_of_movement() == MovementType.END) {
@@ -3524,11 +3530,11 @@ public class HelloApplication extends Application {
                         if (rectangle.getX() <= polygon_pos && rectangle.getX() + rectangle.getWidth() >= polygon_pos) {
                             set_the_chatgpt_image_view(helloController, rectangleChangedInfo.getImage_id(), Type_of_Image.THUMBNAIL_QUALITY);
                             rectangleChangedInfo.setDid_we_ever_change_the_photo(true);
-                            create_and_attach_the_opacity_listener(helloController, shapeObjectTimeLine);
+                            create_and_attach_all_the_image_listeners(helloController, shapeObjectTimeLine);
                             enable_the_image_control_panel(helloController, shapeObjectTimeLine);
                         } else if (rectangleChangedInfo.isDid_we_ever_change_the_photo()) {
                             set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.THUMBNAIL_QUALITY);
-                            detach_the_opacity_listener(helloController, shapeObjectTimeLine);
+                            detach_all_the_image_control_listeners(helloController,shapeObjectTimeLine);
                             disable_the_image_control_panel(helloController);
                         }
                     }
@@ -6806,6 +6812,12 @@ public class HelloApplication extends Application {
         helloController.setting_beside_help_spread_the_app.setCursor(Cursor.HAND);
     }
 
+    private void create_and_attach_all_the_image_listeners(HelloController helloController, Shape_object_time_line shape_object_time_line){
+        create_and_attach_the_opacity_listener(helloController,shape_object_time_line);
+        create_and_attach_the_fade_in_listener(helloController,shape_object_time_line);
+        create_and_attach_the_fade_out_listener(helloController,shape_object_time_line);
+    }
+
     private void create_and_attach_the_opacity_listener(HelloController helloController, Shape_object_time_line shape_object_time_line) {
         Opacity_settings opacity_settings = shape_object_time_line.getOpacity_settings();
         Listener_info listener_info = opacity_settings.getOpacity_change_listener();
@@ -6826,6 +6838,48 @@ public class HelloApplication extends Application {
         }
     }
 
+    private void create_and_attach_the_fade_in_listener(HelloController helloController, Shape_object_time_line shape_object_time_line){
+        Opacity_settings opacity_settings = shape_object_time_line.getOpacity_settings();
+        Listener_info listener_info = opacity_settings.getFade_in_change_listener();
+        if(!listener_info.isListener_set()){
+            ChangeListener<Number> fade_in_change_listener = new ChangeListener<Number>() {
+                @Override
+                public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
+                    helloController.label_holding_the_fade_in.setText(return_formatted_string_to_1_decimal_place_always(new_number.doubleValue()) + unit_sign_beside_fade_in_fade_out);
+                    opacity_settings.setFade_in(new_number.doubleValue());
+                }
+            };
+            listener_info.setChange_listener(fade_in_change_listener);
+            listener_info.setListener_set(true);
+
+        }
+        if(!listener_info.isListener_attached()){
+            helloController.slider_to_control_fade_in_of_image.valueProperty().addListener(listener_info.getChange_listener());
+            listener_info.setListener_attached(true);
+        }
+    }
+
+    private void create_and_attach_the_fade_out_listener(HelloController helloController, Shape_object_time_line shape_object_time_line){
+        Opacity_settings opacity_settings = shape_object_time_line.getOpacity_settings();
+        Listener_info listener_info = opacity_settings.getFade_out_change_listener();
+        if(!listener_info.isListener_set()){
+            ChangeListener<Number> fade_out_change_listener = new ChangeListener<Number>() {
+                @Override
+                public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
+                    helloController.label_holding_the_fade_out.setText(return_formatted_string_to_1_decimal_place_always(new_number.doubleValue()) + unit_sign_beside_fade_in_fade_out);
+                    opacity_settings.setFade_out(new_number.doubleValue());
+                }
+            };
+            listener_info.setChange_listener(fade_out_change_listener);
+            listener_info.setListener_set(true);
+
+        }
+        if(!listener_info.isListener_attached()){
+            helloController.slider_to_control_fade_out_of_image.valueProperty().addListener(listener_info.getChange_listener());
+            listener_info.setListener_attached(true);
+        }
+    }
+
     private void enable_the_image_control_panel(HelloController helloController, Shape_object_time_line shape_object_time_line) {
         Opacity_settings opacity_settings = shape_object_time_line.getOpacity_settings();
         helloController.image_controls_stack_pane.setDisable(false);
@@ -6837,6 +6891,11 @@ public class HelloApplication extends Application {
         helloController.image_controls_stack_pane.setDisable(true);
         helloController.slider_to_control_the_opacity_of_an_image.setValue(100);
         helloController.label_holding_the_opacity_percentage.setText("100" + unit_sign_beside_opacity);
+        helloController.slider_to_control_fade_in_of_image.setValue(0);
+        helloController.label_holding_the_fade_in.setText(return_formatted_string_to_1_decimal_place_always(helloController.slider_to_control_fade_in_of_image.getMin()) + unit_sign_beside_fade_in_fade_out);
+        helloController.slider_to_control_fade_out_of_image.setValue(0);
+        helloController.label_holding_the_fade_out.setText(return_formatted_string_to_1_decimal_place_always(helloController.slider_to_control_fade_out_of_image.getMin()) + unit_sign_beside_fade_in_fade_out);
+
             /*helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.setOpacity(0);
             helloController.slider_to_control_the_opacity_of_an_image.setValue(100);
             helloController.slider_to_control_fade_in_of_image.setValue(0);
@@ -6846,11 +6905,35 @@ public class HelloApplication extends Application {
             helloController.label_holding_the_fade_out.setText(return_formatted_string_to_1_decimal_place_always(helloController.slider_to_control_fade_out_of_image.getMin()) + unit_sign_beside_fade_in_fade_out);*/
     }
 
+    private void detach_all_the_image_control_listeners(HelloController helloController,Shape_object_time_line shape_object_time_line){
+        detach_the_opacity_listener(helloController,shape_object_time_line);
+        detach_the_fade_in_listener(helloController,shape_object_time_line);
+        detach_the_fade_out_listener(helloController,shape_object_time_line);
+    }
+
     private void detach_the_opacity_listener(HelloController helloController,Shape_object_time_line shape_object_time_line){
         Opacity_settings opacity_settings = shape_object_time_line.getOpacity_settings();
         Listener_info listener_info = opacity_settings.getOpacity_change_listener();
         if(listener_info.isListener_set() && listener_info.getChange_listener()!=null){
             helloController.slider_to_control_the_opacity_of_an_image.valueProperty().removeListener(listener_info.getChange_listener());
+            listener_info.setListener_attached(false);
+        }
+    }
+
+    private void detach_the_fade_in_listener(HelloController helloController,Shape_object_time_line shape_object_time_line){
+        Opacity_settings opacity_settings = shape_object_time_line.getOpacity_settings();
+        Listener_info listener_info = opacity_settings.getFade_in_change_listener();
+        if(listener_info.isListener_set() && listener_info.getChange_listener()!=null){
+            helloController.slider_to_control_fade_in_of_image.valueProperty().removeListener(listener_info.getChange_listener());
+            listener_info.setListener_attached(false);
+        }
+    }
+
+    private void detach_the_fade_out_listener(HelloController helloController,Shape_object_time_line shape_object_time_line){
+        Opacity_settings opacity_settings = shape_object_time_line.getOpacity_settings();
+        Listener_info listener_info = opacity_settings.getFade_out_change_listener();
+        if(listener_info.isListener_set() && listener_info.getChange_listener()!=null){
+            helloController.slider_to_control_fade_out_of_image.valueProperty().removeListener(listener_info.getChange_listener());
             listener_info.setListener_attached(false);
         }
     }
