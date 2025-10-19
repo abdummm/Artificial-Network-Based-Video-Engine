@@ -121,7 +121,8 @@ public class HelloApplication extends Application {
     private Sound_mode sound_mode;
     private long[] start_millisecond_of_each_verse;
     private HashMap<String, Sub_fonts> hashMap_with_all_the_font_families_and_names;
-    private ArrayList<Canvas> array_list_of_all_canvases = new ArrayList<>();
+    private ArrayList<Listener_info> array_list_with_all_of_the_image_control_listeners = new ArrayList<>();
+
 
     private final static int image_view_in_tile_pane_width = 90;
     private final static int image_view_in_tile_pane_height = 160;
@@ -2348,11 +2349,11 @@ public class HelloApplication extends Application {
                                 set_the_chatgpt_image_view(helloController, media_pool_item_dragged.getImage_key_uuid(), Type_of_Image.THUMBNAIL_QUALITY);
                                 media_pool_item_dragged.setDid_this_change_the_image(true);
                                 create_and_attach_all_the_image_listeners(helloController, shapeObjectTimeLine);
-                                enable_the_image_control_panel(helloController,shapeObjectTimeLine);
+                                enable_the_image_control_panel(helloController, shapeObjectTimeLine);
                             } else if (media_pool_item_dragged.isDid_this_change_the_image()) {
                                 set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.FULL_QUALITY);
                                 if (media_pool_item_dragged.isDid_this_change_the_image()) {
-                                    detach_all_the_image_control_listeners(helloController,shapeObjectTimeLine);
+                                    detach_all_the_image_control_listeners(helloController, shapeObjectTimeLine);
                                     disable_the_image_control_panel(helloController);
                                 }
                             }
@@ -2360,7 +2361,7 @@ public class HelloApplication extends Application {
                             set_the_opacity_of_the_rectangle_in_time_line_pane((Rectangle) shapeObjectTimeLine.getShape(), 0.4D);
                             if (media_pool_item_dragged.isDid_this_change_the_image()) {
                                 set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.FULL_QUALITY);
-                                detach_all_the_image_control_listeners(helloController,shapeObjectTimeLine);
+                                detach_all_the_image_control_listeners(helloController, shapeObjectTimeLine);
                                 disable_the_image_control_panel(helloController);
                             }
                         }
@@ -2371,42 +2372,44 @@ public class HelloApplication extends Application {
         imageView.setOnMouseReleased(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                imageView.setCursor(Cursor.OPEN_HAND);
-                Media_pool_item_dragged media_pool_item_dragged = (Media_pool_item_dragged) imageView.getUserData();
-                if (media_pool_item_dragged != null) {
-                    Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
-                    ImageView ghost = media_pool_item_dragged.getImageView();
-                    helloController.pane_holding_the_fourth_screen.getChildren().remove(ghost);
-                    double x_pos_local = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY()).getX();
-                    double image_width_in_time_line = nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1));
-                    double min_x_pos_local;
-                    double max_x_pos_local;
-                    if (x_pos_local - image_width_in_time_line / 2 >= time_line_pane_data.getTime_line_base_line() && x_pos_local + image_width_in_time_line / 2 <= time_line_pane_data.getTime_line_end_base_line()) {
-                        min_x_pos_local = x_pos_local - image_width_in_time_line / 2;
-                        max_x_pos_local = x_pos_local + image_width_in_time_line / 2;
-                    } else {
-                        if (x_pos_local - image_width_in_time_line / 2 < time_line_pane_data.getTime_line_base_line()) {
-                            min_x_pos_local = time_line_pane_data.getTime_line_base_line();
-                            max_x_pos_local = time_line_pane_data.getTime_line_base_line() + image_width_in_time_line;
+                if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+                    imageView.setCursor(Cursor.OPEN_HAND);
+                    Media_pool_item_dragged media_pool_item_dragged = (Media_pool_item_dragged) imageView.getUserData();
+                    if (media_pool_item_dragged != null) {
+                        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
+                        ImageView ghost = media_pool_item_dragged.getImageView();
+                        helloController.pane_holding_the_fourth_screen.getChildren().remove(ghost);
+                        double x_pos_local = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY()).getX();
+                        double image_width_in_time_line = nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1));
+                        double min_x_pos_local;
+                        double max_x_pos_local;
+                        if (x_pos_local - image_width_in_time_line / 2 >= time_line_pane_data.getTime_line_base_line() && x_pos_local + image_width_in_time_line / 2 <= time_line_pane_data.getTime_line_end_base_line()) {
+                            min_x_pos_local = x_pos_local - image_width_in_time_line / 2;
+                            max_x_pos_local = x_pos_local + image_width_in_time_line / 2;
                         } else {
-                            max_x_pos_local = time_line_pane_data.getTime_line_end_base_line();
-                            min_x_pos_local = time_line_pane_data.getTime_line_end_base_line() - image_width_in_time_line;
-                        }
-                    }
-                    double polygon_x_pos = return_polygon_middle_position(time_line_pane_data);
-                    if (am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) && !is_there_is_a_collosion(media_pool_item_dragged.getTree_set_containing_all_of_the_items(), min_x_pos_local, max_x_pos_local)) {
-                        time_line_pane_data.getTree_set_containing_all_of_the_items().add(media_pool_item_dragged.getShapeObjectTimeLine());
-                        if (polygon_x_pos >= min_x_pos_local && polygon_x_pos <= max_x_pos_local) {
-                            set_the_chatgpt_image_view(helloController, media_pool_item_dragged.getImage_key_uuid(), Type_of_Image.FULL_QUALITY);
-                        } else {
-                            set_the_chatgpt_image_view(helloController, return_the_image_on_click(helloController.time_line_pane, polygon_x_pos), Type_of_Image.FULL_QUALITY);
-                            if (media_pool_item_dragged.isDid_this_change_the_image()) {
+                            if (x_pos_local - image_width_in_time_line / 2 < time_line_pane_data.getTime_line_base_line()) {
+                                min_x_pos_local = time_line_pane_data.getTime_line_base_line();
+                                max_x_pos_local = time_line_pane_data.getTime_line_base_line() + image_width_in_time_line;
+                            } else {
+                                max_x_pos_local = time_line_pane_data.getTime_line_end_base_line();
+                                min_x_pos_local = time_line_pane_data.getTime_line_end_base_line() - image_width_in_time_line;
                             }
                         }
-                    } else {
-                        helloController.time_line_pane.getChildren().remove(media_pool_item_dragged.getShapeObjectTimeLine().getShape());
-                        if (media_pool_item_dragged.isDid_this_change_the_image()) {
-                            set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.FULL_QUALITY);
+                        double polygon_x_pos = return_polygon_middle_position(time_line_pane_data);
+                        if (am_i_in_time_line_boundries(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), media_pool_item_dragged) && !is_there_is_a_collosion(media_pool_item_dragged.getTree_set_containing_all_of_the_items(), min_x_pos_local, max_x_pos_local)) {
+                            time_line_pane_data.getTree_set_containing_all_of_the_items().add(media_pool_item_dragged.getShapeObjectTimeLine());
+                            if (polygon_x_pos >= min_x_pos_local && polygon_x_pos <= max_x_pos_local) {
+                                set_the_chatgpt_image_view(helloController, media_pool_item_dragged.getImage_key_uuid(), Type_of_Image.FULL_QUALITY);
+                            } else {
+                                set_the_chatgpt_image_view(helloController, return_the_image_on_click(helloController.time_line_pane, polygon_x_pos), Type_of_Image.FULL_QUALITY);
+                                if (media_pool_item_dragged.isDid_this_change_the_image()) {
+                                }
+                            }
+                        } else {
+                            helloController.time_line_pane.getChildren().remove(media_pool_item_dragged.getShapeObjectTimeLine().getShape());
+                            if (media_pool_item_dragged.isDid_this_change_the_image()) {
+                                set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.FULL_QUALITY);
+                            }
                         }
                     }
                 }
@@ -2858,6 +2861,7 @@ public class HelloApplication extends Application {
                         time_line_clicked(helloController, pane, mouseEvent.getX());
                         which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, mouseEvent.getX() - time_line_pane_data.getTime_line_base_line()));
                         set_the_chatgpt_image_view(helloController, return_the_image_on_click(pane, mouseEvent.getX()), Type_of_Image.FULL_QUALITY);
+                        set_up_the_image_controller_enable_disable(helloController,return_the_shape_on_click(pane,mouseEvent.getX()));
                     }
                 } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
                     empty_tile_pane_context_menu.show(helloController.tile_pane_media_pool, mouseEvent.getScreenX(), mouseEvent.getScreenY());
@@ -2944,9 +2948,43 @@ public class HelloApplication extends Application {
                     which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, x_position - time_line_pane_data.getTime_line_base_line()));
                 }
                 set_the_chatgpt_image_view(helloController, return_the_image_on_click(pane, x_position), Type_of_Image.THUMBNAIL_QUALITY);
+                set_up_the_image_controller_enable_disable(helloController,return_the_shape_on_click(pane, x_position));
             }
         });
     }
+
+    private void set_up_the_image_controller_enable_disable(HelloController helloController, Shape_object_time_line shape_object_time_line) {
+        detach_the_listeners_image_control_unknown(helloController);
+        if (shape_object_time_line == null) {
+            disable_the_image_control_panel(helloController);
+        } else {
+            create_and_attach_all_the_image_listeners(helloController, shape_object_time_line);
+            enable_the_image_control_panel(helloController, shape_object_time_line);
+        }
+    }
+
+    private void detach_the_listeners_image_control_unknown(HelloController helloController) {
+        for (Listener_info listener_info : array_list_with_all_of_the_image_control_listeners) {
+            if (listener_info.getListener_type() == Listener_type.OPACITY_LISTENER) {
+                if (listener_info.isListener_set() && listener_info.getChange_listener() != null) {
+                    helloController.slider_to_control_the_opacity_of_an_image.valueProperty().removeListener(listener_info.getChange_listener());
+                    listener_info.setListener_attached(false);
+                }
+            } else if (listener_info.getListener_type() == Listener_type.FADE_IN_LISTENER) {
+                if (listener_info.isListener_set() && listener_info.getChange_listener() != null) {
+                    helloController.slider_to_control_fade_in_of_image.valueProperty().removeListener(listener_info.getChange_listener());
+                    listener_info.setListener_attached(false);
+                }
+            } else if (listener_info.getListener_type() == Listener_type.FADE_OUT_LISTENER) {
+                if (listener_info.isListener_set() && listener_info.getChange_listener() != null) {
+                    helloController.slider_to_control_fade_out_of_image.valueProperty().removeListener(listener_info.getChange_listener());
+                    listener_info.setListener_attached(false);
+                }
+            }
+        }
+        array_list_with_all_of_the_image_control_listeners.clear();
+    }
+
 
    /* private void listen_to_mouse_moving_in_time_line_pane(Pane pane, Polygon polygon) {
         Time_line_pane_data time_line_pane_data = ((Time_line_pane_data) pane.getUserData());
@@ -2995,6 +3033,7 @@ public class HelloApplication extends Application {
                             set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.FULL_QUALITY);
                         } else {
                             set_the_chatgpt_image_view(helloController, last_seen_image_vid_is_playing.getImage_id(), Type_of_Image.FULL_QUALITY);
+                            set_up_the_image_controller_enable_disable(helloController,last_seen_image_vid_is_playing);
                         }
                     }
                 }
@@ -3463,7 +3502,7 @@ public class HelloApplication extends Application {
                             enable_the_image_control_panel(helloController, shapeObjectTimeLine);
                         } else if (rectangleChangedInfo.isDid_we_ever_change_the_photo()) {
                             set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.THUMBNAIL_QUALITY);
-                            detach_all_the_image_control_listeners(helloController,shapeObjectTimeLine);
+                            detach_all_the_image_control_listeners(helloController, shapeObjectTimeLine);
                             disable_the_image_control_panel(helloController);
                         }
                     } else if (rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE) {
@@ -3506,7 +3545,7 @@ public class HelloApplication extends Application {
                             enable_the_image_control_panel(helloController, shapeObjectTimeLine);
                         } else if (rectangleChangedInfo.isDid_we_ever_change_the_photo()) {
                             set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.THUMBNAIL_QUALITY);
-                            detach_all_the_image_control_listeners(helloController,shapeObjectTimeLine);
+                            detach_all_the_image_control_listeners(helloController, shapeObjectTimeLine);
                             disable_the_image_control_panel(helloController);
                         }
                     } else if (rectangleChangedInfo.getType_of_movement() == MovementType.END) {
@@ -3534,7 +3573,7 @@ public class HelloApplication extends Application {
                             enable_the_image_control_panel(helloController, shapeObjectTimeLine);
                         } else if (rectangleChangedInfo.isDid_we_ever_change_the_photo()) {
                             set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.THUMBNAIL_QUALITY);
-                            detach_all_the_image_control_listeners(helloController,shapeObjectTimeLine);
+                            detach_all_the_image_control_listeners(helloController, shapeObjectTimeLine);
                             disable_the_image_control_panel(helloController);
                         }
                     }
@@ -6812,10 +6851,10 @@ public class HelloApplication extends Application {
         helloController.setting_beside_help_spread_the_app.setCursor(Cursor.HAND);
     }
 
-    private void create_and_attach_all_the_image_listeners(HelloController helloController, Shape_object_time_line shape_object_time_line){
-        create_and_attach_the_opacity_listener(helloController,shape_object_time_line);
-        create_and_attach_the_fade_in_listener(helloController,shape_object_time_line);
-        create_and_attach_the_fade_out_listener(helloController,shape_object_time_line);
+    private void create_and_attach_all_the_image_listeners(HelloController helloController, Shape_object_time_line shape_object_time_line) {
+        create_and_attach_the_opacity_listener(helloController, shape_object_time_line);
+        create_and_attach_the_fade_in_listener(helloController, shape_object_time_line);
+        create_and_attach_the_fade_out_listener(helloController, shape_object_time_line);
     }
 
     private void create_and_attach_the_opacity_listener(HelloController helloController, Shape_object_time_line shape_object_time_line) {
@@ -6832,16 +6871,17 @@ public class HelloApplication extends Application {
             listener_info.setChange_listener(opacity_change_listener);
             listener_info.setListener_set(true);
         }
-        if(!listener_info.isListener_attached()){
+        if (!listener_info.isListener_attached()) {
             helloController.slider_to_control_the_opacity_of_an_image.valueProperty().addListener(listener_info.getChange_listener());
             listener_info.setListener_attached(true);
+            array_list_with_all_of_the_image_control_listeners.add(listener_info);
         }
     }
 
-    private void create_and_attach_the_fade_in_listener(HelloController helloController, Shape_object_time_line shape_object_time_line){
+    private void create_and_attach_the_fade_in_listener(HelloController helloController, Shape_object_time_line shape_object_time_line) {
         Opacity_settings opacity_settings = shape_object_time_line.getOpacity_settings();
         Listener_info listener_info = opacity_settings.getFade_in_change_listener();
-        if(!listener_info.isListener_set()){
+        if (!listener_info.isListener_set()) {
             ChangeListener<Number> fade_in_change_listener = new ChangeListener<Number>() {
                 @Override
                 public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
@@ -6851,18 +6891,18 @@ public class HelloApplication extends Application {
             };
             listener_info.setChange_listener(fade_in_change_listener);
             listener_info.setListener_set(true);
-
         }
-        if(!listener_info.isListener_attached()){
+        if (!listener_info.isListener_attached()) {
             helloController.slider_to_control_fade_in_of_image.valueProperty().addListener(listener_info.getChange_listener());
             listener_info.setListener_attached(true);
+            array_list_with_all_of_the_image_control_listeners.add(listener_info);
         }
     }
 
-    private void create_and_attach_the_fade_out_listener(HelloController helloController, Shape_object_time_line shape_object_time_line){
+    private void create_and_attach_the_fade_out_listener(HelloController helloController, Shape_object_time_line shape_object_time_line) {
         Opacity_settings opacity_settings = shape_object_time_line.getOpacity_settings();
         Listener_info listener_info = opacity_settings.getFade_out_change_listener();
-        if(!listener_info.isListener_set()){
+        if (!listener_info.isListener_set()) {
             ChangeListener<Number> fade_out_change_listener = new ChangeListener<Number>() {
                 @Override
                 public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
@@ -6874,40 +6914,42 @@ public class HelloApplication extends Application {
             listener_info.setListener_set(true);
 
         }
-        if(!listener_info.isListener_attached()){
+        if (!listener_info.isListener_attached()) {
             helloController.slider_to_control_fade_out_of_image.valueProperty().addListener(listener_info.getChange_listener());
             listener_info.setListener_attached(true);
+            array_list_with_all_of_the_image_control_listeners.add(listener_info);
         }
     }
 
-    private void detach_all_the_image_control_listeners(HelloController helloController,Shape_object_time_line shape_object_time_line){
-        detach_the_opacity_listener(helloController,shape_object_time_line);
-        detach_the_fade_in_listener(helloController,shape_object_time_line);
-        detach_the_fade_out_listener(helloController,shape_object_time_line);
+    private void detach_all_the_image_control_listeners(HelloController helloController, Shape_object_time_line shape_object_time_line) {
+        detach_the_opacity_listener(helloController, shape_object_time_line);
+        detach_the_fade_in_listener(helloController, shape_object_time_line);
+        detach_the_fade_out_listener(helloController, shape_object_time_line);
+        array_list_with_all_of_the_image_control_listeners.clear();
     }
 
-    private void detach_the_opacity_listener(HelloController helloController,Shape_object_time_line shape_object_time_line){
+    private void detach_the_opacity_listener(HelloController helloController, Shape_object_time_line shape_object_time_line) {
         Opacity_settings opacity_settings = shape_object_time_line.getOpacity_settings();
         Listener_info listener_info = opacity_settings.getOpacity_change_listener();
-        if(listener_info.isListener_set() && listener_info.getChange_listener()!=null){
+        if (listener_info.isListener_set() && listener_info.getChange_listener() != null) {
             helloController.slider_to_control_the_opacity_of_an_image.valueProperty().removeListener(listener_info.getChange_listener());
             listener_info.setListener_attached(false);
         }
     }
 
-    private void detach_the_fade_in_listener(HelloController helloController,Shape_object_time_line shape_object_time_line){
+    private void detach_the_fade_in_listener(HelloController helloController, Shape_object_time_line shape_object_time_line) {
         Opacity_settings opacity_settings = shape_object_time_line.getOpacity_settings();
         Listener_info listener_info = opacity_settings.getFade_in_change_listener();
-        if(listener_info.isListener_set() && listener_info.getChange_listener()!=null){
+        if (listener_info.isListener_set() && listener_info.getChange_listener() != null) {
             helloController.slider_to_control_fade_in_of_image.valueProperty().removeListener(listener_info.getChange_listener());
             listener_info.setListener_attached(false);
         }
     }
 
-    private void detach_the_fade_out_listener(HelloController helloController,Shape_object_time_line shape_object_time_line){
+    private void detach_the_fade_out_listener(HelloController helloController, Shape_object_time_line shape_object_time_line) {
         Opacity_settings opacity_settings = shape_object_time_line.getOpacity_settings();
         Listener_info listener_info = opacity_settings.getFade_out_change_listener();
-        if(listener_info.isListener_set() && listener_info.getChange_listener()!=null){
+        if (listener_info.isListener_set() && listener_info.getChange_listener() != null) {
             helloController.slider_to_control_fade_out_of_image.valueProperty().removeListener(listener_info.getChange_listener());
             listener_info.setListener_attached(false);
         }
