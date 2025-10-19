@@ -15,9 +15,9 @@ public class Opacity_settings {
         this.opacity = 100.0;
         this.fade_in = 0;
         this.fade_out = 0;
-        this.opacity_change_listener = new Listener_info();
-        this.fade_in_change_listener = new Listener_info();
-        this.fade_out_change_listener = new Listener_info();
+        this.opacity_change_listener = new Listener_info(false,false,Listener_type.OPACITY_LISTENER);
+        this.fade_in_change_listener = new Listener_info(false,false,Listener_type.FADE_IN_LISTENER);
+        this.fade_out_change_listener = new Listener_info(false,false,Listener_type.FADE_OUT_LISTENER);
     }
 
     public Listener_info getOpacity_change_listener() {
