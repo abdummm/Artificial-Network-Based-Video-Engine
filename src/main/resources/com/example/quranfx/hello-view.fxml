@@ -329,7 +329,7 @@
                             <StackPane fx:id="center_group_grid_pane">
                                 <VBox alignment="CENTER">
                                     <Pane fx:id="stack_pane_of_image_view_and_text">
-<!--                                        <Rectangle fx:id="black_rectangle_behind_image_view" mouseTransparent="true" fill="black" />-->
+                                        <!--                                        <Rectangle fx:id="black_rectangle_behind_image_view" mouseTransparent="true" fill="black" />-->
                                         <ImageView fx:id="chatgpt_image_view" preserveRatio="true" opacity="1"/>
                                         <Rectangle fx:id="rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint"
                                                    mouseTransparent="true" fill="black" opacity="0.0"/>
@@ -355,7 +355,8 @@
                                         <Insets top="15.0" left="15.0" right="15.0" bottom="15.0"/>
                                     </StackPane.margin>
                                     <HBox alignment="CENTER_RIGHT">
-                                        <JFXButton fx:id="render_video" text="Render Video" style="-fx-font-size: 14px;" />
+                                        <JFXButton fx:id="render_video" text="Render Video"
+                                                   style="-fx-font-size: 14px;"/>
                                     </HBox>
                                     <HBox alignment="CENTER_LEFT">
                                         <VBox.margin>
@@ -435,20 +436,19 @@
                                         </VBox.margin>
                                         <CheckBox fx:id="check_box_saying_help_spread_the_app"
                                                   text="Help spread Sabrly"/>
-                                        <JFXButton fx:id="question_mark_beside_help_spread_the_app"
-                                                   focusTraversable="false">
-                                            <HBox.margin>
-                                                <Insets left="5.0"/>
-                                            </HBox.margin>
-                                        </JFXButton>
                                         <JFXButton fx:id="setting_beside_help_spread_the_app"
                                                    focusTraversable="false">
                                             <HBox.margin>
                                                 <Insets left="5.0"/>
                                             </HBox.margin>
                                         </JFXButton>
+                                        <JFXButton fx:id="question_mark_beside_help_spread_the_app"
+                                                   focusTraversable="false">
+                                            <HBox.margin>
+                                                <Insets left="5.0"/>
+                                            </HBox.margin>
+                                        </JFXButton>
                                     </HBox>
-
                                 </VBox>
                             </StackPane>
                         </HBox>
