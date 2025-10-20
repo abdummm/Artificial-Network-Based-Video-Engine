@@ -2862,7 +2862,7 @@ public class HelloApplication extends Application {
                         time_line_clicked(helloController, pane, mouseEvent.getX());
                         which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, mouseEvent.getX() - time_line_pane_data.getTime_line_base_line()));
                         set_the_chatgpt_image_view(helloController, return_the_image_on_click(pane, mouseEvent.getX()), Type_of_Image.FULL_QUALITY);
-                        set_up_the_image_controller_enable_disable(helloController,return_the_shape_on_click(pane,mouseEvent.getX()));
+                        set_up_the_image_controller_enable_disable(helloController, return_the_shape_on_click(pane, mouseEvent.getX()));
                     }
                 } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
                     empty_tile_pane_context_menu.show(helloController.tile_pane_media_pool, mouseEvent.getScreenX(), mouseEvent.getScreenY());
@@ -2949,7 +2949,7 @@ public class HelloApplication extends Application {
                     which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, x_position - time_line_pane_data.getTime_line_base_line()));
                 }
                 set_the_chatgpt_image_view(helloController, return_the_image_on_click(pane, x_position), Type_of_Image.THUMBNAIL_QUALITY);
-                set_up_the_image_controller_enable_disable(helloController,return_the_shape_on_click(pane, x_position));
+                set_up_the_image_controller_enable_disable(helloController, return_the_shape_on_click(pane, x_position));
             }
         });
     }
@@ -3034,7 +3034,7 @@ public class HelloApplication extends Application {
                             set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.FULL_QUALITY);
                         } else {
                             set_the_chatgpt_image_view(helloController, last_seen_image_vid_is_playing.getImage_id(), Type_of_Image.FULL_QUALITY);
-                            set_up_the_image_controller_enable_disable(helloController,last_seen_image_vid_is_playing);
+                            set_up_the_image_controller_enable_disable(helloController, last_seen_image_vid_is_playing);
                         }
                     }
                 }
@@ -3413,6 +3413,7 @@ public class HelloApplication extends Application {
             public void handle(ActionEvent actionEvent) {
                 remove_the_image_from_time_line_hash_map(pane, shapeObjectTimeLine);
                 clear_image_view_if_recatngle_is_in_boundries(helloController, pane, shapeObjectTimeLine);
+                disable_image_control_if_its_in_the_boundaries(helloController, pane, shapeObjectTimeLine);
             }
         });
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
@@ -3616,6 +3617,15 @@ public class HelloApplication extends Application {
                 }
             }
         });
+    }
+
+    private void disable_image_control_if_its_in_the_boundaries(HelloController helloController, Pane pane, Shape_object_time_line shape_object_time_line) {
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
+        double x_pos = return_polygon_middle_position(time_line_pane_data);
+        if (x_pos >= shape_object_time_line.getStart() && x_pos <= shape_object_time_line.getEnd()) {
+            detach_all_the_image_control_listeners(helloController, shape_object_time_line);
+            disable_the_image_control_panel(helloController);
+        }
     }
 
     private void set_the_rectangle_mouse_cursor(HelloController helloController, double scene_x, double scene_y, Shape_object_time_line shapeObjectTimeLine, double change_cursor_to_double_arrow_buffer) {
