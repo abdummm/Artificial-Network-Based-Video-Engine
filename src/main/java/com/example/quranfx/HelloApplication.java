@@ -122,6 +122,7 @@ public class HelloApplication extends Application {
     private long[] start_millisecond_of_each_verse;
     private HashMap<String, Sub_fonts> hashMap_with_all_the_font_families_and_names;
     private ArrayList<Listener_info> array_list_with_all_of_the_image_control_listeners = new ArrayList<>();
+    private Stage learn_more_about_app_stage;
 
 
     private final static int image_view_in_tile_pane_width = 90;
@@ -6538,9 +6539,13 @@ public class HelloApplication extends Application {
     }
 
     private void learn_more_about_spreading_the_app_dialog() { // TODO change how this dialog looks
-        Stage feedbackStage = new Stage();
-        feedbackStage.initOwner(main_stage);
-        feedbackStage.initStyle(StageStyle.DECORATED);
+        if (learn_more_about_app_stage != null && learn_more_about_app_stage.isShowing()) {
+            learn_more_about_app_stage.toFront();
+            return;
+        }
+        learn_more_about_app_stage = new Stage();
+        learn_more_about_app_stage.initOwner(main_stage);
+        learn_more_about_app_stage.initStyle(StageStyle.DECORATED);
         //feedbackStage.initModality(Modality.WINDOW_MODAL); // optional
         VBox vBox = new VBox();
         vBox.setAlignment(Pos.CENTER);
@@ -6549,7 +6554,7 @@ public class HelloApplication extends Application {
         got_it_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                feedbackStage.close();
+                learn_more_about_app_stage.close();
             }
         });
 
@@ -6562,9 +6567,9 @@ public class HelloApplication extends Application {
         got_it_button.setFocusTraversable(false);
         vBox.getChildren().addAll(main_text, got_it_button);
         Scene scene = new Scene(vBox, 450, 225);
-        feedbackStage.setScene(scene);
-        feedbackStage.setTitle("Help spread " + app_name);
-        feedbackStage.show();
+        learn_more_about_app_stage.setScene(scene);
+        learn_more_about_app_stage.setTitle("Help spread " + app_name);
+        learn_more_about_app_stage.show();
     }
 
     private void set_the_cursor_of_help_spread_app_button(HelloController helloController) {
