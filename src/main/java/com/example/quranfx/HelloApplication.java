@@ -404,9 +404,16 @@ public class HelloApplication extends Application {
 
     private void add_surats_to_the_list_view(HelloController helloController, String response_string) {
         JsonNode nameNode = return_name_node(response_string);
-        if (nameNode != null) {
+        if (nameNode != null && nameNode.get("chapters") != null) {
             for (int i = 0; i < nameNode.get("chapters").size(); i++) {
                 helloController.choose_the_surat.getItems().add(String.valueOf(nameNode.get("chapters").get(i).get("id")).concat(" - ").concat(String.valueOf(nameNode.get("chapters").get(i).get("name_simple"))).replace("\"", ""));
+            }
+        } else {
+            show_alert("There was a problem getting the list of chapters. Please try again later.");
+            try {
+                throw new JsonParseException(null, "'chapters' field is missing or null in JSON data.");
+            } catch (JsonParseException e) {
+                throw new RuntimeException(e);
             }
         }
     }
@@ -4249,14 +4256,19 @@ public class HelloApplication extends Application {
             hash_map_with_the_translations = new HashMap<>();
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(response);
-            JsonNode translations = root.get("translations");
-            for (JsonNode item : translations) {
-                String language_name = item.get("language_name").asText();
-                int id = item.get("id").asInt();
-                ArrayList<Integer> arrayList_with_ids = hash_map_with_the_translations.getOrDefault(language_name, new ArrayList<>());
-                arrayList_with_ids.add(id);
-                hash_map_with_the_translations.put(language_name.toLowerCase(), arrayList_with_ids);
-                hashMap_id_to_language_name_text.put(id, language_name.toLowerCase());
+            if (root != null && root.get("translations")!=null) {
+                JsonNode translations = root.get("translations");
+                for (JsonNode item : translations) {
+                    String language_name = item.get("language_name").asText();
+                    int id = item.get("id").asInt();
+                    ArrayList<Integer> arrayList_with_ids = hash_map_with_the_translations.getOrDefault(language_name, new ArrayList<>());
+                    arrayList_with_ids.add(id);
+                    hash_map_with_the_translations.put(language_name.toLowerCase(), arrayList_with_ids);
+                    hashMap_id_to_language_name_text.put(id, language_name.toLowerCase());
+                }
+            } else {
+                show_alert("There was a problem getting the translations. Please try again later.");
+                throw new JsonParseException(null, "'translations' field is missing or null in JSON data.");
             }
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -6881,6 +6893,7 @@ public class HelloApplication extends Application {
                 public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
                     helloController.label_holding_the_opacity_percentage.setText(String.valueOf(new_number.intValue()) + "%");
                     opacity_settings.setOpacity(new_number.doubleValue());
+                    helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.setOpacity(opacity_settings.return_total_opacity(time_difference_compared_to_start(shape_object_time_line,helloController.time_line_pane),time_difference_compared_to_end(shape_object_time_line,helloController.time_line_pane)));
                 }
             };
             listener_info.setChange_listener(opacity_change_listener);
@@ -6902,6 +6915,7 @@ public class HelloApplication extends Application {
                 public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
                     helloController.label_holding_the_fade_in.setText(return_formatted_string_to_1_decimal_place_always(new_number.doubleValue()) + unit_sign_beside_fade_in_fade_out);
                     opacity_settings.setFade_in(new_number.doubleValue());
+                    helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.setOpacity(opacity_settings.return_total_opacity(time_difference_compared_to_start(shape_object_time_line,helloController.time_line_pane),time_difference_compared_to_end(shape_object_time_line,helloController.time_line_pane)));
                 }
             };
             listener_info.setChange_listener(fade_in_change_listener);
@@ -6923,6 +6937,7 @@ public class HelloApplication extends Application {
                 public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
                     helloController.label_holding_the_fade_out.setText(return_formatted_string_to_1_decimal_place_always(new_number.doubleValue()) + unit_sign_beside_fade_in_fade_out);
                     opacity_settings.setFade_out(new_number.doubleValue());
+                    helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.setOpacity(opacity_settings.return_total_opacity(time_difference_compared_to_start(shape_object_time_line,helloController.time_line_pane),time_difference_compared_to_end(shape_object_time_line,helloController.time_line_pane)));
                 }
             };
             listener_info.setChange_listener(fade_out_change_listener);
@@ -6935,6 +6950,24 @@ public class HelloApplication extends Application {
             array_list_with_all_of_the_image_control_listeners.add(listener_info);
         }
     }
+
+    private double time_difference_compared_to_start(Shape_object_time_line shape_object_time_line, Pane pane) {
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
+        double x_pos_pixels = return_polygon_middle_position(time_line_pane_data);
+        double x_pos_time = pixels_to_nanoseconds(time_line_pane_data, x_pos_pixels-time_line_pane_data.getTime_line_base_line());
+        double start = shape_object_time_line.getStart_time();
+        System.out.println(x_pos_time - start);
+        return x_pos_time - start;
+    }
+
+    private double time_difference_compared_to_end(Shape_object_time_line shape_object_time_line, Pane pane) {
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
+        double x_pos_pixels = return_polygon_middle_position(time_line_pane_data);
+        double x_pos_time = pixels_to_nanoseconds(time_line_pane_data, x_pos_pixels);
+        double end = shape_object_time_line.getEnd();
+        return end - x_pos_time;
+    }
+
 
     private void detach_all_the_image_control_listeners(HelloController helloController, Shape_object_time_line shape_object_time_line) {
         detach_the_opacity_listener(helloController, shape_object_time_line);
