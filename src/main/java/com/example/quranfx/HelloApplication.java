@@ -3056,6 +3056,7 @@ public class HelloApplication extends Application {
                             set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.FULL_QUALITY);
                             detach_the_listeners_image_control_unknown(helloController);
                             disable_the_image_control_panel(helloController);
+                            reset_the_opacity(helloController);
                         } else {
                             set_the_chatgpt_image_view(helloController, last_seen_image_vid_is_playing.getImage_id(), Type_of_Image.FULL_QUALITY);
                             set_up_the_image_controller_enable_disable(helloController, last_seen_image_vid_is_playing);
@@ -3441,6 +3442,7 @@ public class HelloApplication extends Application {
                 remove_the_image_from_time_line_hash_map(pane, shapeObjectTimeLine);
                 clear_image_view_if_recatngle_is_in_boundries(helloController, pane, shapeObjectTimeLine);
                 disable_image_control_if_its_in_the_boundaries(helloController, pane, shapeObjectTimeLine);
+                reset_the_opacity_if_its_not_in_boundaries(helloController,pane,shapeObjectTimeLine);
             }
         });
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
@@ -3655,6 +3657,14 @@ public class HelloApplication extends Application {
         if (x_pos >= shape_object_time_line.getStart() && x_pos <= shape_object_time_line.getEnd()) {
             detach_all_the_image_control_listeners(helloController, shape_object_time_line);
             disable_the_image_control_panel(helloController);
+        }
+    }
+
+    private void reset_the_opacity_if_its_not_in_boundaries(HelloController helloController, Pane pane, Shape_object_time_line shape_object_time_line){
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
+        double x_pos = return_polygon_middle_position(time_line_pane_data);
+        if (x_pos < shape_object_time_line.getStart() || x_pos > shape_object_time_line.getEnd()) {
+            reset_the_opacity(helloController);
         }
     }
 
@@ -6465,8 +6475,8 @@ public class HelloApplication extends Application {
                 which_verse_am_i_on_milliseconds(helloController, new_time);
                 the_verse_changed(helloController, selected_verse);
                 media_has_been_rewinded_or_forwaded(helloController, new_time);
-                set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, new_time), Type_of_Image.FULL_QUALITY);
                 helloController.list_view_with_all_of_the_languages.refresh();
+                set_up_everything_image_view_time_line_time(helloController,new_time);
             }
         });
     }
@@ -6479,8 +6489,8 @@ public class HelloApplication extends Application {
                     selected_verse--;
                     the_verse_changed(helloController, selected_verse);
                     scroll_to_specific_verse_time(helloController);
-                    set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, ayats_processed[selected_verse].getStart_millisecond()), Type_of_Image.FULL_QUALITY);
                     helloController.list_view_with_all_of_the_languages.refresh();
+                    set_up_everything_image_view_time_line_time(helloController,ayats_processed[selected_verse].getStart_millisecond());
                 }
             }
         });
@@ -6503,8 +6513,8 @@ public class HelloApplication extends Application {
                     selected_verse++;
                     the_verse_changed(helloController, selected_verse);
                     scroll_to_specific_verse_time(helloController);
-                    set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, ayats_processed[selected_verse].getStart_millisecond()), Type_of_Image.FULL_QUALITY);
                     helloController.list_view_with_all_of_the_languages.refresh();
+                    set_up_everything_image_view_time_line_time(helloController,ayats_processed[selected_verse].getStart_millisecond());
                 }
             }
         });
@@ -6519,8 +6529,8 @@ public class HelloApplication extends Application {
                 which_verse_am_i_on_milliseconds(helloController, new_time);
                 the_verse_changed(helloController, selected_verse);
                 media_has_been_rewinded_or_forwaded(helloController, new_time);
-                set_the_chatgpt_image_view(helloController, return_the_image_from_time(helloController.time_line_pane, new_time), Type_of_Image.FULL_QUALITY);
                 helloController.list_view_with_all_of_the_languages.refresh();
+                set_up_everything_image_view_time_line_time(helloController,new_time);
             }
         });
     }
@@ -7074,5 +7084,25 @@ public class HelloApplication extends Application {
 
     private void reset_the_opacity(HelloController helloController){
         helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.setOpacity(0);
+    }
+
+    private void set_up_everything_image_view_time_line_time(HelloController helloController, long time_in_nanos){
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
+        double x_pos = nanoseconds_to_pixels(time_line_pane_data,time_in_nanos) + time_line_pane_data.getTime_line_base_line();
+        set_up_everything_image_view_time_line_x_pos(helloController,x_pos);
+    }
+
+    private void set_up_everything_image_view_time_line_x_pos(HelloController helloController,double x_pos){
+        Shape_object_time_line shape_object_time_line_returned_on_click = return_the_shape_on_click(helloController.time_line_pane, x_pos);
+        if (shape_object_time_line_returned_on_click != null) {
+            set_the_chatgpt_image_view(helloController, shape_object_time_line_returned_on_click.getImage_id(), Type_of_Image.FULL_QUALITY);
+            set_up_the_image_controller_enable_disable(helloController, shape_object_time_line_returned_on_click);
+            set_the_opacity_of_image_view_considering_everything(helloController, shape_object_time_line_returned_on_click);
+        } else {
+            set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.FULL_QUALITY);
+            detach_the_listeners_image_control_unknown(helloController);
+            disable_the_image_control_panel(helloController);
+            reset_the_opacity(helloController);
+        }
     }
 }
