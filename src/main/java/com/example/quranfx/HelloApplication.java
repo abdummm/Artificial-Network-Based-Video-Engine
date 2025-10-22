@@ -268,6 +268,7 @@ public class HelloApplication extends Application {
         bind_the_height_for_settings_icon_to_help_spread_app_button(helloController);
         set_up_the_icon_for_settings_beside_help_spread_app(helloController);
         set_the_cursor_of_settings_beside_help_spread_app(helloController);
+        set_up_the_fade_in_fade_out_slider_ticks(helloController);
     }
 
     /*public static void main(String[] args) {
@@ -2869,7 +2870,13 @@ public class HelloApplication extends Application {
                         time_line_clicked(helloController, pane, mouseEvent.getX());
                         which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, mouseEvent.getX() - time_line_pane_data.getTime_line_base_line()));
                         set_the_chatgpt_image_view(helloController, return_the_image_on_click(pane, mouseEvent.getX()), Type_of_Image.FULL_QUALITY);
-                        set_up_the_image_controller_enable_disable(helloController, return_the_shape_on_click(pane, mouseEvent.getX()));
+                        Shape_object_time_line shape_object_time_line_returned_on_click = return_the_shape_on_click(pane, mouseEvent.getX());
+                        if (shape_object_time_line_returned_on_click != null) {
+                            set_up_the_image_controller_enable_disable(helloController, shape_object_time_line_returned_on_click);
+                            set_the_opacity_of_image_view_considering_everything(helloController, shape_object_time_line_returned_on_click);
+                        } else {
+                            reset_the_opacity(helloController);
+                        }
                     }
                 } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
                     empty_tile_pane_context_menu.show(helloController.tile_pane_media_pool, mouseEvent.getScreenX(), mouseEvent.getScreenY());
@@ -2956,7 +2963,15 @@ public class HelloApplication extends Application {
                     which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, x_position - time_line_pane_data.getTime_line_base_line()));
                 }
                 set_the_chatgpt_image_view(helloController, return_the_image_on_click(pane, x_position), Type_of_Image.THUMBNAIL_QUALITY);
-                set_up_the_image_controller_enable_disable(helloController, return_the_shape_on_click(pane, x_position));
+                Shape_object_time_line shape_object_time_line = return_the_shape_on_click(pane, x_position);
+                if (shape_object_time_line != null) {
+                    set_up_the_image_controller_enable_disable(helloController, return_the_shape_on_click(pane, x_position));
+                    set_the_opacity_of_image_view_considering_everything(helloController, shape_object_time_line);
+                } else {
+                    detach_the_listeners_image_control_unknown(helloController);
+                    disable_the_image_control_panel(helloController);
+                    reset_the_opacity(helloController);
+                }
             }
         });
     }
@@ -3039,10 +3054,15 @@ public class HelloApplication extends Application {
                         last_seen_image_vid_is_playing = return_the_shape_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, time_in_nanos) + time_line_pane_data.getTime_line_base_line());
                         if (last_seen_image_vid_is_playing == null) {
                             set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.FULL_QUALITY);
+                            detach_the_listeners_image_control_unknown(helloController);
+                            disable_the_image_control_panel(helloController);
                         } else {
                             set_the_chatgpt_image_view(helloController, last_seen_image_vid_is_playing.getImage_id(), Type_of_Image.FULL_QUALITY);
                             set_up_the_image_controller_enable_disable(helloController, last_seen_image_vid_is_playing);
                         }
+                    }
+                    if(last_seen_image_vid_is_playing!=null){
+                        set_the_opacity_of_image_view_considering_everything(helloController, last_seen_image_vid_is_playing);
                     }
                 }
             }
@@ -3513,6 +3533,7 @@ public class HelloApplication extends Application {
                             set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.THUMBNAIL_QUALITY);
                             detach_all_the_image_control_listeners(helloController, shapeObjectTimeLine);
                             disable_the_image_control_panel(helloController);
+                            reset_the_opacity(helloController);
                         }
                     } else if (rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE) {
                         if (mouse_scene_x_translated - local_x >= time_line_pane_data.getTime_line_base_line() && mouse_scene_x_translated - local_x + rectangle.getWidth() <= time_line_pane_data.getTime_line_end_base_line()) {
@@ -3556,6 +3577,7 @@ public class HelloApplication extends Application {
                             set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.THUMBNAIL_QUALITY);
                             detach_all_the_image_control_listeners(helloController, shapeObjectTimeLine);
                             disable_the_image_control_panel(helloController);
+                            reset_the_opacity(helloController);
                         }
                     } else if (rectangleChangedInfo.getType_of_movement() == MovementType.END) {
                         double original_width = rectangleChangedInfo.getOriginal_end_rectangle() - rectangleChangedInfo.getOriginal_start_rectangle();
@@ -3584,6 +3606,7 @@ public class HelloApplication extends Application {
                             set_the_chatgpt_image_view(helloController, no_image_found, Type_of_Image.THUMBNAIL_QUALITY);
                             detach_all_the_image_control_listeners(helloController, shapeObjectTimeLine);
                             disable_the_image_control_panel(helloController);
+                            reset_the_opacity(helloController);
                         }
                     }
                 }
@@ -4256,7 +4279,7 @@ public class HelloApplication extends Application {
             hash_map_with_the_translations = new HashMap<>();
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(response);
-            if (root != null && root.get("translations")!=null) {
+            if (root != null && root.get("translations") != null) {
                 JsonNode translations = root.get("translations");
                 for (JsonNode item : translations) {
                     String language_name = item.get("language_name").asText();
@@ -6893,7 +6916,7 @@ public class HelloApplication extends Application {
                 public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
                     helloController.label_holding_the_opacity_percentage.setText(String.valueOf(new_number.intValue()) + "%");
                     opacity_settings.setOpacity(new_number.doubleValue());
-                    helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.setOpacity(opacity_settings.return_total_opacity(time_difference_compared_to_start(shape_object_time_line,helloController.time_line_pane),time_difference_compared_to_end(shape_object_time_line,helloController.time_line_pane)));
+                    helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.setOpacity(opacity_settings.return_total_opacity(time_difference_compared_to_start(shape_object_time_line, helloController.time_line_pane), time_difference_compared_to_end(shape_object_time_line, helloController.time_line_pane)));
                 }
             };
             listener_info.setChange_listener(opacity_change_listener);
@@ -6915,7 +6938,7 @@ public class HelloApplication extends Application {
                 public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
                     helloController.label_holding_the_fade_in.setText(return_formatted_string_to_1_decimal_place_always(new_number.doubleValue()) + unit_sign_beside_fade_in_fade_out);
                     opacity_settings.setFade_in(new_number.doubleValue());
-                    helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.setOpacity(opacity_settings.return_total_opacity(time_difference_compared_to_start(shape_object_time_line,helloController.time_line_pane),time_difference_compared_to_end(shape_object_time_line,helloController.time_line_pane)));
+                    set_the_opacity_of_image_view_considering_everything(helloController, shape_object_time_line);
                 }
             };
             listener_info.setChange_listener(fade_in_change_listener);
@@ -6937,7 +6960,7 @@ public class HelloApplication extends Application {
                 public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
                     helloController.label_holding_the_fade_out.setText(return_formatted_string_to_1_decimal_place_always(new_number.doubleValue()) + unit_sign_beside_fade_in_fade_out);
                     opacity_settings.setFade_out(new_number.doubleValue());
-                    helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.setOpacity(opacity_settings.return_total_opacity(time_difference_compared_to_start(shape_object_time_line,helloController.time_line_pane),time_difference_compared_to_end(shape_object_time_line,helloController.time_line_pane)));
+                    set_the_opacity_of_image_view_considering_everything(helloController, shape_object_time_line);
                 }
             };
             listener_info.setChange_listener(fade_out_change_listener);
@@ -6951,20 +6974,25 @@ public class HelloApplication extends Application {
         }
     }
 
+    private void set_the_opacity_of_image_view_considering_everything(HelloController helloController, Shape_object_time_line shape_object_time_line) {
+        Opacity_settings opacity_settings = shape_object_time_line.getOpacity_settings();
+        helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.setOpacity(opacity_settings.return_total_opacity(time_difference_compared_to_start(shape_object_time_line, helloController.time_line_pane), time_difference_compared_to_end(shape_object_time_line, helloController.time_line_pane)));
+
+    }
+
     private double time_difference_compared_to_start(Shape_object_time_line shape_object_time_line, Pane pane) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         double x_pos_pixels = return_polygon_middle_position(time_line_pane_data);
-        double x_pos_time = pixels_to_nanoseconds(time_line_pane_data, x_pos_pixels-time_line_pane_data.getTime_line_base_line());
+        double x_pos_time = pixels_to_nanoseconds(time_line_pane_data, x_pos_pixels - time_line_pane_data.getTime_line_base_line());
         double start = shape_object_time_line.getStart_time();
-        System.out.println(x_pos_time - start);
         return x_pos_time - start;
     }
 
     private double time_difference_compared_to_end(Shape_object_time_line shape_object_time_line, Pane pane) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         double x_pos_pixels = return_polygon_middle_position(time_line_pane_data);
-        double x_pos_time = pixels_to_nanoseconds(time_line_pane_data, x_pos_pixels);
-        double end = shape_object_time_line.getEnd();
+        double x_pos_time = pixels_to_nanoseconds(time_line_pane_data, x_pos_pixels - time_line_pane_data.getTime_line_base_line());
+        double end = shape_object_time_line.getEnd_time();
         return end - x_pos_time;
     }
 
@@ -7030,5 +7058,21 @@ public class HelloApplication extends Application {
             helloController.label_holding_the_opacity_percentage.setText("100" + unit_sign_beside_opacity);
             helloController.label_holding_the_fade_in.setText(return_formatted_string_to_1_decimal_place_always(helloController.slider_to_control_fade_in_of_image.getMin()) + unit_sign_beside_fade_in_fade_out);
             helloController.label_holding_the_fade_out.setText(return_formatted_string_to_1_decimal_place_always(helloController.slider_to_control_fade_out_of_image.getMin()) + unit_sign_beside_fade_in_fade_out);*/
+    }
+
+    private void set_up_the_fade_in_fade_out_slider_ticks(HelloController helloController) {
+        set_up_the_tick_marks_for_a_slider(helloController.slider_to_control_fade_in_of_image, false, true);
+        set_up_the_tick_marks_for_a_slider(helloController.slider_to_control_fade_out_of_image, false, true);
+    }
+
+    private void set_up_the_tick_marks_for_a_slider(Slider slider, boolean show_tick_marks, boolean snap_to_ticks) {
+        slider.setShowTickMarks(show_tick_marks);
+        slider.setSnapToTicks(snap_to_ticks);
+        slider.setMajorTickUnit(0.1);
+        slider.setMinorTickCount(0);
+    }
+
+    private void reset_the_opacity(HelloController helloController){
+        helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.setOpacity(0);
     }
 }
