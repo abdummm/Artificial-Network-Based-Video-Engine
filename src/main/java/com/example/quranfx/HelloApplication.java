@@ -2870,14 +2870,7 @@ public class HelloApplication extends Application {
                     if (mouseEvent.getY() <= y_drag_area && mouseEvent.getX() >= base_time_line && mouseEvent.getX() <= end_time_line) {
                         time_line_clicked(helloController, pane, mouseEvent.getX());
                         which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, mouseEvent.getX() - time_line_pane_data.getTime_line_base_line()));
-                        set_the_chatgpt_image_view(helloController, return_the_image_on_click(pane, mouseEvent.getX()), Type_of_Image.FULL_QUALITY);
-                        Shape_object_time_line shape_object_time_line_returned_on_click = return_the_shape_on_click(pane, mouseEvent.getX());
-                        if (shape_object_time_line_returned_on_click != null) {
-                            set_up_the_image_controller_enable_disable(helloController, shape_object_time_line_returned_on_click);
-                            set_the_opacity_of_image_view_considering_everything(helloController, shape_object_time_line_returned_on_click);
-                        } else {
-                            reset_the_opacity(helloController);
-                        }
+                        set_up_everything_image_view_time_line_x_pos(helloController,mouseEvent.getX(),Type_of_Image.FULL_QUALITY);
                     }
                 } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
                     empty_tile_pane_context_menu.show(helloController.tile_pane_media_pool, mouseEvent.getScreenX(), mouseEvent.getScreenY());
