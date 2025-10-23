@@ -7087,14 +7087,15 @@ public class HelloApplication extends Application {
     }
 
     private void set_up_the_fade_in_fade_out_slider_ticks(HelloController helloController) {
-        set_up_the_tick_marks_for_a_slider(helloController.slider_to_control_fade_in_of_image, false, true);
-        set_up_the_tick_marks_for_a_slider(helloController.slider_to_control_fade_out_of_image, false, true);
+        set_up_the_tick_marks_for_a_slider(helloController.slider_to_control_fade_in_of_image,0.1, false, true);
+        set_up_the_tick_marks_for_a_slider(helloController.slider_to_control_fade_out_of_image,0.1, false, true);
+        set_up_the_tick_marks_for_a_slider(helloController.slider_to_control_the_opacity_of_an_image,1,false,true);
     }
 
-    private void set_up_the_tick_marks_for_a_slider(Slider slider, boolean show_tick_marks, boolean snap_to_ticks) {
+    private void set_up_the_tick_marks_for_a_slider(Slider slider,double major_tick_units, boolean show_tick_marks, boolean snap_to_ticks) {
         slider.setShowTickMarks(show_tick_marks);
         slider.setSnapToTicks(snap_to_ticks);
-        slider.setMajorTickUnit(0.1);
+        slider.setMajorTickUnit(major_tick_units);
         slider.setMinorTickCount(0);
     }
 
