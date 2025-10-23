@@ -2292,7 +2292,7 @@ public class HelloApplication extends Application {
                     Rectangle created_rectangle = create_and_return_time_line_rectangle(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1)));
                     created_rectangle.setVisible(false);
                     Shape_object_time_line shapeObjectTimeLine = new Shape_object_time_line(0, nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1)), created_rectangle, mediaPool.getId(), 0, TimeUnit.SECONDS.toNanos(1), new Opacity_settings());
-                    set_up_the_image_rectangle(created_rectangle, mediaPool.getThumbnail(), helloController.time_line_pane);
+                    set_up_the_image_rectangle(created_rectangle, mediaPool.getThumbnail(), helloController.time_line_pane, new Opacity_settings());
                     configure_the_image_rectangle(shapeObjectTimeLine, helloController, helloController.time_line_pane, mediaPool.getThumbnail());
                     imageView.setCursor(Cursor.CLOSED_HAND);
                     double real_x_pos = mouseEvent.getSceneX() - mouseEvent.getX();
@@ -2870,7 +2870,7 @@ public class HelloApplication extends Application {
                     if (mouseEvent.getY() <= y_drag_area && mouseEvent.getX() >= base_time_line && mouseEvent.getX() <= end_time_line) {
                         time_line_clicked(helloController, pane, mouseEvent.getX());
                         which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, mouseEvent.getX() - time_line_pane_data.getTime_line_base_line()));
-                        set_up_everything_image_view_time_line_x_pos(helloController,mouseEvent.getX(),Type_of_Image.FULL_QUALITY);
+                        set_up_everything_image_view_time_line_x_pos(helloController, mouseEvent.getX(), Type_of_Image.FULL_QUALITY);
                     }
                 } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
                     empty_tile_pane_context_menu.show(helloController.tile_pane_media_pool, mouseEvent.getScreenX(), mouseEvent.getScreenY());
@@ -2945,7 +2945,7 @@ public class HelloApplication extends Application {
                     polygon.setCursor(Cursor.DEFAULT);
                 }
                 Point2D point_2d_relative_to_the_time_line = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY());
-                set_up_everything_image_view_time_line_x_pos(helloController, point_2d_relative_to_the_time_line.getX(),Type_of_Image.FULL_QUALITY);
+                set_up_everything_image_view_time_line_x_pos(helloController, point_2d_relative_to_the_time_line.getX(), Type_of_Image.FULL_QUALITY);
             }
         });
         polygon.setOnMouseDragged(new EventHandler<MouseEvent>() {
@@ -2957,7 +2957,7 @@ public class HelloApplication extends Application {
                 if (x_position - time_line_pane_data.getTime_line_base_line() >= 0) {
                     which_verse_am_i_on_milliseconds(helloController, time_of_x_pos_in_nano_seconds);
                 }
-                set_up_everything_image_view_time_line_x_pos(helloController, x_position,Type_of_Image.THUMBNAIL_QUALITY);
+                set_up_everything_image_view_time_line_x_pos(helloController, x_position, Type_of_Image.THUMBNAIL_QUALITY);
                 /*set_the_chatgpt_image_view(helloController, return_the_image_on_click(pane, x_position), Type_of_Image.THUMBNAIL_QUALITY);
                 Shape_object_time_line shape_object_time_line = return_the_shape_on_click(pane, x_position);
                 if (shape_object_time_line != null) {
@@ -3346,9 +3346,9 @@ public class HelloApplication extends Application {
         pane.getChildren().remove(shapeObjectTimeLine.getShape());
     }
 
-    private void set_up_the_image_rectangle(Rectangle rectangle, Image image, Pane pane) {
+    private void set_up_the_image_rectangle(Rectangle rectangle, Image image, Pane pane, Opacity_settings opacity_settings) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
-        ImagePattern pattern = new ImagePattern(create_image_for_the_time_line_thumbnail(remove_transparent_pixels(image), (int) rectangle.getWidth(), (int) rectangle.getHeight()), 0, 0, 1, 1, true);
+        ImagePattern pattern = new ImagePattern(create_image_for_the_time_line_thumbnail(remove_transparent_pixels(image), (int) rectangle.getWidth(), (int) rectangle.getHeight(), opacity_settings, time_line_pane_data), 0, 0, 1, 1, true);
         rectangle.setStrokeWidth(1);
         rectangle.setStroke(javafx.scene.paint.Color.BLACK);
         rectangle.setArcHeight(5);
@@ -3356,7 +3356,7 @@ public class HelloApplication extends Application {
         rectangle.setFill(pattern);
     }
 
-    private Image create_image_for_the_time_line_thumbnail(Image image, int width, int height) {
+    private Image create_image_for_the_time_line_thumbnail(Image image, int width, int height, Opacity_settings opacity_settings, Time_line_pane_data time_line_pane_data) {
         try {
             BufferedImage thumbnail = Thumbnails.of(image_to_buffered_image(image))
                     .height(height)
@@ -3368,11 +3368,27 @@ public class HelloApplication extends Application {
             PixelWriter pixelWriter = writableImage.getPixelWriter();
             PixelReader pixelReader = buffer_image_to_image(thumbnail).getPixelReader();
             int number_of_images = Math.floorDiv(width, thumbnail.getWidth());
-            for (int k = 0; k < number_of_images; k++) {
-                pixelWriter.setPixels(k * thumbnail.getWidth(), 0, thumbnail.getWidth(), thumbnail.getHeight(), pixelReader, 0, 0);
-            }
-            if (width % thumbnail.getWidth() != 0) {
-                pixelWriter.setPixels(number_of_images * thumbnail.getWidth(), 0, width % thumbnail.getWidth(), thumbnail.getHeight(), pixelReader, 0, 0);
+            if (opacity_settings.getFade_in() == 0 && opacity_settings.getFade_out() == 0) {
+                for (int k = 0; k < number_of_images; k++) {
+                    pixelWriter.setPixels(k * thumbnail.getWidth(), 0, thumbnail.getWidth(), thumbnail.getHeight(), pixelReader, 0, 0);
+                }
+                if (width % thumbnail.getWidth() != 0) {
+                    pixelWriter.setPixels(number_of_images * thumbnail.getWidth(), 0, width % thumbnail.getWidth(), thumbnail.getHeight(), pixelReader, 0, 0);
+                }
+            } else {
+                for (int i = 0; i < width; i++) {
+                    double time_since_start = pixels_to_nanoseconds(time_line_pane_data, i);
+                    double time_till_end = pixels_to_nanoseconds(time_line_pane_data, width - i);
+                    double fade_in_multiplier = Math.min(1, time_since_start / (opacity_settings.getFade_in() * TimeUnit.SECONDS.toNanos(1)));
+                    double fade_out_multiplier = Math.min(1, time_till_end / (opacity_settings.getFade_out() * TimeUnit.SECONDS.toNanos(1)));
+                    for (int j = 0; j < height; j++) {
+                        int argb_color = pixelReader.getArgb(i % thumbnail.getWidth(), j % thumbnail.getHeight());
+                        int alpha = (int) (fade_in_multiplier * fade_out_multiplier * 255);
+                        alpha <<= 24;
+                        alpha |= (0x00FFFFFF & argb_color);
+                        pixelWriter.setArgb(i, j, alpha);
+                    }
+                }
             }
             return writableImage;
         } catch (IOException e) {
@@ -3629,7 +3645,7 @@ public class HelloApplication extends Application {
                         }
                         check_if_i_am_in_right_rectangle_for_cursor(helloController, mouseEvent.getSceneX(), mouseEvent.getSceneY(), shapeObjectTimeLine, change_cursor_to_double_arrow_buffer, pane);
                         if (rectangle.getWidth() != old_width) {
-                            set_up_the_image_rectangle(rectangle, image, pane);
+                            set_up_the_image_rectangle(rectangle, image, pane, shapeObjectTimeLine.getOpacity_settings());
                         }
                         if (rectangleChangedInfo.getType_of_movement() == MovementType.MIDDLE) {// added becuase its removed earlier
                             time_line_pane_data.getTree_set_containing_all_of_the_items().add(shapeObjectTimeLine);
@@ -6472,7 +6488,7 @@ public class HelloApplication extends Application {
                 the_verse_changed(helloController, selected_verse);
                 media_has_been_rewinded_or_forwaded(helloController, new_time);
                 helloController.list_view_with_all_of_the_languages.refresh();
-                set_up_everything_image_view_time_line_time(helloController, new_time,Type_of_Image.FULL_QUALITY);
+                set_up_everything_image_view_time_line_time(helloController, new_time, Type_of_Image.FULL_QUALITY);
             }
         });
     }
@@ -6486,7 +6502,7 @@ public class HelloApplication extends Application {
                     the_verse_changed(helloController, selected_verse);
                     scroll_to_specific_verse_time(helloController);
                     helloController.list_view_with_all_of_the_languages.refresh();
-                    set_up_everything_image_view_time_line_time(helloController, ayats_processed[selected_verse].getStart_millisecond(),Type_of_Image.FULL_QUALITY);
+                    set_up_everything_image_view_time_line_time(helloController, ayats_processed[selected_verse].getStart_millisecond(), Type_of_Image.FULL_QUALITY);
                 }
             }
         });
@@ -6510,7 +6526,7 @@ public class HelloApplication extends Application {
                     the_verse_changed(helloController, selected_verse);
                     scroll_to_specific_verse_time(helloController);
                     helloController.list_view_with_all_of_the_languages.refresh();
-                    set_up_everything_image_view_time_line_time(helloController, ayats_processed[selected_verse].getStart_millisecond(),Type_of_Image.FULL_QUALITY);
+                    set_up_everything_image_view_time_line_time(helloController, ayats_processed[selected_verse].getStart_millisecond(), Type_of_Image.FULL_QUALITY);
                 }
             }
         });
@@ -6526,7 +6542,7 @@ public class HelloApplication extends Application {
                 the_verse_changed(helloController, selected_verse);
                 media_has_been_rewinded_or_forwaded(helloController, new_time);
                 helloController.list_view_with_all_of_the_languages.refresh();
-                set_up_everything_image_view_time_line_time(helloController, new_time,Type_of_Image.FULL_QUALITY);
+                set_up_everything_image_view_time_line_time(helloController, new_time, Type_of_Image.FULL_QUALITY);
             }
         });
     }
@@ -6945,6 +6961,8 @@ public class HelloApplication extends Application {
                     helloController.label_holding_the_fade_in.setText(return_formatted_string_to_1_decimal_place_always(new_number.doubleValue()) + unit_sign_beside_fade_in_fade_out);
                     opacity_settings.setFade_in(new_number.doubleValue());
                     set_the_opacity_of_image_view_considering_everything(helloController, shape_object_time_line);
+                    Media_pool media_pool = hashMap_with_media_pool_items.get(shape_object_time_line.getImage_id());
+                    set_up_the_image_rectangle((Rectangle) shape_object_time_line.getShape(), remove_transparent_pixels(media_pool.getThumbnail()), helloController.time_line_pane, opacity_settings);
                 }
             };
             listener_info.setChange_listener(fade_in_change_listener);
@@ -6967,6 +6985,8 @@ public class HelloApplication extends Application {
                     helloController.label_holding_the_fade_out.setText(return_formatted_string_to_1_decimal_place_always(new_number.doubleValue()) + unit_sign_beside_fade_in_fade_out);
                     opacity_settings.setFade_out(new_number.doubleValue());
                     set_the_opacity_of_image_view_considering_everything(helloController, shape_object_time_line);
+                    Media_pool media_pool = hashMap_with_media_pool_items.get(shape_object_time_line.getImage_id());
+                    set_up_the_image_rectangle((Rectangle) shape_object_time_line.getShape(), remove_transparent_pixels(media_pool.getThumbnail()), helloController.time_line_pane, opacity_settings);
                 }
             };
             listener_info.setChange_listener(fade_out_change_listener);
@@ -7082,19 +7102,19 @@ public class HelloApplication extends Application {
         helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.setOpacity(0);
     }
 
-    private void set_up_everything_image_view_time_line_time(HelloController helloController, long time_in_nanos,Type_of_Image type_of_image) {
+    private void set_up_everything_image_view_time_line_time(HelloController helloController, long time_in_nanos, Type_of_Image type_of_image) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
         double x_pos = nanoseconds_to_pixels(time_line_pane_data, time_in_nanos) + time_line_pane_data.getTime_line_base_line();
         Shape_object_time_line shape_object_time_line_returned_on_click = return_the_shape_on_click(helloController.time_line_pane, x_pos);
-        set_up_everything_image_view_time_line_shape_object_time_line(helloController, shape_object_time_line_returned_on_click,type_of_image);
+        set_up_everything_image_view_time_line_shape_object_time_line(helloController, shape_object_time_line_returned_on_click, type_of_image);
     }
 
-    private void set_up_everything_image_view_time_line_x_pos(HelloController helloController, double x_pos,Type_of_Image type_of_image) {
+    private void set_up_everything_image_view_time_line_x_pos(HelloController helloController, double x_pos, Type_of_Image type_of_image) {
         Shape_object_time_line shape_object_time_line_returned_on_click = return_the_shape_on_click(helloController.time_line_pane, x_pos);
-        set_up_everything_image_view_time_line_shape_object_time_line(helloController,shape_object_time_line_returned_on_click,type_of_image);
+        set_up_everything_image_view_time_line_shape_object_time_line(helloController, shape_object_time_line_returned_on_click, type_of_image);
     }
 
-    private void set_up_everything_image_view_time_line_shape_object_time_line(HelloController helloController, Shape_object_time_line shape_object_time_line,Type_of_Image type_of_image) {
+    private void set_up_everything_image_view_time_line_shape_object_time_line(HelloController helloController, Shape_object_time_line shape_object_time_line, Type_of_Image type_of_image) {
         if (shape_object_time_line != null) {
             set_the_chatgpt_image_view(helloController, shape_object_time_line.getImage_id(), Type_of_Image.FULL_QUALITY);
             set_up_the_image_controller_enable_disable(helloController, shape_object_time_line);
