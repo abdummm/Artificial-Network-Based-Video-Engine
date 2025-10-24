@@ -13,7 +13,7 @@ public class Text_box_info {
     private double max_y_point;
 
     public Text_box_info() {
-        this.center_position = new Point2D(0,0);
+        this.center_position = new Point2D(0, 0);
         this.text_box_width = 0;
         this.text_box_height = 0;
         this.visible = false;
@@ -28,10 +28,10 @@ public class Text_box_info {
         this.text_box_width = text_box_width;
         this.text_box_height = text_box_height;
         this.visible = visible;
-        this.min_x_point = center_position.getX() - this.text_box_width/2;
-        this.max_x_point = center_position.getX() + this.text_box_width/2;
-        this.min_y_point = center_position.getY() - this.text_box_height/2;
-        this.max_y_point = center_position.getY() + this.text_box_height/2;
+        this.min_x_point = center_position.getX() - this.text_box_width / 2;
+        this.max_x_point = center_position.getX() + this.text_box_width / 2;
+        this.min_y_point = center_position.getY() - this.text_box_height / 2;
+        this.max_y_point = center_position.getY() + this.text_box_height / 2;
     }
 
     public double getText_box_width() {
@@ -70,14 +70,14 @@ public class Text_box_info {
         this.visible = visible;
     }
 
-    private void update_the_x_points(){
-        min_x_point = center_position.getX() - text_box_width/2;
-        max_x_point = center_position.getX() + text_box_width/2;
+    private void update_the_x_points() {
+        min_x_point = center_position.getX() - text_box_width / 2;
+        max_x_point = center_position.getX() + text_box_width / 2;
     }
 
-    private void update_the_y_points(){
-        min_y_point = center_position.getY() - text_box_height/2;
-        max_y_point = center_position.getY() + text_box_height/2;
+    private void update_the_y_points() {
+        min_y_point = center_position.getY() - text_box_height / 2;
+        max_y_point = center_position.getY() + text_box_height / 2;
     }
 
     public double getMin_x_point() {
@@ -94,5 +94,9 @@ public class Text_box_info {
 
     public double getMax_y_point() {
         return max_y_point;
+    }
+
+    public double get_area() {
+        return (max_y_point - min_y_point) * (max_x_point - min_x_point);
     }
 }
