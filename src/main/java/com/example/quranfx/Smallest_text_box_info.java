@@ -1,15 +1,15 @@
 package com.example.quranfx;
 
-public class Text_box_dragged_info {
+public class Smallest_text_box_info {
     private Text_box_info text_box_info;
     private Language_info language_info;
     private boolean set = false;
 
-    public Text_box_dragged_info() {
+    public Smallest_text_box_info() {
         this.set = false;
     }
 
-    public Text_box_dragged_info(Text_box_info text_box_info, Language_info language_info) {
+    public Smallest_text_box_info(Text_box_info text_box_info, Language_info language_info) {
         this.text_box_info = text_box_info;
         this.language_info = language_info;
         this.set = true;
