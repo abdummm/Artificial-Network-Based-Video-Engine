@@ -3,9 +3,10 @@ package com.example.quranfx;
 import javafx.geometry.Point2D;
 
 public class Text_on_canvas_dragged {
-    Point2D original_point2D_of_mouse_event;
-    Point2D original_point2D_of_text;
-    Language_info language_info;
+    private Point2D original_point2D_of_mouse_event;
+    private Point2D original_point2D_of_text;
+    private Language_info language_info;
+    private Type_of_cursor type_of_cursor;
     private boolean data_set = false;
 
     public Point2D getOriginal_point2D_of_mouse_event() {
@@ -39,4 +40,6 @@ public class Text_on_canvas_dragged {
     public void setOriginal_point2D_of_text(Point2D original_point2D_of_text) {
         this.original_point2D_of_text = original_point2D_of_text;
     }
+
+
 }
