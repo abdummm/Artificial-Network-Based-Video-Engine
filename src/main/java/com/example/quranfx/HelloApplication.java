@@ -155,7 +155,7 @@ public class HelloApplication extends Application {
     private final static String no_image_found = "black";
     private final static String unit_sign_beside_opacity = "%";
     private final static String unit_sign_beside_fade_in_fade_out = "s";
-    private final static double distance_for_resize_arrow_text_on_cavnas = 7.5D;
+    private final static double distance_for_resize_arrow_text_on_cavnas = 10D;
 
     //private final static double circle_button_radius = 20D;
 
@@ -6840,8 +6840,8 @@ public class HelloApplication extends Application {
             public void handle(MouseEvent mouseEvent) {
                 if (text_on_canvas_dragged.isData_set()) {
                     Text_item text_item = text_on_canvas_dragged.getLanguage_info().getArrayList_of_all_of_the_translations().get(selected_verse);
-                    double x_pos_difference = mouseEvent.getX() - text_on_canvas_dragged.original_point2D_of_mouse_event.getX();
-                    double y_pos_difference = mouseEvent.getY() - text_on_canvas_dragged.original_point2D_of_mouse_event.getY();
+                    double x_pos_difference = mouseEvent.getX() - text_on_canvas_dragged.getOriginal_point2D_of_mouse_event().getX();
+                    double y_pos_difference = mouseEvent.getY() - text_on_canvas_dragged.getOriginal_point2D_of_mouse_event().getY();
                     x_pos_difference = x_pos_difference / text_on_canvas_dragged.getLanguage_info().getLanguage_canvas().getScaleX();
                     y_pos_difference = y_pos_difference / text_on_canvas_dragged.getLanguage_info().getLanguage_canvas().getScaleY();
                     text_item.setPoint2D(new Point2D(text_on_canvas_dragged.getOriginal_point2D_of_text().getX() + x_pos_difference, text_on_canvas_dragged.getOriginal_point2D_of_text().getY() + y_pos_difference));
@@ -6862,6 +6862,22 @@ public class HelloApplication extends Application {
     }
 
     private void set_the_holding_cursor_of_image_view_for_text(HelloController helloController, ObservableList<Language_info> all_of_the_languages, MouseEvent mouseEvent) {
+        Type_of_cursor type_of_cursor = return_type_of_cursor_based_on_position(all_of_the_languages, mouseEvent);
+        switch (type_of_cursor) {
+            case DEFAULT -> helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.DEFAULT);
+            case CENTER -> helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.OPEN_HAND);
+            case NORTH -> helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.N_RESIZE);
+            case EAST -> helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.E_RESIZE);
+            case SOUTH -> helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.S_RESIZE);
+            case WEST -> helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.W_RESIZE);
+            case NORTH_EAST -> helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.NE_RESIZE);
+            case SOUTH_EAST -> helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.SE_RESIZE);
+            case SOUTH_WEST -> helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.SW_RESIZE);
+            case NORTH_WEST -> helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.NW_RESIZE);
+        }
+    }
+
+    private Type_of_cursor return_type_of_cursor_based_on_position(ObservableList<Language_info> all_of_the_languages, MouseEvent mouseEvent) {
         Text_box_info smalled_text_box_info = null;
         double min_area = Double.MAX_VALUE;
         Point2D min_area_mouse_event_point_2d = new Point2D(0, 0);
@@ -6876,56 +6892,65 @@ public class HelloApplication extends Application {
                 }
             }
         }
-        if (smalled_text_box_info != null) {
+        if (smalled_text_box_info == null) {
+            return Type_of_cursor.DEFAULT;
+        } else {
             boolean close_to_left = false;
             boolean close_to_top = false;
             boolean close_to_right = false;
             boolean close_to_bottom = false;
             double local_horizontal_distance_for_resize;
             double local_vertical_distance_for_resize;
-            if(smalled_text_box_info.getText_box_width() >= distance_for_resize_arrow_text_on_cavnas*2){
+            byte number_of_edges_the_mouse_is_close_to = 0;
+            if (smalled_text_box_info.getText_box_width() >= distance_for_resize_arrow_text_on_cavnas * 2) {
                 local_horizontal_distance_for_resize = distance_for_resize_arrow_text_on_cavnas;
             } else {
-                local_horizontal_distance_for_resize = smalled_text_box_info.getText_box_width()/3D;
+                local_horizontal_distance_for_resize = smalled_text_box_info.getText_box_width() / 3D;
             }
-            if(smalled_text_box_info.getText_box_height() >= distance_for_resize_arrow_text_on_cavnas*2){
+            if (smalled_text_box_info.getText_box_height() >= distance_for_resize_arrow_text_on_cavnas * 2) {
                 local_vertical_distance_for_resize = distance_for_resize_arrow_text_on_cavnas;
             } else {
-                local_vertical_distance_for_resize = smalled_text_box_info.getText_box_height()/3D;
+                local_vertical_distance_for_resize = smalled_text_box_info.getText_box_height() / 3D;
             }
             if (min_area_mouse_event_point_2d.getX() - smalled_text_box_info.getMin_x_point() <= local_horizontal_distance_for_resize) {
                 close_to_left = true;
+                number_of_edges_the_mouse_is_close_to++;
             }
             if (smalled_text_box_info.getMax_x_point() - min_area_mouse_event_point_2d.getX() <= local_horizontal_distance_for_resize) {
                 close_to_right = true;
+                number_of_edges_the_mouse_is_close_to++;
             }
             if (min_area_mouse_event_point_2d.getY() - smalled_text_box_info.getMin_y_point() <= local_vertical_distance_for_resize) {
                 close_to_top = true;
+                number_of_edges_the_mouse_is_close_to++;
             }
             if (smalled_text_box_info.getMax_y_point() - min_area_mouse_event_point_2d.getY() <= local_vertical_distance_for_resize) {
                 close_to_bottom = true;
+                number_of_edges_the_mouse_is_close_to++;
             }
-            if (!close_to_left && !close_to_top && !close_to_right && !close_to_bottom) {
-                helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.OPEN_HAND);
-            } else if (close_to_left && close_to_top) {
-                helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.NW_RESIZE);
-            } else if (close_to_left && close_to_bottom) {
-                helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.SW_RESIZE);
-            } else if (close_to_right && close_to_top) {
-                helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.NE_RESIZE);
-            } else if (close_to_right && close_to_bottom) {
-                helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.SE_RESIZE);
-            } else if (close_to_left) {
-                helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.W_RESIZE);
-            } else if (close_to_top) {
-                helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.N_RESIZE);
-            } else if (close_to_right) {
-                helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.E_RESIZE);
+            if (number_of_edges_the_mouse_is_close_to == 0) {
+                return Type_of_cursor.CENTER;
+            } else if (number_of_edges_the_mouse_is_close_to == 1) {
+                if (close_to_top) {
+                    return Type_of_cursor.NORTH;
+                } else if (close_to_right) {
+                    return Type_of_cursor.EAST;
+                } else if (close_to_bottom) {
+                    return Type_of_cursor.SOUTH;
+                } else {
+                    return Type_of_cursor.WEST;
+                }
             } else {
-                helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.S_RESIZE);
+                if (close_to_top && close_to_left) {
+                    return Type_of_cursor.NORTH_WEST;
+                } else if (close_to_top && close_to_right) {
+                    return Type_of_cursor.NORTH_EAST;
+                } else if (close_to_bottom && close_to_right) {
+                    return Type_of_cursor.SOUTH_EAST;
+                } else {
+                    return Type_of_cursor.SOUTH_WEST;
+                }
             }
-        } else {
-            helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.DEFAULT);
         }
     }
 
