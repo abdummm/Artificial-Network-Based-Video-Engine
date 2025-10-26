@@ -3,7 +3,7 @@ package com.example.quranfx;
 public class Smallest_text_box_info {
     private Text_box_info text_box_info;
     private Language_info language_info;
-    private boolean set = false;
+    private boolean set;
 
     public Smallest_text_box_info() {
         this.set = false;
