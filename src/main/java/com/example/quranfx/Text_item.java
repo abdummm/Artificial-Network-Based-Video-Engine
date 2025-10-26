@@ -16,8 +16,6 @@ public class Text_item {
     private Color color;
     private long start_time;
     private long end_time;
-    private double width;
-    private double height;
     private Text_on_canvas_mode text_on_canvas_mode;
     private Stroke_info stroke_info;
     private double left_margin;
@@ -54,13 +52,11 @@ public class Text_item {
         this.start_time = start_time;
         this.end_time = end_time;
         double[] width_and_height_of_text = get_width_and_height_of_string(verse_text, this.font);
-        this.width = width_and_height_of_text[0];
-        this.height = width_and_height_of_text[1];
         text_on_canvas_mode = Text_on_canvas_mode.CENTER;
         this.stroke_info = new Stroke_info();
         this.left_margin = 0;
         this.right_margin = 0;
-        this.text_box_info = new Text_box_info();
+        this.text_box_info = new Text_box_info(point2D,width_and_height_of_text[0],width_and_height_of_text[1],true);
     }
 
     private Font return_first_font(double font_size) {
@@ -95,10 +91,12 @@ public class Text_item {
         this.point2D = point2D;
     }
 
-    private double[] get_width_and_height_of_string(String verse_text, Font font) {
-        Text textNode = new Text(verse_text);
-        textNode.setFont(font);
-        return new double[]{textNode.getLayoutBounds().getWidth(), textNode.getLayoutBounds().getHeight()};
+    private double[] get_width_and_height_of_string(String adjusted_verse_text, Font font) {
+        Text text = new Text(adjusted_verse_text);
+        text.setFont(font);
+        double width = text.getLayoutBounds().getWidth();
+        double height = text.getLayoutBounds().getHeight();
+        return new double[]{width, height};
     }
 
     public double getFont_size() {
@@ -188,5 +186,24 @@ public class Text_item {
 
     public void setText_box_info(Text_box_info text_box_info) {
         this.text_box_info = text_box_info;
+    }
+
+    @Override
+    public String toString() {
+        return "Text_item{" +
+                "verse_text='" + verse_text + '\'' +
+                ", adjusted_verse_text='" + adjusted_verse_text + '\'' +
+                ", point2D=" + point2D +
+                ", font_size=" + font_size +
+                ", font=" + font +
+                ", color=" + color +
+                ", start_time=" + start_time +
+                ", end_time=" + end_time +
+                ", text_on_canvas_mode=" + text_on_canvas_mode +
+                ", stroke_info=" + stroke_info +
+                ", left_margin=" + left_margin +
+                ", right_margin=" + right_margin +
+                ", text_box_info=" + text_box_info +
+                '}';
     }
 }
