@@ -26,4 +26,13 @@ public class Smallest_text_box_info {
     public boolean isSet() {
         return set;
     }
+
+    @Override
+    public String toString() {
+        return "Smallest_text_box_info{" +
+                "text_box_info=" + text_box_info +
+                ", language_info=" + language_info +
+                ", set=" + set +
+                '}';
+    }
 }
