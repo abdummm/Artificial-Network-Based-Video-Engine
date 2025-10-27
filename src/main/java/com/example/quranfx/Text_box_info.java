@@ -1,6 +1,8 @@
 package com.example.quranfx;
 
 import javafx.geometry.Point2D;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 public class Text_box_info {
     Point2D center_position;
@@ -14,30 +16,30 @@ public class Text_box_info {
     private boolean set = false;
     private double min_width;
     private double min_height;
+    private static final double extra_width_padding = 25D;
+    private static final double extra_height_padding = 20D;
 
-    /*public Text_box_info(double text_box_width,double text_box_height) {
-        this.center_position = new Point2D(0, 0);
-        this.text_box_width = text_box_width;
-        this.text_box_height = text_box_height;
-        this.visible = false;
-        this.min_x_point = 0;
-        this.max_x_point = 0;
-        this.min_y_point = 0;
-        this.max_y_point = 0;
-    }*/
-
-    public Text_box_info(Point2D center_position, double text_box_width, double text_box_height, boolean visible) {
+    public Text_box_info(Point2D center_position, String adjusted_verse, Font font, boolean visible) {
         this.center_position = new Point2D(center_position.getX(), center_position.getY());
-        this.text_box_width = text_box_width;
-        this.text_box_height = text_box_height;
-        this.min_width = text_box_width;
-        this.min_height = text_box_height;
+        double[] width_and_height = get_width_and_height_of_string(adjusted_verse, font);
+        this.text_box_width = width_and_height[0] + extra_width_padding;
+        this.text_box_height = width_and_height[1] + extra_height_padding;
+        this.min_width = width_and_height[0] + extra_width_padding;
+        this.min_height = width_and_height[1] + extra_height_padding;
         this.visible = visible;
         this.min_x_point = center_position.getX() - this.text_box_width / 2;
         this.max_x_point = center_position.getX() + this.text_box_width / 2;
         this.min_y_point = center_position.getY() - this.text_box_height / 2;
         this.max_y_point = center_position.getY() + this.text_box_height / 2;
         set = true;
+    }
+
+    private double[] get_width_and_height_of_string(String adjusted_verse_text, Font font) {
+        Text text = new Text(adjusted_verse_text);
+        text.setFont(font);
+        double width = text.getLayoutBounds().getWidth();
+        double height = text.getLayoutBounds().getHeight();
+        return new double[]{width, height};
     }
 
     public double getText_box_width() {
@@ -110,12 +112,12 @@ public class Text_box_info {
         return set;
     }
 
-    public void set_x_position(double x_position){
-        center_position = new Point2D(x_position,center_position.getY());
+    public void set_x_position(double x_position) {
+        center_position = new Point2D(x_position, center_position.getY());
     }
 
-    public void set_y_position(double y_position){
-        center_position = new Point2D(center_position.getX(),y_position);
+    public void set_y_position(double y_position) {
+        center_position = new Point2D(center_position.getX(), y_position);
     }
 
     public double getMin_width() {
