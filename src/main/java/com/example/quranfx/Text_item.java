@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Text_item {
     private String verse_text;
     private String adjusted_verse_text;
-    private Point2D point2D;
+    //private Point2D point2D;
     private double font_size;
     private Font font;
     private Color color;
@@ -45,7 +45,6 @@ public class Text_item {
     public Text_item(String verse_text, long start_time, long end_time) {
         this.verse_text = verse_text;
         this.adjusted_verse_text = verse_text;
-        this.point2D = new Point2D(video_width / 2D, video_height / 2D);
         this.font_size = 36;
         this.font = return_default_font(font_size);
         this.color = Color.WHITE;
@@ -56,7 +55,7 @@ public class Text_item {
         this.stroke_info = new Stroke_info();
         this.left_margin = 0;
         this.right_margin = 0;
-        this.text_box_info = new Text_box_info(point2D,width_and_height_of_text[0],width_and_height_of_text[1],true);
+        this.text_box_info = new Text_box_info(new Point2D(video_width / 2D, video_height / 2D),width_and_height_of_text[0],width_and_height_of_text[1],true);
     }
 
     private Font return_first_font(double font_size) {
@@ -81,14 +80,6 @@ public class Text_item {
 
     public String getVerse_text() {
         return verse_text;
-    }
-
-    public Point2D getPoint2D() {
-        return point2D;
-    }
-
-    public void setPoint2D(Point2D point2D) {
-        this.point2D = point2D;
     }
 
     private double[] get_width_and_height_of_string(String adjusted_verse_text, Font font) {
@@ -122,22 +113,6 @@ public class Text_item {
 
     public void setText_on_canvas_mode(Text_on_canvas_mode text_on_canvas_mode) { // will not be used now
         this.text_on_canvas_mode = text_on_canvas_mode;
-    }
-
-    public double get_x_position() {
-        return point2D.getX();
-    }
-
-    public void set_x_position(double x_position) {
-        this.point2D = new Point2D(x_position, this.point2D.getY());
-    }
-
-    public double get_y_position() {
-        return point2D.getY();
-    }
-
-    public void set_y_position(double y_position) {
-        this.point2D = new Point2D(this.point2D.getX(), y_position);
     }
 
     public Font getFont() {
@@ -186,24 +161,5 @@ public class Text_item {
 
     public void setText_box_info(Text_box_info text_box_info) {
         this.text_box_info = text_box_info;
-    }
-
-    @Override
-    public String toString() {
-        return "Text_item{" +
-                "verse_text='" + verse_text + '\'' +
-                ", adjusted_verse_text='" + adjusted_verse_text + '\'' +
-                ", point2D=" + point2D +
-                ", font_size=" + font_size +
-                ", font=" + font +
-                ", color=" + color +
-                ", start_time=" + start_time +
-                ", end_time=" + end_time +
-                ", text_on_canvas_mode=" + text_on_canvas_mode +
-                ", stroke_info=" + stroke_info +
-                ", left_margin=" + left_margin +
-                ", right_margin=" + right_margin +
-                ", text_box_info=" + text_box_info +
-                '}';
     }
 }
