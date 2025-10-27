@@ -118,5 +118,11 @@ public class Text_box_info {
         center_position = new Point2D(center_position.getX(),y_position);
     }
 
+    public double getMin_width() {
+        return min_width;
+    }
 
+    public double getMin_height() {
+        return min_height;
+    }
 }
