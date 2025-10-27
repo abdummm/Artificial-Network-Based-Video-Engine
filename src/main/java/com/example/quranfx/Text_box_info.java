@@ -11,27 +11,33 @@ public class Text_box_info {
     private double max_x_point;
     private double min_y_point;
     private double max_y_point;
+    private boolean set = false;
+    private double min_width;
+    private double min_height;
 
-    public Text_box_info() {
+    /*public Text_box_info(double text_box_width,double text_box_height) {
         this.center_position = new Point2D(0, 0);
-        this.text_box_width = 0;
-        this.text_box_height = 0;
+        this.text_box_width = text_box_width;
+        this.text_box_height = text_box_height;
         this.visible = false;
         this.min_x_point = 0;
         this.max_x_point = 0;
         this.min_y_point = 0;
         this.max_y_point = 0;
-    }
+    }*/
 
     public Text_box_info(Point2D center_position, double text_box_width, double text_box_height, boolean visible) {
-        this.center_position = center_position;
+        this.center_position = new Point2D(center_position.getX(), center_position.getY());
         this.text_box_width = text_box_width;
         this.text_box_height = text_box_height;
+        this.min_width = text_box_width;
+        this.min_height = text_box_height;
         this.visible = visible;
         this.min_x_point = center_position.getX() - this.text_box_width / 2;
         this.max_x_point = center_position.getX() + this.text_box_width / 2;
         this.min_y_point = center_position.getY() - this.text_box_height / 2;
         this.max_y_point = center_position.getY() + this.text_box_height / 2;
+        set = true;
     }
 
     public double getText_box_width() {
@@ -99,4 +105,18 @@ public class Text_box_info {
     public double get_area() {
         return (max_y_point - min_y_point) * (max_x_point - min_x_point);
     }
+
+    public boolean isSet() {
+        return set;
+    }
+
+    public void set_x_position(double x_position){
+        center_position = new Point2D(x_position,center_position.getY());
+    }
+
+    public void set_y_position(double y_position){
+        center_position = new Point2D(center_position.getX(),y_position);
+    }
+
+
 }
