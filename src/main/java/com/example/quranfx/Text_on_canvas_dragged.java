@@ -10,8 +10,9 @@ public class Text_on_canvas_dragged {
     private Text_item text_item;
     private double original_height;
     private double original_width;
+    private double canvas_height;
 
-    public Text_on_canvas_dragged(Point2D original_point2D_of_mouse_event, Point2D original_point2D_of_text, Language_info language_info, Type_of_cursor type_of_cursor, Text_item text_item, double original_height, double original_width) {
+    public Text_on_canvas_dragged(Point2D original_point2D_of_mouse_event, Point2D original_point2D_of_text, Language_info language_info, Type_of_cursor type_of_cursor, Text_item text_item, double original_height, double original_width,double canvas_height) {
         this.original_point2D_of_mouse_event = original_point2D_of_mouse_event;
         this.original_point2D_of_text = original_point2D_of_text;
         this.language_info = language_info;
@@ -19,6 +20,7 @@ public class Text_on_canvas_dragged {
         this.text_item = text_item;
         this.original_height = original_height;
         this.original_width = original_width;
+        this.canvas_height = canvas_height;
     }
 
     public Point2D getOriginal_point2D_of_mouse_event() {
@@ -47,5 +49,9 @@ public class Text_on_canvas_dragged {
 
     public double getOriginal_width() {
         return original_width;
+    }
+
+    public double getCanvas_height() {
+        return canvas_height;
     }
 }
