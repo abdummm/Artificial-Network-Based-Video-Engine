@@ -50,12 +50,11 @@ public class Text_item {
         this.color = Color.WHITE;
         this.start_time = start_time;
         this.end_time = end_time;
-        double[] width_and_height_of_text = get_width_and_height_of_string(verse_text, this.font);
         text_on_canvas_mode = Text_on_canvas_mode.CENTER;
         this.stroke_info = new Stroke_info();
         this.left_margin = 0;
         this.right_margin = 0;
-        this.text_box_info = new Text_box_info(new Point2D(video_width / 2D, video_height / 2D),width_and_height_of_text[0],width_and_height_of_text[1],true);
+        this.text_box_info = new Text_box_info(new Point2D(video_width / 2D, video_height / 2D),adjusted_verse_text,font,true);
     }
 
     private Font return_first_font(double font_size) {
@@ -80,14 +79,6 @@ public class Text_item {
 
     public String getVerse_text() {
         return verse_text;
-    }
-
-    private double[] get_width_and_height_of_string(String adjusted_verse_text, Font font) {
-        Text text = new Text(adjusted_verse_text);
-        text.setFont(font);
-        double width = text.getLayoutBounds().getWidth();
-        double height = text.getLayoutBounds().getHeight();
-        return new double[]{width, height};
     }
 
     public double getFont_size() {
