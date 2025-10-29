@@ -82,4 +82,12 @@ public class Text_on_canvas_dragged {
     public void setWidth_difference(double width_difference) {
         this.width_difference = width_difference;
     }
+
+    public double getY_scale() {
+        return y_scale;
+    }
+
+    public double getX_scale() {
+        return x_scale;
+    }
 }
