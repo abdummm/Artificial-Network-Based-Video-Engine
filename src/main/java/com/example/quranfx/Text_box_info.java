@@ -24,7 +24,7 @@ public class Text_box_info {
         double[] width_and_height = get_width_and_height_of_string(adjusted_verse, font);
         this.text_box_width = width_and_height[0] + extra_width_padding;
         this.text_box_height = width_and_height[1] + extra_height_padding;
-        this.min_width = width_and_height[0] + extra_width_padding;
+        this.min_width = return_the_min_width(adjusted_verse,font) + extra_width_padding;
         this.min_height = width_and_height[1] + extra_height_padding;
         this.visible = visible;
         this.min_x_point = center_position.getX() - this.text_box_width / 2;
@@ -40,6 +40,17 @@ public class Text_box_info {
         double width = text.getLayoutBounds().getWidth();
         double height = text.getLayoutBounds().getHeight();
         return new double[]{width, height};
+    }
+    private double return_the_min_width(String adjusted_verse_text, Font font) {
+        String[] words = adjusted_verse_text.split(" ");
+        Text text = new Text();
+        text.setFont(font);
+        double min_width = 0;
+        for(String word : words){
+            text.setText(word);
+            min_width = Math.max(min_width, text.getLayoutBounds().getWidth());
+        }
+        return min_width;
     }
 
     public double getText_box_width() {
