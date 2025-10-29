@@ -6844,10 +6844,9 @@ public class HelloApplication extends Application {
                 if (smallest_text_box_info.isSet()) {
                     Type_of_cursor type_of_cursor = return_type_of_cursor_based_on_position(mouseEvent, smallest_text_box_info);
                     text_on_canvas_dragged[0] = new Text_on_canvas_dragged(new Point2D(mouseEvent.getX(), mouseEvent.getY()), new Point2D(smallest_text_box_info.getLanguage_info().getArrayList_of_all_of_the_translations().get(selected_verse).getText_box_info().getCenter_position().getX(), smallest_text_box_info.getLanguage_info().getArrayList_of_all_of_the_translations().get(selected_verse).getText_box_info().getCenter_position().getY()), smallest_text_box_info.getLanguage_info(), type_of_cursor, smallest_text_box_info.getLanguage_info().getArrayList_of_all_of_the_translations().get(selected_verse), smallest_text_box_info.getText_box_info().getText_box_height(), smallest_text_box_info.getText_box_info().getText_box_width(),smallest_text_box_info.getLanguage_info().getLanguage_canvas().getHeight(),smallest_text_box_info.getLanguage_info().getLanguage_canvas().getWidth());
-                    text_on_canvas_dragged[0].setHeight_difference(mouseEvent.getY() - smallest_text_box_info.getText_box_info().getMin_y_point()*smallest_text_box_info.getLanguage_info().getLanguage_canvas().getScaleY());
-                    System.out.println((mouseEvent.getY()/smallest_text_box_info.getLanguage_info().getLanguage_canvas().getScaleY()) - smallest_text_box_info.getText_box_info().getMin_y_point());
-                    if (type_of_cursor == Type_of_cursor.CENTER) {
-                        helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.CLOSED_HAND);
+                    switch (type_of_cursor){
+                        case CENTER -> helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.CLOSED_HAND);
+                        case NORTH -> text_on_canvas_dragged[0].setHeight_difference(mouseEvent.getY() - smallest_text_box_info.getText_box_info().getMin_y_point()*smallest_text_box_info.getLanguage_info().getLanguage_canvas().getScaleY());
                     }
                 }
             }
