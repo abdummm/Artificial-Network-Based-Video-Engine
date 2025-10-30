@@ -90,4 +90,20 @@ public class Text_on_canvas_dragged {
     public double getX_scale() {
         return x_scale;
     }
+
+    public double get_min_x_of_text(){
+        return original_point2D_of_text.getX() - original_width/2D;
+    }
+
+    public double get_max_x_of_text(){
+        return original_point2D_of_text.getX() + original_width/2D;
+    }
+
+    public double get_min_y_of_text(){
+        return original_point2D_of_text.getY() - original_height/2D;
+    }
+
+    public double get_max_y_of_text(){
+        return original_point2D_of_text.getY() + original_height/2D;
+    }
 }
