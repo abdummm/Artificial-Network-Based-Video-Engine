@@ -6145,7 +6145,7 @@ public class HelloApplication extends Application {
             if (array_list_with_verses != null) {
                 ArrayList<Text_item> array_list_with_text_items = new ArrayList<>(array_list_with_verses.size());
                 for (int j = 0; j < array_list_with_verses.size(); j++) {
-                    Text_item text_item = new Text_item(edit_the_verses_before_adding_them(array_list_with_verses.get(j)), ayats_processed[j].getStart_millisecond(), ayats_processed[j].getStart_millisecond() + ayats_processed[j].getDuration());
+                    Text_item text_item = new Text_item(edit_the_verses_before_adding_them(array_list_with_verses.get(j)), 1080,ayats_processed[j].getStart_millisecond(), ayats_processed[j].getStart_millisecond() + ayats_processed[j].getDuration());
                     array_list_with_text_items.add(text_item);
                 }
                 languageInfo.setArrayList_of_all_of_the_translations(array_list_with_text_items);
@@ -6456,7 +6456,7 @@ public class HelloApplication extends Application {
     private ArrayList<Text_item> return_the_formatted_text_item_from_array_list(ArrayList<String> arrayList_of_strings) {
         ArrayList<Text_item> array_list_to_be_returned = new ArrayList<>(arrayList_of_strings.size());
         for (int i = 0; i < arrayList_of_strings.size(); i++) {
-            Text_item text_item = new Text_item(edit_the_verses_before_adding_them(arrayList_of_strings.get(i)), ayats_processed[i].getStart_millisecond(), ayats_processed[i].getStart_millisecond() + ayats_processed[i].getDuration());
+            Text_item text_item = new Text_item(edit_the_verses_before_adding_them(arrayList_of_strings.get(i)),1080, ayats_processed[i].getStart_millisecond(), ayats_processed[i].getStart_millisecond() + ayats_processed[i].getDuration());
             array_list_to_be_returned.add(text_item);
         }
         return array_list_to_be_returned;
@@ -6717,18 +6717,17 @@ public class HelloApplication extends Application {
             Text current_word_text_item = new Text(current_word.concat(" "));
             current_line_text_item.setFont(font);
             current_word_text_item.setFont(font);
-
             double current_line_width = current_line_text_item.getLayoutBounds().getWidth();
-            double curren_word_width = current_word_text_item.getLayoutBounds().getWidth();
+            double current_word_width = current_word_text_item.getLayoutBounds().getWidth();
             if (current_line.isEmpty()) {
-                if (curren_word_width >= allowed_width) {
+                if (current_word_width >= allowed_width) {
                     string_builder_for_final_string.append(current_word);
                     string_builder_for_final_string.append("\n");
                 } else {
                     current_line.append(current_word).append(" ");
                 }
             } else {
-                if (current_line_width + curren_word_width >= allowed_width) {
+                if (current_line_width + current_word_width >= allowed_width) {
                     current_line.deleteCharAt(current_line.length() - 1);
                     string_builder_for_final_string.append(current_line.toString());
                     string_builder_for_final_string.append("\n");
@@ -6739,7 +6738,10 @@ public class HelloApplication extends Application {
             }
         }
         if (!current_line.isEmpty()) {
-            string_builder_for_final_string.append(current_line);
+            string_builder_for_final_string.append(current_line.deleteCharAt(current_line.length()-1));
+        }
+        if(string_builder_for_final_string.charAt(string_builder_for_final_string.length()-1) == '\n'){
+            string_builder_for_final_string.deleteCharAt(string_builder_for_final_string.length()-1);
         }
         return string_builder_for_final_string.toString();
     }
@@ -6875,8 +6877,8 @@ public class HelloApplication extends Application {
                         Text_box_info text_box_info = text_item.getText_box_info();
                         double x_pos_difference = mouseEvent.getX() - text_on_canvas_dragged[0].getOriginal_point2D_of_mouse_event().getX();
                         double y_pos_difference = mouseEvent.getY() - text_on_canvas_dragged[0].getOriginal_point2D_of_mouse_event().getY();
-                        x_pos_difference = x_pos_difference / text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas().getScaleX();
-                        y_pos_difference = y_pos_difference / text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas().getScaleY();
+                        x_pos_difference = x_pos_difference / text_on_canvas_dragged[0].getX_scale();
+                        y_pos_difference = y_pos_difference / text_on_canvas_dragged[0].getY_scale();
                         double new_x_position = text_on_canvas_dragged[0].getOriginal_point2D_of_text().getX() + x_pos_difference;
                         double new_y_position = text_on_canvas_dragged[0].getOriginal_point2D_of_text().getY() + y_pos_difference;
                         new_x_position = Math.max(text_box_info.getText_box_width() / 2D, new_x_position);
@@ -6892,7 +6894,7 @@ public class HelloApplication extends Application {
                         Text_box_info text_box_info = text_item.getText_box_info();
                         double mouse_y_position = Math.max(mouseEvent.getY(), text_on_canvas_dragged[0].getHeight_difference());
                         double y_pos_difference = mouse_y_position - text_on_canvas_dragged[0].getOriginal_point2D_of_mouse_event().getY();
-                        y_pos_difference = y_pos_difference / text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas().getScaleY();
+                        y_pos_difference = y_pos_difference / text_on_canvas_dragged[0].getY_scale();
                         double new_height = text_on_canvas_dragged[0].getOriginal_height() - y_pos_difference;
                         if (new_height >= text_box_info.getMin_height()) {
                             text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].getOriginal_point2D_of_text().getX(), text_on_canvas_dragged[0].getOriginal_point2D_of_text().getY() + y_pos_difference / 2D));
@@ -6901,7 +6903,7 @@ public class HelloApplication extends Application {
                             place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
                             helloController.list_view_with_all_of_the_languages.refresh();
                         } else if (new_height != text_box_info.getMin_height()) {
-                            text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].getOriginal_point2D_of_text().getX(), text_box_info.getMin_y_point() + text_box_info.getMin_height() / 2D));
+                            text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].getOriginal_point2D_of_text().getX(), text_on_canvas_dragged[0].get_max_y_of_text() - text_box_info.getMin_height() / 2D));
                             text_box_info.setText_box_height(text_box_info.getMin_height());
                             place_the_canvas_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
                             place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
@@ -6914,7 +6916,7 @@ public class HelloApplication extends Application {
                         Text_box_info text_box_info = text_item.getText_box_info();
                         double mouse_y_position = Math.min(mouseEvent.getY(), text_on_canvas_dragged[0].getCanvas_height()*text_on_canvas_dragged[0].getY_scale() - text_on_canvas_dragged[0].getHeight_difference());
                         double y_pos_difference = mouse_y_position - text_on_canvas_dragged[0].getOriginal_point2D_of_mouse_event().getY();
-                        y_pos_difference = y_pos_difference / text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas().getScaleY();
+                        y_pos_difference = y_pos_difference / text_on_canvas_dragged[0].getY_scale();
                         double new_height = text_on_canvas_dragged[0].getOriginal_height() + y_pos_difference;
                         if (new_height >= text_box_info.getMin_height()) {
                             text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].getOriginal_point2D_of_text().getX(), text_on_canvas_dragged[0].getOriginal_point2D_of_text().getY() + y_pos_difference / 2D));
@@ -6923,14 +6925,41 @@ public class HelloApplication extends Application {
                             place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
                             helloController.list_view_with_all_of_the_languages.refresh();
                         } else if (new_height != text_box_info.getMin_height()) {
-                            text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].getOriginal_point2D_of_text().getX(), text_box_info.getMin_y_point() + text_box_info.getMin_height() / 2D));
+                            text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].getOriginal_point2D_of_text().getX(), text_on_canvas_dragged[0].get_min_y_of_text() + text_box_info.getMin_height() / 2D));
                             text_box_info.setText_box_height(text_box_info.getMin_height());
                             place_the_canvas_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
                             place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
                             helloController.list_view_with_all_of_the_languages.refresh();
                         }
                     } else if (text_on_canvas_dragged[0].getType_of_cursor() == Type_of_cursor.WEST) {
-
+                        Text_item text_item = text_on_canvas_dragged[0].getText_item();
+                        Text_box_info text_box_info = text_item.getText_box_info();
+                        double mouse_x_position = Math.max(mouseEvent.getX(), text_on_canvas_dragged[0].getWidth_difference());
+                        double x_pos_difference = mouse_x_position - text_on_canvas_dragged[0].getOriginal_point2D_of_mouse_event().getX();
+                        x_pos_difference = x_pos_difference / text_on_canvas_dragged[0].getX_scale();
+                        double new_width = text_on_canvas_dragged[0].getOriginal_width() - x_pos_difference;
+                        String adjusted_verse = do_i_need_to_resize_the_verse_text(text_item.getVerse_text(),text_item.getFont(),Math.max(new_width,text_box_info.getMin_width()),text_item.getLeft_margin(),text_item.getRight_margin());
+                        double[] width_and_height_of_adjusted_text = get_width_and_height_of_string(adjusted_verse,text_item.getFont());
+                        double new_text_width = Math.max(width_and_height_of_adjusted_text[0],text_on_canvas_dragged[0].getOriginal_width());
+                        double new_text_height = Math.max(width_and_height_of_adjusted_text[1],text_on_canvas_dragged[0].getOriginal_height());
+                        text_item.setAdjusted_verse_text(adjusted_verse);
+                        if (new_width >= text_box_info.getMin_width()) {
+                            text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].getOriginal_point2D_of_text().getX() + x_pos_difference/2D, text_on_canvas_dragged[0].getOriginal_point2D_of_text().getY()));
+                            text_box_info.setText_box_width(text_on_canvas_dragged[0].getOriginal_width() - x_pos_difference);
+                            text_box_info.setText_box_height(new_text_height);
+                            text_box_info.setMin_height(new_text_height);
+                            place_the_canvas_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
+                            place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
+                            helloController.list_view_with_all_of_the_languages.refresh();
+                        } else if (new_width != text_box_info.getMin_width()) {
+                            text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].get_max_x_of_text()- text_box_info.getMin_width() / 2D, text_on_canvas_dragged[0].getOriginal_point2D_of_text().getY()));
+                            text_box_info.setText_box_width(text_box_info.getMin_width());
+                            text_box_info.setText_box_height(new_text_height);
+                            text_box_info.setMin_height(new_text_height);
+                            place_the_canvas_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
+                            place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
+                            helloController.list_view_with_all_of_the_languages.refresh();
+                        }
                     } else if (text_on_canvas_dragged[0].getType_of_cursor() == Type_of_cursor.NORTH_EAST) {
 
                     } else if (text_on_canvas_dragged[0].getType_of_cursor() == Type_of_cursor.SOUTH_EAST) {
@@ -7055,6 +7084,14 @@ public class HelloApplication extends Application {
             }
         }
         return smalled_text_box_info;
+    }
+
+    private double[] get_width_and_height_of_string(String adjusted_verse_text, Font font) {
+        Text text = new Text(adjusted_verse_text);
+        text.setFont(font);
+        double width = text.getLayoutBounds().getWidth();
+        double height = text.getLayoutBounds().getHeight();
+        return new double[]{width, height};
     }
 
     private void listen_to_render_video_button_clicked(HelloController helloController) {
