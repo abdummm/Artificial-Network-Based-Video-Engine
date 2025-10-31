@@ -138,4 +138,12 @@ public class Text_box_info {
     public double getMin_height() {
         return min_height;
     }
+
+    public void setMin_width(double min_width) {
+        this.min_width = min_width;
+    }
+
+    public void setMin_height(double min_height) {
+        this.min_height = min_height;
+    }
 }
