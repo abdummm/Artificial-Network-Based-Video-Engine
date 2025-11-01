@@ -10,7 +10,6 @@ import java.util.ArrayList;
 public class Text_item {
     private String verse_text;
     private String adjusted_verse_text;
-    //private Point2D point2D;
     private double font_size;
     private Font font;
     private Color color;
@@ -46,7 +45,7 @@ public class Text_item {
         this.verse_text = verse_text;
         this.font_size = 36;
         this.font = return_default_font(font_size);
-        this.adjusted_verse_text = do_i_need_to_resize_the_verse_text(verse_text,font,text_box_width,left_margin,right_margin);
+        this.adjusted_verse_text = Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(verse_text,font,text_box_width,left_margin,right_margin);
         this.color = Color.WHITE;
         this.start_time = start_time;
         this.end_time = end_time;
@@ -75,45 +74,6 @@ public class Text_item {
         } else {
             return return_first_font(font_size);
         }
-    }
-
-    private String do_i_need_to_resize_the_verse_text(String verse_text, Font font, double allowed_width, double left_margin, double right_margin) {
-        allowed_width = allowed_width - 2 * left_margin - 2 * right_margin;
-        String[] split_verse_into_words = verse_text.split(" ");
-        StringBuilder string_builder_for_final_string = new StringBuilder();
-        StringBuilder current_line = new StringBuilder();
-        for (String current_word : split_verse_into_words) {
-            Text current_line_text_item = new Text(current_line.toString());
-            Text current_word_text_item = new Text(current_word.concat(" "));
-            current_line_text_item.setFont(font);
-            current_word_text_item.setFont(font);
-            double current_line_width = current_line_text_item.getLayoutBounds().getWidth();
-            double current_word_width = current_word_text_item.getLayoutBounds().getWidth();
-            if (current_line.isEmpty()) {
-                if (current_word_width >= allowed_width) {
-                    string_builder_for_final_string.append(current_word);
-                    string_builder_for_final_string.append("\n");
-                } else {
-                    current_line.append(current_word).append(" ");
-                }
-            } else {
-                if (current_line_width + current_word_width >= allowed_width) {
-                    current_line.deleteCharAt(current_line.length() - 1);
-                    string_builder_for_final_string.append(current_line.toString());
-                    string_builder_for_final_string.append("\n");
-                    current_line = new StringBuilder(current_word).append(" ");
-                } else {
-                    current_line.append(current_word).append(" ");
-                }
-            }
-        }
-        if (!current_line.isEmpty()) {
-            string_builder_for_final_string.append(current_line.deleteCharAt(current_line.length() - 1));
-        }
-        if (string_builder_for_final_string.charAt(string_builder_for_final_string.length() - 1) == '\n') {
-            string_builder_for_final_string.deleteCharAt(string_builder_for_final_string.length() - 1);
-        }
-        return string_builder_for_final_string.toString();
     }
 
     public String getVerse_text() {
