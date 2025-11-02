@@ -41,7 +41,7 @@ public class Text_item {
         this.text_box_info = new Text_box_info(new Point2D(0,0),0,0);
     }*/
 
-    public Text_item(String verse_text, double text_box_width, long start_time, long end_time) {
+    public Text_item(String verse_text, long start_time, long end_time) {
         this.verse_text = verse_text;
         this.font_size = 36;
         this.font = return_default_font(font_size);
