@@ -30,6 +30,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
@@ -5007,6 +5008,7 @@ public class HelloApplication extends Application {
                     private VBox holds_advnaced_options;
                     private JFXButton center_button_x_pos;
                     private JFXButton center_button_y_pos;
+                    private Separator separator_inside_advanced_options_before_everything;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -5087,6 +5089,7 @@ public class HelloApplication extends Application {
                         holds_advnaced_options = new VBox();
                         center_button_x_pos = new JFXButton();
                         center_button_y_pos = new JFXButton();
+                        separator_inside_advanced_options_before_everything = new Separator();
 
                         final double top_margin_in_vbox_control = 10;
                         final double half_top_margin_in_vbox_control = 5;
@@ -5568,6 +5571,10 @@ public class HelloApplication extends Application {
                             }
                         });
 
+                        //separator_inside_advanced_options_before_everything
+                        VBox.setMargin(separator_inside_advanced_options_before_everything, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
+
+
 
                         hbox_holding_the_advanced_options_toggle.getChildren().add(label_holding_advanced_options);
                         hbox_holding_the_advanced_options_toggle.getChildren().add(toggle_switch_for_advanced_options);
@@ -5657,6 +5664,7 @@ public class HelloApplication extends Application {
                         /*holds_advnaced_options.getChildren().add(hbox_hosting_the_position_label);
                         holds_advnaced_options.getChildren().add(hbox_for_x_and_y_positions);
                         holds_advnaced_options.getChildren().add(separator_under_position);*/
+                        holds_advnaced_options.getChildren().add(separator_inside_advanced_options_before_everything);
                         holds_advnaced_options.getChildren().add(hbox_hosting_the_stroke_label);
                         holds_advnaced_options.getChildren().add(vbox_carrying_the_stroke_stuff);
                         holds_advnaced_options.getChildren().add(separator_under_stroke);
@@ -6257,7 +6265,7 @@ public class HelloApplication extends Application {
         double stroke_weight = strokeText.getStroke_weight();
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        if (text_on_canvas_mode == Text_on_canvas_mode.CENTER) {
+        /*if (text_on_canvas_mode == Text_on_canvas_mode.CENTER) {
             gc.setTextAlign(TextAlignment.CENTER);
             gc.setTextBaseline(VPos.CENTER);
         } else if (text_on_canvas_mode == Text_on_canvas_mode.TOP_LEFT) {
@@ -6269,12 +6277,30 @@ public class HelloApplication extends Application {
             gc.setLineJoin(StrokeLineJoin.ROUND);
             gc.setMiterLimit(1.0);
             gc.setLineCap(StrokeLineCap.ROUND);
-            gc.setStroke(stroke_color); // TODO fix the stroke lines going out of stroke, get back to chatgpt
+            gc.setStroke(stroke_color);
             gc.setLineWidth(stroke_weight);
             gc.strokeText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());
         }
         gc.setFill(color_of_text);
-        gc.fillText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());
+        gc.fillText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());*/
+        Text text = new Text();
+        text.setText(adjusted_verse_text);
+        text.setFill(color_of_text);
+        text.setFont(font_for_verse);
+        if (is_stroke_enabled && stroke_weight > 0) {
+            text.setStroke(stroke_color);
+            text.setStrokeWidth(stroke_weight);
+            text.setStrokeLineJoin(StrokeLineJoin.ROUND);
+            text.setStrokeLineCap(StrokeLineCap.ROUND);
+            text.setStrokeMiterLimit(1.0);
+        }
+        text.setTextAlignment(TextAlignment.CENTER);
+        text.setFontSmoothingType(FontSmoothingType.GRAY);
+        SnapshotParameters snapshot_parameters = new SnapshotParameters();
+        snapshot_parameters.setFill(javafx.scene.paint.Color.TRANSPARENT); // preserve transparency
+
+        WritableImage text_image = text.snapshot(snapshot_parameters, null);
+        gc.drawImage(text_image,point2D_of_the_text.getX()-text_image.getWidth()/2,point2D_of_the_text.getY()-text_image.getHeight()/2);
     }
 
     private void place_the_box_surrounding_the_text(Canvas canvas, Text_item text_item) {
