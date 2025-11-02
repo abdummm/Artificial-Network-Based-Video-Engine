@@ -183,6 +183,8 @@ public class HelloApplication extends Application {
         center_the_progress_indicator(helloController, scene);
         listen_to_height_change_property(helloController, scene);
         get_the_quran_api_token(helloController, true, scene);
+        set_up_icon_for_question_mark_button_on_loading_screen(helloController);
+        set_the_cursor_for_question_mark_button_on_loading_screen(helloController);
     }
 
 
@@ -7324,5 +7326,16 @@ public class HelloApplication extends Application {
             disable_the_image_control_panel(helloController);
             reset_the_opacity(helloController);
         }
+    }
+
+    private void set_up_icon_for_question_mark_button_on_loading_screen(HelloController helloController) {
+        helloController.question_mark_loading_screen.setShape(return_default_squircle());
+        helloController.question_mark_loading_screen.setGraphic(return_the_icon("gold_settings_icon", 20, 20));
+        helloController.question_mark_loading_screen.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        helloController.question_mark_loading_screen.setAlignment(Pos.CENTER);
+    }
+
+    private void set_the_cursor_for_question_mark_button_on_loading_screen(HelloController helloController) {
+        helloController.question_mark_loading_screen.setCursor(Cursor.HAND);
     }
 }
