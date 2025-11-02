@@ -154,4 +154,20 @@ public class Text_item {
     public void setText_box_info(Text_box_info text_box_info) {
         this.text_box_info = text_box_info;
     }
+
+    public double getExtra_width_padding() {
+        return extra_width_padding;
+    }
+
+    public void setExtra_width_padding(double extra_width_padding) {
+        this.extra_width_padding = extra_width_padding;
+    }
+
+    public double getExtra_height_padding() {
+        return extra_height_padding;
+    }
+
+    public void setExtra_height_padding(double extra_height_padding) {
+        this.extra_height_padding = extra_height_padding;
+    }
 }
