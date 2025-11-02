@@ -274,6 +274,7 @@ public class HelloApplication extends Application {
         set_up_the_icon_for_settings_beside_help_spread_app(helloController);
         set_the_cursor_of_settings_beside_help_spread_app(helloController);
         set_up_the_fade_in_fade_out_slider_ticks(helloController);
+        hide_the_question_mark_button_loading_screen_when_done(helloController);
     }
 
     /*public static void main(String[] args) {
@@ -7337,5 +7338,10 @@ public class HelloApplication extends Application {
 
     private void set_the_cursor_for_question_mark_button_on_loading_screen(HelloController helloController) {
         helloController.question_mark_loading_screen.setCursor(Cursor.HAND);
+    }
+
+    private void hide_the_question_mark_button_loading_screen_when_done(HelloController helloController){
+        helloController.question_mark_loading_screen.setVisible(false);
+        helloController.question_mark_loading_screen.setManaged(false);
     }
 }
