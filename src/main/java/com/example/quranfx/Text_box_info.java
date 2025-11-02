@@ -16,17 +16,15 @@ public class Text_box_info {
     private boolean set = false;
     private double min_width;
     private double min_height;
-    private double extra_width_padding = 25;
-    private double extra_height_padding = 20;
 
-    public Text_box_info(Point2D center_position, String adjusted_verse, Font font, boolean visible) {
+    public Text_box_info(Text_item text_item, Point2D center_position, String adjusted_verse, Font font, boolean visible) {
         this.center_position = new Point2D(center_position.getX(), center_position.getY());
         double[] width_and_height = Text_sizing.getInstance().get_width_and_height_of_string(adjusted_verse, font);
         //this.text_box_width = Math.min(width_and_height[0] + extra_width_padding, 1080);
         this.text_box_width = 1080;
-        this.text_box_height = width_and_height[1] + extra_height_padding;
-        this.min_width = return_the_min_width(adjusted_verse,font) + extra_width_padding;
-        this.min_height = width_and_height[1] + extra_height_padding;
+        this.text_box_height = width_and_height[1] + text_item.getExtra_height_padding();
+        this.min_width = return_the_min_width(adjusted_verse,font) + text_item.getExtra_width_padding();
+        this.min_height = width_and_height[1] + text_item.getExtra_height_padding();
         this.visible = visible;
         this.min_x_point = center_position.getX() - this.text_box_width / 2;
         this.max_x_point = center_position.getX() + this.text_box_width / 2;
@@ -140,19 +138,5 @@ public class Text_box_info {
         this.min_height = min_height;
     }
 
-    public double getExtra_width_padding() {
-        return extra_width_padding;
-    }
 
-    public double getExtra_height_padding() {
-        return extra_height_padding;
-    }
-
-    public void setExtra_width_padding(double extra_width_padding) {
-        this.extra_width_padding = extra_width_padding;
-    }
-
-    public void setExtra_height_padding(double extra_height_padding) {
-        this.extra_height_padding = extra_height_padding;
-    }
 }
