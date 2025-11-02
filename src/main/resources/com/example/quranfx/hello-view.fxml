@@ -50,6 +50,13 @@
                             stylesheets="@mfx_spinner_style_loading_start.css">
         </MFXProgressSpinner>
 
+        <JFXButton StackPane.alignment="BOTTOM_RIGHT" fx:id="question_mark_loading_screen"
+                   focusTraversable="false">
+            <StackPane.margin>
+                <Insets bottom="10.0" left="10.0"/>
+            </StackPane.margin>
+        </JFXButton>
+
 
     </StackPane>
     <BorderPane fx:id="choose_surat_screen" visible="false">
