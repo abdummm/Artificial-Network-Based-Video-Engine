@@ -6145,7 +6145,7 @@ public class HelloApplication extends Application {
             if (array_list_with_verses != null) {
                 ArrayList<Text_item> array_list_with_text_items = new ArrayList<>(array_list_with_verses.size());
                 for (int j = 0; j < array_list_with_verses.size(); j++) {
-                    Text_item text_item = new Text_item(edit_the_verses_before_adding_them(array_list_with_verses.get(j)), 1080,ayats_processed[j].getStart_millisecond(), ayats_processed[j].getStart_millisecond() + ayats_processed[j].getDuration());
+                    Text_item text_item = new Text_item(edit_the_verses_before_adding_them(array_list_with_verses.get(j)),ayats_processed[j].getStart_millisecond(), ayats_processed[j].getStart_millisecond() + ayats_processed[j].getDuration());
                     array_list_with_text_items.add(text_item);
                 }
                 languageInfo.setArrayList_of_all_of_the_translations(array_list_with_text_items);
@@ -6456,7 +6456,7 @@ public class HelloApplication extends Application {
     private ArrayList<Text_item> return_the_formatted_text_item_from_array_list(ArrayList<String> arrayList_of_strings) {
         ArrayList<Text_item> array_list_to_be_returned = new ArrayList<>(arrayList_of_strings.size());
         for (int i = 0; i < arrayList_of_strings.size(); i++) {
-            Text_item text_item = new Text_item(edit_the_verses_before_adding_them(arrayList_of_strings.get(i)),1080, ayats_processed[i].getStart_millisecond(), ayats_processed[i].getStart_millisecond() + ayats_processed[i].getDuration());
+            Text_item text_item = new Text_item(edit_the_verses_before_adding_them(arrayList_of_strings.get(i)), ayats_processed[i].getStart_millisecond(), ayats_processed[i].getStart_millisecond() + ayats_processed[i].getDuration());
             array_list_to_be_returned.add(text_item);
         }
         return array_list_to_be_returned;
