@@ -47,7 +47,7 @@ public class Text_item {
         this.verse_text = verse_text;
         this.font_size = 36;
         this.font = return_default_font(font_size);
-        this.adjusted_verse_text = Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(verse_text,font,1080-extra_width_padding,left_margin,right_margin);
+        this.adjusted_verse_text = Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(verse_text,font,video_width-extra_width_padding,left_margin,right_margin);
         this.color = Color.WHITE;
         this.start_time = start_time;
         this.end_time = end_time;
