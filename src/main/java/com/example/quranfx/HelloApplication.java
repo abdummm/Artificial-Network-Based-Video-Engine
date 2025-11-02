@@ -5640,6 +5640,9 @@ public class HelloApplication extends Application {
                         v_box_inside_the_stack_pane.getChildren().add(check_box_is_the_langauge_enabled);
                         v_box_inside_the_stack_pane.getChildren().add(separator_between_check_box_and_everything);
 
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_hosting_the_position_label);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_for_x_and_y_positions);
+                        v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_position);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_containing_the_text_color_label);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(color_picker);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_color_picker);
@@ -5652,9 +5655,9 @@ public class HelloApplication extends Application {
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(hbox_holding_the_advanced_options_toggle);
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(holds_advnaced_options);
 
-                        holds_advnaced_options.getChildren().add(hbox_hosting_the_position_label);
+                        /*holds_advnaced_options.getChildren().add(hbox_hosting_the_position_label);
                         holds_advnaced_options.getChildren().add(hbox_for_x_and_y_positions);
-                        holds_advnaced_options.getChildren().add(separator_under_position);
+                        holds_advnaced_options.getChildren().add(separator_under_position);*/
                         holds_advnaced_options.getChildren().add(hbox_hosting_the_stroke_label);
                         holds_advnaced_options.getChildren().add(vbox_carrying_the_stroke_stuff);
                         holds_advnaced_options.getChildren().add(separator_under_stroke);
