@@ -22,7 +22,8 @@ public class Text_box_info {
     public Text_box_info(Point2D center_position, String adjusted_verse, Font font, boolean visible) {
         this.center_position = new Point2D(center_position.getX(), center_position.getY());
         double[] width_and_height = Text_sizing.getInstance().get_width_and_height_of_string(adjusted_verse, font);
-        this.text_box_width = Math.min(width_and_height[0] + extra_width_padding, 1080);
+        //this.text_box_width = Math.min(width_and_height[0] + extra_width_padding, 1080);
+        this.text_box_width = 1080;
         this.text_box_height = width_and_height[1] + extra_height_padding;
         this.min_width = return_the_min_width(adjusted_verse,font) + extra_width_padding;
         this.min_height = width_and_height[1] + extra_height_padding;
