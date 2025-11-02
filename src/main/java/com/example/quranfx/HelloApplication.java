@@ -5007,6 +5007,7 @@ public class HelloApplication extends Application {
                     private VBox holds_advnaced_options;
                     private JFXButton center_button_x_pos;
                     private JFXButton center_button_y_pos;
+                    private Separator separator_inside_advanced_options_before_everything;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -5087,6 +5088,7 @@ public class HelloApplication extends Application {
                         holds_advnaced_options = new VBox();
                         center_button_x_pos = new JFXButton();
                         center_button_y_pos = new JFXButton();
+                        separator_inside_advanced_options_before_everything = new Separator();
 
 
                         final double top_margin_in_vbox_control = 10;
