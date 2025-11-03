@@ -124,7 +124,7 @@ public class HelloApplication extends Application {
     private HashMap<String, Sub_fonts> hashMap_with_all_the_font_families_and_names;
     private ArrayList<Listener_info> array_list_with_all_of_the_image_control_listeners = new ArrayList<>();
     private Stage learn_more_about_app_stage;
-    private Shape_object_time_line old_dragged_shape_object_time_line;
+    private Stage app_settings_information_stage;
 
 
     private final static int image_view_in_tile_pane_width = 90;
@@ -142,6 +142,7 @@ public class HelloApplication extends Application {
     private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
     private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
     private final static String app_name = "Sabrly";
+    private final static String app_version = "1.0";
     private final static double screen_width_multiplier = 0.55D;
     private final static double screen_height_multiplier = 0.55D;
     private final static int scroll_pane_hosting_time_line_border_width = 1;
@@ -183,8 +184,9 @@ public class HelloApplication extends Application {
         center_the_progress_indicator(helloController, scene);
         listen_to_height_change_property(helloController, scene);
         get_the_quran_api_token(helloController, true, scene);
-        set_up_icon_for_question_mark_button_on_loading_screen(helloController);
+        set_up_icon_for_settings_mark_button_on_loading_screen(helloController);
         set_the_cursor_for_question_mark_button_on_loading_screen(helloController);
+        listen_to_settings_button_clicked_loading_screen(helloController);
     }
 
 
@@ -274,7 +276,7 @@ public class HelloApplication extends Application {
         set_up_the_icon_for_settings_beside_help_spread_app(helloController);
         set_the_cursor_of_settings_beside_help_spread_app(helloController);
         set_up_the_fade_in_fade_out_slider_ticks(helloController);
-        hide_the_question_mark_button_loading_screen_when_done(helloController);
+        hide_the_settings_mark_button_loading_screen_when_done(helloController);
     }
 
     /*public static void main(String[] args) {
@@ -5578,7 +5580,6 @@ public class HelloApplication extends Application {
                         VBox.setMargin(separator_inside_advanced_options_before_everything, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
 
 
-
                         hbox_holding_the_advanced_options_toggle.getChildren().add(label_holding_advanced_options);
                         hbox_holding_the_advanced_options_toggle.getChildren().add(toggle_switch_for_advanced_options);
 
@@ -6158,7 +6159,7 @@ public class HelloApplication extends Application {
             if (array_list_with_verses != null) {
                 ArrayList<Text_item> array_list_with_text_items = new ArrayList<>(array_list_with_verses.size());
                 for (int j = 0; j < array_list_with_verses.size(); j++) {
-                    Text_item text_item = new Text_item(edit_the_verses_before_adding_them(array_list_with_verses.get(j)),ayats_processed[j].getStart_millisecond(), ayats_processed[j].getStart_millisecond() + ayats_processed[j].getDuration());
+                    Text_item text_item = new Text_item(edit_the_verses_before_adding_them(array_list_with_verses.get(j)), ayats_processed[j].getStart_millisecond(), ayats_processed[j].getStart_millisecond() + ayats_processed[j].getDuration());
                     array_list_with_text_items.add(text_item);
                 }
                 languageInfo.setArrayList_of_all_of_the_translations(array_list_with_text_items);
@@ -6303,7 +6304,7 @@ public class HelloApplication extends Application {
         snapshot_parameters.setFill(javafx.scene.paint.Color.TRANSPARENT); // preserve transparency
 
         WritableImage text_image = text.snapshot(snapshot_parameters, null);
-        gc.drawImage(text_image,point2D_of_the_text.getX()-text_image.getWidth()/2,point2D_of_the_text.getY()-text_image.getHeight()/2);
+        gc.drawImage(text_image, point2D_of_the_text.getX() - text_image.getWidth() / 2, point2D_of_the_text.getY() - text_image.getHeight() / 2);
     }
 
     private void place_the_box_surrounding_the_text(Canvas canvas, Text_item text_item) {
@@ -6854,7 +6855,7 @@ public class HelloApplication extends Application {
                         case SOUTH -> {
                             text_on_canvas_dragged[0].setHeight_difference(smallest_text_box_info.getText_box_info().getMax_y_point() * y_scale - mouseEvent.getY());
                         }
-                        case WEST  -> {
+                        case WEST -> {
                             text_on_canvas_dragged[0].setWidth_difference(mouseEvent.getX() - smallest_text_box_info.getText_box_info().getMin_x_point() * x_scale);
                         }
                     }
@@ -6907,7 +6908,7 @@ public class HelloApplication extends Application {
                     } else if (text_on_canvas_dragged[0].getType_of_cursor() == Type_of_cursor.SOUTH) {
                         Text_item text_item = text_on_canvas_dragged[0].getText_item();
                         Text_box_info text_box_info = text_item.getText_box_info();
-                        double mouse_y_position = Math.min(mouseEvent.getY(), text_on_canvas_dragged[0].getCanvas_height()*text_on_canvas_dragged[0].getY_scale() - text_on_canvas_dragged[0].getHeight_difference());
+                        double mouse_y_position = Math.min(mouseEvent.getY(), text_on_canvas_dragged[0].getCanvas_height() * text_on_canvas_dragged[0].getY_scale() - text_on_canvas_dragged[0].getHeight_difference());
                         double y_pos_difference = mouse_y_position - text_on_canvas_dragged[0].getOriginal_point2D_of_mouse_event().getY();
                         y_pos_difference = y_pos_difference / text_on_canvas_dragged[0].getY_scale();
                         double new_height = text_on_canvas_dragged[0].getOriginal_height() + y_pos_difference;
@@ -6931,12 +6932,12 @@ public class HelloApplication extends Application {
                         double x_pos_difference = mouse_x_position - text_on_canvas_dragged[0].getOriginal_point2D_of_mouse_event().getX();
                         x_pos_difference = x_pos_difference / text_on_canvas_dragged[0].getX_scale();
                         double new_width = text_on_canvas_dragged[0].getOriginal_width() - x_pos_difference;
-                        String adjusted_verse = Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(text_item.getVerse_text(),text_item.getFont(),Math.max(new_width,text_box_info.getMin_width())-text_item.getExtra_width_padding(),text_item.getLeft_margin(),text_item.getRight_margin());
-                        double[] width_and_height_of_adjusted_text = Text_sizing.getInstance().get_width_and_height_of_string(adjusted_verse,text_item.getFont());
-                        double new_text_height = Math.max(width_and_height_of_adjusted_text[1] + text_item.getExtra_height_padding(),text_on_canvas_dragged[0].getOriginal_height());
+                        String adjusted_verse = Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(text_item.getVerse_text(), text_item.getFont(), Math.max(new_width, text_box_info.getMin_width()) - text_item.getExtra_width_padding(), text_item.getLeft_margin(), text_item.getRight_margin());
+                        double[] width_and_height_of_adjusted_text = Text_sizing.getInstance().get_width_and_height_of_string(adjusted_verse, text_item.getFont());
+                        double new_text_height = Math.max(width_and_height_of_adjusted_text[1] + text_item.getExtra_height_padding(), text_on_canvas_dragged[0].getOriginal_height());
                         text_item.setAdjusted_verse_text(adjusted_verse);
                         if (new_width >= text_box_info.getMin_width()) {
-                            text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].getOriginal_point2D_of_text().getX() + x_pos_difference/2D, text_on_canvas_dragged[0].getOriginal_point2D_of_text().getY()));
+                            text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].getOriginal_point2D_of_text().getX() + x_pos_difference / 2D, text_on_canvas_dragged[0].getOriginal_point2D_of_text().getY()));
                             text_box_info.setText_box_width(text_on_canvas_dragged[0].getOriginal_width() - x_pos_difference);
                             text_box_info.setText_box_height(new_text_height);
                             text_box_info.setMin_height(width_and_height_of_adjusted_text[1] + text_item.getExtra_height_padding());
@@ -6944,7 +6945,7 @@ public class HelloApplication extends Application {
                             place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
                             helloController.list_view_with_all_of_the_languages.refresh();
                         } else if (new_width != text_box_info.getMin_width()) {
-                            text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].get_max_x_of_text()- text_box_info.getMin_width() / 2D, text_on_canvas_dragged[0].getOriginal_point2D_of_text().getY()));
+                            text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].get_max_x_of_text() - text_box_info.getMin_width() / 2D, text_on_canvas_dragged[0].getOriginal_point2D_of_text().getY()));
                             text_box_info.setText_box_width(text_box_info.getMin_width());
                             text_box_info.setText_box_height(new_text_height);
                             text_box_info.setMin_height(width_and_height_of_adjusted_text[1] + text_item.getExtra_height_padding());
@@ -7329,19 +7330,103 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void set_up_icon_for_question_mark_button_on_loading_screen(HelloController helloController) {
-        helloController.question_mark_loading_screen.setShape(return_default_squircle());
-        helloController.question_mark_loading_screen.setGraphic(return_the_icon("gold_settings_icon", 20, 20));
-        helloController.question_mark_loading_screen.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-        helloController.question_mark_loading_screen.setAlignment(Pos.CENTER);
+    private void set_up_icon_for_settings_mark_button_on_loading_screen(HelloController helloController) {
+        helloController.settings_loading_screen.setShape(return_default_squircle());
+        helloController.settings_loading_screen.setGraphic(return_the_icon("gold_settings_icon", 20, 20));
+        helloController.settings_loading_screen.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        helloController.settings_loading_screen.setAlignment(Pos.CENTER);
     }
 
     private void set_the_cursor_for_question_mark_button_on_loading_screen(HelloController helloController) {
-        helloController.question_mark_loading_screen.setCursor(Cursor.HAND);
+        helloController.settings_loading_screen.setCursor(Cursor.HAND);
     }
 
-    private void hide_the_question_mark_button_loading_screen_when_done(HelloController helloController){
-        helloController.question_mark_loading_screen.setVisible(false);
-        helloController.question_mark_loading_screen.setManaged(false);
+    private void hide_the_settings_mark_button_loading_screen_when_done(HelloController helloController) {
+        helloController.settings_loading_screen.setVisible(false);
+        helloController.settings_loading_screen.setManaged(false);
+    }
+
+    private void listen_to_settings_button_clicked_loading_screen(HelloController helloController) {
+        helloController.settings_loading_screen.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                show_settings_dialog();
+            }
+        });
+    }
+
+    private void show_settings_dialog() {
+        if (app_settings_information_stage != null && app_settings_information_stage.isShowing()) {
+            app_settings_information_stage.toFront();
+            return;
+        }
+        app_settings_information_stage = new Stage();
+        app_settings_information_stage.initOwner(main_stage);
+        app_settings_information_stage.initStyle(StageStyle.DECORATED);
+        VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
+        Label app_version_label = new Label("Version: " + app_version);
+        Label label_saying_to_user_main_stuff = new Label("If you’d like to share feedback or report a bug, feel free to send me an email or join our Discord community using the link below.");
+        Label label_saying_help_email = new Label(help_email);
+        HBox hbox_hosting_copy_buttons = new HBox();
+        JFXButton copy_email_button = new JFXButton("Copy email");
+        JFXButton copy_discord_invite_link_button = new JFXButton("Copy Discord invite link");
+        JFXButton got_it_button = new JFXButton("Got it");
+        copy_email_button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+
+            }
+        });
+        copy_discord_invite_link_button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+
+            }
+        });
+        got_it_button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                app_settings_information_stage.close();
+            }
+        });
+
+        VBox.setMargin(app_version_label, new Insets(0, 10, 0, 10));
+
+        VBox.setMargin(label_saying_to_user_main_stuff, new Insets(25, 10, 0, 10));
+
+        VBox.setMargin(label_saying_help_email,new Insets(25,10,0,10));
+
+        VBox.setMargin(hbox_hosting_copy_buttons, new Insets(25, 10, 0, 10));
+
+        VBox.setMargin(got_it_button, new Insets(25, 10, 0, 10));
+
+        HBox.setMargin(copy_discord_invite_link_button, new Insets(0, 0, 0, 15));
+        hbox_hosting_copy_buttons.setAlignment(Pos.CENTER);
+
+        app_version_label.setAlignment(Pos.CENTER);
+        app_version_label.setTextAlignment(TextAlignment.CENTER);
+        app_version_label.setWrapText(true);
+
+        label_saying_to_user_main_stuff.setAlignment(Pos.CENTER);
+        label_saying_to_user_main_stuff.setTextAlignment(TextAlignment.CENTER); // center each line of text
+        label_saying_to_user_main_stuff.setWrapText(true);
+
+        copy_email_button.setStyle("-fx-background-color: #000000; -fx-text-fill: #FFFFFF;");
+        copy_email_button.setFocusTraversable(false);
+
+        copy_discord_invite_link_button.setStyle("-fx-background-color: #000000; -fx-text-fill: #FFFFFF;");
+        copy_discord_invite_link_button.setFocusTraversable(false);
+
+        got_it_button.setStyle("-fx-background-color: #000000; -fx-text-fill: #FFFFFF;");
+        got_it_button.setFocusTraversable(false);
+
+        hbox_hosting_copy_buttons.getChildren().addAll(copy_email_button, copy_discord_invite_link_button);
+
+        vBox.getChildren().addAll(app_version_label, label_saying_to_user_main_stuff, label_saying_help_email, hbox_hosting_copy_buttons, got_it_button);
+        Scene scene = new Scene(vBox, 450, 225);
+        app_settings_information_stage.setScene(scene);
+        app_settings_information_stage.setTitle("Settings");
+        app_settings_information_stage.show();
     }
 }
