@@ -7366,7 +7366,7 @@ public class HelloApplication extends Application {
         VBox vBox = new VBox();
         vBox.setAlignment(Pos.CENTER);
         Label app_version_label = new Label("Version: " + app_version);
-        Label label_saying_to_user_main_stuff = new Label("If you’d like to share feedback or report a bug, feel free to send me an email or join our Discord community using the link below.");
+        Label label_saying_to_user_main_stuff = new Label("If you’d like to share feedback or report a bug, feel free to send me an email\n or join our Discord community using the link below.");
         Label label_saying_help_email = new Label(help_email);
         HBox hbox_hosting_copy_buttons = new HBox();
         JFXButton copy_email_button = new JFXButton("Copy email");
@@ -7391,7 +7391,7 @@ public class HelloApplication extends Application {
             }
         });
 
-        VBox.setMargin(app_version_label, new Insets(0, 10, 0, 10));
+        VBox.setMargin(app_version_label, new Insets(25, 10, 0, 10));
 
         VBox.setMargin(label_saying_to_user_main_stuff, new Insets(25, 10, 0, 10));
 
@@ -7399,7 +7399,7 @@ public class HelloApplication extends Application {
 
         VBox.setMargin(hbox_hosting_copy_buttons, new Insets(25, 10, 0, 10));
 
-        VBox.setMargin(got_it_button, new Insets(25, 10, 0, 10));
+        VBox.setMargin(got_it_button, new Insets(25, 10, 0, 25));
 
         HBox.setMargin(copy_discord_invite_link_button, new Insets(0, 0, 0, 15));
         hbox_hosting_copy_buttons.setAlignment(Pos.CENTER);
@@ -7424,8 +7424,9 @@ public class HelloApplication extends Application {
         hbox_hosting_copy_buttons.getChildren().addAll(copy_email_button, copy_discord_invite_link_button);
 
         vBox.getChildren().addAll(app_version_label, label_saying_to_user_main_stuff, label_saying_help_email, hbox_hosting_copy_buttons, got_it_button);
-        Scene scene = new Scene(vBox, 450, 225);
+        Scene scene = new Scene(vBox);
         app_settings_information_stage.setScene(scene);
+        app_settings_information_stage.sizeToScene();
         app_settings_information_stage.setTitle("Settings");
         app_settings_information_stage.show();
     }
