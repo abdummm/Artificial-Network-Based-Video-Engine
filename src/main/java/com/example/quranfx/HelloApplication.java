@@ -126,10 +126,13 @@ public class HelloApplication extends Application {
     private Stage learn_more_about_app_stage;
     private Stage app_settings_information_stage;
 
+    private final static String help_email = "sabrlyhelp@gmail.com";
+    private final static String discord_invite_link = "https://discord.gg/ZzPgNx8U95";
+    private final static String app_name = "Sabrly";
+    private final static String app_version = "1.0";
 
     private final static int image_view_in_tile_pane_width = 90;
     private final static int image_view_in_tile_pane_height = 160;
-    private final static String help_email = "abdomakesappshelp@gmail.com";
     private final static double blurry_circle_raduis = 30D;
     private final static int play_button_size = 30;
     private final static int pause_button_size = 33;
@@ -141,8 +144,6 @@ public class HelloApplication extends Application {
     private final static String clientId_live = Quran_api_secrets.clientId_live;
     private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
     private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
-    private final static String app_name = "Sabrly";
-    private final static String app_version = "1.0";
     private final static double screen_width_multiplier = 0.55D;
     private final static double screen_height_multiplier = 0.55D;
     private final static int scroll_pane_hosting_time_line_border_width = 1;
@@ -3077,7 +3078,8 @@ public class HelloApplication extends Application {
         helloController.give_feedback_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                showEmailPopupWithReply();
+                //showEmailPopupWithReply();
+                show_feedback_settings_dialog("Feedback");
             }
         });
     }
@@ -7350,16 +7352,18 @@ public class HelloApplication extends Application {
         helloController.settings_loading_screen.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                show_settings_dialog();
+                show_feedback_settings_dialog("Settings");
             }
         });
     }
 
-    private void show_settings_dialog() {
+    private void show_feedback_settings_dialog(String dialog_title) {
         if (app_settings_information_stage != null && app_settings_information_stage.isShowing()) {
             app_settings_information_stage.toFront();
             return;
         }
+        final int vertical_margin = 40;
+        final int horizontal_margin = 30;
         app_settings_information_stage = new Stage();
         app_settings_information_stage.initOwner(main_stage);
         app_settings_information_stage.initStyle(StageStyle.DECORATED);
@@ -7372,16 +7376,19 @@ public class HelloApplication extends Application {
         JFXButton copy_email_button = new JFXButton("Copy email");
         JFXButton copy_discord_invite_link_button = new JFXButton("Copy Discord invite link");
         JFXButton got_it_button = new JFXButton("Got it");
+        Separator empty_separator_at_the_bottom = new Separator();
         copy_email_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-
+                copyToClipboard(help_email);
+                showToast(app_settings_information_stage, "Copied", 2500);
             }
         });
         copy_discord_invite_link_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-
+                copyToClipboard(discord_invite_link);
+                showToast(app_settings_information_stage, "Copied", 2500);
             }
         });
         got_it_button.setOnAction(new EventHandler<ActionEvent>() {
@@ -7391,15 +7398,17 @@ public class HelloApplication extends Application {
             }
         });
 
-        VBox.setMargin(app_version_label, new Insets(25, 10, 0, 10));
+        VBox.setMargin(app_version_label, new Insets(vertical_margin, horizontal_margin, 0, horizontal_margin));
 
-        VBox.setMargin(label_saying_to_user_main_stuff, new Insets(25, 10, 0, 10));
+        VBox.setMargin(label_saying_to_user_main_stuff, new Insets(25, horizontal_margin, 0, horizontal_margin));
 
-        VBox.setMargin(label_saying_help_email,new Insets(25,10,0,10));
+        VBox.setMargin(label_saying_help_email,new Insets(25,horizontal_margin,0,horizontal_margin));
 
-        VBox.setMargin(hbox_hosting_copy_buttons, new Insets(25, 10, 0, 10));
+        VBox.setMargin(hbox_hosting_copy_buttons, new Insets(25, horizontal_margin, 0, horizontal_margin));
 
-        VBox.setMargin(got_it_button, new Insets(25, 10, 0, 25));
+        VBox.setMargin(got_it_button, new Insets(25, horizontal_margin, 0, horizontal_margin));
+
+        VBox.setMargin(empty_separator_at_the_bottom,new Insets(vertical_margin,0,0,0));
 
         HBox.setMargin(copy_discord_invite_link_button, new Insets(0, 0, 0, 15));
         hbox_hosting_copy_buttons.setAlignment(Pos.CENTER);
@@ -7421,13 +7430,15 @@ public class HelloApplication extends Application {
         got_it_button.setStyle("-fx-background-color: #000000; -fx-text-fill: #FFFFFF;");
         got_it_button.setFocusTraversable(false);
 
+        empty_separator_at_the_bottom.setVisible(false);
+
         hbox_hosting_copy_buttons.getChildren().addAll(copy_email_button, copy_discord_invite_link_button);
 
-        vBox.getChildren().addAll(app_version_label, label_saying_to_user_main_stuff, label_saying_help_email, hbox_hosting_copy_buttons, got_it_button);
+        vBox.getChildren().addAll(app_version_label, label_saying_to_user_main_stuff, label_saying_help_email, hbox_hosting_copy_buttons, got_it_button,empty_separator_at_the_bottom);
         Scene scene = new Scene(vBox);
         app_settings_information_stage.setScene(scene);
         app_settings_information_stage.sizeToScene();
-        app_settings_information_stage.setTitle("Settings");
+        app_settings_information_stage.setTitle(dialog_title);
         app_settings_information_stage.show();
     }
 }
