@@ -226,7 +226,7 @@ public class HelloController {
     public JFXButton setting_beside_help_spread_the_app;
 
     @FXML
-    public JFXButton question_mark_loading_screen;
+    public JFXButton settings_loading_screen;
 
    /* @FXML
     public Rectangle black_rectangle_behind_image_view;*/
