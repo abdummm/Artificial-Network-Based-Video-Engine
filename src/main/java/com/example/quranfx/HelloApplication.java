@@ -5023,8 +5023,10 @@ public class HelloApplication extends Application {
                     private Label label_holding_the_shadow_value;
                     private Label label_saying_weight_before_shadow_slider;
                     private HBox hbox_holding_the_shadow_slider_and_value;
-                    private Checkbox shadow_check_box;
+                    private CheckBox shadow_check_box;
                     private ColorPicker shadow_color_picker;
+                    private VBox vbox_holding_everything_shadow;
+                    private Region region_to_expand_space_for_shadow_check_box;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -5112,6 +5114,10 @@ public class HelloApplication extends Application {
                         label_holding_the_shadow_value = new Label();
                         hbox_holding_the_shadow_slider_and_value = new HBox();
                         label_saying_weight_before_shadow_slider = new Label();
+                        shadow_check_box = new CheckBox();
+                        shadow_color_picker = new ColorPicker();
+                        vbox_holding_everything_shadow = new VBox();
+                        region_to_expand_space_for_shadow_check_box = new Region();
 
                         final double top_margin_in_vbox_control = 10;
                         final double half_top_margin_in_vbox_control = 5;
@@ -5620,6 +5626,9 @@ public class HelloApplication extends Application {
                         //label_saying_weight_before_shadow_slider
                         label_saying_weight_before_shadow_slider.setText("Weight:");
 
+                        //region_to_expand_space_for_shadow_check_box
+                        HBox.setHgrow(region_to_expand_space_for_shadow_check_box, Priority.ALWAYS);
+
 
                         hbox_holding_the_shadow_slider_and_value.getChildren().add(label_saying_weight_before_shadow_slider);
                         hbox_holding_the_shadow_slider_and_value.getChildren().add(shadow_slider);
@@ -5627,6 +5636,8 @@ public class HelloApplication extends Application {
 
 
                         hbox_holding_the_shadow_label.getChildren().add(shadow_label);
+                        hbox_holding_the_shadow_label.getChildren().add(region_to_expand_space_for_shadow_check_box);
+                        hbox_holding_the_shadow_label.getChildren().add(shadow_check_box);
 
 
                         hbox_holding_the_advanced_options_toggle.getChildren().add(label_holding_advanced_options);
