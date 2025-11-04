@@ -39,6 +39,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
@@ -6302,6 +6303,12 @@ public class HelloApplication extends Application {
         }
         text.setTextAlignment(TextAlignment.CENTER);
         text.setFontSmoothingType(FontSmoothingType.GRAY);
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setOffsetX(2.0);              // horizontal offset of the shadow
+        dropShadow.setOffsetY(2.0);              // vertical offset
+        dropShadow.setRadius(4.0);               // blur radius
+        dropShadow.setColor(javafx.scene.paint.Color.color(0, 0, 0, 0.6)); // black shadow with 60% opacity
+        text.setEffect(dropShadow);
         SnapshotParameters snapshot_parameters = new SnapshotParameters();
         snapshot_parameters.setFill(javafx.scene.paint.Color.TRANSPARENT); // preserve transparency
 
@@ -6966,7 +6973,7 @@ public class HelloApplication extends Application {
                         text_item.setAdjusted_verse_text(adjusted_verse);
                         if (new_width >= text_box_info.getMin_width()) {
                             text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].getOriginal_point2D_of_text().getX() + x_pos_difference / 2D, text_on_canvas_dragged[0].getOriginal_point2D_of_text().getY()));
-                            text_box_info.setText_box_width(text_on_canvas_dragged[0].getOriginal_width() - x_pos_difference);
+                            text_box_info.setText_box_width(new_width);
                             text_box_info.setText_box_height(new_text_height);
                             text_box_info.setMin_height(width_and_height_of_adjusted_text[1] + text_item.getExtra_height_padding());
                             place_the_canvas_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
@@ -7428,13 +7435,13 @@ public class HelloApplication extends Application {
 
         VBox.setMargin(label_saying_to_user_main_stuff, new Insets(25, horizontal_margin, 0, horizontal_margin));
 
-        VBox.setMargin(label_saying_help_email,new Insets(25,horizontal_margin,0,horizontal_margin));
+        VBox.setMargin(label_saying_help_email, new Insets(25, horizontal_margin, 0, horizontal_margin));
 
         VBox.setMargin(hbox_hosting_copy_buttons, new Insets(25, horizontal_margin, 0, horizontal_margin));
 
         VBox.setMargin(got_it_button, new Insets(25, horizontal_margin, 0, horizontal_margin));
 
-        VBox.setMargin(empty_separator_at_the_bottom,new Insets(vertical_margin,0,0,0));
+        VBox.setMargin(empty_separator_at_the_bottom, new Insets(vertical_margin, 0, 0, 0));
 
         HBox.setMargin(copy_discord_invite_link_button, new Insets(0, 0, 0, 15));
         hbox_hosting_copy_buttons.setAlignment(Pos.CENTER);
@@ -7460,7 +7467,7 @@ public class HelloApplication extends Application {
 
         hbox_hosting_copy_buttons.getChildren().addAll(copy_email_button, copy_discord_invite_link_button);
 
-        vBox.getChildren().addAll(app_version_label, label_saying_to_user_main_stuff, label_saying_help_email, hbox_hosting_copy_buttons, got_it_button,empty_separator_at_the_bottom);
+        vBox.getChildren().addAll(app_version_label, label_saying_to_user_main_stuff, label_saying_help_email, hbox_hosting_copy_buttons, got_it_button, empty_separator_at_the_bottom);
         Scene scene = new Scene(vBox);
         app_settings_information_stage.setScene(scene);
         app_settings_information_stage.sizeToScene();
