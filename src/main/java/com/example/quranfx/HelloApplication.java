@@ -5109,6 +5109,7 @@ public class HelloApplication extends Application {
                         shadow_slider = new Slider();
                         label_holding_the_shadow_value = new Label();
                         hbox_holding_the_shadow_slider_and_value = new HBox();
+                        label_saying_weight_before_shadow_slider = new Label();
 
                         final double top_margin_in_vbox_control = 10;
                         final double half_top_margin_in_vbox_control = 5;
@@ -5601,15 +5602,29 @@ public class HelloApplication extends Application {
                         VBox.setMargin(hbox_holding_the_shadow_label, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
 
                         //shadow_slider
-                        HBox.setMargin(stroke_weight_slider, new Insets(0, 0, 0, 10));
-                        HBox.setHgrow(stroke_weight_slider, Priority.ALWAYS);
-                        stroke_weight_slider.setMaxWidth(Double.MAX_VALUE);
-                        stroke_weight_slider.setMin(min_stroke_weight);
-                        stroke_weight_slider.setMax(max_stroke_weight);
+                        HBox.setMargin(shadow_slider, new Insets(0, 0, 0, 10));
+                        HBox.setHgrow(shadow_slider, Priority.ALWAYS);
+                        shadow_slider.setMaxWidth(Double.MAX_VALUE);
+                        shadow_slider.setMin(min_stroke_weight);
+                        shadow_slider.setMax(max_stroke_weight);
 
                         //label_holding_the_shadow_value
+                        label_holding_the_shadow_value.setText(return_formatted_string_to_1_decimal_place_always(0));
 
                         //hbox_holding_the_shadow_slider_and_value
+                        hbox_holding_the_shadow_slider_and_value.setAlignment(Pos.CENTER_LEFT);
+                        VBox.setMargin(hbox_holding_the_shadow_slider_and_value, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+
+                        //label_saying_weight_before_shadow_slider
+                        label_saying_weight_before_shadow_slider.setText("Weight:");
+
+
+                        hbox_holding_the_shadow_slider_and_value.getChildren().add(label_saying_weight_before_shadow_slider);
+                        hbox_holding_the_shadow_slider_and_value.getChildren().add(shadow_slider);
+                        hbox_holding_the_shadow_slider_and_value.getChildren().add(label_holding_the_shadow_value);
+
+
+                        hbox_holding_the_shadow_label.getChildren().add(shadow_label);
 
 
                         hbox_holding_the_advanced_options_toggle.getChildren().add(label_holding_advanced_options);
@@ -5704,9 +5719,11 @@ public class HelloApplication extends Application {
                         holds_advnaced_options.getChildren().add(hbox_hosting_the_stroke_label);
                         holds_advnaced_options.getChildren().add(vbox_carrying_the_stroke_stuff);
                         holds_advnaced_options.getChildren().add(separator_under_stroke);
-                        holds_advnaced_options.getChildren().add(hbox_holding_the_margin_label);
+                        /*holds_advnaced_options.getChildren().add(hbox_holding_the_margin_label);
                         holds_advnaced_options.getChildren().add(hbox_hosting_the_left_margin);
-                        holds_advnaced_options.getChildren().add(hbox_hosting_the_right_margin);
+                        holds_advnaced_options.getChildren().add(hbox_hosting_the_right_margin);*/
+                        holds_advnaced_options.getChildren().add(hbox_holding_the_shadow_label);
+                        holds_advnaced_options.getChildren().add(hbox_holding_the_shadow_slider_and_value);
                         v_box_inside_the_stack_pane.getChildren().add(v_box_with_all_of_the_controls_except_check_box);
 
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_advanced_options);
