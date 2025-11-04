@@ -5021,6 +5021,7 @@ public class HelloApplication extends Application {
                     private HBox hbox_holding_the_shadow_label;
                     private Slider shadow_slider;
                     private Label label_holding_the_shadow_value;
+                    private Label label_saying_weight_before_shadow_slider;
                     private HBox hbox_holding_the_shadow_slider_and_value;
 
                     {
@@ -5591,6 +5592,24 @@ public class HelloApplication extends Application {
 
                         //separator_inside_advanced_options_before_everything
                         VBox.setMargin(separator_inside_advanced_options_before_everything, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
+
+                        //shadow_label
+                        shadow_label.setText("Shadow");
+
+                        //hbox_holding_the_shadow_label
+                        hbox_holding_the_shadow_label.setAlignment(Pos.CENTER_LEFT);
+                        VBox.setMargin(hbox_holding_the_shadow_label, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+
+                        //shadow_slider
+                        HBox.setMargin(stroke_weight_slider, new Insets(0, 0, 0, 10));
+                        HBox.setHgrow(stroke_weight_slider, Priority.ALWAYS);
+                        stroke_weight_slider.setMaxWidth(Double.MAX_VALUE);
+                        stroke_weight_slider.setMin(min_stroke_weight);
+                        stroke_weight_slider.setMax(max_stroke_weight);
+
+                        //label_holding_the_shadow_value
+
+                        //hbox_holding_the_shadow_slider_and_value
 
 
                         hbox_holding_the_advanced_options_toggle.getChildren().add(label_holding_advanced_options);
