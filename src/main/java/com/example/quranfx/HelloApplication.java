@@ -5017,6 +5017,11 @@ public class HelloApplication extends Application {
                     private JFXButton center_button_x_pos;
                     private JFXButton center_button_y_pos;
                     private Separator separator_inside_advanced_options_before_everything;
+                    private Label shadow_label;
+                    private HBox hbox_holding_the_shadow_label;
+                    private Slider shadow_slider;
+                    private Label label_holding_the_shadow_value;
+                    private HBox hbox_holding_the_shadow_slider_and_value;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
