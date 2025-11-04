@@ -5103,6 +5103,11 @@ public class HelloApplication extends Application {
                         center_button_x_pos = new JFXButton();
                         center_button_y_pos = new JFXButton();
                         separator_inside_advanced_options_before_everything = new Separator();
+                        shadow_label = new Label();
+                        hbox_holding_the_shadow_label = new HBox();
+                        shadow_slider = new Slider();
+                        label_holding_the_shadow_value = new Label();
+                        hbox_holding_the_shadow_slider_and_value = new HBox();
 
                         final double top_margin_in_vbox_control = 10;
                         final double half_top_margin_in_vbox_control = 5;
