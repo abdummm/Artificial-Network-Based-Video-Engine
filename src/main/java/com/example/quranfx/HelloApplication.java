@@ -5619,15 +5619,26 @@ public class HelloApplication extends Application {
                         //label_holding_the_shadow_value
                         label_holding_the_shadow_value.setText(return_formatted_string_to_1_decimal_place_always(0));
 
-                        //hbox_holding_the_shadow_slider_and_value
-                        hbox_holding_the_shadow_slider_and_value.setAlignment(Pos.CENTER_LEFT);
-                        VBox.setMargin(hbox_holding_the_shadow_slider_and_value, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
-
                         //label_saying_weight_before_shadow_slider
                         label_saying_weight_before_shadow_slider.setText("Weight:");
 
                         //region_to_expand_space_for_shadow_check_box
                         HBox.setHgrow(region_to_expand_space_for_shadow_check_box, Priority.ALWAYS);
+
+                        //shadow_color_picker
+                        VBox.setMargin(shadow_color_picker, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+                        bind_an_item_to_a_property(shadow_color_picker, root.widthProperty(), start_and_end_margin * 2);
+                        shadow_color_picker.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                            @Override
+                            public void handle(MouseEvent mouseEvent) {
+                                shadow_color_picker.show();
+                            }
+                        });
+                        shadow_color_picker.setValue(javafx.scene.paint.Color.BLACK);
+
+                        //hbox_holding_the_shadow_slider_and_value
+                        hbox_holding_the_shadow_slider_and_value.setAlignment(Pos.CENTER_LEFT);
+                        VBox.setMargin(hbox_holding_the_shadow_slider_and_value, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
 
 
                         hbox_holding_the_shadow_slider_and_value.getChildren().add(label_saying_weight_before_shadow_slider);
