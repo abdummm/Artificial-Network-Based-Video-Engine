@@ -5023,6 +5023,8 @@ public class HelloApplication extends Application {
                     private Label label_holding_the_shadow_value;
                     private Label label_saying_weight_before_shadow_slider;
                     private HBox hbox_holding_the_shadow_slider_and_value;
+                    private Checkbox shadow_check_box;
+                    private ColorPicker shadow_color_picker;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
