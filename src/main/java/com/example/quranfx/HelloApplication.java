@@ -27,10 +27,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.*;
 import javafx.geometry.Insets;
+import javafx.scene.*;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
@@ -5021,12 +5019,14 @@ public class HelloApplication extends Application {
                     private HBox hbox_holding_the_shadow_label;
                     private Slider shadow_slider;
                     private Label label_holding_the_shadow_value;
+                    private Label fake_label_for_shadow_value;
                     private Label label_saying_weight_before_shadow_slider;
                     private HBox hbox_holding_the_shadow_slider_and_value;
                     private CheckBox shadow_check_box;
                     private ColorPicker shadow_color_picker;
                     private VBox vbox_holding_everything_shadow;
                     private Region region_to_expand_space_for_shadow_check_box;
+                    private StackPane stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -5118,6 +5118,9 @@ public class HelloApplication extends Application {
                         shadow_color_picker = new ColorPicker();
                         vbox_holding_everything_shadow = new VBox();
                         region_to_expand_space_for_shadow_check_box = new Region();
+                        fake_label_for_shadow_value  = new Label();
+                        stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight = new StackPane();
+
 
                         final double top_margin_in_vbox_control = 10;
                         final double half_top_margin_in_vbox_control = 5;
@@ -5126,6 +5129,8 @@ public class HelloApplication extends Application {
                         final double separator_start_end = 5;
                         final double min_stroke_weight = 0;
                         final double max_stroke_weight = 15;
+                        final double min_shadow_weight = 0;
+                        final double max_shadow_weight = 10;
                         final double buttons_at_the_bottom_height = 32.5;
                         final double left_margin_at_the_start_of_stroke_weight = 5;
 
@@ -5376,6 +5381,7 @@ public class HelloApplication extends Application {
                         stroke_weight_slider.setMaxWidth(Double.MAX_VALUE);
                         stroke_weight_slider.setMin(min_stroke_weight);
                         stroke_weight_slider.setMax(max_stroke_weight);
+                        set_up_the_tick_marks_for_a_slider(stroke_weight_slider,0.1);
 
 
                         //hbox_hosting_the_weight_label_and_the_slider
@@ -5414,7 +5420,6 @@ public class HelloApplication extends Application {
                         //fake_label_for_stroke_weight_space
                         //HBox.setMargin(fake_label_for_stroke_weight_space, new Insets(0, 0, 0, left_margin_at_the_start_of_stroke_weight));
                         String widest_text = find_the_widest_text(0, stroke_weight_slider.getMax(), 0.1);
-                        fake_label_for_stroke_weight_space.setText(return_formatted_string_to_1_decimal_place_always(stroke_weight_slider.getMax()));
                         fake_label_for_stroke_weight_space.setVisible(false);
                         fake_label_for_stroke_weight_space.setText(widest_text);
 
@@ -5613,8 +5618,9 @@ public class HelloApplication extends Application {
                         HBox.setMargin(shadow_slider, new Insets(0, 0, 0, 10));
                         HBox.setHgrow(shadow_slider, Priority.ALWAYS);
                         shadow_slider.setMaxWidth(Double.MAX_VALUE);
-                        shadow_slider.setMin(min_stroke_weight);
-                        shadow_slider.setMax(max_stroke_weight);
+                        shadow_slider.setMin(min_shadow_weight);
+                        shadow_slider.setMax(max_shadow_weight);
+                        set_up_the_tick_marks_for_a_slider(shadow_slider,0.1);
 
                         //label_holding_the_shadow_value
                         label_holding_the_shadow_value.setText(return_formatted_string_to_1_decimal_place_always(0));
@@ -5640,11 +5646,26 @@ public class HelloApplication extends Application {
                         hbox_holding_the_shadow_slider_and_value.setAlignment(Pos.CENTER_LEFT);
                         VBox.setMargin(hbox_holding_the_shadow_slider_and_value, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
 
+                        //vbox_holding_everything_shadow
+                        vbox_holding_everything_shadow.setDisable(true);
+
+                        //fake_label_for_shadow_value
+                        String widest_text_for_shadow = find_the_widest_text(0, shadow_slider.getMax(), 0.1);
+                        fake_label_for_shadow_value.setVisible(false);
+                        fake_label_for_shadow_value.setText(widest_text_for_shadow);
+
+                        //stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight
+
+
+                        stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight.getChildren().add(fake_label_for_shadow_value);
+                        stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight.getChildren().add(label_holding_the_shadow_value);
 
                         hbox_holding_the_shadow_slider_and_value.getChildren().add(label_saying_weight_before_shadow_slider);
                         hbox_holding_the_shadow_slider_and_value.getChildren().add(shadow_slider);
-                        hbox_holding_the_shadow_slider_and_value.getChildren().add(label_holding_the_shadow_value);
+                        hbox_holding_the_shadow_slider_and_value.getChildren().add(stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight);
 
+                        vbox_holding_everything_shadow.getChildren().add(shadow_color_picker);
+                        vbox_holding_everything_shadow.getChildren().add(hbox_holding_the_shadow_slider_and_value);
 
                         hbox_holding_the_shadow_label.getChildren().add(shadow_label);
                         hbox_holding_the_shadow_label.getChildren().add(region_to_expand_space_for_shadow_check_box);
@@ -5747,7 +5768,7 @@ public class HelloApplication extends Application {
                         holds_advnaced_options.getChildren().add(hbox_hosting_the_left_margin);
                         holds_advnaced_options.getChildren().add(hbox_hosting_the_right_margin);*/
                         holds_advnaced_options.getChildren().add(hbox_holding_the_shadow_label);
-                        holds_advnaced_options.getChildren().add(hbox_holding_the_shadow_slider_and_value);
+                        holds_advnaced_options.getChildren().add(vbox_holding_everything_shadow);
                         v_box_inside_the_stack_pane.getChildren().add(v_box_with_all_of_the_controls_except_check_box);
 
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_advanced_options);
@@ -5799,14 +5820,23 @@ public class HelloApplication extends Application {
                                         toggle_switch_for_advanced_options.selectedProperty().removeListener(old_language_info.getAdvanced_options_change_listener());
                                         old_language_info.setAdvanced_options_change_listener(null);
                                     }
-                                    if (old_language_info.getLeft_margin_text_change_listener() != null) {
+                                    if (old_language_info.getShadow_color_change_listener() != null) {
+                                        shadow_color_picker.valueProperty().removeListener(old_language_info.getShadow_color_change_listener());
+                                        old_language_info.setShadow_color_change_listener(null);
+                                    }
+                                    if (old_language_info.getShadow_weight_change_listener() != null) {
+                                        shadow_slider.valueProperty().removeListener(old_language_info.getShadow_weight_change_listener());
+                                        old_language_info.setShadow_weight_change_listener(null);
+                                    }
+
+                                    /*if (old_language_info.getLeft_margin_text_change_listener() != null) {
                                         left_margin_input_field.textProperty().removeListener(old_language_info.getLeft_margin_text_change_listener());
                                         old_language_info.setLeft_margin_text_change_listener(null);
                                     }
                                     if (old_language_info.getRight_margin_text_change_listener() != null) {
                                         right_margin_input_field.textProperty().removeListener(old_language_info.getRight_margin_text_change_listener());
                                         old_language_info.setRight_margin_text_change_listener(null);
-                                    }
+                                    }*/
                                 }
                             }
                         });
@@ -5852,17 +5882,17 @@ public class HelloApplication extends Application {
                                 y_position_of_text.setText(String.valueOf((int) point2D_of_the_text.getY()));
                                 left_margin_input_field.setText(remove_trailing_zeroes_from_number(text_item_of_the_selected_verse.getLeft_margin()));
                                 right_margin_input_field.setText(remove_trailing_zeroes_from_number(text_item_of_the_selected_verse.getRight_margin()));
-                                Stroke_info stroke_info = text_item_of_the_selected_verse.getStroke_info();
-                                if (stroke_info.isIs_the_stroke_on()) {
+                                Text_accessory_info textaccessory_info = text_item_of_the_selected_verse.getStroke_info();
+                                if (textaccessory_info.isIs_the_accessory_on()) {
                                     vbox_carrying_the_stroke_stuff.setDisable(false);
                                     stroke_check_box.setSelected(true);
                                 } else {
                                     vbox_carrying_the_stroke_stuff.setDisable(true);
                                     stroke_check_box.setSelected(false);
                                 }
-                                stroke_color_picker.setValue(stroke_info.getStroke_color());
-                                stroke_weight_slider.setValue(stroke_info.getStroke_weight());
-                                label_hosting_the_percentage_of_weight.setText(return_formatted_string_to_1_decimal_place_always(stroke_info.getStroke_weight()));
+                                stroke_color_picker.setValue(textaccessory_info.getAccessory_color());
+                                stroke_weight_slider.setValue(textaccessory_info.getAccessory_weight());
+                                label_hosting_the_percentage_of_weight.setText(return_formatted_string_to_1_decimal_place_always(textaccessory_info.getAccessory_weight()));
 
                                 if (check_box_is_the_langauge_enabled.isSelected()) {
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
@@ -5909,13 +5939,13 @@ public class HelloApplication extends Application {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
                                     vbox_carrying_the_stroke_stuff.setDisable(!stroke_check_box.isSelected());
-                                    text_item_of_the_selected_verse.getStroke_info().setIs_the_stroke_on(stroke_check_box.isSelected());
+                                    text_item_of_the_selected_verse.getStroke_info().setIs_the_accessory_on(stroke_check_box.isSelected());
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             });
 
-                            increase_left_margin_button.setOnAction(new EventHandler<ActionEvent>() {
+                            /*increase_left_margin_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
                                     change_margin_by_increment(left_margin_input_field, text_item_of_the_selected_verse, item, plus_minus_font_increments, Margin_type.LEFT_MARGIN);
@@ -5953,7 +5983,7 @@ public class HelloApplication extends Application {
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
-                            });
+                            });*/
 
                             center_button_x_pos.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
@@ -5976,6 +6006,15 @@ public class HelloApplication extends Application {
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     y_position_of_text.setText(String.valueOf((int) y_pos));
+                                }
+                            });
+
+                            shadow_check_box.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    vbox_holding_everything_shadow.setDisable(!shadow_check_box.isSelected());
+                                    text_item_of_the_selected_verse.getShadow_info().setIs_the_accessory_on(shadow_check_box.isSelected());
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             });
 
@@ -6091,7 +6130,7 @@ public class HelloApplication extends Application {
                             ChangeListener<? super javafx.scene.paint.Color> change_listener_for_stroke_color = new ChangeListener<javafx.scene.paint.Color>() {
                                 @Override
                                 public void changed(ObservableValue<? extends javafx.scene.paint.Color> observableValue, javafx.scene.paint.Color old_color, javafx.scene.paint.Color new_color) {
-                                    text_item_of_the_selected_verse.getStroke_info().setStroke_color(new_color);
+                                    text_item_of_the_selected_verse.getStroke_info().setAccessory_color(new_color);
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
@@ -6103,7 +6142,7 @@ public class HelloApplication extends Application {
                             ChangeListener<? super Number> change_listener_for_stroke_weight = new ChangeListener<Number>() {
                                 @Override
                                 public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
-                                    text_item_of_the_selected_verse.getStroke_info().setStroke_weight(new_number.doubleValue());
+                                    text_item_of_the_selected_verse.getStroke_info().setAccessory_weight(new_number.doubleValue());
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     label_hosting_the_percentage_of_weight.setText(return_formatted_string_to_1_decimal_place_always(stroke_weight_slider.getValue()));
@@ -6112,6 +6151,7 @@ public class HelloApplication extends Application {
                             stroke_weight_slider.valueProperty().addListener(change_listener_for_stroke_weight);
                             item.setStroke_weight_change_listener(change_listener_for_stroke_weight);
 
+                            //advanced_options_selected_listener
                             ChangeListener<? super Boolean> change_listener_for_advanced_options = new ChangeListener<Boolean>() {
                                 @Override
                                 public void changed(ObservableValue<? extends Boolean> observableValue, Boolean old_value, Boolean new_value) {
@@ -6123,7 +6163,30 @@ public class HelloApplication extends Application {
                             toggle_switch_for_advanced_options.selectedProperty().addListener(change_listener_for_advanced_options);
                             item.setAdvanced_options_change_listener(change_listener_for_advanced_options);
 
-                            ChangeListener<String> change_listener_for_left_margin_text = new ChangeListener<String>() {
+                            //shadow_color_change_listener
+                            ChangeListener<? super javafx.scene.paint.Color> shadow_color_change_listener = new ChangeListener<javafx.scene.paint.Color>() {
+                                @Override
+                                public void changed(ObservableValue<? extends javafx.scene.paint.Color> observableValue, javafx.scene.paint.Color old_color, javafx.scene.paint.Color new_color) {
+                                    text_item_of_the_selected_verse.getShadow_info().setAccessory_color(new_color);
+                                    place_the_canvas_text(item.getLanguage_canvas(),text_item_of_the_selected_verse);
+                                }
+                            };
+                            shadow_color_picker.valueProperty().addListener(shadow_color_change_listener);
+                            item.setShadow_color_change_listener(shadow_color_change_listener);
+
+                            //shadow_weight_change_listener
+                            ChangeListener<? super Number> shadow_weight_change_listener = new ChangeListener<Number>() {
+                                @Override
+                                public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
+                                    text_item_of_the_selected_verse.getShadow_info().setAccessory_weight(new_number.doubleValue());
+                                    place_the_canvas_text(item.getLanguage_canvas(),text_item_of_the_selected_verse);
+                                }
+                            };
+                            shadow_slider.valueProperty().addListener(shadow_weight_change_listener);
+                            item.setShadow_weight_change_listener(shadow_weight_change_listener);
+
+                            //left_margin_listener
+                            /*ChangeListener<String> change_listener_for_left_margin_text = new ChangeListener<String>() {
                                 @Override
                                 public void changed(ObservableValue<? extends String> observableValue, String old_string, String new_string) {
                                     double left_margin = 0;
@@ -6137,10 +6200,10 @@ public class HelloApplication extends Application {
                                 }
                             };
                             left_margin_input_field.textProperty().addListener(change_listener_for_left_margin_text);
-                            item.setLeft_margin_text_change_listener(change_listener_for_left_margin_text);
+                            item.setLeft_margin_text_change_listener(change_listener_for_left_margin_text);*/
 
-
-                            ChangeListener<String> change_listener_for_right_margin_text = new ChangeListener<String>() {
+                            //right_margin_listener
+                            /*ChangeListener<String> change_listener_for_right_margin_text = new ChangeListener<String>() {
                                 @Override
                                 public void changed(ObservableValue<? extends String> observableValue, String old_string, String new_string) {
                                     double right_margin = 0;
@@ -6154,7 +6217,7 @@ public class HelloApplication extends Application {
                                 }
                             };
                             right_margin_input_field.textProperty().addListener(change_listener_for_right_margin_text);
-                            item.setRight_margin_text_change_listener(change_listener_for_right_margin_text);
+                            item.setRight_margin_text_change_listener(change_listener_for_right_margin_text);*/
 
                             setGraphic(root);
                         }
@@ -6336,54 +6399,63 @@ public class HelloApplication extends Application {
         javafx.scene.paint.Color color_of_text = text_item.getColor();
         Text_on_canvas_mode text_on_canvas_mode = text_item.getText_on_canvas_mode();
         Font font_for_verse = text_item.getFont();
-        Stroke_info strokeText = text_item.getStroke_info();
-        boolean is_stroke_enabled = strokeText.isIs_the_stroke_on();
-        javafx.scene.paint.Color stroke_color = strokeText.getStroke_color();
-        double stroke_weight = strokeText.getStroke_weight();
+        Text_accessory_info strokeText = text_item.getStroke_info();
+        Text_accessory_info shadow_info = text_item.getShadow_info();
+        boolean is_stroke_enabled = strokeText.isIs_the_accessory_on();
+        javafx.scene.paint.Color stroke_color = strokeText.getAccessory_color();
+        double stroke_weight = strokeText.getAccessory_weight();
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        /*if (text_on_canvas_mode == Text_on_canvas_mode.CENTER) {
-            gc.setTextAlign(TextAlignment.CENTER);
-            gc.setTextBaseline(VPos.CENTER);
-        } else if (text_on_canvas_mode == Text_on_canvas_mode.TOP_LEFT) {
-            gc.setTextAlign(TextAlignment.LEFT);   // horizontal: left edge
-            gc.setTextBaseline(VPos.TOP);          // vertical: top edge
-        }
-        gc.setFont(font_for_verse);
         if (is_stroke_enabled && stroke_weight > 0) {
-            gc.setLineJoin(StrokeLineJoin.ROUND);
-            gc.setMiterLimit(1.0);
-            gc.setLineCap(StrokeLineCap.ROUND);
-            gc.setStroke(stroke_color);
-            gc.setLineWidth(stroke_weight);
-            gc.strokeText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());
-        }
-        gc.setFill(color_of_text);
-        gc.fillText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());*/
-        Text text = new Text();
-        text.setText(adjusted_verse_text);
-        text.setFill(color_of_text);
-        text.setFont(font_for_verse);
-        if (is_stroke_enabled && stroke_weight > 0) {
-            text.setStroke(stroke_color);
-            text.setStrokeWidth(stroke_weight);
-            text.setStrokeLineJoin(StrokeLineJoin.ROUND);
-            text.setStrokeLineCap(StrokeLineCap.ROUND);
-            text.setStrokeMiterLimit(1.0);
-        }
-        text.setTextAlignment(TextAlignment.CENTER);
-        text.setFontSmoothingType(FontSmoothingType.GRAY);
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setOffsetX(2.0);              // horizontal offset of the shadow
-        dropShadow.setOffsetY(2.0);              // vertical offset
-        dropShadow.setRadius(4.0);               // blur radius
-        dropShadow.setColor(javafx.scene.paint.Color.color(0, 0, 0, 0.6)); // black shadow with 60% opacity
-        text.setEffect(dropShadow);
-        SnapshotParameters snapshot_parameters = new SnapshotParameters();
-        snapshot_parameters.setFill(javafx.scene.paint.Color.TRANSPARENT); // preserve transparency
+            if (text_on_canvas_mode == Text_on_canvas_mode.CENTER) {
+                gc.setTextAlign(TextAlignment.CENTER);
+                gc.setTextBaseline(VPos.CENTER);
+            } else if (text_on_canvas_mode == Text_on_canvas_mode.TOP_LEFT) {
+                gc.setTextAlign(TextAlignment.LEFT);   // horizontal: left edge
+                gc.setTextBaseline(VPos.TOP);          // vertical: top edge
+            }
+            gc.setFont(font_for_verse);
+            if (is_stroke_enabled && stroke_weight > 0) {
+                gc.setLineJoin(StrokeLineJoin.ROUND);
+                gc.setMiterLimit(1.0);
+                gc.setLineCap(StrokeLineCap.ROUND);
+                gc.setStroke(stroke_color);
+                gc.setLineWidth(stroke_weight);
+                gc.strokeText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());
+            }
+            gc.setFill(color_of_text);
+            gc.fillText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());
+        } else {
+            Text text = new Text();
+            text.setText(adjusted_verse_text);
+            text.setFill(color_of_text);
+            text.setFont(font_for_verse);
+            text.setTextAlignment(TextAlignment.CENTER);
+            text.setFontSmoothingType(FontSmoothingType.GRAY);
+            if (is_stroke_enabled && stroke_weight > 0) {
+                text.setStroke(stroke_color);
+                text.setStrokeWidth(stroke_weight);
+                text.setStrokeType(StrokeType.OUTSIDE);
+                text.setStrokeLineJoin(StrokeLineJoin.ROUND);
+                text.setStrokeLineCap(StrokeLineCap.ROUND);
+                text.setStrokeMiterLimit(1.0);
+            }
+            if (shadow_info.isIs_the_accessory_on() && shadow_info.getAccessory_weight() > 0) {
+                javafx.scene.paint.Color shadow_color_without_opacity = shadow_info.getAccessory_color();
+                javafx.scene.paint.Color shadow_color = new javafx.scene.paint.Color(shadow_color_without_opacity.getRed(),shadow_color_without_opacity.getGreen(),shadow_color_without_opacity.getBlue(),shadow_info.getAccessory_weight()/10D);
+                DropShadow dropShadow = new DropShadow();
+                dropShadow.setOffsetX(2.0);              // horizontal offset of the shadow
+                dropShadow.setOffsetY(2.0);              // vertical offset
+                dropShadow.setRadius(4.0);               // blur radius
+                dropShadow.setColor(shadow_color);
+                text.setEffect(dropShadow);
+            }
+            SnapshotParameters snapshot_parameters = new SnapshotParameters();
+            snapshot_parameters.setFill(javafx.scene.paint.Color.TRANSPARENT); // preserve transparency
 
-        WritableImage text_image = text.snapshot(snapshot_parameters, null);
-        gc.drawImage(text_image, point2D_of_the_text.getX() - text_image.getWidth() / 2, point2D_of_the_text.getY() - text_image.getHeight() / 2);
+            WritableImage text_image = text.snapshot(snapshot_parameters, null);
+            gc.drawImage(text_image, point2D_of_the_text.getX() - text_image.getWidth() / 2, point2D_of_the_text.getY() - text_image.getHeight() / 2);
+        }
     }
 
     private void place_the_box_surrounding_the_text(Canvas canvas, Text_item text_item) {
@@ -6985,7 +7057,7 @@ public class HelloApplication extends Application {
                     } else if (text_on_canvas_dragged[0].getType_of_cursor() == Type_of_cursor.EAST) {
                         Text_item text_item = text_on_canvas_dragged[0].getText_item();
                         Text_box_info text_box_info = text_item.getText_box_info();
-                        double mouse_x_position = Math.min(mouseEvent.getX(), text_on_canvas_dragged[0].getCanvas_width()*text_on_canvas_dragged[0].getX_scale()-text_on_canvas_dragged[0].getWidth_difference());
+                        double mouse_x_position = Math.min(mouseEvent.getX(), text_on_canvas_dragged[0].getCanvas_width() * text_on_canvas_dragged[0].getX_scale() - text_on_canvas_dragged[0].getWidth_difference());
                         double x_pos_difference = mouse_x_position - text_on_canvas_dragged[0].getOriginal_point2D_of_mouse_event().getX();
                         x_pos_difference = x_pos_difference / text_on_canvas_dragged[0].getX_scale();
                         double new_width = text_on_canvas_dragged[0].getOriginal_width() + x_pos_difference;
@@ -7394,14 +7466,14 @@ public class HelloApplication extends Application {
     }
 
     private void set_up_the_fade_in_fade_out_slider_ticks(HelloController helloController) {
-        set_up_the_tick_marks_for_a_slider(helloController.slider_to_control_fade_in_of_image, 0.1, false, true);
-        set_up_the_tick_marks_for_a_slider(helloController.slider_to_control_fade_out_of_image, 0.1, false, true);
-        set_up_the_tick_marks_for_a_slider(helloController.slider_to_control_the_opacity_of_an_image, 1, false, true);
+        set_up_the_tick_marks_for_a_slider(helloController.slider_to_control_fade_in_of_image, 0.1);
+        set_up_the_tick_marks_for_a_slider(helloController.slider_to_control_fade_out_of_image, 0.1);
+        set_up_the_tick_marks_for_a_slider(helloController.slider_to_control_the_opacity_of_an_image, 1);
     }
 
-    private void set_up_the_tick_marks_for_a_slider(Slider slider, double major_tick_units, boolean show_tick_marks, boolean snap_to_ticks) {
-        slider.setShowTickMarks(show_tick_marks);
-        slider.setSnapToTicks(snap_to_ticks);
+    private void set_up_the_tick_marks_for_a_slider(Slider slider, double major_tick_units) {
+        slider.setShowTickMarks(false);
+        slider.setSnapToTicks(true);
         slider.setMajorTickUnit(major_tick_units);
         slider.setMinorTickCount(0);
     }
