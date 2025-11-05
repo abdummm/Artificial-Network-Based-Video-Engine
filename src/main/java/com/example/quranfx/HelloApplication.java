@@ -6483,12 +6483,12 @@ public class HelloApplication extends Application {
         dropShadow.setColor(shadow_color);
         return dropShadow;*/
 
-        double baseOffset = 0.5;  // minimum offset even at low intensity
-        double maxOffset = 3.0;   // max offset at intensity 10
-        double baseRadius = 1.0;
-        double maxRadius = 6.0;
-        double spread_plus = 0.05;
-        double spread_multiplier = 0.1;
+        double baseOffset = 0.8;   // slightly higher base offset for stronger presence
+        double maxOffset = 4.0;    // more noticeable at full intensity
+        double baseRadius = 1.5;   // increase for a softer yet stronger spread
+        double maxRadius = 8.0;    // larger blur radius
+        double spread_plus = 0.08; // stronger minimum spread
+        double spread_multiplier = 0.15; // increase spread scaling
         javafx.scene.paint.Color shadow_color = new javafx.scene.paint.Color(color.getRed(), color.getGreen(), color.getBlue(), intensity / 10D);
         DropShadow dropShadow = new DropShadow();
         double radius = baseRadius + (intensity / 10.0) * (maxRadius - baseRadius);
