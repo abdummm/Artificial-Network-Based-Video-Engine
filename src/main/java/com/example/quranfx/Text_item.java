@@ -3,7 +3,6 @@ package com.example.quranfx;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 
@@ -16,7 +15,8 @@ public class Text_item {
     private long start_time;
     private long end_time;
     private Text_on_canvas_mode text_on_canvas_mode;
-    private Stroke_info stroke_info;
+    private Text_accessory_info stroke_info;
+    private Text_accessory_info shadow_info;
     private double left_margin;
     private double right_margin;
     private Text_box_info text_box_info;
@@ -52,7 +52,8 @@ public class Text_item {
         this.start_time = start_time;
         this.end_time = end_time;
         text_on_canvas_mode = Text_on_canvas_mode.CENTER;
-        this.stroke_info = new Stroke_info();
+        this.stroke_info = new Text_accessory_info();
+        this.shadow_info = new Text_accessory_info();
         this.left_margin = 0;
         this.right_margin = 0;
         this.text_box_info = new Text_box_info(this,new Point2D(video_width / 2D, video_height / 2D), adjusted_verse_text, font, true);
@@ -115,12 +116,12 @@ public class Text_item {
         this.font = font;
     }
 
-    public Stroke_info getStroke_info() {
+    public Text_accessory_info getStroke_info() {
         return stroke_info;
     }
 
-    public void setStroke_info(Stroke_info stroke_info) {
-        this.stroke_info = stroke_info;
+    public void setStroke_info(Text_accessory_info textaccessory_info) {
+        this.stroke_info = textaccessory_info;
     }
 
     public String getAdjusted_verse_text() {
@@ -169,5 +170,13 @@ public class Text_item {
 
     public void setExtra_height_padding(double extra_height_padding) {
         this.extra_height_padding = extra_height_padding;
+    }
+
+    public Text_accessory_info getShadow_info() {
+        return shadow_info;
+    }
+
+    public void setShadow_info(Text_accessory_info shadow_info) {
+        this.shadow_info = shadow_info;
     }
 }
