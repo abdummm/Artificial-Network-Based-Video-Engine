@@ -52,8 +52,8 @@ public class Text_item {
         this.start_time = start_time;
         this.end_time = end_time;
         text_on_canvas_mode = Text_on_canvas_mode.CENTER;
-        this.stroke_info = new Text_accessory_info();
-        this.shadow_info = new Text_accessory_info();
+        this.stroke_info = new Text_accessory_info(Accessory_type.STROKE);
+        this.shadow_info = new Text_accessory_info(Accessory_type.SHADOW);
         this.left_margin = 0;
         this.right_margin = 0;
         this.text_box_info = new Text_box_info(this,new Point2D(video_width / 2D, video_height / 2D), adjusted_verse_text, font, true);
