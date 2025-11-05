@@ -29,8 +29,10 @@ public class Language_info {
     private ChangeListener<? super Color> stroke_color_change_listener;
     private ChangeListener<? super Number> stroke_weight_change_listener;
     private ChangeListener<? super Boolean> advanced_options_change_listener;
-    private ChangeListener<String> left_margin_text_change_listener;
-    private ChangeListener<String> right_margin_text_change_listener;
+    /*private ChangeListener<String> left_margin_text_change_listener;
+    private ChangeListener<String> right_margin_text_change_listener;*/
+    private ChangeListener<? super Number> shadow_weight_change_listener;
+    private ChangeListener<? super Color> shadow_color_change_listener;
     private boolean advanced_options_selected;
 
 
@@ -194,7 +196,7 @@ public class Language_info {
         this.advanced_options_change_listener = advanced_options_change_listener;
     }
 
-    public ChangeListener<String> getLeft_margin_text_change_listener() {
+    /*public ChangeListener<String> getLeft_margin_text_change_listener() {
         return left_margin_text_change_listener;
     }
 
@@ -208,7 +210,7 @@ public class Language_info {
 
     public void setRight_margin_text_change_listener(ChangeListener<String> right_margin_text_change_listener) {
         this.right_margin_text_change_listener = right_margin_text_change_listener;
-    }
+    }*/
 
     public boolean isAdvanced_options_selected() {
         return advanced_options_selected;
@@ -216,5 +218,21 @@ public class Language_info {
 
     public void setAdvanced_options_selected(boolean advanced_options_selected) {
         this.advanced_options_selected = advanced_options_selected;
+    }
+
+    public ChangeListener<? super Number> getShadow_weight_change_listener() {
+        return shadow_weight_change_listener;
+    }
+
+    public void setShadow_weight_change_listener(ChangeListener<? super Number> shadow_weight_change_listener) {
+        this.shadow_weight_change_listener = shadow_weight_change_listener;
+    }
+
+    public ChangeListener<? super Color> getShadow_color_change_listener() {
+        return shadow_color_change_listener;
+    }
+
+    public void setShadow_color_change_listener(ChangeListener<? super Color> shadow_color_change_listener) {
+        this.shadow_color_change_listener = shadow_color_change_listener;
     }
 }
