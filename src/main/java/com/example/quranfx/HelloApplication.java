@@ -5027,6 +5027,22 @@ public class HelloApplication extends Application {
                     private VBox vbox_holding_everything_shadow;
                     private Region region_to_expand_space_for_shadow_check_box;
                     private StackPane stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight;
+                    private Label fade_label_at_the_top;
+                    private HBox hbox_holding_the_fade_label;
+                    private Label fade_in_label_for_verse;
+                    private Label fake_fade_in_label_for_verse;
+                    private StackPane stack_pane_holding_fade_in_and_fake_fade_in_for_verse;
+                    private Slider fade_in_slider_for_verse;
+                    private Label label_holding_fade_in_time_for_verse;
+                    private Label fake_label_holding_fade_in_time_for_verse;
+                    private StackPane stack_pane_holding_real_and_fake_fade_in_time_for_verse;
+                    private Label fade_out_label_for_verse;
+                    private Label fake_fade_out_label_for_verse;
+                    private StackPane stack_pane_holding_fade_out_and_fake_fade_out_for_verse;
+                    private Slider fade_out_slider_for_verse;
+                    private Label label_holding_fade_out_time_for_verse;
+                    private Label fake_label_holding_fade_out_time_for_verse;
+                    private StackPane stack_pane_holding_real_and_fake_fade_out_time_for_verse;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
