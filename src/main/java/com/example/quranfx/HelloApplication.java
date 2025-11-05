@@ -5136,6 +5136,22 @@ public class HelloApplication extends Application {
                         region_to_expand_space_for_shadow_check_box = new Region();
                         fake_label_for_shadow_value  = new Label();
                         stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight = new StackPane();
+                        fade_label_at_the_top = new Label();
+                        hbox_holding_the_fade_label = new HBox();
+                        fade_in_label_for_verse = new Label();
+                        fake_fade_in_label_for_verse = new Label();
+                        stack_pane_holding_fade_in_and_fake_fade_in_for_verse = new StackPane();
+                        fade_in_slider_for_verse = new Slider();
+                        label_holding_fade_in_time_for_verse = new Label();
+                        fake_label_holding_fade_in_time_for_verse = new Label();
+                        stack_pane_holding_real_and_fake_fade_in_time_for_verse = new StackPane();
+                        fade_out_label_for_verse = new Label();
+                        fake_fade_out_label_for_verse = new Label();
+                        stack_pane_holding_fade_out_and_fake_fade_out_for_verse = new StackPane();
+                        fade_out_slider_for_verse = new Slider();
+                        label_holding_fade_out_time_for_verse = new Label();
+                        fake_label_holding_fade_out_time_for_verse = new Label();
+                        stack_pane_holding_real_and_fake_fade_out_time_for_verse = new StackPane();
 
 
                         final double top_margin_in_vbox_control = 10;
