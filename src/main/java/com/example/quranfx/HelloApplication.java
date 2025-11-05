@@ -5132,7 +5132,7 @@ public class HelloApplication extends Application {
                         final double min_shadow_weight = 0;
                         final double max_shadow_weight = 10;
                         final double buttons_at_the_bottom_height = 32.5;
-                        final double left_margin_at_the_start_of_stroke_weight = 5;
+                        final double left_margin_at_the_start_of_stroke_shadow_weight = 5;
 
                         //root
                         bind_the_root_to_list_view(helloController, root, paddingProperty());
@@ -5413,18 +5413,18 @@ public class HelloApplication extends Application {
                         set_pref_min_max(apply_to_all_verses_button, buttons_at_the_bottom_height, Resize_bind_type.HEIGHT);
 
                         //label_hosting_the_percentage_of_weight
-                        //HBox.setMargin(label_hosting_the_percentage_of_weight, new Insets(0, 0, 0, left_margin_at_the_start_of_stroke_weight));
+                        //HBox.setMargin(label_hosting_the_percentage_of_weight, new Insets(0, 0, 0, left_margin_at_the_start_of_stroke_shadow_weight));
                         //label_hosting_the_percentage_of_weight.setText(String.valueOf(return_percentage_based_on_value(Global_default_values.stroke_weight,stroke_weight_slider.getMax())) + "%");
                         label_hosting_the_percentage_of_weight.setText(return_formatted_string_to_1_decimal_place_always(Global_default_values.stroke_weight));
 
                         //fake_label_for_stroke_weight_space
-                        //HBox.setMargin(fake_label_for_stroke_weight_space, new Insets(0, 0, 0, left_margin_at_the_start_of_stroke_weight));
+                        //HBox.setMargin(fake_label_for_stroke_weight_space, new Insets(0, 0, 0, left_margin_at_the_start_of_stroke_shadow_weight));
                         String widest_text = find_the_widest_text(0, stroke_weight_slider.getMax(), 0.1);
                         fake_label_for_stroke_weight_space.setVisible(false);
                         fake_label_for_stroke_weight_space.setText(widest_text);
 
                         //stack_pane_holding_the_stroke_weights
-                        HBox.setMargin(stack_pane_holding_the_stroke_weights, new Insets(0, 0, 0, left_margin_at_the_start_of_stroke_weight));
+                        HBox.setMargin(stack_pane_holding_the_stroke_weights, new Insets(0, 0, 0, left_margin_at_the_start_of_stroke_shadow_weight));
 
                         //separator_under_font_size
                         VBox.setMargin(separator_under_font_size, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
@@ -5655,6 +5655,7 @@ public class HelloApplication extends Application {
                         fake_label_for_shadow_value.setText(widest_text_for_shadow);
 
                         //stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight
+                        HBox.setMargin(stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight,new Insets(0,0,0,left_margin_at_the_start_of_stroke_shadow_weight));
 
 
                         stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight.getChildren().add(fake_label_for_shadow_value);
@@ -6178,6 +6179,7 @@ public class HelloApplication extends Application {
                             ChangeListener<? super Number> shadow_weight_change_listener = new ChangeListener<Number>() {
                                 @Override
                                 public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
+                                    label_holding_the_shadow_value.setText(return_formatted_string_to_1_decimal_place_always(new_number.doubleValue()));
                                     text_item_of_the_selected_verse.getShadow_info().setAccessory_weight(new_number.doubleValue());
                                     place_the_canvas_text(item.getLanguage_canvas(),text_item_of_the_selected_verse);
                                 }
