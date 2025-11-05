@@ -5621,9 +5621,10 @@ public class HelloApplication extends Application {
                         shadow_slider.setMin(min_shadow_weight);
                         shadow_slider.setMax(max_shadow_weight);
                         set_up_the_tick_marks_for_a_slider(shadow_slider,0.1);
+                        shadow_slider.setValue(Global_default_values.shadow_weight);
 
                         //label_holding_the_shadow_value
-                        label_holding_the_shadow_value.setText(return_formatted_string_to_1_decimal_place_always(0));
+                        label_holding_the_shadow_value.setText(return_formatted_string_to_1_decimal_place_always(Global_default_values.shadow_weight));
 
                         //label_saying_weight_before_shadow_slider
                         label_saying_weight_before_shadow_slider.setText("Weight:");
