@@ -7,10 +7,14 @@ public class Text_accessory_info {
     private Color accessory_color;
     private double accessory_weight;
 
-    public Text_accessory_info() {
+    public Text_accessory_info(Accessory_type accessory_type) {
         this.is_the_accessory_on = false;
         this.accessory_color = Color.BLACK;
-        this.accessory_weight = Global_default_values.stroke_weight;
+        if (accessory_type == Accessory_type.STROKE) {
+            this.accessory_weight = Global_default_values.stroke_weight;
+        } else if (accessory_type == Accessory_type.SHADOW) {
+            this.accessory_weight = Global_default_values.shadow_weight;
+        }
     }
 
     public boolean isIs_the_accessory_on() {
