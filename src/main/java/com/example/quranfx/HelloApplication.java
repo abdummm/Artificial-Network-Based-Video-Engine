@@ -5157,6 +5157,7 @@ public class HelloApplication extends Application {
                         stack_pane_holding_real_and_fake_fade_out_time_for_verse = new StackPane();
                         separator_under_fade_in_fade_out_verse = new Separator();
                         hbox_holding_verse_fade_in_and_slider = new HBox();
+                        hbox_holding_verse_fade_out_and_slider = new HBox();
 
 
                         final double top_margin_in_vbox_control = 10;
@@ -5967,6 +5968,14 @@ public class HelloApplication extends Application {
                                         shadow_slider.valueProperty().removeListener(old_language_info.getShadow_weight_change_listener());
                                         old_language_info.setShadow_weight_change_listener(null);
                                     }
+                                    if(old_language_info.getVerse_fade_in_listener()!=null){
+                                        fade_in_slider_for_verse.valueProperty().removeListener(old_language_info.getVerse_fade_in_listener());
+                                        old_language_info.setVerse_fade_in_listener(null);
+                                    }
+                                    if(old_language_info.getVerse_fade_out_listener()!=null){
+                                        fade_out_slider_for_verse.valueProperty().removeListener(old_language_info.getVerse_fade_out_listener());
+                                        old_language_info.setVerse_fade_out_listener(null);
+                                    }
 
                                     /*if (old_language_info.getLeft_margin_text_change_listener() != null) {
                                         left_margin_input_field.textProperty().removeListener(old_language_info.getLeft_margin_text_change_listener());
@@ -6044,6 +6053,12 @@ public class HelloApplication extends Application {
                                 shadow_color_picker.setValue(shadow_info.getAccessory_color());
                                 shadow_slider.setValue(shadow_info.getAccessory_weight());
                                 label_holding_the_shadow_value.setText(return_formatted_string_to_1_decimal_place_always(shadow_info.getAccessory_weight()));
+
+                                fade_in_slider_for_verse.setValue(text_item_of_the_selected_verse.getFade_in());
+                                label_holding_fade_in_time_for_verse.setText(return_formatted_string_to_1_decimal_place_always(text_item_of_the_selected_verse.getFade_in()).concat(unit_sign_beside_fade_in_fade_out));
+
+                                fade_out_slider_for_verse.setValue(text_item_of_the_selected_verse.getFade_out());
+                                label_holding_fade_out_time_for_verse.setText(return_formatted_string_to_1_decimal_place_always(text_item_of_the_selected_verse.getFade_out()).concat(unit_sign_beside_fade_in_fade_out));
 
                                 if (check_box_is_the_langauge_enabled.isSelected()) {
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
@@ -6338,6 +6353,28 @@ public class HelloApplication extends Application {
                             };
                             shadow_slider.valueProperty().addListener(shadow_weight_change_listener);
                             item.setShadow_weight_change_listener(shadow_weight_change_listener);
+
+                            //verse_fade_in_listener
+                            ChangeListener<? super Number> verse_fade_in_listener = new ChangeListener<Number>() {
+                                @Override
+                                public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
+                                    label_holding_fade_in_time_for_verse.setText(return_formatted_string_to_1_decimal_place_always(new_number.doubleValue()) + unit_sign_beside_fade_in_fade_out);
+                                    text_item_of_the_selected_verse.setFade_in(new_number.doubleValue());
+                                }
+                            };
+                            fade_in_slider_for_verse.valueProperty().addListener(verse_fade_in_listener);
+                            item.setVerse_fade_in_listener(verse_fade_in_listener);
+
+                            //verse_fade_out_listener
+                            ChangeListener<? super Number> verse_fade_out_listener = new ChangeListener<Number>() {
+                                @Override
+                                public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
+                                    label_holding_fade_out_time_for_verse.setText(return_formatted_string_to_1_decimal_place_always(new_number.doubleValue()) + unit_sign_beside_fade_in_fade_out);
+                                    text_item_of_the_selected_verse.setFade_out(new_number.doubleValue());
+                                }
+                            };
+                            fade_out_slider_for_verse.valueProperty().addListener(verse_fade_out_listener);
+                            item.setVerse_fade_out_listener(verse_fade_out_listener);
 
                             //left_margin_listener
                             /*ChangeListener<String> change_listener_for_left_margin_text = new ChangeListener<String>() {
