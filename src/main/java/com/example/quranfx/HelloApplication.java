@@ -5043,6 +5043,8 @@ public class HelloApplication extends Application {
                     private Label label_holding_fade_out_time_for_verse;
                     private Label fake_label_holding_fade_out_time_for_verse;
                     private StackPane stack_pane_holding_real_and_fake_fade_out_time_for_verse;
+                    private Separator separator_under_fade_in_fade_out_verse;
+                    private HBox hbox_holding_verse_fade_in_and_slider;
 
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -5152,6 +5154,8 @@ public class HelloApplication extends Application {
                         label_holding_fade_out_time_for_verse = new Label();
                         fake_label_holding_fade_out_time_for_verse = new Label();
                         stack_pane_holding_real_and_fake_fade_out_time_for_verse = new StackPane();
+                        separator_under_fade_in_fade_out_verse = new Separator();
+                        hbox_holding_verse_fade_in_and_slider = new HBox();
 
 
                         final double top_margin_in_vbox_control = 10;
@@ -5414,7 +5418,6 @@ public class HelloApplication extends Application {
                         stroke_weight_slider.setMin(min_stroke_weight);
                         stroke_weight_slider.setMax(max_stroke_weight);
                         set_up_the_tick_marks_for_a_slider(stroke_weight_slider,0.1);
-
 
                         //hbox_hosting_the_weight_label_and_the_slider
                         VBox.setMargin(hbox_hosting_the_weight_label_and_the_slider, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
@@ -5690,6 +5693,71 @@ public class HelloApplication extends Application {
                         //stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight
                         HBox.setMargin(stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight,new Insets(0,0,0,left_margin_at_the_start_of_stroke_shadow_weight));
 
+                        //fade_label_at_the_top
+                        fade_label_at_the_top.setText("Fade");
+
+                        //hbox_holding_the_fade_label
+                        hbox_holding_the_fade_label.setAlignment(Pos.CENTER_LEFT);
+                        VBox.setMargin(hbox_holding_the_fade_label, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+
+                        //hbox_holding_verse_fade_in_and_slider
+                        VBox.setMargin(hbox_holding_verse_fade_in_and_slider, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+
+                        //fade_in_label_for_verse
+                        fade_in_label_for_verse.setText("Fade in:");
+
+                        //fake_fade_in_label_for_verse
+                        fake_fade_in_label_for_verse.setText("Fade out:");
+                        fake_fade_in_label_for_verse.setVisible(false);
+
+                        //stack_pane_holding_fade_in_and_fake_fade_in_for_verse
+                        stack_pane_holding_fade_in_and_fake_fade_in_for_verse.setAlignment(Pos.CENTER_LEFT);
+
+                        //fade_in_slider_for_verse
+                        HBox.setMargin(fade_in_slider_for_verse, new Insets(0, 0, 0, 10));
+                        HBox.setHgrow(fade_in_slider_for_verse, Priority.ALWAYS);
+                        fade_in_slider_for_verse.setMaxWidth(Double.MAX_VALUE);
+                        fade_in_slider_for_verse.setMin(0);
+                        fade_in_slider_for_verse.setMax(2);
+                        set_up_the_tick_marks_for_a_slider(fade_in_slider_for_verse,0.1);
+
+                        //label_holding_fade_in_time_for_verse
+                        label_holding_fade_in_time_for_verse.setText("0.0s");
+
+                        //fake_label_holding_fade_in_time_for_verse
+                        fake_label_holding_fade_in_time_for_verse.setText(return_the_widest_text_for_fade_in_and_fade_out(0,2,0.1D));
+                        fake_label_holding_fade_in_time_for_verse.setVisible(false);
+
+                        //stack_pane_holding_real_and_fake_fade_in_time_for_verse
+                        HBox.setMargin(stack_pane_holding_real_and_fake_fade_in_time_for_verse, new Insets(0, 0, 0, left_margin_at_the_start_of_stroke_shadow_weight));
+
+                        //fade_out_label_for_verse
+
+                        //fake_fade_out_label_for_verse
+
+                        //stack_pane_holding_fade_out_and_fake_fade_out_for_verse
+
+                        //fade_out_slider_for_verse
+
+                        //label_holding_fade_out_time_for_verse
+
+                        //fake_label_holding_fade_out_time_for_verse
+
+                        //stack_pane_holding_real_and_fake_fade_out_time_for_verse
+
+                        //separator_under_fade_in_fade_out_verse
+
+                        hbox_holding_the_fade_label.getChildren().add(fade_label_at_the_top);
+
+                        stack_pane_holding_fade_in_and_fake_fade_in_for_verse.getChildren().add(fade_in_label_for_verse);
+                        stack_pane_holding_fade_in_and_fake_fade_in_for_verse.getChildren().add(fake_fade_in_label_for_verse);
+
+                        stack_pane_holding_real_and_fake_fade_in_time_for_verse.getChildren().add(fake_label_holding_fade_in_time_for_verse);
+                        stack_pane_holding_real_and_fake_fade_in_time_for_verse.getChildren().add(label_holding_fade_in_time_for_verse);
+
+                        hbox_holding_verse_fade_in_and_slider.getChildren().add(stack_pane_holding_fade_in_and_fake_fade_in_for_verse);
+                        hbox_holding_verse_fade_in_and_slider.getChildren().add(fade_in_slider_for_verse);
+                        hbox_holding_verse_fade_in_and_slider.getChildren().add(stack_pane_holding_real_and_fake_fade_in_time_for_verse);
 
                         stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight.getChildren().add(fake_label_for_shadow_value);
                         stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight.getChildren().add(label_holding_the_shadow_value);
@@ -5795,6 +5863,8 @@ public class HelloApplication extends Application {
                         holds_advnaced_options.getChildren().add(hbox_for_x_and_y_positions);
                         holds_advnaced_options.getChildren().add(separator_under_position);*/
                         holds_advnaced_options.getChildren().add(separator_inside_advanced_options_before_everything);
+                        holds_advnaced_options.getChildren().add(hbox_holding_the_fade_label);
+                        holds_advnaced_options.getChildren().add(hbox_holding_verse_fade_in_and_slider);
                         holds_advnaced_options.getChildren().add(hbox_hosting_the_stroke_label);
                         holds_advnaced_options.getChildren().add(vbox_carrying_the_stroke_stuff);
                         holds_advnaced_options.getChildren().add(separator_under_stroke);
