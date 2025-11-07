@@ -24,6 +24,8 @@ public class Text_item {
     private static final double video_width = 1080;
     private double extra_width_padding = 25;
     private double extra_height_padding = 20;
+    private double fade_in;
+    private double fade_out;
 
     /*public Text_item(String verse_text,String adjusted_verse_text, Point2D point2D, double font_size, Font font, Color color, long start_time, long end_time, double width, double height, Text_on_canvas_mode text_on_canvas_mode, Stroke_text strokeText, double left_margin, double right_margin) {
         this.verse_text = verse_text;
@@ -56,6 +58,8 @@ public class Text_item {
         this.shadow_info = new Text_accessory_info(Accessory_type.SHADOW);
         this.left_margin = 0;
         this.right_margin = 0;
+        this.fade_in = 0;
+        this.fade_out = 0;
         this.text_box_info = new Text_box_info(this,new Point2D(video_width / 2D, video_height / 2D), adjusted_verse_text, font, true);
     }
 
@@ -178,5 +182,21 @@ public class Text_item {
 
     public void setShadow_info(Text_accessory_info shadow_info) {
         this.shadow_info = shadow_info;
+    }
+
+    public double getFade_in() {
+        return fade_in;
+    }
+
+    public void setFade_in(double fade_in) {
+        this.fade_in = fade_in;
+    }
+
+    public double getFade_out() {
+        return fade_out;
+    }
+
+    public void setFade_out(double fade_out) {
+        this.fade_out = fade_out;
     }
 }
