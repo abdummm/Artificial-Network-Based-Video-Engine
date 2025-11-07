@@ -6014,6 +6014,10 @@ public class HelloApplication extends Application {
                                         fade_out_slider_for_verse.valueProperty().removeListener(old_language_info.getVerse_fade_out_listener());
                                         old_language_info.setVerse_fade_out_listener(null);
                                     }
+                                    if(old_language_info.getVerse_text_area_text_change_listener()!=null){
+                                        verse_text_area.textProperty().removeListener(old_language_info.getVerse_text_area_text_change_listener());
+                                        old_language_info.setVerse_text_area_text_change_listener(null);
+                                    }
 
                                     /*if (old_language_info.getLeft_margin_text_change_listener() != null) {
                                         left_margin_input_field.textProperty().removeListener(old_language_info.getLeft_margin_text_change_listener());
@@ -6422,6 +6426,15 @@ public class HelloApplication extends Application {
                             };
                             fade_out_slider_for_verse.valueProperty().addListener(verse_fade_out_listener);
                             item.setVerse_fade_out_listener(verse_fade_out_listener);
+
+                            ChangeListener<? super String> verse_text_area_change_listener = new ChangeListener<String>() {
+                                @Override
+                                public void changed(ObservableValue<? extends String> observableValue, String old_string, String new_string) {
+                                    text_item_of_the_selected_verse.setVerse_text(new_string);
+                                }
+                            };
+                            verse_text_area.textProperty().addListener(verse_text_area_change_listener);
+                            item.setVerse_text_area_text_change_listener(verse_text_area_change_listener);
 
                             //left_margin_listener
                             /*ChangeListener<String> change_listener_for_left_margin_text = new ChangeListener<String>() {
