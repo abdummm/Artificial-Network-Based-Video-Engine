@@ -201,4 +201,8 @@ public class Text_item {
     public void setFade_out(double fade_out) {
         this.fade_out = fade_out;
     }
+
+    public void setVerse_text(String verse_text) {
+        this.verse_text = verse_text;
+    }
 }
