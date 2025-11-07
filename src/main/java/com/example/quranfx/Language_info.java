@@ -33,6 +33,8 @@ public class Language_info {
     private ChangeListener<String> right_margin_text_change_listener;*/
     private ChangeListener<? super Number> shadow_weight_change_listener;
     private ChangeListener<? super Color> shadow_color_change_listener;
+    private ChangeListener<? super Number> verse_fade_in_listener;
+    private ChangeListener<? super Number> verse_fade_out_listener;
     private boolean advanced_options_selected;
 
 
@@ -234,5 +236,21 @@ public class Language_info {
 
     public void setShadow_color_change_listener(ChangeListener<? super Color> shadow_color_change_listener) {
         this.shadow_color_change_listener = shadow_color_change_listener;
+    }
+
+    public ChangeListener<? super Number> getVerse_fade_in_listener() {
+        return verse_fade_in_listener;
+    }
+
+    public void setVerse_fade_in_listener(ChangeListener<? super Number> verse_fade_in_listener) {
+        this.verse_fade_in_listener = verse_fade_in_listener;
+    }
+
+    public ChangeListener<? super Number> getVerse_fade_out_listener() {
+        return verse_fade_out_listener;
+    }
+
+    public void setVerse_fade_out_listener(ChangeListener<? super Number> verse_fade_out_listener) {
+        this.verse_fade_out_listener = verse_fade_out_listener;
     }
 }
