@@ -35,6 +35,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.effect.DropShadow;
@@ -5046,7 +5047,11 @@ public class HelloApplication extends Application {
                     private Separator separator_under_fade_in_fade_out_verse;
                     private HBox hbox_holding_verse_fade_in_and_slider;
                     private HBox hbox_holding_verse_fade_out_and_slider;
-
+                    private Label label_saying_verse;
+                    private HBox hbox_holding_the_verse_label;
+                    private TextArea verse_text_area;
+                    private JFXButton reset_text_area_and_verse_to_original_verse_button;
+                    private Separator separator_under_shadow;
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                         root = new VBox(0);
@@ -5158,6 +5163,11 @@ public class HelloApplication extends Application {
                         separator_under_fade_in_fade_out_verse = new Separator();
                         hbox_holding_verse_fade_in_and_slider = new HBox();
                         hbox_holding_verse_fade_out_and_slider = new HBox();
+                        label_saying_verse = new Label();
+                        hbox_holding_the_verse_label = new HBox();
+                        verse_text_area = new TextArea();
+                        reset_text_area_and_verse_to_original_verse_button = new JFXButton();
+                        separator_under_shadow = new Separator();
 
 
                         final double top_margin_in_vbox_control = 10;
@@ -5764,9 +5774,28 @@ public class HelloApplication extends Application {
                         //hbox_holding_verse_fade_out_and_slider
                         VBox.setMargin(hbox_holding_verse_fade_out_and_slider, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
 
-
                         //separator_under_fade_in_fade_out_verse
                         VBox.setMargin(separator_under_fade_in_fade_out_verse, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
+
+                        //label_saying_verse
+                        label_saying_verse.setText("Verse");
+
+                        //hbox_holding_the_verse_label
+                        hbox_holding_the_verse_label.setAlignment(Pos.CENTER_LEFT);
+                        VBox.setMargin(hbox_holding_the_verse_label, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+
+                        //verse_text_area
+                        verse_text_area.setPrefRowCount(3);
+                        verse_text_area.setWrapText(true);
+                        bind_an_item_to_a_property(verse_text_area, root.widthProperty(), start_and_end_margin * 2);
+
+                        //reset_text_area_and_verse_to_original_verse_button
+                        reset_text_area_and_verse_to_original_verse_button.setText("Reset");
+
+                        //separator_under_shadow
+                        VBox.setMargin(separator_under_fade_in_fade_out_verse, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
+
+                        hbox_holding_the_verse_label.getChildren().add(label_saying_verse);
 
                         hbox_holding_the_fade_label.getChildren().add(fade_label_at_the_top);
 
@@ -5909,6 +5938,8 @@ public class HelloApplication extends Application {
                         holds_advnaced_options.getChildren().add(hbox_hosting_the_right_margin);*/
                         holds_advnaced_options.getChildren().add(hbox_holding_the_shadow_label);
                         holds_advnaced_options.getChildren().add(vbox_holding_everything_shadow);
+                        holds_advnaced_options.getChildren().add(hbox_holding_the_verse_label);
+                        holds_advnaced_options.getChildren().add(verse_text_area);
                         v_box_inside_the_stack_pane.getChildren().add(v_box_with_all_of_the_controls_except_check_box);
 
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_advanced_options);
@@ -6590,6 +6621,7 @@ public class HelloApplication extends Application {
         javafx.scene.paint.Color color_of_text = text_item.getColor();
         Text_on_canvas_mode text_on_canvas_mode = text_item.getText_on_canvas_mode();
         Font font_for_verse = text_item.getFont();
+        System.out.println(font_for_verse);
         Text_accessory_info strokeText = text_item.getStroke_info();
         Text_accessory_info shadow_info = text_item.getShadow_info();
         boolean is_stroke_enabled = strokeText.isIs_the_accessory_on();
