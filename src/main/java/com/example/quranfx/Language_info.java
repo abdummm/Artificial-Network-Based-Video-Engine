@@ -7,6 +7,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
+import org.bytedeco.opencv.presets.opencv_core;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -35,6 +36,7 @@ public class Language_info {
     private ChangeListener<? super Color> shadow_color_change_listener;
     private ChangeListener<? super Number> verse_fade_in_listener;
     private ChangeListener<? super Number> verse_fade_out_listener;
+    private ChangeListener<? super String> verse_text_area_text_change_listener;
     private boolean advanced_options_selected;
 
 
@@ -252,5 +254,13 @@ public class Language_info {
 
     public void setVerse_fade_out_listener(ChangeListener<? super Number> verse_fade_out_listener) {
         this.verse_fade_out_listener = verse_fade_out_listener;
+    }
+
+    public ChangeListener<? super String> getVerse_text_area_text_change_listener() {
+        return verse_text_area_text_change_listener;
+    }
+
+    public void setVerse_text_area_text_change_listener(ChangeListener<? super String> verse_text_area_text_change_listener) {
+        this.verse_text_area_text_change_listener = verse_text_area_text_change_listener;
     }
 }
