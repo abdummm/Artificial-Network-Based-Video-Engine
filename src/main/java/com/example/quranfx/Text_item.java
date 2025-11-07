@@ -7,6 +7,7 @@ import javafx.scene.text.Font;
 import java.util.ArrayList;
 
 public class Text_item {
+    private String original_verse_text;
     private String verse_text;
     private String adjusted_verse_text;
     private double font_size;
@@ -46,6 +47,7 @@ public class Text_item {
     }*/
 
     public Text_item(String verse_text, long start_time, long end_time) {
+        this.original_verse_text =  verse_text;
         this.verse_text = verse_text;
         this.font_size = 36;
         this.font = return_default_font(font_size);
