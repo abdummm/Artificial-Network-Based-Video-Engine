@@ -5785,15 +5785,20 @@ public class HelloApplication extends Application {
                         VBox.setMargin(hbox_holding_the_verse_label, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
 
                         //verse_text_area
+                        VBox.setMargin(verse_text_area, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
                         verse_text_area.setPrefRowCount(3);
                         verse_text_area.setWrapText(true);
                         bind_an_item_to_a_property(verse_text_area, root.widthProperty(), start_and_end_margin * 2);
 
                         //reset_text_area_and_verse_to_original_verse_button
                         reset_text_area_and_verse_to_original_verse_button.setText("Reset");
+                        bind_an_item_to_a_property(reset_text_area_and_verse_to_original_verse_button, root.widthProperty(), start_and_end_margin * 2);
+                        VBox.setMargin(reset_text_area_and_verse_to_original_verse_button, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
+
+
 
                         //separator_under_shadow
-                        VBox.setMargin(separator_under_fade_in_fade_out_verse, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
+                        VBox.setMargin(separator_under_shadow, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
 
                         hbox_holding_the_verse_label.getChildren().add(label_saying_verse);
 
@@ -5938,8 +5943,10 @@ public class HelloApplication extends Application {
                         holds_advnaced_options.getChildren().add(hbox_hosting_the_right_margin);*/
                         holds_advnaced_options.getChildren().add(hbox_holding_the_shadow_label);
                         holds_advnaced_options.getChildren().add(vbox_holding_everything_shadow);
+                        holds_advnaced_options.getChildren().add(separator_under_shadow);
                         holds_advnaced_options.getChildren().add(hbox_holding_the_verse_label);
                         holds_advnaced_options.getChildren().add(verse_text_area);
+                        holds_advnaced_options.getChildren().add(reset_text_area_and_verse_to_original_verse_button);
                         v_box_inside_the_stack_pane.getChildren().add(v_box_with_all_of_the_controls_except_check_box);
 
                         v_box_with_all_of_the_controls_except_check_box.getChildren().add(separator_under_advanced_options);
@@ -6091,6 +6098,8 @@ public class HelloApplication extends Application {
                                 fade_out_slider_for_verse.setValue(text_item_of_the_selected_verse.getFade_out());
                                 label_holding_fade_out_time_for_verse.setText(return_formatted_string_to_1_decimal_place_always(text_item_of_the_selected_verse.getFade_out()).concat(unit_sign_beside_fade_in_fade_out));
 
+                                verse_text_area.setText(text_item_of_the_selected_verse.getVerse_text());
+
                                 if (check_box_is_the_langauge_enabled.isSelected()) {
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
@@ -6212,6 +6221,13 @@ public class HelloApplication extends Application {
                                     vbox_holding_everything_shadow.setDisable(!shadow_check_box.isSelected());
                                     text_item_of_the_selected_verse.getShadow_info().setIs_the_accessory_on(shadow_check_box.isSelected());
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                }
+                            });
+
+                            reset_text_area_and_verse_to_original_verse_button.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+
                                 }
                             });
 
@@ -6621,7 +6637,6 @@ public class HelloApplication extends Application {
         javafx.scene.paint.Color color_of_text = text_item.getColor();
         Text_on_canvas_mode text_on_canvas_mode = text_item.getText_on_canvas_mode();
         Font font_for_verse = text_item.getFont();
-        System.out.println(font_for_verse);
         Text_accessory_info strokeText = text_item.getStroke_info();
         Text_accessory_info shadow_info = text_item.getShadow_info();
         boolean is_stroke_enabled = strokeText.isIs_the_accessory_on();
@@ -6696,7 +6711,8 @@ public class HelloApplication extends Application {
         double maxRadius = 8.0;    // larger blur radius
         double spread_plus = 0.08; // stronger minimum spread
         double spread_multiplier = 0.15; // increase spread scaling
-        javafx.scene.paint.Color shadow_color = new javafx.scene.paint.Color(color.getRed(), color.getGreen(), color.getBlue(), intensity / 10D);
+        double applied_intensity = Math.min(1D,(intensity/10D)*1.5D);
+        javafx.scene.paint.Color shadow_color = new javafx.scene.paint.Color(color.getRed(), color.getGreen(), color.getBlue(), applied_intensity);
         DropShadow dropShadow = new DropShadow();
         double radius = baseRadius + (intensity / 10.0) * (maxRadius - baseRadius);
         double offset = baseOffset + (intensity / 10.0) * (maxOffset - baseOffset);
