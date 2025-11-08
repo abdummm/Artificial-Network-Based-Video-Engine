@@ -49,7 +49,7 @@ public class Text_sizing {
         if (!current_line.isEmpty()) {
             string_builder_for_final_string.append(current_line.deleteCharAt(current_line.length()-1));
         }
-        if(string_builder_for_final_string.charAt(string_builder_for_final_string.length()-1) == '\n'){
+        if(!string_builder_for_final_string.isEmpty() && string_builder_for_final_string.charAt(string_builder_for_final_string.length()-1) == '\n'){
             string_builder_for_final_string.deleteCharAt(string_builder_for_final_string.length()-1);
         }
         return string_builder_for_final_string.toString();
