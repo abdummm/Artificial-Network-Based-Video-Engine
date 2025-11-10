@@ -113,6 +113,11 @@
             <version>7.1-1.5.11</version>
         </dependency>
         <dependency>
+            <groupId>io.github.humbleui</groupId>
+            <artifactId>skija-macos-arm64</artifactId>
+            <version>0.143.0</version>
+        </dependency>
+        <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>tilesfx</artifactId>
             <version>21.0.9</version>
