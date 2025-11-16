@@ -6998,10 +6998,10 @@ public class HelloApplication extends Application {
         combox_of_all_of_fonts_sub_choices.getItems().clear();
         FontStyleSet font_style_set = FontMgr.getDefault().matchFamily(combo_box_with_all_fonts.getSelectionModel().getSelectedItem());
         if(font_style_set.count() == 0){
-            combox_of_all_of_fonts_sub_choices.getItems().add(new Sub_font_name_and_style("Regular",FontStyle.NORMAL,null));
+            combox_of_all_of_fonts_sub_choices.getItems().add(new Sub_font_name_and_style("Regular",FontStyle.NORMAL));
         } else {
             for (int i = 0; i < font_style_set.count(); i++) {
-                combox_of_all_of_fonts_sub_choices.getItems().add(new Sub_font_name_and_style(font_style_set.getStyleName(i), font_style_set.getStyle(i), font_style_set.getTypeface(i)));
+                combox_of_all_of_fonts_sub_choices.getItems().add(new Sub_font_name_and_style(font_style_set.getStyleName(i), font_style_set.getStyle(i)));
             }
         }
     }
