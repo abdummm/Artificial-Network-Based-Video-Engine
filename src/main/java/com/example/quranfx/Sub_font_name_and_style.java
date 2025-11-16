@@ -6,12 +6,10 @@ import io.github.humbleui.skija.Typeface;
 public class Sub_font_name_and_style {
     private String font_name;
     private FontStyle font_style;
-    private Typeface typeface;
 
-    public Sub_font_name_and_style(String font_name, FontStyle font_style,Typeface typeface) {
+    public Sub_font_name_and_style(String font_name, FontStyle font_style) {
         this.font_name = font_name;
         this.font_style = font_style;
-        this.typeface = typeface;
     }
 
     public String getFont_name() {
@@ -20,9 +18,5 @@ public class Sub_font_name_and_style {
 
     public FontStyle getFont_style() {
         return font_style;
-    }
-
-    public Typeface getTypeface() {
-        return typeface;
     }
 }
