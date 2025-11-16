@@ -30,6 +30,7 @@ module com.example.quranfx {
     requires javafx.graphics;
     requires org.checkerframework.checker.qual;
     requires io.github.humbleui.skija.shared;
+    requires io.github.humbleui.types;
 
 
     opens com.example.quranfx to javafx.fxml;
