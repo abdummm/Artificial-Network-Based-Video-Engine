@@ -1,7 +1,7 @@
 package com.example.quranfx;
 
+import io.github.humbleui.skija.Font;
 import javafx.geometry.Point2D;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public class Text_box_info {
