@@ -1,17 +1,21 @@
 package com.example.quranfx;
 
+import io.github.humbleui.skija.Font;
+import io.github.humbleui.skija.FontMgr;
+import io.github.humbleui.skija.FontStyle;
+import io.github.humbleui.skija.Typeface;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 
 import java.util.ArrayList;
 
 public class Text_item {
+    private static final float default_font_size = 36;
     private String original_verse_text;
     private String verse_text;
     private String adjusted_verse_text;
-    private double font_size;
-    private Font font;
+    private io.github.humbleui.skija.Font font;
+    private double font_size = default_font_size;
     private Color color;
     private long start_time;
     private long end_time;
@@ -49,7 +53,6 @@ public class Text_item {
     public Text_item(String verse_text, long start_time, long end_time) {
         this.original_verse_text = verse_text;
         this.verse_text = verse_text;
-        this.font_size = 36;
         this.font = return_default_font(font_size);
         this.adjusted_verse_text = Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(verse_text, font, video_width - extra_width_padding, left_margin, right_margin);
         this.color = Color.WHITE;
@@ -65,24 +68,9 @@ public class Text_item {
         this.text_box_info = new Text_box_info(this, new Point2D(video_width / 2D, video_height / 2D), adjusted_verse_text, font, true);
     }
 
-    private Font return_first_font(double font_size) {
-        String first_family_in_fonts = Font.getFamilies().getFirst();
-        Sub_fonts sub_fonts = new Sub_fonts(Font.getFontNames(first_family_in_fonts), first_family_in_fonts);
-        ArrayList<Font_name_and_displayed_name> sorted_fonts = sub_fonts.getFont_names();
-        int font_position = sub_fonts.getRegular_position();
-        return new Font(sorted_fonts.get(font_position).getFont_name(), font_size);
-    }
-
-    private Font return_default_font(double font_size) {
-        String font_name = "System";
-        if (Font.getFamilies().contains(font_name)) {
-            Sub_fonts sub_fonts = new Sub_fonts(Font.getFontNames(font_name), font_name);
-            ArrayList<Font_name_and_displayed_name> sorted_fonts = sub_fonts.getFont_names();
-            int font_position = sub_fonts.getRegular_position();
-            return new Font(sorted_fonts.get(font_position).getFont_name(), font_size);
-        } else {
-            return return_first_font(font_size);
-        }
+    private io.github.humbleui.skija.Font return_default_font(double font_size) {
+        Typeface type_face = FontMgr.getDefault().matchFamilyStyle("Arial", FontStyle.NORMAL);
+        return new Font(type_face, (float) font_size);
     }
 
     public String getVerse_text() {
@@ -94,8 +82,8 @@ public class Text_item {
     }
 
     public void setFont_size(double font_size) {
-        this.font = new Font(font.getName(), font_size);
         this.font_size = font_size;
+        font.setSize((float) font_size);
     }
 
     public Color getColor() {
@@ -114,12 +102,13 @@ public class Text_item {
         this.text_on_canvas_mode = text_on_canvas_mode;
     }
 
-    public Font getFont() {
+    public io.github.humbleui.skija.Font getFont() {
         return font;
     }
 
-    public void setFont(Font font) {
-        this.font = font;
+    public void setFont(String font,Sub_font_name_and_style sub_font_name_and_style) {
+        Typeface type_face = FontMgr.getDefault().matchFamilyStyle(font, sub_font_name_and_style.getFont_style());
+        this.font = new Font(type_face,(float) font_size);
     }
 
     public Text_accessory_info getStroke_info() {
