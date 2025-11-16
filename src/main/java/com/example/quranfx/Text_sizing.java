@@ -1,33 +1,32 @@
 package com.example.quranfx;
 
-import javafx.scene.text.Font;
+import io.github.humbleui.skija.Font;
+import io.github.humbleui.skija.FontMetrics;
+import io.github.humbleui.skija.TextLine;
 import javafx.scene.text.Text;
 
 public class Text_sizing {
     private static Text_sizing text_sizing = null;
 
-    private Text_sizing(){}
+    private Text_sizing() {
+    }
 
-    public static Text_sizing getInstance(){
-        if(text_sizing == null){
+    public static Text_sizing getInstance() {
+        if (text_sizing == null) {
             text_sizing = new Text_sizing();
         }
         return text_sizing;
     }
 
-    public String do_i_need_to_resize_the_verse_text(String verse_text, Font font, double allowed_width, double left_margin, double right_margin) {
+    public String do_i_need_to_resize_the_verse_text(String verse_text, io.github.humbleui.skija.Font font, double allowed_width, double left_margin, double right_margin) {
         final double EPS = 1e-6; // floating point inconsistent.
         allowed_width = allowed_width - 2 * left_margin - 2 * right_margin;
         String[] split_verse_into_words = verse_text.split(" ");
         StringBuilder string_builder_for_final_string = new StringBuilder();
         StringBuilder current_line = new StringBuilder();
         for (String current_word : split_verse_into_words) {
-            Text current_line_text_item = new Text(current_line.toString());
-            Text current_word_text_item = new Text(current_word);
-            current_line_text_item.setFont(font);
-            current_word_text_item.setFont(font);
-            double current_line_width = current_line_text_item.getLayoutBounds().getWidth();
-            double current_word_width = current_word_text_item.getLayoutBounds().getWidth();
+            double current_line_width = TextLine.make(current_line.toString(), font).getWidth();
+            double current_word_width = TextLine.make(current_word, font).getWidth();
             if (current_line.isEmpty()) {
                 if (current_word_width >= allowed_width + EPS) {
                     string_builder_for_final_string.append(current_word);
@@ -47,19 +46,37 @@ public class Text_sizing {
             }
         }
         if (!current_line.isEmpty()) {
-            string_builder_for_final_string.append(current_line.deleteCharAt(current_line.length()-1));
+            string_builder_for_final_string.append(current_line.deleteCharAt(current_line.length() - 1));
         }
-        if(!string_builder_for_final_string.isEmpty() && string_builder_for_final_string.charAt(string_builder_for_final_string.length()-1) == '\n'){
-            string_builder_for_final_string.deleteCharAt(string_builder_for_final_string.length()-1);
+        if (!string_builder_for_final_string.isEmpty() && string_builder_for_final_string.charAt(string_builder_for_final_string.length() - 1) == '\n') {
+            string_builder_for_final_string.deleteCharAt(string_builder_for_final_string.length() - 1);
         }
         return string_builder_for_final_string.toString();
     }
 
-    public double[] get_width_and_height_of_string(String adjusted_verse_text, Font font) {
-        Text text = new Text(adjusted_verse_text);
-        text.setFont(font);
-        double width = text.getLayoutBounds().getWidth();
-        double height = text.getLayoutBounds().getHeight();
-        return new double[]{width, height};
+    public double[] get_width_and_height_of_string(String adjusted_verse_text, io.github.humbleui.skija.Font font) {
+        String[] lines =  adjusted_verse_text.split("\n");
+        float max_width = 0;
+        float total_height = 0;
+        float last_height = 0;
+        for(String line : lines) {
+            TextLine textLine = TextLine.make(line, font);
+            max_width = Math.max(max_width, textLine.getWidth());
+            total_height += Math.abs(textLine.getAscent()) + textLine.getDescent() + textLine.getLeading();
+            last_height = textLine.getLeading();
+        }
+        total_height -= last_height;
+        return new double[]{max_width, total_height};
+    }
+
+    public double return_the_min_width(String adjusted_verse_text, Font font) {
+        String[] words = adjusted_verse_text.split(" ");
+        double min_width = 0;
+        for (String word : words) {
+            TextLine textLine = TextLine.make(word, font);
+            float width = textLine.getWidth();
+            min_width = Math.max(min_width, width);
+        }
+        return min_width;
     }
 }
