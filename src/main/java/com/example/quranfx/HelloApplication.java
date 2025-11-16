@@ -8,6 +8,8 @@ import com.drew.metadata.exif.ExifIFD0Directory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXButton;
+import io.github.humbleui.skija.*;
+import io.github.humbleui.skija.Paint;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -43,6 +45,7 @@ import javafx.scene.image.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
+import javafx.scene.layout.Region;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.ImagePattern;
@@ -55,6 +58,8 @@ import javafx.scene.text.Font;
 import javafx.stage.*;
 
 import java.awt.*;
+import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.io.*;
@@ -121,7 +126,6 @@ public class HelloApplication extends Application {
     private HashMap<Integer, String> hashMap_id_to_language_name_text = new HashMap<>();
     private Sound_mode sound_mode;
     private long[] start_millisecond_of_each_verse;
-    private HashMap<String, Sub_fonts> hashMap_with_all_the_font_families_and_names;
     private ArrayList<Listener_info> array_list_with_all_of_the_image_control_listeners = new ArrayList<>();
     private Stage learn_more_about_app_stage;
     private Stage app_settings_information_stage;
@@ -252,7 +256,6 @@ public class HelloApplication extends Application {
         add_the_css_files_at_the_start(scene);
         set_the_border_width_of_list_view_languages(helloController);
         //bind_the_languages_list_view_to_the_right_border_pane(helloController);
-        set_up_the_fonts();
         listen_to_fast_rewind_button_click(helloController);
         set_rewind_button_click(helloController);
         play_pause_button_click_listen(helloController);
@@ -3684,7 +3687,10 @@ public class HelloApplication extends Application {
     private void reset_the_opacity_if_its_not_in_boundaries(HelloController helloController, Pane pane, Shape_object_time_line shape_object_time_line) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         double x_pos = return_polygon_middle_position(time_line_pane_data);
-        if (x_pos < shape_object_time_line.getStart() || x_pos > shape_object_time_line.getEnd()) {
+        System.out.println(shape_object_time_line.getStart());
+        System.out.println(shape_object_time_line.getEnd());
+        System.out.println(x_pos);
+        if (x_pos >= shape_object_time_line.getStart() && x_pos <= shape_object_time_line.getEnd()) {
             reset_the_opacity(helloController);
         }
     }
@@ -4967,7 +4973,7 @@ public class HelloApplication extends Application {
                     private Label label_saying_fonts;
                     private HBox hbox_hosting_the_fonts_label;
                     private Separator separator_under_font_picker;
-                    private ComboBox<Font_name_and_displayed_name> combox_of_all_of_fonts_sub_choices;
+                    private ComboBox<Sub_font_name_and_style> combox_of_all_of_fonts_sub_choices;
                     private JFXButton reset_prefrence_button;
                     private JFXButton increase_font_size_button;
                     private JFXButton decrease_font_size_button;
@@ -5052,6 +5058,7 @@ public class HelloApplication extends Application {
                     private TextArea verse_text_area;
                     private JFXButton reset_text_area_and_verse_to_original_verse_button;
                     private Separator separator_under_shadow;
+
                     {
                         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                         root = new VBox(0);
@@ -5142,7 +5149,7 @@ public class HelloApplication extends Application {
                         shadow_color_picker = new ColorPicker();
                         vbox_holding_everything_shadow = new VBox();
                         region_to_expand_space_for_shadow_check_box = new Region();
-                        fake_label_for_shadow_value  = new Label();
+                        fake_label_for_shadow_value = new Label();
                         stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight = new StackPane();
                         fade_label_at_the_top = new Label();
                         hbox_holding_the_fade_label = new HBox();
@@ -5321,36 +5328,34 @@ public class HelloApplication extends Application {
                         //combox_of_all_of_fonts_sub_choices
                         bind_an_item_to_a_property(combox_of_all_of_fonts_sub_choices, root.widthProperty(), start_and_end_margin * 2);
                         VBox.setMargin(combox_of_all_of_fonts_sub_choices, new Insets(half_top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
-                        combox_of_all_of_fonts_sub_choices.setCellFactory(new javafx.util.Callback<ListView<Font_name_and_displayed_name>, ListCell<Font_name_and_displayed_name>>() {
+                        combox_of_all_of_fonts_sub_choices.setCellFactory(new javafx.util.Callback<ListView<Sub_font_name_and_style>, ListCell<Sub_font_name_and_style>>() {
                             @Override
-                            public ListCell<Font_name_and_displayed_name> call(ListView<Font_name_and_displayed_name> fontNameAndDisplayedNameListView) {
-                                return new ListCell<Font_name_and_displayed_name>() {
+                            public ListCell<Sub_font_name_and_style> call(ListView<Sub_font_name_and_style> fontNameAndStyleListView) {
+                                return new ListCell<Sub_font_name_and_style>() {
                                     @Override
-                                    protected void updateItem(Font_name_and_displayed_name item, boolean empty) {
+                                    protected void updateItem(Sub_font_name_and_style item, boolean empty) {
                                         super.updateItem(item, empty);
                                         if (empty || item == null) {
                                             setText(null);
                                         } else {
-                                            setText(item.getDisplayed_name());
+                                            setText(item.getFont_name());
                                         }
                                     }
                                 };
                             }
                         });
-                        combox_of_all_of_fonts_sub_choices.setButtonCell(new ListCell<Font_name_and_displayed_name>() {
+                        combox_of_all_of_fonts_sub_choices.setButtonCell(new ListCell<Sub_font_name_and_style>() {
                             @Override
-                            protected void updateItem(Font_name_and_displayed_name item, boolean empty) {
+                            protected void updateItem(Sub_font_name_and_style item, boolean empty) {
                                 super.updateItem(item, empty);
                                 if (empty || item == null) {
                                     setText(null);
                                 } else {
-                                    setText(item.getDisplayed_name());
+                                    setText(item.getFont_name());
                                 }
                             }
                         });
-                        combox_of_all_of_fonts_sub_choices.setItems(FXCollections.observableArrayList(hashMap_with_all_the_font_families_and_names.get(combox_of_all_of_fonts.getSelectionModel().getSelectedItem()).getFont_names()));
-                        Sub_fonts sub_fonts = hashMap_with_all_the_font_families_and_names.get(combox_of_all_of_fonts.getSelectionModel().getSelectedItem());
-                        combox_of_all_of_fonts_sub_choices.getSelectionModel().select(sub_fonts.getRegular_position());
+                        add_all_sub_fonts_to_sub_fonts_combo_box(combox_of_all_of_fonts, combox_of_all_of_fonts_sub_choices);
 
                         //increase_font_size_button
                         increase_font_size_button.setFocusTraversable(false);
@@ -5429,7 +5434,7 @@ public class HelloApplication extends Application {
                         stroke_weight_slider.setMaxWidth(Double.MAX_VALUE);
                         stroke_weight_slider.setMin(min_stroke_weight);
                         stroke_weight_slider.setMax(max_stroke_weight);
-                        set_up_the_tick_marks_for_a_slider(stroke_weight_slider,0.1);
+                        set_up_the_tick_marks_for_a_slider(stroke_weight_slider, 0.1);
 
                         //hbox_hosting_the_weight_label_and_the_slider
                         VBox.setMargin(hbox_hosting_the_weight_label_and_the_slider, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
@@ -5667,7 +5672,7 @@ public class HelloApplication extends Application {
                         shadow_slider.setMaxWidth(Double.MAX_VALUE);
                         shadow_slider.setMin(min_shadow_weight);
                         shadow_slider.setMax(max_shadow_weight);
-                        set_up_the_tick_marks_for_a_slider(shadow_slider,0.1);
+                        set_up_the_tick_marks_for_a_slider(shadow_slider, 0.1);
                         shadow_slider.setValue(Global_default_values.shadow_weight);
 
                         //label_holding_the_shadow_value
@@ -5703,7 +5708,7 @@ public class HelloApplication extends Application {
                         fake_label_for_shadow_value.setText(widest_text_for_shadow);
 
                         //stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight
-                        HBox.setMargin(stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight,new Insets(0,0,0,left_margin_at_the_start_of_stroke_shadow_weight));
+                        HBox.setMargin(stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight, new Insets(0, 0, 0, left_margin_at_the_start_of_stroke_shadow_weight));
 
                         //fade_label_at_the_top
                         fade_label_at_the_top.setText("Fade");
@@ -5731,13 +5736,13 @@ public class HelloApplication extends Application {
                         fade_in_slider_for_verse.setMaxWidth(Double.MAX_VALUE);
                         fade_in_slider_for_verse.setMin(0);
                         fade_in_slider_for_verse.setMax(2);
-                        set_up_the_tick_marks_for_a_slider(fade_in_slider_for_verse,0.1);
+                        set_up_the_tick_marks_for_a_slider(fade_in_slider_for_verse, 0.1);
 
                         //label_holding_fade_in_time_for_verse
                         label_holding_fade_in_time_for_verse.setText("0.0s");
 
                         //fake_label_holding_fade_in_time_for_verse
-                        fake_label_holding_fade_in_time_for_verse.setText(return_the_widest_text_for_fade_in_and_fade_out(0,2,0.1D));
+                        fake_label_holding_fade_in_time_for_verse.setText(return_the_widest_text_for_fade_in_and_fade_out(0, 2, 0.1D));
                         fake_label_holding_fade_in_time_for_verse.setVisible(false);
 
                         //stack_pane_holding_real_and_fake_fade_in_time_for_verse
@@ -5759,13 +5764,13 @@ public class HelloApplication extends Application {
                         fade_out_slider_for_verse.setMaxWidth(Double.MAX_VALUE);
                         fade_out_slider_for_verse.setMin(0);
                         fade_out_slider_for_verse.setMax(2);
-                        set_up_the_tick_marks_for_a_slider(fade_out_slider_for_verse,0.1);
+                        set_up_the_tick_marks_for_a_slider(fade_out_slider_for_verse, 0.1);
 
                         //label_holding_fade_out_time_for_verse
                         label_holding_fade_out_time_for_verse.setText("0.0s");
 
                         //fake_label_holding_fade_out_time_for_verse
-                        fake_label_holding_fade_out_time_for_verse.setText(return_the_widest_text_for_fade_in_and_fade_out(0,2,0.1D));
+                        fake_label_holding_fade_out_time_for_verse.setText(return_the_widest_text_for_fade_in_and_fade_out(0, 2, 0.1D));
                         fake_label_holding_fade_out_time_for_verse.setVisible(false);
 
                         //stack_pane_holding_real_and_fake_fade_out_time_for_verse
@@ -5796,7 +5801,6 @@ public class HelloApplication extends Application {
                         VBox.setMargin(reset_text_area_and_verse_to_original_verse_button, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
 
 
-
                         //separator_under_shadow
                         VBox.setMargin(separator_under_shadow, new Insets(top_margin_in_vbox_control, separator_start_end, 0, separator_start_end));
 
@@ -5823,8 +5827,6 @@ public class HelloApplication extends Application {
                         hbox_holding_verse_fade_out_and_slider.getChildren().add(stack_pane_holding_fade_out_and_fake_fade_out_for_verse);
                         hbox_holding_verse_fade_out_and_slider.getChildren().add(fade_out_slider_for_verse);
                         hbox_holding_verse_fade_out_and_slider.getChildren().add(stack_pane_holding_real_and_fake_fade_out_time_for_verse);
-
-
 
 
                         stack_pane_holding_the_fake_shadow_weight_and_the_real_shadow_weight.getChildren().add(fake_label_for_shadow_value);
@@ -6006,15 +6008,15 @@ public class HelloApplication extends Application {
                                         shadow_slider.valueProperty().removeListener(old_language_info.getShadow_weight_change_listener());
                                         old_language_info.setShadow_weight_change_listener(null);
                                     }
-                                    if(old_language_info.getVerse_fade_in_listener()!=null){
+                                    if (old_language_info.getVerse_fade_in_listener() != null) {
                                         fade_in_slider_for_verse.valueProperty().removeListener(old_language_info.getVerse_fade_in_listener());
                                         old_language_info.setVerse_fade_in_listener(null);
                                     }
-                                    if(old_language_info.getVerse_fade_out_listener()!=null){
+                                    if (old_language_info.getVerse_fade_out_listener() != null) {
                                         fade_out_slider_for_verse.valueProperty().removeListener(old_language_info.getVerse_fade_out_listener());
                                         old_language_info.setVerse_fade_out_listener(null);
                                     }
-                                    if(old_language_info.getVerse_text_area_text_change_listener()!=null){
+                                    if (old_language_info.getVerse_text_area_text_change_listener() != null) {
                                         verse_text_area.textProperty().removeListener(old_language_info.getVerse_text_area_text_change_listener());
                                         old_language_info.setVerse_text_area_text_change_listener(null);
                                     }
@@ -6050,13 +6052,10 @@ public class HelloApplication extends Application {
                                 }
                                 select_or_un_select_the_language(item, jfxButton, language_name, check_box_is_the_langauge_enabled, down_or_left_image_view, helloController, v_box_with_all_of_the_controls_except_check_box);
                                 color_picker.setValue(text_item_of_the_selected_verse.getColor());
-                                String main_font_name = text_item_of_the_selected_verse.getFont().getFamily();
-                                String sub_font_name = text_item_of_the_selected_verse.getFont().getName();
+                                String main_font_name = text_item_of_the_selected_verse.getFont().getTypeface().getFamilyName();
                                 combox_of_all_of_fonts.setValue(main_font_name);
-                                Sub_fonts sub_fonts = hashMap_with_all_the_font_families_and_names.get(main_font_name);
-                                combox_of_all_of_fonts_sub_choices.getItems().clear();
-                                combox_of_all_of_fonts_sub_choices.setItems(FXCollections.observableArrayList(sub_fonts.getFont_names()));
-                                combox_of_all_of_fonts_sub_choices.setValue(sub_fonts.return_the_font_name_and_displayed_name_based_on_font_name(sub_font_name));
+                                add_all_sub_fonts_to_sub_fonts_combo_box(combox_of_all_of_fonts, combox_of_all_of_fonts_sub_choices);
+                                set_the_correct_sub_font(combox_of_all_of_fonts_sub_choices,text_item_of_the_selected_verse.getFont());
                                 text_field_for_font_size.setText(String.valueOf((int) text_item_of_the_selected_verse.getFont_size()));
                                 if (item.isAdvanced_options_selected()) {
                                     holds_advnaced_options.setVisible(true);
@@ -6085,7 +6084,7 @@ public class HelloApplication extends Application {
                                 label_hosting_the_percentage_of_weight.setText(return_formatted_string_to_1_decimal_place_always(stroke_info.getAccessory_weight()));
 
                                 Text_accessory_info shadow_info = text_item_of_the_selected_verse.getShadow_info();
-                                if(shadow_info.isIs_the_accessory_on()){
+                                if (shadow_info.isIs_the_accessory_on()) {
                                     vbox_holding_everything_shadow.setDisable(false);
                                     shadow_check_box.setSelected(true);
                                 } else {
@@ -6135,6 +6134,9 @@ public class HelloApplication extends Application {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
                                     change_text_size_by_increment(text_field_for_font_size, text_item_of_the_selected_verse, item, plus_minus_font_increments);
+                                    text_item_of_the_selected_verse.getText_box_info().update_the_min_height_and_width();
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             });
 
@@ -6142,6 +6144,9 @@ public class HelloApplication extends Application {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
                                     change_text_size_by_increment(text_field_for_font_size, text_item_of_the_selected_verse, item, -plus_minus_font_increments);
+                                    text_item_of_the_selected_verse.getText_box_info().update_the_min_height_and_width();
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             });
 
@@ -6231,7 +6236,11 @@ public class HelloApplication extends Application {
                             reset_text_area_and_verse_to_original_verse_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-
+                                    text_item_of_the_selected_verse.setVerse_text(text_item_of_the_selected_verse.getOriginal_verse_text());
+                                    text_item_of_the_selected_verse.getText_box_info().update_the_min_height_and_width();
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    verse_text_area.setText(text_item_of_the_selected_verse.getOriginal_verse_text());
                                 }
                             });
 
@@ -6302,7 +6311,7 @@ public class HelloApplication extends Application {
                                         font_size = Double.parseDouble(new_string);
                                     }
                                     text_item_of_the_selected_verse.setFont_size(font_size);
-                                    text_item_of_the_selected_verse.setAdjusted_verse_text(Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
+                                    text_item_of_the_selected_verse.getText_box_info().update_the_min_height_and_width();
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
@@ -6314,11 +6323,10 @@ public class HelloApplication extends Application {
                             ChangeListener<String> change_listener_for_font = new ChangeListener<String>() {
                                 @Override
                                 public void changed(ObservableValue<? extends String> observableValue, String old_font, String new_font) {
-                                    Sub_fonts sub_fonts = hashMap_with_all_the_font_families_and_names.get(new_font);
-                                    combox_of_all_of_fonts_sub_choices.getItems().clear();
-                                    combox_of_all_of_fonts_sub_choices.setItems(FXCollections.observableArrayList(sub_fonts.getFont_names()));
-                                    combox_of_all_of_fonts_sub_choices.getSelectionModel().select(sub_fonts.getRegular_position());
-                                    text_item_of_the_selected_verse.setAdjusted_verse_text(Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
+                                    add_all_sub_fonts_to_sub_fonts_combo_box(combox_of_all_of_fonts, combox_of_all_of_fonts_sub_choices);
+                                    combox_of_all_of_fonts_sub_choices.getSelectionModel().select(0);
+                                    text_item_of_the_selected_verse.setFont(new_font,combox_of_all_of_fonts_sub_choices.getItems().getFirst());
+                                    text_item_of_the_selected_verse.getText_box_info().update_the_min_height_and_width();
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     //combox_of_all_of_fonts_sub_choices.setVisibleRowCount(sub_fonts.getFont_names().size());
@@ -6328,13 +6336,12 @@ public class HelloApplication extends Application {
                             item.setFont_change_listener(change_listener_for_font);
 
                             //sub_font_cahnge_listener
-                            ChangeListener<Font_name_and_displayed_name> change_listener_for_sub_font = new ChangeListener<Font_name_and_displayed_name>() {
+                            ChangeListener<Sub_font_name_and_style> change_listener_for_sub_font = new ChangeListener<Sub_font_name_and_style>() {
                                 @Override
-                                public void changed(ObservableValue<? extends Font_name_and_displayed_name> observableValue, Font_name_and_displayed_name old_font_name_and_displayed_name, Font_name_and_displayed_name new_font_name_and_displayed_name) {
-                                    if (new_font_name_and_displayed_name != null) {
-                                        double font_size = text_item_of_the_selected_verse.getFont_size();
-                                        text_item_of_the_selected_verse.setFont(new Font(new_font_name_and_displayed_name.getFont_name(), font_size));
-                                        text_item_of_the_selected_verse.setAdjusted_verse_text(Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
+                                public void changed(ObservableValue<? extends Sub_font_name_and_style> observableValue, Sub_font_name_and_style old_sub_font_name_and_style, Sub_font_name_and_style new_sub_font_name_and_style) {
+                                    if (new_sub_font_name_and_style != null) {
+                                        text_item_of_the_selected_verse.setFont(combox_of_all_of_fonts.getSelectionModel().getSelectedItem(),new_sub_font_name_and_style);
+                                        text_item_of_the_selected_verse.getText_box_info().update_the_min_height_and_width();
                                         place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                         place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     }
@@ -6385,7 +6392,7 @@ public class HelloApplication extends Application {
                                 @Override
                                 public void changed(ObservableValue<? extends javafx.scene.paint.Color> observableValue, javafx.scene.paint.Color old_color, javafx.scene.paint.Color new_color) {
                                     text_item_of_the_selected_verse.getShadow_info().setAccessory_color(new_color);
-                                    place_the_canvas_text(item.getLanguage_canvas(),text_item_of_the_selected_verse);
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             };
@@ -6398,7 +6405,7 @@ public class HelloApplication extends Application {
                                 public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
                                     label_holding_the_shadow_value.setText(return_formatted_string_to_1_decimal_place_always(new_number.doubleValue()));
                                     text_item_of_the_selected_verse.getShadow_info().setAccessory_weight(new_number.doubleValue());
-                                    place_the_canvas_text(item.getLanguage_canvas(),text_item_of_the_selected_verse);
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             };
@@ -6431,6 +6438,9 @@ public class HelloApplication extends Application {
                                 @Override
                                 public void changed(ObservableValue<? extends String> observableValue, String old_string, String new_string) {
                                     text_item_of_the_selected_verse.setVerse_text(new_string);
+                                    text_item_of_the_selected_verse.getText_box_info().update_the_min_height_and_width();
+                                    place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                 }
                             };
                             verse_text_area.textProperty().addListener(verse_text_area_change_listener);
@@ -6489,9 +6499,7 @@ public class HelloApplication extends Application {
         font_size = font_size + plus_minus_font_increments_local;
         text_field_for_font_size.setText(remove_trailing_zeroes_from_number(font_size));
         text_item_of_the_selected_verse.setFont_size(font_size);
-        text_item_of_the_selected_verse.setAdjusted_verse_text(Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(verse_text, text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
-        place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
-        place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+        //text_item_of_the_selected_verse.setAdjusted_verse_text(Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(verse_text, text_item_of_the_selected_verse.getFont(), item.getLanguage_canvas().getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
         text_field_for_font_size.positionCaret(Math.min(caret_position, text_field_for_font_size.getText().length()));
     }
 
@@ -6535,6 +6543,18 @@ public class HelloApplication extends Application {
 
     private void set_up_the_adjusted_text(Text_item text_item_of_the_selected_verse, Canvas language_canvas) {
         text_item_of_the_selected_verse.setAdjusted_verse_text(Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), language_canvas.getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
+    }
+
+    private void set_the_correct_sub_font(ComboBox<Sub_font_name_and_style> combo_box_of_sub_fonts, io.github.humbleui.skija.Font font){
+        if(font.getTypeface()!=null){
+            FontStyle font_style = font.getTypeface().getFontStyle();;
+            for(Sub_font_name_and_style sub_font_name_and_style : combo_box_of_sub_fonts.getItems()){
+                if(font_style.equals(sub_font_name_and_style.getFont_style())){
+                    combo_box_of_sub_fonts.getSelectionModel().select(sub_font_name_and_style);
+                    return;
+                }
+            }
+        }
     }
 
     private void update_the_translations(HelloController helloController, HashMap<String, ArrayList<String>> hash_map_with_allf_of_the_verses) {
@@ -6649,7 +6669,7 @@ public class HelloApplication extends Application {
         Point2D point2D_of_the_text = text_item.getText_box_info().getCenter_position();
         javafx.scene.paint.Color color_of_text = text_item.getColor();
         Text_on_canvas_mode text_on_canvas_mode = text_item.getText_on_canvas_mode();
-        Font font_for_verse = text_item.getFont();
+        io.github.humbleui.skija.Font font_for_verse = text_item.getFont();
         Text_accessory_info strokeText = text_item.getStroke_info();
         Text_accessory_info shadow_info = text_item.getShadow_info();
         boolean is_stroke_enabled = strokeText.isIs_the_accessory_on();
@@ -6657,7 +6677,7 @@ public class HelloApplication extends Application {
         double stroke_weight = strokeText.getAccessory_weight();
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        if (is_stroke_enabled && stroke_weight > 0) {
+        /*if (is_stroke_enabled && stroke_weight > 0) {
             if (text_on_canvas_mode == Text_on_canvas_mode.CENTER) {
                 gc.setTextAlign(TextAlignment.CENTER);
                 gc.setTextBaseline(VPos.CENTER);
@@ -6667,7 +6687,7 @@ public class HelloApplication extends Application {
             }
             gc.setFont(font_for_verse);
             if (shadow_info.isIs_the_accessory_on() && shadow_info.getAccessory_weight() > 0) {
-                DropShadow dropShadow = get_drop_shadow_based_on_intensity(shadow_info.getAccessory_weight(),shadow_info.getAccessory_color());
+                DropShadow dropShadow = get_drop_shadow_based_on_intensity(shadow_info.getAccessory_weight(), shadow_info.getAccessory_color());
                 gc.save();
                 gc.setEffect(dropShadow);
             }
@@ -6698,7 +6718,7 @@ public class HelloApplication extends Application {
                 text.setStrokeMiterLimit(1.0);
             }
             if (shadow_info.isIs_the_accessory_on() && shadow_info.getAccessory_weight() > 0) {
-                DropShadow dropShadow = get_drop_shadow_based_on_intensity(shadow_info.getAccessory_weight(),shadow_info.getAccessory_color());
+                DropShadow dropShadow = get_drop_shadow_based_on_intensity(shadow_info.getAccessory_weight(), shadow_info.getAccessory_color());
                 text.setEffect(dropShadow);
             }
             SnapshotParameters snapshot_parameters = new SnapshotParameters();
@@ -6706,10 +6726,43 @@ public class HelloApplication extends Application {
 
             WritableImage text_image = text.snapshot(snapshot_parameters, null);
             gc.drawImage(text_image, point2D_of_the_text.getX() - text_image.getWidth() / 2, point2D_of_the_text.getY() - text_image.getHeight() / 2);
+        }*/
+        /*Typeface type_face = FontMgr.getDefault().matchFamilyStyle("SF Arabic Rounded", FontStyle.NORMAL);
+        io.github.humbleui.skija.Font font = new io.github.humbleui.skija.Font(type_face, (float) font_for_verse.getSize());*/
+        Paint paint = new Paint().setAntiAlias(true).setColor(colorToInt(color_of_text));
+        String[] lines = adjusted_verse_text.split("\n");
+        TextLine[] array_of_text_lines = new TextLine[lines.length];
+        float max_width = 0;
+        float height = 0;
+        for(int i = 0;i<lines.length;i++){
+            TextLine textLine = TextLine.make(lines[i], font_for_verse);
+            array_of_text_lines[i] = textLine;
+            max_width = Math.max(max_width,textLine.getWidth());
+            height += Math.abs(textLine.getAscent()) + Math.abs(textLine.getDescent()) + Math.abs(textLine.getLeading());
         }
+        if(array_of_text_lines.length>0){
+            height -= array_of_text_lines[array_of_text_lines.length-1].getLeading();
+        }
+        ImageInfo imageInfo = new ImageInfo((int) Math.ceil(max_width), (int) Math.ceil(height), ColorType.N32, ColorAlphaType.PREMUL);
+        Surface surface = Surface.makeRaster(imageInfo);
+        io.github.humbleui.skija.Canvas surface_canvas = surface.getCanvas();
+        float local_height = 0;
+        for(TextLine textLine : array_of_text_lines){
+            surface_canvas.drawTextLine(textLine, (max_width - textLine.getWidth()) /2F, Math.abs(textLine.getAscent()) + local_height, paint);
+            local_height += textLine.getDescent() + Math.abs(textLine.getAscent()) + textLine.getLeading();
+        }
+        Image fxImage = convertSkijaToFx(surface);
+        gc.drawImage(fxImage, point2D_of_the_text.getX() - fxImage.getWidth() / 2D, point2D_of_the_text.getY() - fxImage.getHeight()/2D);
     }
 
-    private DropShadow get_drop_shadow_based_on_intensity(double intensity, javafx.scene.paint.Color color){
+    private Image convertSkijaToFx(Surface surface) {
+        io.github.humbleui.skija.Image skImage = surface.makeImageSnapshot();
+        io.github.humbleui.skija.Data data = skImage.encodeToData();
+        byte[] bytes = data.getBytes();
+        return new javafx.scene.image.Image(new java.io.ByteArrayInputStream(bytes));
+    }
+
+    private DropShadow get_drop_shadow_based_on_intensity(double intensity, javafx.scene.paint.Color color) {
         /*javafx.scene.paint.Color shadow_color = new javafx.scene.paint.Color(color.getRed(),color.getGreen(),color.getBlue(),intensity/10D);
         DropShadow dropShadow = new DropShadow();
         dropShadow.setOffsetX(2.0);              // horizontal offset of the shadow
@@ -6724,7 +6777,7 @@ public class HelloApplication extends Application {
         double maxRadius = 8.0;    // larger blur radius
         double spread_plus = 0.08; // stronger minimum spread
         double spread_multiplier = 0.15; // increase spread scaling
-        double applied_intensity = Math.min(1D,(intensity/10D)*1.5D);
+        double applied_intensity = Math.min(1D, (intensity / 10D) * 1.5D);
         javafx.scene.paint.Color shadow_color = new javafx.scene.paint.Color(color.getRed(), color.getGreen(), color.getBlue(), applied_intensity);
         DropShadow dropShadow = new DropShadow();
         double radius = baseRadius + (intensity / 10.0) * (maxRadius - baseRadius);
@@ -6748,6 +6801,14 @@ public class HelloApplication extends Application {
         gc.setLineWidth(2);
         gc.fillRect(point2D_of_the_text.getX() - width / 2, point2D_of_the_text.getY() - height / 2, width, height);
         gc.strokeRect(point2D_of_the_text.getX() - width / 2, point2D_of_the_text.getY() - height / 2, width, height);
+    }
+
+    public static int colorToInt(javafx.scene.paint.Color color) {
+        int a = (int) Math.round(color.getOpacity() * 255);
+        int r = (int) Math.round(color.getRed() * 255);
+        int g = (int) Math.round(color.getGreen() * 255);
+        int b = (int) Math.round(color.getBlue() * 255);
+        return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
     /*private void set_the_width_and_height_of_text_box(Text_item text_item) {
@@ -6925,15 +6986,23 @@ public class HelloApplication extends Application {
     }
 
     private void add_the_fonts_to_the_combo_box(ComboBox<String> comboBox) {
-        comboBox.getItems().addAll(Font.getFamilies());
+        FontMgr font_manager = FontMgr.getDefault();
+        ArrayList<String> array_list_of_families = new ArrayList<>();
+        for (int i = 0; i < font_manager.getFamiliesCount(); i++) {
+            array_list_of_families.add(font_manager.getFamilyName(i));
+        }
+        comboBox.getItems().addAll(array_list_of_families);
     }
 
-    private void set_up_the_fonts() {
-        hashMap_with_all_the_font_families_and_names = new HashMap<>();
-        ArrayList<String> family_names = new ArrayList<>(Font.getFamilies());
-        for (String family_name : family_names) {
-            Sub_fonts sub_fonts = new Sub_fonts(Font.getFontNames(family_name), family_name);
-            hashMap_with_all_the_font_families_and_names.put(family_name, sub_fonts);
+    private void add_all_sub_fonts_to_sub_fonts_combo_box(ComboBox<String> combo_box_with_all_fonts, ComboBox<Sub_font_name_and_style> combox_of_all_of_fonts_sub_choices) {
+        combox_of_all_of_fonts_sub_choices.getItems().clear();
+        FontStyleSet font_style_set = FontMgr.getDefault().matchFamily(combo_box_with_all_fonts.getSelectionModel().getSelectedItem());
+        if(font_style_set.count() == 0){
+            combox_of_all_of_fonts_sub_choices.getItems().add(new Sub_font_name_and_style("Regular",FontStyle.NORMAL,null));
+        } else {
+            for (int i = 0; i < font_style_set.count(); i++) {
+                combox_of_all_of_fonts_sub_choices.getItems().add(new Sub_font_name_and_style(font_style_set.getStyleName(i), font_style_set.getStyle(i), font_style_set.getTypeface(i)));
+            }
         }
     }
 
@@ -7467,12 +7536,12 @@ public class HelloApplication extends Application {
             double local_horizontal_distance_for_resize;
             double local_vertical_distance_for_resize;
             byte number_of_edges_the_mouse_is_close_to = 0;
-            if (smalled_text_box_info.getText_box_width() >= distance_for_resize_arrow_text_on_cavnas * 2) {
+            if (smalled_text_box_info.getText_box_width() >= distance_for_resize_arrow_text_on_cavnas * 3) {
                 local_horizontal_distance_for_resize = distance_for_resize_arrow_text_on_cavnas;
             } else {
                 local_horizontal_distance_for_resize = smalled_text_box_info.getText_box_width() / 3D;
             }
-            if (smalled_text_box_info.getText_box_height() >= distance_for_resize_arrow_text_on_cavnas * 2) {
+            if (smalled_text_box_info.getText_box_height() >= distance_for_resize_arrow_text_on_cavnas * 3) {
                 local_vertical_distance_for_resize = distance_for_resize_arrow_text_on_cavnas;
             } else {
                 local_vertical_distance_for_resize = smalled_text_box_info.getText_box_height() / 3D;
@@ -7495,7 +7564,18 @@ public class HelloApplication extends Application {
             }
             if (number_of_edges_the_mouse_is_close_to == 0) {
                 return Type_of_cursor.CENTER;
-            } else if (number_of_edges_the_mouse_is_close_to == 1) {
+            } else {
+                if (close_to_top) {
+                    return Type_of_cursor.NORTH;
+                } else if (close_to_bottom) {
+                    return Type_of_cursor.SOUTH;
+                } else if (close_to_right) {
+                    return Type_of_cursor.EAST;
+                } else {
+                    return Type_of_cursor.WEST;
+                }
+            }
+            /*else if (number_of_edges_the_mouse_is_close_to == 1) {
                 if (close_to_top) {
                     return Type_of_cursor.NORTH;
                 } else if (close_to_right) {
@@ -7515,7 +7595,7 @@ public class HelloApplication extends Application {
                 } else {
                     return Type_of_cursor.SOUTH_WEST;
                 }
-            }
+            }*/
         }
     }
 
