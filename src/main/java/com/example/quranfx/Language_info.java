@@ -1,11 +1,11 @@
 package com.example.quranfx;
 
-import io.github.humbleui.skija.Canvas;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 import org.bytedeco.opencv.presets.opencv_core;
 import org.jsoup.Jsoup;
@@ -20,7 +20,7 @@ public class Language_info {
     private boolean visible_check_mark_checked;
     private ArrayList<Text_item> arrayList_of_all_of_the_translations;
     private boolean item_extended;
-    private io.github.humbleui.skija.Canvas language_canvas;
+    private Canvas language_canvas;
     private ChangeListener<String> x_position_change_listener;
     private ChangeListener<String> y_position_change_listener;
     private ChangeListener<? super Color> color_change_listener;
@@ -104,7 +104,7 @@ public class Language_info {
         return arrayList_of_all_of_the_translations;
     }
 
-    public io.github.humbleui.skija.Canvas getLanguage_canvas() {
+    public Canvas getLanguage_canvas() {
         return language_canvas;
     }
 
