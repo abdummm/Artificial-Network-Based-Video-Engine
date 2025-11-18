@@ -129,6 +129,7 @@ public class HelloApplication extends Application {
     private ArrayList<Listener_info> array_list_with_all_of_the_image_control_listeners = new ArrayList<>();
     private Stage learn_more_about_app_stage;
     private Stage app_settings_information_stage;
+    private WritableImage cached_text_image;
 
     private final static String help_email = "sabrlyhelp@gmail.com";
     private final static String discord_invite_link = "https://discord.gg/ZzPgNx8U95";
@@ -5794,6 +5795,7 @@ public class HelloApplication extends Application {
                         verse_text_area.setPrefRowCount(3);
                         verse_text_area.setWrapText(true);
                         bind_an_item_to_a_property(verse_text_area, root.widthProperty(), start_and_end_margin * 2);
+                        verse_text_area.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
 
                         //reset_text_area_and_verse_to_original_verse_button
                         reset_text_area_and_verse_to_original_verse_button.setText("Reset");
@@ -6055,7 +6057,7 @@ public class HelloApplication extends Application {
                                 String main_font_name = text_item_of_the_selected_verse.getFont().getTypeface().getFamilyName();
                                 combox_of_all_of_fonts.setValue(main_font_name);
                                 add_all_sub_fonts_to_sub_fonts_combo_box(combox_of_all_of_fonts, combox_of_all_of_fonts_sub_choices);
-                                set_the_correct_sub_font(combox_of_all_of_fonts_sub_choices,text_item_of_the_selected_verse.getFont());
+                                set_the_correct_sub_font(combox_of_all_of_fonts_sub_choices, text_item_of_the_selected_verse.getFont());
                                 text_field_for_font_size.setText(String.valueOf((int) text_item_of_the_selected_verse.getFont_size()));
                                 if (item.isAdvanced_options_selected()) {
                                     holds_advnaced_options.setVisible(true);
@@ -6325,7 +6327,7 @@ public class HelloApplication extends Application {
                                 public void changed(ObservableValue<? extends String> observableValue, String old_font, String new_font) {
                                     add_all_sub_fonts_to_sub_fonts_combo_box(combox_of_all_of_fonts, combox_of_all_of_fonts_sub_choices);
                                     combox_of_all_of_fonts_sub_choices.getSelectionModel().select(0);
-                                    text_item_of_the_selected_verse.setFont(new_font,combox_of_all_of_fonts_sub_choices.getItems().getFirst());
+                                    text_item_of_the_selected_verse.setFont(new_font, combox_of_all_of_fonts_sub_choices.getItems().getFirst());
                                     text_item_of_the_selected_verse.getText_box_info().update_the_min_height_and_width();
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
@@ -6340,7 +6342,7 @@ public class HelloApplication extends Application {
                                 @Override
                                 public void changed(ObservableValue<? extends Sub_font_name_and_style> observableValue, Sub_font_name_and_style old_sub_font_name_and_style, Sub_font_name_and_style new_sub_font_name_and_style) {
                                     if (new_sub_font_name_and_style != null) {
-                                        text_item_of_the_selected_verse.setFont(combox_of_all_of_fonts.getSelectionModel().getSelectedItem(),new_sub_font_name_and_style);
+                                        text_item_of_the_selected_verse.setFont(combox_of_all_of_fonts.getSelectionModel().getSelectedItem(), new_sub_font_name_and_style);
                                         text_item_of_the_selected_verse.getText_box_info().update_the_min_height_and_width();
                                         place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                         place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
@@ -6545,11 +6547,12 @@ public class HelloApplication extends Application {
         text_item_of_the_selected_verse.setAdjusted_verse_text(Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(text_item_of_the_selected_verse.getVerse_text(), text_item_of_the_selected_verse.getFont(), language_canvas.getWidth(), text_item_of_the_selected_verse.getLeft_margin(), text_item_of_the_selected_verse.getRight_margin()));
     }
 
-    private void set_the_correct_sub_font(ComboBox<Sub_font_name_and_style> combo_box_of_sub_fonts, io.github.humbleui.skija.Font font){
-        if(font.getTypeface()!=null){
-            FontStyle font_style = font.getTypeface().getFontStyle();;
-            for(Sub_font_name_and_style sub_font_name_and_style : combo_box_of_sub_fonts.getItems()){
-                if(font_style.equals(sub_font_name_and_style.getFont_style())){
+    private void set_the_correct_sub_font(ComboBox<Sub_font_name_and_style> combo_box_of_sub_fonts, io.github.humbleui.skija.Font font) {
+        if (font.getTypeface() != null) {
+            FontStyle font_style = font.getTypeface().getFontStyle();
+            ;
+            for (Sub_font_name_and_style sub_font_name_and_style : combo_box_of_sub_fonts.getItems()) {
+                if (font_style.equals(sub_font_name_and_style.getFont_style())) {
                     combo_box_of_sub_fonts.getSelectionModel().select(sub_font_name_and_style);
                     return;
                 }
@@ -6734,32 +6737,44 @@ public class HelloApplication extends Application {
         TextLine[] array_of_text_lines = new TextLine[lines.length];
         float max_width = 0;
         float height = 0;
-        for(int i = 0;i<lines.length;i++){
+        for (int i = 0; i < lines.length; i++) {
             TextLine textLine = TextLine.make(lines[i], font_for_verse);
             array_of_text_lines[i] = textLine;
-            max_width = Math.max(max_width,textLine.getWidth());
+            max_width = Math.max(max_width, textLine.getWidth());
             height += Math.abs(textLine.getAscent()) + Math.abs(textLine.getDescent()) + Math.abs(textLine.getLeading());
         }
-        if(array_of_text_lines.length>0){
-            height -= array_of_text_lines[array_of_text_lines.length-1].getLeading();
+        if (array_of_text_lines.length > 0) {
+            height -= array_of_text_lines[array_of_text_lines.length - 1].getLeading();
         }
         ImageInfo imageInfo = new ImageInfo((int) Math.ceil(max_width), (int) Math.ceil(height), ColorType.N32, ColorAlphaType.PREMUL);
         Surface surface = Surface.makeRaster(imageInfo);
         io.github.humbleui.skija.Canvas surface_canvas = surface.getCanvas();
         float local_height = 0;
-        for(TextLine textLine : array_of_text_lines){
-            surface_canvas.drawTextLine(textLine, (max_width - textLine.getWidth()) /2F, Math.abs(textLine.getAscent()) + local_height, paint);
+        for (TextLine textLine : array_of_text_lines) {
+            surface_canvas.drawTextLine(textLine, (max_width - textLine.getWidth()) / 2F, Math.abs(textLine.getAscent()) + local_height, paint);
             local_height += textLine.getDescent() + Math.abs(textLine.getAscent()) + textLine.getLeading();
         }
         Image fxImage = convertSkijaToFx(surface);
-        gc.drawImage(fxImage, point2D_of_the_text.getX() - fxImage.getWidth() / 2D, point2D_of_the_text.getY() - fxImage.getHeight()/2D);
+        gc.drawImage(fxImage, point2D_of_the_text.getX() - fxImage.getWidth() / 2D, point2D_of_the_text.getY() - fxImage.getHeight() / 2D);
     }
 
     private Image convertSkijaToFx(Surface surface) {
         io.github.humbleui.skija.Image skImage = surface.makeImageSnapshot();
-        io.github.humbleui.skija.Data data = skImage.encodeToData();
-        byte[] bytes = data.getBytes();
-        return new javafx.scene.image.Image(new java.io.ByteArrayInputStream(bytes));
+        Bitmap bitmap = Bitmap.makeFromImage(skImage);
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        ByteBuffer buffer = bitmap.peekPixels();
+        if (cached_text_image == null ||
+                cached_text_image.getWidth() != width ||
+                cached_text_image.getHeight() != height) {
+            cached_text_image = new WritableImage(width, height);
+        }
+        PixelWriter pixelWriter = cached_text_image.getPixelWriter();
+        pixelWriter.setPixels(0, 0, width, height,
+                PixelFormat.getByteBgraPreInstance(),
+                buffer,
+                width * 4); // stride
+        return cached_text_image;
     }
 
     private DropShadow get_drop_shadow_based_on_intensity(double intensity, javafx.scene.paint.Color color) {
@@ -6997,8 +7012,8 @@ public class HelloApplication extends Application {
     private void add_all_sub_fonts_to_sub_fonts_combo_box(ComboBox<String> combo_box_with_all_fonts, ComboBox<Sub_font_name_and_style> combox_of_all_of_fonts_sub_choices) {
         combox_of_all_of_fonts_sub_choices.getItems().clear();
         FontStyleSet font_style_set = FontMgr.getDefault().matchFamily(combo_box_with_all_fonts.getSelectionModel().getSelectedItem());
-        if(font_style_set.count() == 0){
-            combox_of_all_of_fonts_sub_choices.getItems().add(new Sub_font_name_and_style("Regular",FontStyle.NORMAL));
+        if (font_style_set.count() == 0) {
+            combox_of_all_of_fonts_sub_choices.getItems().add(new Sub_font_name_and_style("Regular", FontStyle.NORMAL));
         } else {
             for (int i = 0; i < font_style_set.count(); i++) {
                 combox_of_all_of_fonts_sub_choices.getItems().add(new Sub_font_name_and_style(font_style_set.getStyleName(i), font_style_set.getStyle(i)));
