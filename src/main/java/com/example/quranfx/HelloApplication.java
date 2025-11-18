@@ -4228,6 +4228,12 @@ public class HelloApplication extends Application {
                         call_the_2_apis_at_the_start(helloController, scene);
                     }
                 } catch (IOException e) {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            show_alert("An error has occurred on the server side. Please try again later.");
+                        }
+                    });
                     throw new RuntimeException(e);
                 }
             }
