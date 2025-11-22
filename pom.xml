@@ -12,7 +12,23 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.9.2</junit.version>
+        <jpro.version>2025.3.2</jpro.version>
     </properties>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jpro-sandec-repository</id>
+            <url>https://sandec.jfrog.io/artifactory/repo</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <repositories>
+        <repository>
+            <id>jpro-sandec-repository</id>
+            <url>https://sandec.jfrog.io/artifactory/repo</url>
+        </repository>
+        <!-- keep any existing repositories you need -->
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -175,6 +191,12 @@
             <artifactId>materialfx</artifactId>
             <version>11.17.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/one.jpro/jpro-webapi -->
+        <dependency>
+            <groupId>one.jpro</groupId>
+            <artifactId>jpro-webapi</artifactId>
+            <version>2025.2.1</version>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -191,6 +213,14 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>one.jpro</groupId>
+                <artifactId>jpro-maven-plugin</artifactId>
+                <version>2025.2.1</version>
+                <configuration>
+                    <mainClassName>com.example.quranfx.HelloApplication</mainClassName>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
