@@ -1,15 +1,8 @@
 package com.example.quranfx;
 
-import javafx.beans.binding.DoubleBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
-import org.bytedeco.opencv.presets.opencv_core;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 
 import java.util.ArrayList;
@@ -38,6 +31,8 @@ public class Language_info {
     private ChangeListener<? super Number> verse_fade_out_listener;
     private ChangeListener<? super String> verse_text_area_text_change_listener;
     private boolean advanced_options_selected;
+    private boolean text_box_showing;
+    private ChangeListener<Double> x_position_listen_to_update_from_outside;
 
 
 
@@ -49,6 +44,7 @@ public class Language_info {
         this.item_extended = false;
         this.language_canvas = null;
         this.advanced_options_selected = false;
+        this.text_box_showing = false;
     }
 
     private String edit_displayed_language_name(String language_name) {
@@ -262,5 +258,21 @@ public class Language_info {
 
     public void setVerse_text_area_text_change_listener(ChangeListener<? super String> verse_text_area_text_change_listener) {
         this.verse_text_area_text_change_listener = verse_text_area_text_change_listener;
+    }
+
+    public boolean isText_box_showing() {
+        return text_box_showing;
+    }
+
+    public void setText_box_showing(boolean text_box_showing) {
+        this.text_box_showing = text_box_showing;
+    }
+
+    public ChangeListener<Double> get_x_position_listen_to_update_from_outside() {
+        return x_position_listen_to_update_from_outside;
+    }
+
+    public void set_x_position_listen_to_update_from_outside(ChangeListener<Double> x_position_listen_to_update_from_outside) {
+        this.x_position_listen_to_update_from_outside = x_position_listen_to_update_from_outside;
     }
 }
