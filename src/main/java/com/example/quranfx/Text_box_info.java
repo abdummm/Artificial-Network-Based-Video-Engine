@@ -5,7 +5,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.text.Text;
 
 public class Text_box_info {
-    Point2D center_position;
+    private Point2D center_position;
     private double text_box_width;
     private double text_box_height;
     private boolean visible;
