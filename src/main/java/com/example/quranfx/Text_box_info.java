@@ -140,4 +140,22 @@ public class Text_box_info {
         update_the_x_points();
         update_the_y_points();
     }
+
+    @Override
+    public String toString() {
+        return "Text_box_info{" +
+                "center_position=" + center_position +
+                ", text_box_width=" + text_box_width +
+                ", text_box_height=" + text_box_height +
+                ", visible=" + visible +
+                ", min_x_point=" + min_x_point +
+                ", max_x_point=" + max_x_point +
+                ", min_y_point=" + min_y_point +
+                ", max_y_point=" + max_y_point +
+                ", set=" + set +
+                ", min_width=" + min_width +
+                ", min_height=" + min_height +
+                ", text_item=" + text_item +
+                '}';
+    }
 }
