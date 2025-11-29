@@ -2,6 +2,7 @@ package com.example.quranfx;
 
 import javafx.beans.value.ChangeListener;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 
 
@@ -32,8 +33,7 @@ public class Language_info {
     private ChangeListener<? super String> verse_text_area_text_change_listener;
     private boolean advanced_options_selected;
     private boolean text_box_showing;
-    private ChangeListener<Double> x_position_listen_to_update_from_outside;
-
+    private Translation_UI_fields translation_ui_fields;
 
 
     public Language_info(String language_name, ArrayList<Text_item> arrayList_of_all_of_the_translations) {
@@ -268,11 +268,11 @@ public class Language_info {
         this.text_box_showing = text_box_showing;
     }
 
-    public ChangeListener<Double> get_x_position_listen_to_update_from_outside() {
-        return x_position_listen_to_update_from_outside;
+    public void setTranslation_ui_fields(Translation_UI_fields translation_ui_fields) {
+        this.translation_ui_fields = translation_ui_fields;
     }
 
-    public void set_x_position_listen_to_update_from_outside(ChangeListener<Double> x_position_listen_to_update_from_outside) {
-        this.x_position_listen_to_update_from_outside = x_position_listen_to_update_from_outside;
+    public Translation_UI_fields getTranslation_ui_fields() {
+        return translation_ui_fields;
     }
 }
