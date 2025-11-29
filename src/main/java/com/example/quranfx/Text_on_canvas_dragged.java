@@ -16,8 +16,9 @@ public class Text_on_canvas_dragged {
     private double width_difference;
     private double y_scale;
     private double x_scale;
+    private int original_index;
 
-    public Text_on_canvas_dragged(Point2D original_point2D_of_mouse_event, Point2D original_point2D_of_text, Language_info language_info, Type_of_cursor type_of_cursor, Text_item text_item, double original_height, double original_width,double canvas_height,double canvas_width,double y_scale, double x_scale) {
+    public Text_on_canvas_dragged(Point2D original_point2D_of_mouse_event, Point2D original_point2D_of_text, Language_info language_info, Type_of_cursor type_of_cursor, Text_item text_item, double original_height, double original_width,double canvas_height,double canvas_width,double y_scale, double x_scale,int original_index) {
         this.original_point2D_of_mouse_event = original_point2D_of_mouse_event;
         this.original_point2D_of_text = original_point2D_of_text;
         this.language_info = language_info;
@@ -29,6 +30,7 @@ public class Text_on_canvas_dragged {
         this.canvas_width = canvas_width;
         this.y_scale = y_scale;
         this.x_scale = x_scale;
+        this.original_index = original_index;
     }
 
     public Point2D getOriginal_point2D_of_mouse_event() {
@@ -105,5 +107,13 @@ public class Text_on_canvas_dragged {
 
     public double get_max_y_of_text(){
         return original_point2D_of_text.getY() + original_height/2D;
+    }
+
+    public int getOriginal_index() {
+        return original_index;
+    }
+
+    public void setOriginal_index(int original_index) {
+        this.original_index = original_index;
     }
 }
