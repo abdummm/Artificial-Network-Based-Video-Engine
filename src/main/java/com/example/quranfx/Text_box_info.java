@@ -49,7 +49,6 @@ public class Text_box_info {
     }
 
     public void setText_box_height(double text_box_height) {
-        System.out.println(System.currentTimeMillis());
         this.text_box_height = text_box_height;
         update_the_y_points();
     }
