@@ -33,7 +33,6 @@ public class Language_info {
     private ChangeListener<? super String> verse_text_area_text_change_listener;
     private boolean advanced_options_selected;
     private boolean text_box_showing;
-    private Translation_UI_fields translation_ui_fields;
 
 
     public Language_info(String language_name, ArrayList<Text_item> arrayList_of_all_of_the_translations) {
@@ -266,13 +265,5 @@ public class Language_info {
 
     public void setText_box_showing(boolean text_box_showing) {
         this.text_box_showing = text_box_showing;
-    }
-
-    public void setTranslation_ui_fields(Translation_UI_fields translation_ui_fields) {
-        this.translation_ui_fields = translation_ui_fields;
-    }
-
-    public Translation_UI_fields getTranslation_ui_fields() {
-        return translation_ui_fields;
     }
 }
