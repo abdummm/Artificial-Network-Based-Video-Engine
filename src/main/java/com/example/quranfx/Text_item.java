@@ -206,4 +206,6 @@ public class Text_item {
     public String getOriginal_verse_text() {
         return original_verse_text;
     }
+
+
 }
