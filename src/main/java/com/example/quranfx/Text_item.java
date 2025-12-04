@@ -59,8 +59,8 @@ public class Text_item {
         this.start_time = start_time;
         this.end_time = end_time;
         text_on_canvas_mode = Text_on_canvas_mode.CENTER;
-        this.stroke_info = new Text_accessory_info(Accessory_type.STROKE);
-        this.shadow_info = new Text_accessory_info(Accessory_type.SHADOW);
+        this.stroke_info = new Text_accessory_info(Accessory_type.STROKE,Global_default_values.stroke_weight,Global_default_values.max_stroke_weight);
+        this.shadow_info = new Text_accessory_info(Accessory_type.SHADOW,Global_default_values.shadow_weight,Global_default_values.max_shadow_weight);
         this.left_margin = 0;
         this.right_margin = 0;
         this.fade_in = 0;
