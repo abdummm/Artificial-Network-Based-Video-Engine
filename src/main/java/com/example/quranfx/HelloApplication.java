@@ -5189,9 +5189,9 @@ public class HelloApplication extends Application {
                         final double start_and_end_margin = 8.5;
                         final double separator_start_end = 5;
                         final double min_stroke_weight = 0;
-                        final double max_stroke_weight = 15;
+                        final double max_stroke_weight = Global_default_values.max_stroke_weight;
                         final double min_shadow_weight = 0;
-                        final double max_shadow_weight = 10;
+                        final double max_shadow_weight = Global_default_values.max_shadow_weight;
                         final double buttons_at_the_bottom_height = 32.5;
                         final double left_margin_at_the_start_of_stroke_shadow_weight = 5;
 
