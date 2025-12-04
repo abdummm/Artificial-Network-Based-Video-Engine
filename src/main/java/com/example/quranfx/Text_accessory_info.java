@@ -6,15 +6,13 @@ public class Text_accessory_info {
     private boolean is_the_accessory_on;
     private Color accessory_color;
     private double accessory_weight;
+    private double max_accessory_weight;
 
-    public Text_accessory_info(Accessory_type accessory_type) {
+    public Text_accessory_info(Accessory_type accessory_type, double accessory_weight,double max_accessory_weight) {
         this.is_the_accessory_on = false;
         this.accessory_color = Color.BLACK;
-        if (accessory_type == Accessory_type.STROKE) {
-            this.accessory_weight = Global_default_values.stroke_weight;
-        } else if (accessory_type == Accessory_type.SHADOW) {
-            this.accessory_weight = Global_default_values.shadow_weight;
-        }
+        this.accessory_weight = accessory_weight;
+        this.max_accessory_weight = max_accessory_weight;
     }
 
     public boolean isIs_the_accessory_on() {
@@ -39,5 +37,13 @@ public class Text_accessory_info {
 
     public void setAccessory_weight(double accessory_weight) {
         this.accessory_weight = accessory_weight;
+    }
+
+    public double getMax_accessory_weight() {
+        return max_accessory_weight;
+    }
+
+    public void setMax_accessory_weight(double max_accessory_weight) {
+        this.max_accessory_weight = max_accessory_weight;
     }
 }
