@@ -6821,7 +6821,7 @@ public class HelloApplication extends Application {
         /*Typeface type_face = FontMgr.getDefault().matchFamilyStyle("SF Arabic Rounded", FontStyle.NORMAL);
         io.github.humbleui.skija.Font font = new io.github.humbleui.skija.Font(type_face, (float) font_for_verse.getSize());*/
         double weight = shadow_info.getAccessory_weight(); // 0–15
-        double t = Math.max(0.0, Math.min(1.0, weight / 15.0));
+        double t = Math.max(0.0, Math.min(1.0, weight / shadow_info.getMax_accessory_weight()));
         float minSigma = 2.0f;
         float maxSigma = 16.0f;
         float sigma = (float) (minSigma + t * (maxSigma - minSigma));
