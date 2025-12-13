@@ -6830,7 +6830,13 @@ public class HelloApplication extends Application {
         double alpha = minAlpha + t * (maxAlpha - minAlpha);
         Paint paint = new Paint().setAntiAlias(true).setColor(colorToInt(color_of_text));
         Paint strokePaint = new Paint().setAntiAlias(true).setStroke(true).setStrokeWidth((float) stroke_weight).setColor(colorToInt(stroke_color)).setStrokeJoin(PaintStrokeJoin.ROUND).setStrokeCap(PaintStrokeCap.ROUND);
-        Paint shadowPaint = new Paint().setAntiAlias(true).setColor(colorToInt(new javafx.scene.paint.Color(shadow_info.getAccessory_color().getRed(),shadow_info.getAccessory_color().getGreen(),shadow_info.getAccessory_color().getBlue(),0.6))).setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, (float) shadow_info.getAccessory_weight(), true));
+        Paint shadowPaint;
+        if(shadow_info.isIs_the_accessory_on() && shadow_info.getAccessory_weight() > 0){
+            shadowPaint = new Paint().setAntiAlias(true).setColor(colorToInt(new javafx.scene.paint.Color(shadow_info.getAccessory_color().getRed(),shadow_info.getAccessory_color().getGreen(),shadow_info.getAccessory_color().getBlue(),0.6))).setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, (float) shadow_info.getAccessory_weight(), true));
+
+        } else {
+
+        }
         String[] lines = adjusted_verse_text.split("\n");
         TextLine[] array_of_text_lines = new TextLine[lines.length];
         float max_width = 0;
