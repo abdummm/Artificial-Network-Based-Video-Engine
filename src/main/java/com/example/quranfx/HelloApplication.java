@@ -6821,21 +6821,21 @@ public class HelloApplication extends Application {
         /*Typeface type_face = FontMgr.getDefault().matchFamilyStyle("SF Arabic Rounded", FontStyle.NORMAL);
         io.github.humbleui.skija.Font font = new io.github.humbleui.skija.Font(type_face, (float) font_for_verse.getSize());*/
         double weight = shadow_info.getAccessory_weight(); // 0–15
-        double t = Math.max(0.0, Math.min(1.0, weight / shadow_info.getMax_accessory_weight()));
-        float minSigma = 2.0f;
-        float maxSigma = 16.0f;
-        float sigma = (float) (minSigma + t * (maxSigma - minSigma));
-        double minAlpha = 0.3;
-        double maxAlpha = 0.9;
-        double alpha = minAlpha + t * (maxAlpha - minAlpha);
         Paint paint = new Paint().setAntiAlias(true).setColor(colorToInt(color_of_text));
         Paint strokePaint = new Paint().setAntiAlias(true).setStroke(true).setStrokeWidth((float) stroke_weight).setColor(colorToInt(stroke_color)).setStrokeJoin(PaintStrokeJoin.ROUND).setStrokeCap(PaintStrokeCap.ROUND);
         Paint shadowPaint;
         if(shadow_info.isIs_the_accessory_on() && shadow_info.getAccessory_weight() > 0){
-            shadowPaint = new Paint().setAntiAlias(true).setColor(colorToInt(new javafx.scene.paint.Color(shadow_info.getAccessory_color().getRed(),shadow_info.getAccessory_color().getGreen(),shadow_info.getAccessory_color().getBlue(),0.6))).setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, (float) shadow_info.getAccessory_weight(), true));
+            double t = weight / shadow_info.getMax_accessory_weight();
+            double minAlpha = 0.14;      // was 0.10 → slightly stronger at level 1–3
+            double maxAlpha = 0.98;
 
+            double alpha = minAlpha + Math.pow(t, 1.6) * (maxAlpha - minAlpha);
+            float minSigma = 0.20f;      // sharp at high weight
+            float maxSigma = 2.7f;       // was 3.0 → slightly stronger at low levels
+            float sigma = (float)(maxSigma - t * (maxSigma - minSigma));
+            shadowPaint = new Paint().setAntiAlias(true).setColor(colorToInt(new javafx.scene.paint.Color(shadow_info.getAccessory_color().getRed(),shadow_info.getAccessory_color().getGreen(),shadow_info.getAccessory_color().getBlue(),alpha))).setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, (float) sigma, true));
         } else {
-
+            shadowPaint = new Paint().setAntiAlias(true).setColor(colorToInt(new javafx.scene.paint.Color(0,0,0,0.6))).setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, 1, true));
         }
         String[] lines = adjusted_verse_text.split("\n");
         TextLine[] array_of_text_lines = new TextLine[lines.length];
