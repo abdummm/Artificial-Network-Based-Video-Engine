@@ -1,9 +1,7 @@
 package com.example.quranfx;
 
 import io.github.humbleui.skija.Font;
-import io.github.humbleui.skija.FontMetrics;
 import io.github.humbleui.skija.TextLine;
-import javafx.scene.text.Text;
 
 public class Text_sizing {
     private static Text_sizing text_sizing = null;
@@ -66,7 +64,7 @@ public class Text_sizing {
             last_height = textLine.getLeading();
         }
         total_height -= last_height;
-        return new double[]{max_width, total_height};
+        return new double[]{max_width, total_height + Global_default_values.height_text_margin};
     }
 
     public double return_the_min_width(String adjusted_verse_text, Font font) {

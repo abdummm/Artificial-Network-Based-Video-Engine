@@ -6850,10 +6850,12 @@ public class HelloApplication extends Application {
         if (array_of_text_lines.length > 0) {
             height -= array_of_text_lines[array_of_text_lines.length - 1].getLeading();
         }
+        max_width += 20; // Making sure that the text stroke doesnt get clipped when creating the image
+        height+=Global_default_values.height_text_margin;
         ImageInfo imageInfo = new ImageInfo((int) Math.ceil(max_width), (int) Math.ceil(height), ColorType.N32, ColorAlphaType.PREMUL);
         Surface surface = Surface.makeRaster(imageInfo);
         io.github.humbleui.skija.Canvas surface_canvas = surface.getCanvas();
-        float local_height = 0;
+        float local_height = Global_default_values.height_text_margin/2f;
         for (TextLine textLine : array_of_text_lines) {
             if (shadow_info.isIs_the_accessory_on() && shadow_info.getAccessory_weight() > 0) {
                 surface_canvas.drawTextLine(textLine, ((max_width - textLine.getWidth()) / 2F) + 3, Math.abs(textLine.getAscent()) + local_height + 3, shadowPaint);
