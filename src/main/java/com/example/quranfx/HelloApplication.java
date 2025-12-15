@@ -6824,7 +6824,7 @@ public class HelloApplication extends Application {
         Paint paint = new Paint().setAntiAlias(true).setColor(colorToInt(color_of_text));
         Paint strokePaint = new Paint().setAntiAlias(true).setStroke(true).setStrokeWidth((float) stroke_weight).setColor(colorToInt(stroke_color)).setStrokeJoin(PaintStrokeJoin.ROUND).setStrokeCap(PaintStrokeCap.ROUND);
         Paint shadowPaint;
-        if(shadow_info.isIs_the_accessory_on() && shadow_info.getAccessory_weight() > 0){
+        if (shadow_info.isIs_the_accessory_on() && shadow_info.getAccessory_weight() > 0) {
             double t = weight / shadow_info.getMax_accessory_weight();
             double minAlpha = 0.14;      // was 0.10 → slightly stronger at level 1–3
             double maxAlpha = 0.98;
@@ -6832,10 +6832,10 @@ public class HelloApplication extends Application {
             double alpha = minAlpha + Math.pow(t, 1.6) * (maxAlpha - minAlpha);
             float minSigma = 0.20f;      // sharp at high weight
             float maxSigma = 2.7f;       // was 3.0 → slightly stronger at low levels
-            float sigma = (float)(maxSigma - t * (maxSigma - minSigma));
-            shadowPaint = new Paint().setAntiAlias(true).setColor(colorToInt(new javafx.scene.paint.Color(shadow_info.getAccessory_color().getRed(),shadow_info.getAccessory_color().getGreen(),shadow_info.getAccessory_color().getBlue(),alpha))).setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, (float) sigma, true));
+            float sigma = (float) (maxSigma - t * (maxSigma - minSigma));
+            shadowPaint = new Paint().setAntiAlias(true).setColor(colorToInt(new javafx.scene.paint.Color(shadow_info.getAccessory_color().getRed(), shadow_info.getAccessory_color().getGreen(), shadow_info.getAccessory_color().getBlue(), alpha))).setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, (float) sigma, true));
         } else {
-            shadowPaint = new Paint().setAntiAlias(true).setColor(colorToInt(new javafx.scene.paint.Color(0,0,0,0.6))).setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, 1, true));
+            shadowPaint = new Paint().setAntiAlias(true).setColor(colorToInt(new javafx.scene.paint.Color(0, 0, 0, 0.6))).setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, 1, true));
         }
         String[] lines = adjusted_verse_text.split("\n");
         TextLine[] array_of_text_lines = new TextLine[lines.length];
@@ -6855,7 +6855,7 @@ public class HelloApplication extends Application {
         io.github.humbleui.skija.Canvas surface_canvas = surface.getCanvas();
         float local_height = 0;
         for (TextLine textLine : array_of_text_lines) {
-            if(shadow_info.isIs_the_accessory_on() && shadow_info.getAccessory_weight() > 0){
+            if (shadow_info.isIs_the_accessory_on() && shadow_info.getAccessory_weight() > 0) {
                 surface_canvas.drawTextLine(textLine, ((max_width - textLine.getWidth()) / 2F) + 3, Math.abs(textLine.getAscent()) + local_height + 3, shadowPaint);
             }
             if (is_stroke_enabled && stroke_weight > 0) {
@@ -6940,7 +6940,7 @@ public class HelloApplication extends Application {
         double total_rectangle_height = x_and_y_positions.getLayoutBounds().getHeight() + y_padding;
         double x_canvas_position = (canvas.getWidth() / 2D) - total_rectangle_width / 2D;
         double y_canvas_position;
-        if (y_position <= canvas.getHeight()*0.55) {
+        if (y_position <= canvas.getHeight() * 0.55) {
             y_canvas_position = (canvas.getHeight() * 0.75D) + total_rectangle_height / 2D;
         } else {
             y_canvas_position = (canvas.getHeight() * 0.25D) + total_rectangle_height / 2D;
@@ -7661,8 +7661,8 @@ public class HelloApplication extends Application {
                 }
                 set_the_holding_cursor_of_image_view_for_text(helloController, type_of_cursor);
                 if (text_on_canvas_dragged[0] != null) {
-                    place_the_canvas_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(),text_on_canvas_dragged[0].getText_item());
-                    place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(),text_on_canvas_dragged[0].getText_item());
+                    place_the_canvas_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_on_canvas_dragged[0].getText_item());
+                    place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_on_canvas_dragged[0].getText_item());
                     helloController.list_view_with_all_of_the_languages.refresh();
                     text_on_canvas_dragged[0] = null;
                 }
