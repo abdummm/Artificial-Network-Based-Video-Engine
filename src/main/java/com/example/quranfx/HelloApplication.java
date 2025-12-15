@@ -6850,7 +6850,7 @@ public class HelloApplication extends Application {
         if (array_of_text_lines.length > 0) {
             height -= array_of_text_lines[array_of_text_lines.length - 1].getLeading();
         }
-        max_width += 20; // Making sure that the text stroke doesnt get clipped when creating the image
+        //max_width += 20; // Making sure that the text stroke doesnt get clipped when creating the image
         height+=Global_default_values.height_text_margin;
         ImageInfo imageInfo = new ImageInfo((int) Math.ceil(max_width), (int) Math.ceil(height), ColorType.N32, ColorAlphaType.PREMUL);
         Surface surface = Surface.makeRaster(imageInfo);
@@ -7573,6 +7573,7 @@ public class HelloApplication extends Application {
                         double[] width_and_height_of_adjusted_text = Text_sizing.getInstance().get_width_and_height_of_string(adjusted_verse, text_item.getFont());
                         double new_text_height = Math.max(width_and_height_of_adjusted_text[1] + text_item.getExtra_height_padding(), text_on_canvas_dragged[0].getOriginal_height());
                         text_item.setAdjusted_verse_text(adjusted_verse);
+                        System.out.println("real min width: " + text_box_info.getMin_width());
                         if (new_width >= text_box_info.getMin_width()) {
                             text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].getOriginal_point2D_of_text().getX() + x_pos_difference / 2D, text_on_canvas_dragged[0].getOriginal_point2D_of_text().getY()));
                             text_box_info.setText_box_width(new_width);
