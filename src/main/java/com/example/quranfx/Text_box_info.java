@@ -130,11 +130,11 @@ public class Text_box_info {
     }
 
     public void update_the_min_height_and_width() {
-        min_width = Text_sizing.getInstance().return_the_min_width(text_item.getAdjusted_verse_text(), text_item.getFont()) + text_item.getExtra_width_padding();
-        text_box_width = Math.max(min_width, text_box_width);
-        text_box_width = Math.min(text_box_width,text_item.getVideo_width());
         String new_adjusted_verse = Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(text_item.getVerse_text(), text_item.getFont(), text_box_width - text_item.getExtra_width_padding(), text_item.getLeft_margin(), text_item.getRight_margin());
         text_item.setAdjusted_verse_text(new_adjusted_verse);
+        min_width = Text_sizing.getInstance().return_the_min_width(text_item.getVerse_text(), text_item.getFont()) + text_item.getExtra_width_padding();
+        text_box_width = Math.max(min_width, text_box_width);
+        text_box_width = Math.min(text_box_width,text_item.getVideo_width());
         min_height = Text_sizing.getInstance().get_width_and_height_of_string(text_item.getAdjusted_verse_text(), text_item.getFont())[1] + text_item.getExtra_height_padding();
         text_box_height = /*Math.max(min_height, text_box_height);*/ min_height;
         update_the_x_points();
