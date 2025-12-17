@@ -3,8 +3,11 @@ package com.example.quranfx;
 import io.github.humbleui.skija.Font;
 import io.github.humbleui.skija.TextLine;
 
+import java.util.Arrays;
+
 public class Text_sizing {
     private static Text_sizing text_sizing = null;
+    private static final String text_splitter = "[ \\n]+";
 
     private Text_sizing() {
     }
@@ -18,11 +21,14 @@ public class Text_sizing {
 
     public String do_i_need_to_resize_the_verse_text(String verse_text, io.github.humbleui.skija.Font font, double allowed_width, double left_margin, double right_margin) {
         final double EPS = 1e-6; // floating point inconsistent.
-        allowed_width = allowed_width - 2 * left_margin - 2 * right_margin;
+        allowed_width = allowed_width - (2 * left_margin) - (2 * right_margin);
         String[] split_verse_into_words = verse_text.split(" ");
         StringBuilder string_builder_for_final_string = new StringBuilder();
         StringBuilder current_line = new StringBuilder();
         for (String current_word : split_verse_into_words) {
+            if (current_word.isEmpty()) {
+                continue;
+            }
             double current_line_width = TextLine.make(current_line.toString(), font).getWidth();
             double current_word_width = TextLine.make(current_word, font).getWidth();
             if (current_line.isEmpty()) {
@@ -53,11 +59,11 @@ public class Text_sizing {
     }
 
     public double[] get_width_and_height_of_string(String adjusted_verse_text, io.github.humbleui.skija.Font font) {
-        String[] lines =  adjusted_verse_text.split("\n");
+        String[] lines = adjusted_verse_text.split("\n");
         float max_width = 0;
         float total_height = 0;
         float last_height = 0;
-        for(String line : lines) {
+        for (String line : lines) {
             TextLine textLine = TextLine.make(line, font);
             max_width = Math.max(max_width, textLine.getWidth());
             total_height += Math.abs(textLine.getAscent()) + textLine.getDescent() + textLine.getLeading();
@@ -68,9 +74,12 @@ public class Text_sizing {
     }
 
     public double return_the_min_width(String adjusted_verse_text, Font font) {
-        String[] words = adjusted_verse_text.split(" ");
+        String[] words = adjusted_verse_text.split(text_splitter);
         double min_width = 0;
         for (String word : words) {
+            if (word.isEmpty()) {
+                continue;
+            }
             TextLine textLine = TextLine.make(word, font);
             float width = textLine.getWidth();
             min_width = Math.max(min_width, width);
