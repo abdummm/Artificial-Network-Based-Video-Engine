@@ -228,8 +228,8 @@ public class HelloController {
     @FXML
     public JFXButton settings_loading_screen;
 
-   /* @FXML
-    public Rectangle black_rectangle_behind_image_view;*/
+    @FXML
+    public Canvas canvas_holding_the_text_position;
 
 
 }
