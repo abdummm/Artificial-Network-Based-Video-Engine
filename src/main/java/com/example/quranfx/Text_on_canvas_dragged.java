@@ -1,6 +1,7 @@
 package com.example.quranfx;
 
 import javafx.geometry.Point2D;
+import javafx.scene.canvas.Canvas;
 
 public class Text_on_canvas_dragged {
     private Point2D original_point2D_of_mouse_event;
@@ -17,8 +18,9 @@ public class Text_on_canvas_dragged {
     private double y_scale;
     private double x_scale;
     private int original_index;
+    private Canvas text_position_canvas;
 
-    public Text_on_canvas_dragged(Point2D original_point2D_of_mouse_event, Point2D original_point2D_of_text, Language_info language_info, Type_of_cursor type_of_cursor, Text_item text_item, double original_height, double original_width,double canvas_height,double canvas_width,double y_scale, double x_scale,int original_index) {
+    public Text_on_canvas_dragged(Point2D original_point2D_of_mouse_event, Point2D original_point2D_of_text, Language_info language_info, Type_of_cursor type_of_cursor, Text_item text_item, double original_height, double original_width,double canvas_height,double canvas_width,double y_scale, double x_scale,int original_index,Canvas text_position_canvas) {
         this.original_point2D_of_mouse_event = original_point2D_of_mouse_event;
         this.original_point2D_of_text = original_point2D_of_text;
         this.language_info = language_info;
@@ -31,6 +33,7 @@ public class Text_on_canvas_dragged {
         this.y_scale = y_scale;
         this.x_scale = x_scale;
         this.original_index = original_index;
+        this.text_position_canvas = text_position_canvas;
     }
 
     public Point2D getOriginal_point2D_of_mouse_event() {
@@ -115,5 +118,9 @@ public class Text_on_canvas_dragged {
 
     public void setOriginal_index(int original_index) {
         this.original_index = original_index;
+    }
+
+    public Canvas getText_position_canvas() {
+        return text_position_canvas;
     }
 }
