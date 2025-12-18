@@ -19,34 +19,88 @@ public class Text_sizing {
         return text_sizing;
     }
 
+    /*public String do_i_need_to_resize_the_verse_text(String verse_text, io.github.humbleui.skija.Font font, double allowed_width, double left_margin, double right_margin) {
+        final double EPS = 1e-6; // floating point inconsistent.
+        allowed_width = allowed_width - (2 * left_margin) - (2 * right_margin);
+        String[] split_into_lines = verse_text.split("\n");
+        StringBuilder string_builder_for_final_string = new StringBuilder();
+        for (int i = 0; i < split_into_lines.length; i++) {
+            StringBuilder current_line = new StringBuilder();
+            String[] split_verse_into_words = split_into_lines[i].split(" ");
+            for (String current_word : split_verse_into_words) {
+                if (current_word.isEmpty()) {
+                    continue;
+                }
+                double current_line_width = TextLine.make(current_line.toString(), font).getWidth();
+                double current_word_width = TextLine.make(current_word, font).getWidth();
+                if (current_line.isEmpty()) {
+                    if (current_word_width >= allowed_width + EPS) {
+                        string_builder_for_final_string.append(current_word);
+                        string_builder_for_final_string.append("\n");
+                    } else {
+                        current_line.append(current_word).append(" ");
+                    }
+                } else {
+                    if (current_line_width + current_word_width > allowed_width + EPS) {
+                        current_line.deleteCharAt(current_line.length() - 1);
+                        string_builder_for_final_string.append(current_line);
+                        string_builder_for_final_string.append("\n");
+                        current_line = new StringBuilder(current_word).append(" ");
+                    } else {
+                        current_line.append(current_word).append(" ");
+                    }
+                }
+            }
+            if (!current_line.isEmpty()) {
+                string_builder_for_final_string.append(current_line.deleteCharAt(current_line.length() - 1));
+            }
+        }
+        if (!string_builder_for_final_string.isEmpty() && string_builder_for_final_string.charAt(string_builder_for_final_string.length() - 1) == '\n') {
+            string_builder_for_final_string.deleteCharAt(string_builder_for_final_string.length() - 1);
+        }
+        return string_builder_for_final_string.toString();
+    }*/
+
     public String do_i_need_to_resize_the_verse_text(String verse_text, io.github.humbleui.skija.Font font, double allowed_width, double left_margin, double right_margin) {
         final double EPS = 1e-6; // floating point inconsistent.
         allowed_width = allowed_width - (2 * left_margin) - (2 * right_margin);
-        String[] split_verse_into_words = verse_text.split(" ");
         StringBuilder string_builder_for_final_string = new StringBuilder();
         StringBuilder current_line = new StringBuilder();
-        for (String current_word : split_verse_into_words) {
-            if (current_word.isEmpty()) {
-                continue;
-            }
-            double current_line_width = TextLine.make(current_line.toString(), font).getWidth();
-            double current_word_width = TextLine.make(current_word, font).getWidth();
-            if (current_line.isEmpty()) {
-                if (current_word_width >= allowed_width + EPS) {
-                    string_builder_for_final_string.append(current_word);
-                    string_builder_for_final_string.append("\n");
+        StringBuilder current_word = new StringBuilder();
+        for (int i = 0; i < verse_text.length(); i++) {
+            if (verse_text.charAt(i) == ' ' || verse_text.charAt(i) == '\n' || i == verse_text.length() - 1) {
+                if(i == verse_text.length() - 1 && !(verse_text.charAt(i) == ' ' || verse_text.charAt(i) == '\n')){
+                    current_word.append(verse_text.charAt(i));
+                }
+                double current_line_width = TextLine.make(current_line.toString(), font).getWidth();
+                double current_word_width = TextLine.make(current_word.toString(), font).getWidth();
+                if (current_line.isEmpty()) {
+                    if (current_word_width >= allowed_width + EPS) {
+                        string_builder_for_final_string.append(current_word);
+                        string_builder_for_final_string.append("\n");
+                    } else {
+                        current_line.append(current_word).append(" ");
+                    }
                 } else {
-                    current_line.append(current_word).append(" ");
+                    if (current_line_width + current_word_width > allowed_width + EPS) {
+                        current_line.deleteCharAt(current_line.length() - 1);
+                        string_builder_for_final_string.append(current_line);
+                        string_builder_for_final_string.append("\n");
+                        current_line = new StringBuilder();
+                        current_line.append(current_word);
+                        current_line.append(" ");
+                    } else {
+                        current_line.append(current_word).append(" ");
+                    }
+                }
+                current_word = new StringBuilder();
+                if(verse_text.charAt(i) == '\n'){
+                    current_line.append('\n');
+                    string_builder_for_final_string.append(current_line);
+                    current_line = new StringBuilder();
                 }
             } else {
-                if (current_line_width + current_word_width > allowed_width + EPS) {
-                    current_line.deleteCharAt(current_line.length() - 1);
-                    string_builder_for_final_string.append(current_line);
-                    string_builder_for_final_string.append("\n");
-                    current_line = new StringBuilder(current_word).append(" ");
-                } else {
-                    current_line.append(current_word).append(" ");
-                }
+                current_word.append(verse_text.charAt(i));
             }
         }
         if (!current_line.isEmpty()) {
@@ -57,6 +111,7 @@ public class Text_sizing {
         }
         return string_builder_for_final_string.toString();
     }
+
 
     public double[] get_width_and_height_of_string(String adjusted_verse_text, io.github.humbleui.skija.Font font) {
         String[] lines = adjusted_verse_text.split("\n");
