@@ -283,6 +283,7 @@ public class HelloApplication extends Application {
         set_the_cursor_of_settings_beside_help_spread_app(helloController);
         set_up_the_fade_in_fade_out_slider_ticks(helloController);
         hide_the_settings_mark_button_loading_screen_when_done(helloController);
+        set_up_the_text_position_canvas(helloController);
     }
 
     /*public static void main(String[] args) {
@@ -6727,7 +6728,7 @@ public class HelloApplication extends Application {
 
     private void add_the_canvas_to_the_main_pane(HelloController helloController, Canvas canvas) {
         Pane showing_the_chatgpt_images_pane = helloController.stack_pane_of_image_view_and_text;
-        showing_the_chatgpt_images_pane.getChildren().add(canvas);
+        showing_the_chatgpt_images_pane.getChildren().add(showing_the_chatgpt_images_pane.getChildren().size()-1, canvas);
     }
 
     private void set_the_canvas_data(Canvas canvas, Language_info language_info) {
@@ -6850,7 +6851,7 @@ public class HelloApplication extends Application {
         if (array_of_text_lines.length > 0) {
             height -= array_of_text_lines[array_of_text_lines.length - 1].getLeading();
         }
-        //max_width += 20; // Making sure that the text stroke doesnt get clipped when creating the image
+        max_width += 20; // Making sure that the text stroke doesnt get clipped when creating the image
         height+=Global_default_values.height_text_margin;
         ImageInfo imageInfo = new ImageInfo((int) Math.ceil(max_width), (int) Math.ceil(height), ColorType.N32, ColorAlphaType.PREMUL);
         Surface surface = Surface.makeRaster(imageInfo);
@@ -6948,7 +6949,8 @@ public class HelloApplication extends Application {
             y_canvas_position = (canvas.getHeight() * 0.25D) + total_rectangle_height / 2D;
         }
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.setFill(new javafx.scene.paint.Color(0.5, 0.5, 0.5, 1));
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.setFill(new javafx.scene.paint.Color(0.5, 0.5, 0.5, 0.95));
         gc.fillRoundRect(x_canvas_position, y_canvas_position, total_rectangle_width, total_rectangle_height, 20, 20);
         gc.setFill(javafx.scene.paint.Color.WHITE);
         gc.setFont(new Font(font_size));
@@ -7500,7 +7502,7 @@ public class HelloApplication extends Application {
                     double y_scale = smallest_text_box_info.getLanguage_info().getLanguage_canvas().getScaleY();
                     Type_of_cursor type_of_cursor = return_type_of_cursor_based_on_position(mouseEvent, smallest_text_box_info);
                     int index = helloController.list_view_with_all_of_the_languages.getItems().indexOf(smallest_text_box_info.getLanguage_info());
-                    text_on_canvas_dragged[0] = new Text_on_canvas_dragged(new Point2D(mouseEvent.getX(), mouseEvent.getY()), new Point2D(smallest_text_box_info.getLanguage_info().getArrayList_of_all_of_the_translations().get(selected_verse).getText_box_info().getCenter_position().getX(), smallest_text_box_info.getLanguage_info().getArrayList_of_all_of_the_translations().get(selected_verse).getText_box_info().getCenter_position().getY()), smallest_text_box_info.getLanguage_info(), type_of_cursor, smallest_text_box_info.getLanguage_info().getArrayList_of_all_of_the_translations().get(selected_verse), smallest_text_box_info.getText_box_info().getText_box_height(), smallest_text_box_info.getText_box_info().getText_box_width(), smallest_text_box_info.getLanguage_info().getLanguage_canvas().getHeight(), smallest_text_box_info.getLanguage_info().getLanguage_canvas().getWidth(), y_scale, x_scale, index);
+                    text_on_canvas_dragged[0] = new Text_on_canvas_dragged(new Point2D(mouseEvent.getX(), mouseEvent.getY()), new Point2D(smallest_text_box_info.getLanguage_info().getArrayList_of_all_of_the_translations().get(selected_verse).getText_box_info().getCenter_position().getX(), smallest_text_box_info.getLanguage_info().getArrayList_of_all_of_the_translations().get(selected_verse).getText_box_info().getCenter_position().getY()), smallest_text_box_info.getLanguage_info(), type_of_cursor, smallest_text_box_info.getLanguage_info().getArrayList_of_all_of_the_translations().get(selected_verse), smallest_text_box_info.getText_box_info().getText_box_height(), smallest_text_box_info.getText_box_info().getText_box_width(), smallest_text_box_info.getLanguage_info().getLanguage_canvas().getHeight(), smallest_text_box_info.getLanguage_info().getLanguage_canvas().getWidth(), y_scale, x_scale, index,helloController.canvas_holding_the_text_position);
                     switch (type_of_cursor) {
                         case CENTER -> {
                             helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.CLOSED_HAND);
@@ -7541,7 +7543,7 @@ public class HelloApplication extends Application {
                         text_item.getText_box_info().setCenter_position(new Point2D(new_x_position, new_y_position));
                         place_the_canvas_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
                         place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
-                        place_the_x_and_y_text_positions(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
+                        place_the_x_and_y_text_positions(text_on_canvas_dragged[0].getText_position_canvas(), text_item);
                     } else if (text_on_canvas_dragged[0].getType_of_cursor() == Type_of_cursor.NORTH) {
                         Text_item text_item = text_on_canvas_dragged[0].getText_item();
                         Text_box_info text_box_info = text_item.getText_box_info();
@@ -7554,13 +7556,13 @@ public class HelloApplication extends Application {
                             text_box_info.setText_box_height(text_on_canvas_dragged[0].getOriginal_height() - y_pos_difference);
                             place_the_canvas_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
                             place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
-                            place_the_x_and_y_text_positions(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
+                            place_the_x_and_y_text_positions(text_on_canvas_dragged[0].getText_position_canvas(), text_item);
                         } else if (new_height != text_box_info.getMin_height()) {
                             text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].getOriginal_point2D_of_text().getX(), text_on_canvas_dragged[0].get_max_y_of_text() - text_box_info.getMin_height() / 2D));
                             text_box_info.setText_box_height(text_box_info.getMin_height());
                             place_the_canvas_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
                             place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
-                            place_the_x_and_y_text_positions(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
+                            place_the_x_and_y_text_positions(text_on_canvas_dragged[0].getText_position_canvas(), text_item);
                         }
                     } else if (text_on_canvas_dragged[0].getType_of_cursor() == Type_of_cursor.EAST) {
                         Text_item text_item = text_on_canvas_dragged[0].getText_item();
@@ -7573,7 +7575,6 @@ public class HelloApplication extends Application {
                         double[] width_and_height_of_adjusted_text = Text_sizing.getInstance().get_width_and_height_of_string(adjusted_verse, text_item.getFont());
                         double new_text_height = Math.max(width_and_height_of_adjusted_text[1] + text_item.getExtra_height_padding(), text_on_canvas_dragged[0].getOriginal_height());
                         text_item.setAdjusted_verse_text(adjusted_verse);
-                        System.out.println("real min width: " + text_box_info.getMin_width());
                         if (new_width >= text_box_info.getMin_width()) {
                             text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].getOriginal_point2D_of_text().getX() + x_pos_difference / 2D, text_on_canvas_dragged[0].getOriginal_point2D_of_text().getY()));
                             text_box_info.setText_box_width(new_width);
@@ -7581,7 +7582,7 @@ public class HelloApplication extends Application {
                             text_box_info.setMin_height(width_and_height_of_adjusted_text[1] + text_item.getExtra_height_padding());
                             place_the_canvas_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
                             place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
-                            place_the_x_and_y_text_positions(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
+                            place_the_x_and_y_text_positions(text_on_canvas_dragged[0].getText_position_canvas(), text_item);
                         } else if (new_width != text_box_info.getMin_width()) {
                             text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].get_min_x_of_text() + text_box_info.getMin_width() / 2D, text_on_canvas_dragged[0].getOriginal_point2D_of_text().getY()));
                             text_box_info.setText_box_width(text_box_info.getMin_width());
@@ -7589,7 +7590,7 @@ public class HelloApplication extends Application {
                             text_box_info.setMin_height(width_and_height_of_adjusted_text[1] + text_item.getExtra_height_padding());
                             place_the_canvas_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
                             place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
-                            place_the_x_and_y_text_positions(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
+                            place_the_x_and_y_text_positions(text_on_canvas_dragged[0].getText_position_canvas(), text_item);
                         }
                     } else if (text_on_canvas_dragged[0].getType_of_cursor() == Type_of_cursor.SOUTH) {
                         Text_item text_item = text_on_canvas_dragged[0].getText_item();
@@ -7603,13 +7604,13 @@ public class HelloApplication extends Application {
                             text_box_info.setText_box_height(text_on_canvas_dragged[0].getOriginal_height() + y_pos_difference);
                             place_the_canvas_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
                             place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
-                            place_the_x_and_y_text_positions(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
+                            place_the_x_and_y_text_positions(text_on_canvas_dragged[0].getText_position_canvas(), text_item);
                         } else if (new_height != text_box_info.getMin_height()) {
                             text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].getOriginal_point2D_of_text().getX(), text_on_canvas_dragged[0].get_min_y_of_text() + text_box_info.getMin_height() / 2D));
                             text_box_info.setText_box_height(text_box_info.getMin_height());
                             place_the_canvas_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
                             place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
-                            place_the_x_and_y_text_positions(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
+                            place_the_x_and_y_text_positions(text_on_canvas_dragged[0].getText_position_canvas(), text_item);
                         }
                     } else if (text_on_canvas_dragged[0].getType_of_cursor() == Type_of_cursor.WEST) {
                         Text_item text_item = text_on_canvas_dragged[0].getText_item();
@@ -7629,7 +7630,7 @@ public class HelloApplication extends Application {
                             text_box_info.setMin_height(width_and_height_of_adjusted_text[1] + text_item.getExtra_height_padding());
                             place_the_canvas_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
                             place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
-                            place_the_x_and_y_text_positions(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
+                            place_the_x_and_y_text_positions(text_on_canvas_dragged[0].getText_position_canvas(), text_item);
                         } else if (new_width != text_box_info.getMin_width()) {
                             text_box_info.setCenter_position(new Point2D(text_on_canvas_dragged[0].get_max_x_of_text() - text_box_info.getMin_width() / 2D, text_on_canvas_dragged[0].getOriginal_point2D_of_text().getY()));
                             text_box_info.setText_box_width(text_box_info.getMin_width());
@@ -7637,7 +7638,7 @@ public class HelloApplication extends Application {
                             text_box_info.setMin_height(width_and_height_of_adjusted_text[1] + text_item.getExtra_height_padding());
                             place_the_canvas_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
                             place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
-                            place_the_x_and_y_text_positions(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_item);
+                            place_the_x_and_y_text_positions(text_on_canvas_dragged[0].getText_position_canvas(), text_item);
                         }
                     } else if (text_on_canvas_dragged[0].getType_of_cursor() == Type_of_cursor.NORTH_EAST) {
 
@@ -7666,6 +7667,7 @@ public class HelloApplication extends Application {
                 if (text_on_canvas_dragged[0] != null) {
                     place_the_canvas_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_on_canvas_dragged[0].getText_item());
                     place_the_box_surrounding_the_text(text_on_canvas_dragged[0].getLanguage_info().getLanguage_canvas(), text_on_canvas_dragged[0].getText_item());
+                    clear_a_canvas(text_on_canvas_dragged[0].getText_position_canvas());
                     helloController.list_view_with_all_of_the_languages.refresh();
                     text_on_canvas_dragged[0] = null;
                 }
@@ -8160,5 +8162,16 @@ public class HelloApplication extends Application {
                 }
             }
         }
+    }
+
+    private void set_up_the_text_position_canvas(HelloController helloController){
+        helloController.canvas_holding_the_text_position.setHeight(1920);
+        helloController.canvas_holding_the_text_position.setWidth(1080);
+        bind_the_canvas_to_the_image_view(helloController,helloController.canvas_holding_the_text_position);
+    }
+
+    private void clear_a_canvas(Canvas canvas){
+        GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+        graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 }
