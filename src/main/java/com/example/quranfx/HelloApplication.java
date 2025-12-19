@@ -8196,4 +8196,13 @@ public class HelloApplication extends Application {
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
+
+    private void create_the_split_button(HelloController helloController){
+        JFXButton split_button = new JFXButton();
+        set_pref_min_max(helloController.play_pause_button, width_and_height_of_the_control_buttons * 2, Resize_bind_type.WIDTH_AND_HEIGHT);
+        helloController.play_pause_button.setShape(squirqle);
+        helloController.play_pause_button.setGraphic(return_the_icon("play_arrow", (int) (width_and_height_of_the_control_buttons * multiplier_for_the_icons_inside_the_buttons_audio_control), (int) (width_and_height_of_the_control_buttons * multiplier_for_the_icons_inside_the_buttons_audio_control)));
+        helloController.play_pause_button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        helloController.play_pause_button.setAlignment(Pos.CENTER);
+    }
 }
