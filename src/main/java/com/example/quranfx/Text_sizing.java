@@ -95,6 +95,9 @@ public class Text_sizing {
                 }
                 current_word = new StringBuilder();
                 if(verse_text.charAt(i) == '\n'){
+                    if(!current_line.isEmpty()){
+                        current_line.deleteCharAt(current_line.length() - 1);
+                    }
                     current_line.append('\n');
                     string_builder_for_final_string.append(current_line);
                     current_line = new StringBuilder();
