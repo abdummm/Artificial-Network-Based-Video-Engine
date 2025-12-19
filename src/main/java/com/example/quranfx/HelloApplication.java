@@ -284,6 +284,7 @@ public class HelloApplication extends Application {
         set_up_the_fade_in_fade_out_slider_ticks(helloController);
         hide_the_settings_mark_button_loading_screen_when_done(helloController);
         set_up_the_text_position_canvas(helloController);
+        create_the_split_button(helloController);
     }
 
     /*public static void main(String[] args) {
@@ -8199,10 +8200,13 @@ public class HelloApplication extends Application {
 
     private void create_the_split_button(HelloController helloController){
         JFXButton split_button = new JFXButton();
-        set_pref_min_max(helloController.play_pause_button, width_and_height_of_the_control_buttons * 2, Resize_bind_type.WIDTH_AND_HEIGHT);
-        helloController.play_pause_button.setShape(squirqle);
-        helloController.play_pause_button.setGraphic(return_the_icon("play_arrow", (int) (width_and_height_of_the_control_buttons * multiplier_for_the_icons_inside_the_buttons_audio_control), (int) (width_and_height_of_the_control_buttons * multiplier_for_the_icons_inside_the_buttons_audio_control)));
-        helloController.play_pause_button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-        helloController.play_pause_button.setAlignment(Pos.CENTER);
+        Shape squirqle = return_default_squircle();
+        squirqle.setFill(new javafx.scene.paint.Color(0,0,0,1));
+        set_pref_min_max(helloController.split_verse_button, width_and_height_of_the_control_buttons * 2, Resize_bind_type.WIDTH_AND_HEIGHT);
+        helloController.split_verse_button.setShape(squirqle);
+        helloController.split_verse_button.setGraphic(return_the_icon("split_icon", (int) (width_and_height_of_the_control_buttons * multiplier_for_the_icons_inside_the_buttons_audio_control), (int) (width_and_height_of_the_control_buttons * multiplier_for_the_icons_inside_the_buttons_audio_control)));
+        helloController.split_verse_button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        helloController.split_verse_button.setAlignment(Pos.CENTER);
+        helloController.pane_overlying_the_time_line_pane_for_polygon_indicator.getChildren().add(helloController.split_verse_button);
     }
 }
