@@ -484,7 +484,9 @@
                                 </ScrollPane>
                                 <Canvas fx:id="canvas_on_top_of_time_line_pane" mouseTransparent="true"/>
                                 <Pane fx:id="pane_overlying_the_time_line_pane_for_polygon_indicator"
-                                      mouseTransparent="false" pickOnBounds="false" StackPane.alignment="TOP_CENTER"/>
+                                      mouseTransparent="false" pickOnBounds="false" StackPane.alignment="TOP_CENTER">
+                                    <JFXButton fx:id="split_verse_button" />
+                                </Pane>
                             </StackPane>
                         </HBox>
                     </VBox>
