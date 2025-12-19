@@ -6728,7 +6728,7 @@ public class HelloApplication extends Application {
 
     private void add_the_canvas_to_the_main_pane(HelloController helloController, Canvas canvas) {
         Pane showing_the_chatgpt_images_pane = helloController.stack_pane_of_image_view_and_text;
-        showing_the_chatgpt_images_pane.getChildren().add(showing_the_chatgpt_images_pane.getChildren().size()-1, canvas);
+        showing_the_chatgpt_images_pane.getChildren().add(showing_the_chatgpt_images_pane.getChildren().size() - 1, canvas);
     }
 
     private void set_the_canvas_data(Canvas canvas, Language_info language_info) {
@@ -6825,16 +6825,31 @@ public class HelloApplication extends Application {
         Paint paint = new Paint().setAntiAlias(true).setColor(colorToInt(color_of_text));
         Paint strokePaint = new Paint().setAntiAlias(true).setStroke(true).setStrokeWidth((float) stroke_weight).setColor(colorToInt(stroke_color)).setStrokeJoin(PaintStrokeJoin.ROUND).setStrokeCap(PaintStrokeCap.ROUND);
         Paint shadowPaint;
+        double t = 0; // Declare t outside to use it in the loop
         if (shadow_info.isIs_the_accessory_on() && shadow_info.getAccessory_weight() > 0) {
-            double t = weight / shadow_info.getMax_accessory_weight();
-            double minAlpha = 0.14;      // was 0.10 → slightly stronger at level 1–3
+            t = weight / shadow_info.getMax_accessory_weight();
+            t = Math.min(1.0, Math.max(0.0, t)); // Clamp safety
+
+            double minAlpha = 0.14;
             double maxAlpha = 0.98;
 
-            double alpha = minAlpha + Math.pow(t, 1.6) * (maxAlpha - minAlpha);
-            float minSigma = 0.20f;      // sharp at high weight
-            float maxSigma = 2.7f;       // was 3.0 → slightly stronger at low levels
-            float sigma = (float) (maxSigma - t * (maxSigma - minSigma));
-            shadowPaint = new Paint().setAntiAlias(true).setColor(colorToInt(new javafx.scene.paint.Color(shadow_info.getAccessory_color().getRed(), shadow_info.getAccessory_color().getGreen(), shadow_info.getAccessory_color().getBlue(), alpha))).setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, (float) sigma, true));
+            // 1. Lower exponent (0.7) makes it reach "strong" levels much earlier
+            double alpha = minAlpha + Math.pow(t, 0.7) * (maxAlpha - minAlpha);
+
+            float minSigma = 0.20f;
+            float maxSigma = 2.7f;
+
+            // 2. Higher exponent (2.5) keeps it soft early, then sharpens/densifies at the end
+            float sigma = (float) (maxSigma - Math.pow(t, 2.5) * (maxSigma - minSigma));
+
+            shadowPaint = new Paint()
+                    .setAntiAlias(true)
+                    .setColor(colorToInt(new javafx.scene.paint.Color(
+                            shadow_info.getAccessory_color().getRed(),
+                            shadow_info.getAccessory_color().getGreen(),
+                            shadow_info.getAccessory_color().getBlue(),
+                            alpha)))
+                    .setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, sigma, true));
         } else {
             shadowPaint = new Paint().setAntiAlias(true).setColor(colorToInt(new javafx.scene.paint.Color(0, 0, 0, 0.6))).setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, 1, true));
         }
@@ -6852,14 +6867,21 @@ public class HelloApplication extends Application {
             height -= array_of_text_lines[array_of_text_lines.length - 1].getLeading();
         }
         max_width += 20; // Making sure that the text stroke doesnt get clipped when creating the image
-        height+=Global_default_values.height_text_margin;
+        height += Global_default_values.height_text_margin;
         ImageInfo imageInfo = new ImageInfo((int) Math.ceil(max_width), (int) Math.ceil(height), ColorType.N32, ColorAlphaType.PREMUL);
         Surface surface = Surface.makeRaster(imageInfo);
         io.github.humbleui.skija.Canvas surface_canvas = surface.getCanvas();
-        float local_height = Global_default_values.height_text_margin/2f;
+        float local_height = Global_default_values.height_text_margin / 2f;
         for (TextLine textLine : array_of_text_lines) {
             if (shadow_info.isIs_the_accessory_on() && shadow_info.getAccessory_weight() > 0) {
-                surface_canvas.drawTextLine(textLine, ((max_width - textLine.getWidth()) / 2F) + 3, Math.abs(textLine.getAscent()) + local_height + 3, shadowPaint);
+                float x = ((max_width - textLine.getWidth()) / 2F) + 3;
+                // 3. Added a dynamic Y-offset (up to 4 pixels) based on weight
+                float yShadow = Math.abs(textLine.getAscent()) + local_height + 3 + (float) (t);
+                surface_canvas.drawTextLine(textLine, x, yShadow, shadowPaint);
+                // 4. Double-pass at high intensity (weight > 8) to make it feel extra heavy
+                if (t > 0.8) {
+                    surface_canvas.drawTextLine(textLine, x, yShadow, shadowPaint);
+                }
             }
             if (is_stroke_enabled && stroke_weight > 0) {
                 surface_canvas.drawTextLine(textLine, (max_width - textLine.getWidth()) / 2F, Math.abs(textLine.getAscent()) + local_height, strokePaint);
@@ -6950,7 +6972,7 @@ public class HelloApplication extends Application {
         }
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.setFill(new javafx.scene.paint.Color(0.5, 0.5, 0.5, 0.95));
+        gc.setFill(new javafx.scene.paint.Color(0.5, 0.5, 0.5, 0.925));
         gc.fillRoundRect(x_canvas_position, y_canvas_position, total_rectangle_width, total_rectangle_height, 20, 20);
         gc.setFill(javafx.scene.paint.Color.WHITE);
         gc.setFont(new Font(font_size));
@@ -7502,7 +7524,7 @@ public class HelloApplication extends Application {
                     double y_scale = smallest_text_box_info.getLanguage_info().getLanguage_canvas().getScaleY();
                     Type_of_cursor type_of_cursor = return_type_of_cursor_based_on_position(mouseEvent, smallest_text_box_info);
                     int index = helloController.list_view_with_all_of_the_languages.getItems().indexOf(smallest_text_box_info.getLanguage_info());
-                    text_on_canvas_dragged[0] = new Text_on_canvas_dragged(new Point2D(mouseEvent.getX(), mouseEvent.getY()), new Point2D(smallest_text_box_info.getLanguage_info().getArrayList_of_all_of_the_translations().get(selected_verse).getText_box_info().getCenter_position().getX(), smallest_text_box_info.getLanguage_info().getArrayList_of_all_of_the_translations().get(selected_verse).getText_box_info().getCenter_position().getY()), smallest_text_box_info.getLanguage_info(), type_of_cursor, smallest_text_box_info.getLanguage_info().getArrayList_of_all_of_the_translations().get(selected_verse), smallest_text_box_info.getText_box_info().getText_box_height(), smallest_text_box_info.getText_box_info().getText_box_width(), smallest_text_box_info.getLanguage_info().getLanguage_canvas().getHeight(), smallest_text_box_info.getLanguage_info().getLanguage_canvas().getWidth(), y_scale, x_scale, index,helloController.canvas_holding_the_text_position);
+                    text_on_canvas_dragged[0] = new Text_on_canvas_dragged(new Point2D(mouseEvent.getX(), mouseEvent.getY()), new Point2D(smallest_text_box_info.getLanguage_info().getArrayList_of_all_of_the_translations().get(selected_verse).getText_box_info().getCenter_position().getX(), smallest_text_box_info.getLanguage_info().getArrayList_of_all_of_the_translations().get(selected_verse).getText_box_info().getCenter_position().getY()), smallest_text_box_info.getLanguage_info(), type_of_cursor, smallest_text_box_info.getLanguage_info().getArrayList_of_all_of_the_translations().get(selected_verse), smallest_text_box_info.getText_box_info().getText_box_height(), smallest_text_box_info.getText_box_info().getText_box_width(), smallest_text_box_info.getLanguage_info().getLanguage_canvas().getHeight(), smallest_text_box_info.getLanguage_info().getLanguage_canvas().getWidth(), y_scale, x_scale, index, helloController.canvas_holding_the_text_position);
                     switch (type_of_cursor) {
                         case CENTER -> {
                             helloController.stack_pane_of_image_view_and_text.setCursor(Cursor.CLOSED_HAND);
@@ -8164,13 +8186,13 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void set_up_the_text_position_canvas(HelloController helloController){
+    private void set_up_the_text_position_canvas(HelloController helloController) {
         helloController.canvas_holding_the_text_position.setHeight(1920);
         helloController.canvas_holding_the_text_position.setWidth(1080);
-        bind_the_canvas_to_the_image_view(helloController,helloController.canvas_holding_the_text_position);
+        bind_the_canvas_to_the_image_view(helloController, helloController.canvas_holding_the_text_position);
     }
 
-    private void clear_a_canvas(Canvas canvas){
+    private void clear_a_canvas(Canvas canvas) {
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
