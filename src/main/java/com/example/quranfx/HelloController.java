@@ -231,5 +231,6 @@ public class HelloController {
     @FXML
     public Canvas canvas_holding_the_text_position;
 
-
+    @FXML
+    public JFXButton split_verse_button;
 }
