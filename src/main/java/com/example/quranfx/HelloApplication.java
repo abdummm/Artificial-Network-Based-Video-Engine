@@ -2802,7 +2802,7 @@ public class HelloApplication extends Application {
         //double adjustor = pixels_in_between_each_line / time_between_every_line;
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         for (int i = 0; i < ayats_processed.length; i++) {
-            Text verse_text = new Text("Verse ".concat(String.valueOf(ayats_processed[i].getVerse_number())));
+            Label verse_text = new Label("Verse ".concat(String.valueOf(ayats_processed[i].getVerse_number())));
             double start_x = base_time_line + (nanoseconds_to_pixels(time_line_pane_data, ayats_processed[i].getStart_millisecond()));
             StackPane stackPane = new StackPane();
             stackPane.setPrefWidth(nanoseconds_to_pixels(time_line_pane_data, ayats_processed[i].getDuration()));
@@ -2815,7 +2815,7 @@ public class HelloApplication extends Application {
             rectangle.setArcHeight(5);
             rectangle.setArcWidth(5);
             rectangle.setFill(javafx.scene.paint.Color.WHITE);
-            listen_to_mouse_moved_inside_rectangle(stackPane);
+            listen_to_mouse_moved_inside_rectangle(time_line_pane_data,stackPane,rectangle,verse_text);
             stackPane.getChildren().addAll(rectangle, verse_text);
             pane.getChildren().add(stackPane);
         }
@@ -8291,7 +8291,7 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void listen_to_mouse_moved_inside_rectangle(StackPane stack_pane){
+    private void listen_to_mouse_moved_inside_rectangle(Time_line_pane_data time_line_pane_data,StackPane stack_pane,Rectangle rectangle, Label verse_text){
         final double rectangle_cursor_change_margin = 12.5D;
         final Verse_resize_info[] verse_resize_info = new Verse_resize_info[1];
         stack_pane.setOnMouseMoved(new EventHandler<MouseEvent>() {
@@ -8323,7 +8323,12 @@ public class HelloApplication extends Application {
             public void handle(MouseEvent mouseEvent) {
                 if(verse_resize_info[0]!=null && verse_resize_info[0].isSet()){
                     if(verse_resize_info[0].getResizing_mode() == Resizing_mode.EAST){
-                        stack_pane.setPrefWidth(verse_resize_info[0].getVerse_width() + mouseEvent.getX() - verse_resize_info[0].getInitial_mouse_x_position());
+                        double new_width = verse_resize_info[0].getVerse_width() + mouseEvent.getX() - verse_resize_info[0].getInitial_mouse_x_position();
+                        new_width = Math.max(new_width,nanoseconds_to_pixels(time_line_pane_data,TimeUnit.MILLISECONDS.toNanos(250)));
+                        stack_pane.setPrefWidth(new_width);
+                        stack_pane.setMinWidth(new_width);
+                        stack_pane.setMaxWidth(new_width);
+                        rectangle.setWidth(new_width);
                     } else if(verse_resize_info[0].getResizing_mode() == Resizing_mode.WEST){
 
                     }
