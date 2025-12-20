@@ -2801,6 +2801,7 @@ public class HelloApplication extends Application {
     private void set_up_the_verses_time_line(HelloController helloController, Pane pane, double base_time_line, double pixels_in_between_each_line, long time_between_every_line) {
         //double adjustor = pixels_in_between_each_line / time_between_every_line;
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
+        StackPane[] array_of_verse_stack_panes = new  StackPane[ayats_processed.length];
         for (int i = 0; i < ayats_processed.length; i++) {
             Label verse_text = new Label("Verse ".concat(String.valueOf(ayats_processed[i].getVerse_number())));
             double start_x = base_time_line + (nanoseconds_to_pixels(time_line_pane_data, ayats_processed[i].getStart_millisecond()));
@@ -2815,9 +2816,11 @@ public class HelloApplication extends Application {
             rectangle.setArcHeight(5);
             rectangle.setArcWidth(5);
             rectangle.setFill(javafx.scene.paint.Color.WHITE);
-            listen_to_mouse_moved_inside_rectangle(time_line_pane_data,stackPane,rectangle,verse_text);
             stackPane.getChildren().addAll(rectangle, verse_text);
             pane.getChildren().add(stackPane);
+        }
+        for(int i = 0; i < array_of_verse_stack_panes.length; i++) {
+
         }
     }
 
