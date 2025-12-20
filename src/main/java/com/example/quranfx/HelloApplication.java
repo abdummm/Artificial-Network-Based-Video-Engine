@@ -8310,9 +8310,9 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if(mouseEvent.getX()<=rectangle_cursor_change_margin){
-                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.WEST,mouseEvent.getX(),true);
+                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.WEST,mouseEvent.getX(),true,stack_pane.getLayoutX(),stack_pane.getLayoutX()+stack_pane.getWidth(),stack_pane.getWidth());
                 } else if(stack_pane.getWidth()-mouseEvent.getX()<=rectangle_cursor_change_margin){
-                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.EAST,mouseEvent.getX(),true);
+                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.EAST,mouseEvent.getX(),true,stack_pane.getLayoutX(),stack_pane.getLayoutX()+stack_pane.getWidth(),stack_pane.getWidth());
                 } else {
                     verse_resize_info[0] = new Verse_resize_info(false);
                 }
@@ -8323,7 +8323,7 @@ public class HelloApplication extends Application {
             public void handle(MouseEvent mouseEvent) {
                 if(verse_resize_info[0]!=null && verse_resize_info[0].isSet()){
                     if(verse_resize_info[0].getResizing_mode() == Resizing_mode.EAST){
-
+                        stack_pane.setPrefWidth(verse_resize_info[0].getVerse_width() + mouseEvent.getX() - verse_resize_info[0].getInitial_mouse_x_position());
                     } else if(verse_resize_info[0].getResizing_mode() == Resizing_mode.WEST){
 
                     }
