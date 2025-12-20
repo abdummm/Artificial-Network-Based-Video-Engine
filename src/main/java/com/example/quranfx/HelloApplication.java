@@ -266,7 +266,6 @@ public class HelloApplication extends Application {
         bind_question_mark_beside_check_box_image(helloController);
         set_up_help_spread_app_learn_more_button(helloController);
         listen_to_learn_more_spread_app_button(helloController);
-        set_the_cursor_of_help_spread_app_button(helloController);
         bind_the_opacaity_canvas_to_image_view(helloController);
         set_the_width_and_color_of_image_control_stack_pane(helloController);
         listen_to_help_app_spread_check_mark(helloController);
@@ -280,7 +279,6 @@ public class HelloApplication extends Application {
         listen_to_help_app_settings_button(helloController);
         bind_the_height_for_settings_icon_to_help_spread_app_button(helloController);
         set_up_the_icon_for_settings_beside_help_spread_app(helloController);
-        set_the_cursor_of_settings_beside_help_spread_app(helloController);
         set_up_the_fade_in_fade_out_slider_ticks(helloController);
         hide_the_settings_mark_button_loading_screen_when_done(helloController);
         set_up_the_text_position_canvas(helloController);
@@ -7377,9 +7375,6 @@ public class HelloApplication extends Application {
         learn_more_about_app_stage.show();
     }
 
-    private void set_the_cursor_of_help_spread_app_button(HelloController helloController) {
-        helloController.question_mark_beside_help_spread_the_app.setCursor(Cursor.HAND);
-    }
 
     private void bind_the_opacaity_canvas_to_image_view(HelloController helloController) {
         helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.heightProperty().bind(helloController.chatgpt_image_view.fitHeightProperty());
@@ -7866,10 +7861,6 @@ public class HelloApplication extends Application {
         helloController.setting_beside_help_spread_the_app.setAlignment(Pos.CENTER);
     }
 
-    private void set_the_cursor_of_settings_beside_help_spread_app(HelloController helloController) {
-        helloController.setting_beside_help_spread_the_app.setCursor(Cursor.HAND);
-    }
-
     private void create_and_attach_all_the_image_listeners(HelloController helloController, Shape_object_time_line shape_object_time_line) {
         create_and_attach_the_opacity_listener(helloController, shape_object_time_line);
         create_and_attach_the_fade_in_listener(helloController, shape_object_time_line);
@@ -8261,13 +8252,19 @@ public class HelloApplication extends Application {
 
     private void set_the_buttons_color_change_when_hovered(HelloController helloController){
         change_color_of_button_when_hovered(helloController.split_verse_button,new javafx.scene.paint.Color(0.25,0.25,0.25,1),new javafx.scene.paint.Color(0,0,0,1));
+
         javafx.scene.paint.Color old_default_color = new javafx.scene.paint.Color(1,1,1,1);
         javafx.scene.paint.Color new_hovered_color = new javafx.scene.paint.Color(0.9,0.9,0.9,1);
+
         change_color_of_button_when_hovered(helloController.fast_rewind_button,new_hovered_color,old_default_color);
         change_color_of_button_when_hovered(helloController.rewind_button,new_hovered_color,old_default_color);
         change_color_of_button_when_hovered(helloController.play_pause_button,new_hovered_color,old_default_color);
         change_color_of_button_when_hovered(helloController.forward_button,new_hovered_color,old_default_color);
         change_color_of_button_when_hovered(helloController.fast_forward_button,new_hovered_color,old_default_color);
+
+        change_color_of_button_when_hovered(helloController.setting_beside_help_spread_the_app,new_hovered_color,old_default_color);
+        change_color_of_button_when_hovered(helloController.question_mark_beside_help_spread_the_app,new_hovered_color,old_default_color);
+
     }
 
     private void change_color_of_button_when_hovered(Button button, javafx.scene.paint.Color new_button_color, javafx.scene.paint.Color old_button_color){
@@ -8306,6 +8303,18 @@ public class HelloApplication extends Application {
                 } else {
                     rectangle.setCursor(Cursor.DEFAULT);
                 }
+            }
+        });
+        rectangle.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+
+            }
+        });
+        rectangle.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+
             }
         });
     }
