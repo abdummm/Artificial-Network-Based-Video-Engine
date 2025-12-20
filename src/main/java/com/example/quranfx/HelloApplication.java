@@ -2817,6 +2817,7 @@ public class HelloApplication extends Application {
             rectangle.setArcHeight(5);
             rectangle.setArcWidth(5);
             rectangle.setFill(javafx.scene.paint.Color.WHITE);
+            listen_to_mouse_moved_inside_rectangle(rectangle);
             stackPane.getChildren().addAll(rectangle, verse_text);
             pane.getChildren().add(stackPane);
         }
@@ -4697,7 +4698,7 @@ public class HelloApplication extends Application {
         polygon.setFill(color);
         polygon.setLayoutX(start_x - (time_line_indicator_width / 2));
         polygon.setLayoutY(0);
-        helloController.pane_overlying_the_time_line_pane_for_polygon_indicator.getChildren().add(polygon);
+        helloController.pane_overlying_the_time_line_pane_for_polygon_indicator.getChildren().addFirst(polygon);
         polygon_data = new Polygon_data(start_x - (time_line_indicator_width / 2), time_line_indicator_width);
         /*time_line_pane_data.setReal_polygon_position(start_x - (time_line_indicator_width / 2));
         time_line_pane_data.setPolygon_width(time_line_indicator_width);*/
@@ -8261,7 +8262,7 @@ public class HelloApplication extends Application {
     private void set_the_buttons_color_change_when_hovered(HelloController helloController){
         change_color_of_button_when_hovered(helloController.split_verse_button,new javafx.scene.paint.Color(0.25,0.25,0.25,1),new javafx.scene.paint.Color(0,0,0,1));
         javafx.scene.paint.Color old_default_color = new javafx.scene.paint.Color(1,1,1,1);
-        javafx.scene.paint.Color new_hovered_color = new javafx.scene.paint.Color(0.85,0.85,0.85,1);
+        javafx.scene.paint.Color new_hovered_color = new javafx.scene.paint.Color(0.9,0.9,0.9,1);
         change_color_of_button_when_hovered(helloController.fast_rewind_button,new_hovered_color,old_default_color);
         change_color_of_button_when_hovered(helloController.rewind_button,new_hovered_color,old_default_color);
         change_color_of_button_when_hovered(helloController.play_pause_button,new_hovered_color,old_default_color);
@@ -8289,6 +8290,22 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
 
+            }
+        });
+    }
+
+    private void listen_to_mouse_moved_inside_rectangle(Rectangle rectangle){
+        final double rectangle_cursor_change_margin = 12.5D;
+        rectangle.setOnMouseMoved(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if(mouseEvent.getX()<=rectangle_cursor_change_margin){
+                    rectangle.setCursor(Cursor.W_RESIZE);
+                } else if(rectangle.getWidth()-mouseEvent.getX()<=rectangle_cursor_change_margin){
+                    rectangle.setCursor(Cursor.E_RESIZE);
+                } else {
+                    rectangle.setCursor(Cursor.DEFAULT);
+                }
             }
         });
     }
