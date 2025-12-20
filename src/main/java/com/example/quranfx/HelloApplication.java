@@ -285,6 +285,12 @@ public class HelloApplication extends Application {
         hide_the_settings_mark_button_loading_screen_when_done(helloController);
         set_up_the_text_position_canvas(helloController);
         create_the_split_button(helloController);
+        add_split_verse_button_tooltip(helloController);
+        /*add_fast_reverse_tool_tip(helloController);
+        add_reverse_tool_tip(helloController);
+        add_play_pause_tool_tip(helloController);
+        add_forward_tool_tip(helloController);
+        add_fast_forward_tool_tip(helloController);*/
     }
 
     /*public static void main(String[] args) {
@@ -8200,9 +8206,11 @@ public class HelloApplication extends Application {
 
     private void create_the_split_button(HelloController helloController){
         final double width_and_height_of_the_split_button = 15;
-        Shape squirqle = return_default_squircle();
+        Rectangle rounded_rectangle = new Rectangle();
+        rounded_rectangle.setArcWidth(0.7);
+        rounded_rectangle.setArcHeight(0.7);
         set_pref_min_max(helloController.split_verse_button, width_and_height_of_the_split_button * 2, Resize_bind_type.WIDTH_AND_HEIGHT);
-        helloController.split_verse_button.setShape(squirqle);
+        helloController.split_verse_button.setShape(rounded_rectangle);
         helloController.split_verse_button.setBackground(new Background(new BackgroundFill(new javafx.scene.paint.Color(0,0,0,1),CornerRadii.EMPTY, Insets.EMPTY)));
         helloController.split_verse_button.setRipplerFill(new javafx.scene.paint.Color(1,1,1,1));
         helloController.split_verse_button.setGraphic(return_the_icon("split_icon", (int) (width_and_height_of_the_split_button * 1.25D), (int) (width_and_height_of_the_split_button * 1.25D)));
@@ -8211,4 +8219,40 @@ public class HelloApplication extends Application {
         helloController.split_verse_button.setLayoutX(7.5D);
         helloController.split_verse_button.setLayoutY(7.5D);
     }
+
+    private void add_split_verse_button_tooltip(HelloController helloController){
+        Tooltip tooltip = new Tooltip("Split verse");
+        tooltip.setShowDelay(Duration.millis(how_long_does_it_take_for_tool_tip_to_show_up));
+        helloController.split_verse_button.setTooltip(tooltip);
+    }
+
+    /*private void add_fast_reverse_tool_tip(HelloController helloController){
+        Tooltip tooltip = new Tooltip("Rewind 1 min");
+        tooltip.setShowDelay(Duration.millis(how_long_does_it_take_for_tool_tip_to_show_up));
+        helloController.fast_rewind_button.setTooltip(tooltip);
+    }
+
+    private void add_reverse_tool_tip(HelloController helloController){
+        Tooltip tooltip = new Tooltip("Previous verse");
+        tooltip.setShowDelay(Duration.millis(how_long_does_it_take_for_tool_tip_to_show_up));
+        helloController.rewind_button.setTooltip(tooltip);
+    }
+
+    private void add_play_pause_tool_tip(HelloController helloController){
+        Tooltip tooltip = new Tooltip("Play/Pause");
+        tooltip.setShowDelay(Duration.millis(how_long_does_it_take_for_tool_tip_to_show_up));
+        helloController.play_pause_button.setTooltip(tooltip);
+    }
+
+    private void add_forward_tool_tip(HelloController helloController){
+        Tooltip tooltip = new Tooltip("Next verse");
+        tooltip.setShowDelay(Duration.millis(how_long_does_it_take_for_tool_tip_to_show_up));
+        helloController.forward_button.setTooltip(tooltip);
+    }
+
+    private void add_fast_forward_tool_tip(HelloController helloController){
+        Tooltip tooltip = new Tooltip("Forward 1 min");
+        tooltip.setShowDelay(Duration.millis(how_long_does_it_take_for_tool_tip_to_show_up));
+        helloController.fast_forward_button.setTooltip(tooltip);
+    }*/
 }
