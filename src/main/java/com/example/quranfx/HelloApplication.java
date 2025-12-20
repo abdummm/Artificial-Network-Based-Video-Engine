@@ -34,6 +34,7 @@ import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
@@ -76,7 +77,6 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import javafx.util.Duration;
-import javafx.util.StringConverter;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.resizers.configurations.ScalingMode;
 import okhttp3.*;
@@ -291,6 +291,8 @@ public class HelloApplication extends Application {
         add_play_pause_tool_tip(helloController);
         add_forward_tool_tip(helloController);
         add_fast_forward_tool_tip(helloController);*/
+        listen_to_split_verse(helloController);
+        set_the_buttons_color_change_when_hovered(helloController);
     }
 
     /*public static void main(String[] args) {
@@ -8206,13 +8208,13 @@ public class HelloApplication extends Application {
 
     private void create_the_split_button(HelloController helloController){
         final double width_and_height_of_the_split_button = 15;
-        Rectangle rounded_rectangle = new Rectangle();
+        Rectangle rounded_rectangle = new Rectangle(-1, -1, 2, 2);
         rounded_rectangle.setArcWidth(0.7);
         rounded_rectangle.setArcHeight(0.7);
         set_pref_min_max(helloController.split_verse_button, width_and_height_of_the_split_button * 2, Resize_bind_type.WIDTH_AND_HEIGHT);
         helloController.split_verse_button.setShape(rounded_rectangle);
         helloController.split_verse_button.setBackground(new Background(new BackgroundFill(new javafx.scene.paint.Color(0,0,0,1),CornerRadii.EMPTY, Insets.EMPTY)));
-        helloController.split_verse_button.setRipplerFill(new javafx.scene.paint.Color(1,1,1,1));
+        helloController.split_verse_button.setRipplerFill(new javafx.scene.paint.Color(1,0,0,1));
         helloController.split_verse_button.setGraphic(return_the_icon("split_icon", (int) (width_and_height_of_the_split_button * 1.25D), (int) (width_and_height_of_the_split_button * 1.25D)));
         helloController.split_verse_button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         helloController.split_verse_button.setAlignment(Pos.CENTER);
@@ -8255,4 +8257,39 @@ public class HelloApplication extends Application {
         tooltip.setShowDelay(Duration.millis(how_long_does_it_take_for_tool_tip_to_show_up));
         helloController.fast_forward_button.setTooltip(tooltip);
     }*/
+
+    private void set_the_buttons_color_change_when_hovered(HelloController helloController){
+        change_color_of_button_when_hovered(helloController.split_verse_button,new javafx.scene.paint.Color(0.25,0.25,0.25,1),new javafx.scene.paint.Color(0,0,0,1));
+        javafx.scene.paint.Color old_default_color = new javafx.scene.paint.Color(1,1,1,1);
+        javafx.scene.paint.Color new_hovered_color = new javafx.scene.paint.Color(0.85,0.85,0.85,1);
+        change_color_of_button_when_hovered(helloController.fast_rewind_button,new_hovered_color,old_default_color);
+        change_color_of_button_when_hovered(helloController.rewind_button,new_hovered_color,old_default_color);
+        change_color_of_button_when_hovered(helloController.play_pause_button,new_hovered_color,old_default_color);
+        change_color_of_button_when_hovered(helloController.forward_button,new_hovered_color,old_default_color);
+        change_color_of_button_when_hovered(helloController.fast_forward_button,new_hovered_color,old_default_color);
+    }
+
+    private void change_color_of_button_when_hovered(Button button, javafx.scene.paint.Color new_button_color, javafx.scene.paint.Color old_button_color){
+        button.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                button.setBackground(new Background(new BackgroundFill(new_button_color,CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+        });
+        button.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                button.setBackground(new Background(new BackgroundFill(old_button_color,CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+        });
+    }
+
+    private void listen_to_split_verse(HelloController helloController){
+        helloController.split_verse_button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+
+            }
+        });
+    }
 }
