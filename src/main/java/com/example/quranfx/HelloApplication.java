@@ -2823,11 +2823,11 @@ public class HelloApplication extends Application {
             if(i == 0 && i == array_of_verse_stack_panes.length-1){
                 listen_to_mouse_moved_inside_rectangle(time_line_pane_data,array_of_verse_stack_panes[i],null,null,Verse_position_mode.START_AND_END);
             } else if(i == 0){
-
+                listen_to_mouse_moved_inside_rectangle(time_line_pane_data,array_of_verse_stack_panes[i],null,array_of_verse_stack_panes[i+1],Verse_position_mode.START);
             } else if(i == array_of_verse_stack_panes.length-1){
-
+                listen_to_mouse_moved_inside_rectangle(time_line_pane_data,array_of_verse_stack_panes[i],array_of_verse_stack_panes[i-1],null,Verse_position_mode.END);
             } else {
-
+                listen_to_mouse_moved_inside_rectangle(time_line_pane_data,array_of_verse_stack_panes[i],array_of_verse_stack_panes[i-1],array_of_verse_stack_panes[i+1],Verse_position_mode.MIDDLE);
             }
         }
     }
