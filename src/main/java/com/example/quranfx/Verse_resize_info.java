@@ -1,5 +1,7 @@
 package com.example.quranfx;
 
+import javafx.scene.layout.StackPane;
+
 public class Verse_resize_info {
     private Resizing_mode resizing_mode;
     private double initial_mouse_x_position;
@@ -14,19 +16,19 @@ public class Verse_resize_info {
     private double next_verse_end_x;
     private double next_verse_width;
 
-    public Verse_resize_info(Resizing_mode resizing_mode, double initial_mouse_x_position, boolean set, double verse_start_x, double verse_end_x, double verse_width, double previous_verse_start_x, double previous_verse_end_x, double previous_verse_width, double next_verse_start_x, double next_verse_end_x, double next_verse_width) {
+    public Verse_resize_info(Resizing_mode resizing_mode, double initial_mouse_x_position, boolean set, StackPane main_stack_pane, StackPane previous_stack_pane, StackPane next_stack_pane) {
         this.resizing_mode = resizing_mode;
         this.initial_mouse_x_position = initial_mouse_x_position;
         this.set = set;
-        this.verse_start_x = verse_start_x;
-        this.verse_end_x = verse_end_x;
-        this.verse_width = verse_width;
-        this.previous_verse_start_x = previous_verse_start_x;
-        this.previous_verse_end_x = previous_verse_end_x;
-        this.previous_verse_width = previous_verse_width;
-        this.next_verse_start_x = next_verse_start_x;
-        this.next_verse_end_x = next_verse_end_x;
-        this.next_verse_width = next_verse_width;
+        this.verse_start_x = main_stack_pane.getLayoutX();
+        this.verse_end_x = main_stack_pane.getLayoutX() + main_stack_pane.getWidth();
+        this.verse_width = main_stack_pane.getWidth();
+        this.previous_verse_start_x = previous_stack_pane==null ? 0 : previous_stack_pane.getLayoutX();
+        this.previous_verse_end_x = previous_stack_pane==null ? 0 : previous_stack_pane.getLayoutX() + previous_stack_pane.getWidth();
+        this.previous_verse_width = previous_stack_pane==null ? 0 :previous_stack_pane.getWidth();
+        this.next_verse_start_x = next_stack_pane==null ? 0 : next_stack_pane.getLayoutX();
+        this.next_verse_end_x = next_stack_pane==null ? 0 : next_stack_pane.getLayoutX() + next_stack_pane.getWidth();
+        this.next_verse_width = next_stack_pane==null ? 0 :next_stack_pane.getWidth();
     }
 
     public Verse_resize_info(boolean set) {
