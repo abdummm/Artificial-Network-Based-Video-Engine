@@ -61,4 +61,27 @@ public class Verse_resize_info {
         return verse_width;
     }
 
+    public double getPrevious_verse_start_x() {
+        return previous_verse_start_x;
+    }
+
+    public double getPrevious_verse_end_x() {
+        return previous_verse_end_x;
+    }
+
+    public double getPrevious_verse_width() {
+        return previous_verse_width;
+    }
+
+    public double getNext_verse_start_x() {
+        return next_verse_start_x;
+    }
+
+    public double getNext_verse_end_x() {
+        return next_verse_end_x;
+    }
+
+    public double getNext_verse_width() {
+        return next_verse_width;
+    }
 }
