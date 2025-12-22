@@ -2801,12 +2801,14 @@ public class HelloApplication extends Application {
     private void set_up_the_verses_time_line(HelloController helloController, Pane pane, double base_time_line, double pixels_in_between_each_line, long time_between_every_line) {
         //double adjustor = pixels_in_between_each_line / time_between_every_line;
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
-        StackPane[] array_of_verse_stack_panes = new  StackPane[ayats_processed.length];
+        StackPane[] array_of_verse_stack_panes = new StackPane[ayats_processed.length];
         for (int i = 0; i < ayats_processed.length; i++) {
             Label verse_text = new Label("Verse ".concat(String.valueOf(ayats_processed[i].getVerse_number())));
             double start_x = base_time_line + (nanoseconds_to_pixels(time_line_pane_data, ayats_processed[i].getStart_millisecond()));
             StackPane stackPane = new StackPane();
             stackPane.setPrefWidth(nanoseconds_to_pixels(time_line_pane_data, ayats_processed[i].getDuration()));
+            stackPane.setMinWidth(nanoseconds_to_pixels(time_line_pane_data, ayats_processed[i].getDuration()));
+            stackPane.setMaxWidth(nanoseconds_to_pixels(time_line_pane_data, ayats_processed[i].getDuration()));
             stackPane.setPrefHeight(30);
             stackPane.setLayoutX(start_x);
             stackPane.setLayoutY(30);
@@ -2818,16 +2820,19 @@ public class HelloApplication extends Application {
             rectangle.setFill(javafx.scene.paint.Color.WHITE);
             stackPane.getChildren().addAll(rectangle, verse_text);
             pane.getChildren().add(stackPane);
+            array_of_verse_stack_panes[i] = stackPane;
         }
-        for(int i = 0; i < array_of_verse_stack_panes.length; i++) {
-            if(i == 0 && i == array_of_verse_stack_panes.length-1){
-                listen_to_mouse_moved_inside_rectangle(time_line_pane_data,array_of_verse_stack_panes[i],null,null,Verse_position_mode.START_AND_END);
-            } else if(i == 0){
-                listen_to_mouse_moved_inside_rectangle(time_line_pane_data,array_of_verse_stack_panes[i],null,array_of_verse_stack_panes[i+1],Verse_position_mode.START);
-            } else if(i == array_of_verse_stack_panes.length-1){
-                listen_to_mouse_moved_inside_rectangle(time_line_pane_data,array_of_verse_stack_panes[i],array_of_verse_stack_panes[i-1],null,Verse_position_mode.END);
+        StackPane empty_stack_pane = new StackPane();
+        Rectangle empty_rectangle = new Rectangle();
+        for (int i = 0; i < array_of_verse_stack_panes.length; i++) {
+            if (i == 0 && i == array_of_verse_stack_panes.length - 1) {
+                listen_to_mouse_moved_inside_rectangle(time_line_pane_data, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), empty_stack_pane, empty_rectangle, empty_stack_pane, empty_rectangle, Verse_position_mode.START_AND_END);
+            } else if (i == 0) {
+                listen_to_mouse_moved_inside_rectangle(time_line_pane_data, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), empty_stack_pane, empty_rectangle, array_of_verse_stack_panes[i + 1], (Rectangle) array_of_verse_stack_panes[i + 1].getChildren().getFirst(), Verse_position_mode.START);
+            } else if (i == array_of_verse_stack_panes.length - 1) {
+                listen_to_mouse_moved_inside_rectangle(time_line_pane_data, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), array_of_verse_stack_panes[i - 1], (Rectangle) array_of_verse_stack_panes[i - 1].getChildren().getFirst(), empty_stack_pane, empty_rectangle, Verse_position_mode.END);
             } else {
-                listen_to_mouse_moved_inside_rectangle(time_line_pane_data,array_of_verse_stack_panes[i],array_of_verse_stack_panes[i-1],array_of_verse_stack_panes[i+1],Verse_position_mode.MIDDLE);
+                listen_to_mouse_moved_inside_rectangle(time_line_pane_data, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), array_of_verse_stack_panes[i - 1], (Rectangle) array_of_verse_stack_panes[i - 1].getChildren().getFirst(), array_of_verse_stack_panes[i + 1], (Rectangle) array_of_verse_stack_panes[i + 1].getChildren().getFirst(), Verse_position_mode.MIDDLE);
             }
         }
     }
@@ -8209,15 +8214,15 @@ public class HelloApplication extends Application {
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
-    private void create_the_split_button(HelloController helloController){
+    private void create_the_split_button(HelloController helloController) {
         final double width_and_height_of_the_split_button = 15;
         Rectangle rounded_rectangle = new Rectangle(-1, -1, 2, 2);
         rounded_rectangle.setArcWidth(0.7);
         rounded_rectangle.setArcHeight(0.7);
         set_pref_min_max(helloController.split_verse_button, width_and_height_of_the_split_button * 2, Resize_bind_type.WIDTH_AND_HEIGHT);
         helloController.split_verse_button.setShape(rounded_rectangle);
-        helloController.split_verse_button.setBackground(new Background(new BackgroundFill(new javafx.scene.paint.Color(0,0,0,1),CornerRadii.EMPTY, Insets.EMPTY)));
-        helloController.split_verse_button.setRipplerFill(new javafx.scene.paint.Color(1,0,0,1));
+        helloController.split_verse_button.setBackground(new Background(new BackgroundFill(new javafx.scene.paint.Color(0, 0, 0, 1), CornerRadii.EMPTY, Insets.EMPTY)));
+        helloController.split_verse_button.setRipplerFill(new javafx.scene.paint.Color(1, 0, 0, 1));
         helloController.split_verse_button.setGraphic(return_the_icon("split_icon", (int) (width_and_height_of_the_split_button * 1.25D), (int) (width_and_height_of_the_split_button * 1.25D)));
         helloController.split_verse_button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         helloController.split_verse_button.setAlignment(Pos.CENTER);
@@ -8225,7 +8230,7 @@ public class HelloApplication extends Application {
         helloController.split_verse_button.setLayoutY(7.5D);
     }
 
-    private void add_split_verse_button_tooltip(HelloController helloController){
+    private void add_split_verse_button_tooltip(HelloController helloController) {
         Tooltip tooltip = new Tooltip("Split verse");
         tooltip.setShowDelay(Duration.millis(how_long_does_it_take_for_tool_tip_to_show_up));
         helloController.split_verse_button.setTooltip(tooltip);
@@ -8261,39 +8266,39 @@ public class HelloApplication extends Application {
         helloController.fast_forward_button.setTooltip(tooltip);
     }*/
 
-    private void set_the_buttons_color_change_when_hovered(HelloController helloController){
-        change_color_of_button_when_hovered(helloController.split_verse_button,new javafx.scene.paint.Color(0.25,0.25,0.25,1),new javafx.scene.paint.Color(0,0,0,1));
+    private void set_the_buttons_color_change_when_hovered(HelloController helloController) {
+        change_color_of_button_when_hovered(helloController.split_verse_button, new javafx.scene.paint.Color(0.25, 0.25, 0.25, 1), new javafx.scene.paint.Color(0, 0, 0, 1));
 
-        javafx.scene.paint.Color old_default_color = new javafx.scene.paint.Color(1,1,1,1);
-        javafx.scene.paint.Color new_hovered_color = new javafx.scene.paint.Color(0.9,0.9,0.9,1);
+        javafx.scene.paint.Color old_default_color = new javafx.scene.paint.Color(1, 1, 1, 1);
+        javafx.scene.paint.Color new_hovered_color = new javafx.scene.paint.Color(0.9, 0.9, 0.9, 1);
 
-        change_color_of_button_when_hovered(helloController.fast_rewind_button,new_hovered_color,old_default_color);
-        change_color_of_button_when_hovered(helloController.rewind_button,new_hovered_color,old_default_color);
-        change_color_of_button_when_hovered(helloController.play_pause_button,new_hovered_color,old_default_color);
-        change_color_of_button_when_hovered(helloController.forward_button,new_hovered_color,old_default_color);
-        change_color_of_button_when_hovered(helloController.fast_forward_button,new_hovered_color,old_default_color);
+        change_color_of_button_when_hovered(helloController.fast_rewind_button, new_hovered_color, old_default_color);
+        change_color_of_button_when_hovered(helloController.rewind_button, new_hovered_color, old_default_color);
+        change_color_of_button_when_hovered(helloController.play_pause_button, new_hovered_color, old_default_color);
+        change_color_of_button_when_hovered(helloController.forward_button, new_hovered_color, old_default_color);
+        change_color_of_button_when_hovered(helloController.fast_forward_button, new_hovered_color, old_default_color);
 
-        change_color_of_button_when_hovered(helloController.setting_beside_help_spread_the_app,new_hovered_color,old_default_color);
-        change_color_of_button_when_hovered(helloController.question_mark_beside_help_spread_the_app,new_hovered_color,old_default_color);
+        change_color_of_button_when_hovered(helloController.setting_beside_help_spread_the_app, new_hovered_color, old_default_color);
+        change_color_of_button_when_hovered(helloController.question_mark_beside_help_spread_the_app, new_hovered_color, old_default_color);
 
     }
 
-    private void change_color_of_button_when_hovered(Button button, javafx.scene.paint.Color new_button_color, javafx.scene.paint.Color old_button_color){
+    private void change_color_of_button_when_hovered(Button button, javafx.scene.paint.Color new_button_color, javafx.scene.paint.Color old_button_color) {
         button.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                button.setBackground(new Background(new BackgroundFill(new_button_color,CornerRadii.EMPTY, Insets.EMPTY)));
+                button.setBackground(new Background(new BackgroundFill(new_button_color, CornerRadii.EMPTY, Insets.EMPTY)));
             }
         });
         button.setOnMouseExited(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                button.setBackground(new Background(new BackgroundFill(old_button_color,CornerRadii.EMPTY, Insets.EMPTY)));
+                button.setBackground(new Background(new BackgroundFill(old_button_color, CornerRadii.EMPTY, Insets.EMPTY)));
             }
         });
     }
 
-    private void listen_to_split_verse(HelloController helloController){
+    private void listen_to_split_verse(HelloController helloController) {
         helloController.split_verse_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -8302,16 +8307,15 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void listen_to_mouse_moved_inside_rectangle(Time_line_pane_data time_line_pane_data,StackPane main_stack_pane,StackPane previous_stack_pane,StackPane next_stack_pane,Verse_position_mode verse_position_mode){
-        Rectangle rectangle = (Rectangle) main_stack_pane.getChildren().getFirst();
+    private void listen_to_mouse_moved_inside_rectangle(Time_line_pane_data time_line_pane_data, StackPane main_stack_pane, Rectangle main_rectangle, StackPane previous_stack_pane, Rectangle previous_rectangle, StackPane next_stack_pane, Rectangle next_rectangle, Verse_position_mode verse_position_mode) {
         final double rectangle_cursor_change_margin = 12.5D;
         final Verse_resize_info[] verse_resize_info = new Verse_resize_info[1];
         main_stack_pane.setOnMouseMoved(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                if(mouseEvent.getX()<=rectangle_cursor_change_margin && (verse_position_mode == Verse_position_mode.MIDDLE || verse_position_mode == Verse_position_mode.END)){
+                if (mouseEvent.getX() <= rectangle_cursor_change_margin && (verse_position_mode == Verse_position_mode.MIDDLE || verse_position_mode == Verse_position_mode.END)) {
                     main_stack_pane.setCursor(Cursor.W_RESIZE);
-                } else if(main_stack_pane.getWidth()-mouseEvent.getX()<=rectangle_cursor_change_margin && (verse_position_mode == Verse_position_mode.MIDDLE || verse_position_mode == Verse_position_mode.START)){
+                } else if (main_stack_pane.getWidth() - mouseEvent.getX() <= rectangle_cursor_change_margin && (verse_position_mode == Verse_position_mode.MIDDLE || verse_position_mode == Verse_position_mode.START)) {
                     main_stack_pane.setCursor(Cursor.E_RESIZE);
                 } else {
                     main_stack_pane.setCursor(Cursor.DEFAULT);
@@ -8321,10 +8325,10 @@ public class HelloApplication extends Application {
         main_stack_pane.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                if(mouseEvent.getX()<=rectangle_cursor_change_margin && (verse_position_mode == Verse_position_mode.MIDDLE || verse_position_mode == Verse_position_mode.END)){
-                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.WEST,mouseEvent.getX(),true,main_stack_pane.getLayoutX(),main_stack_pane.getLayoutX()+main_stack_pane.getWidth(),main_stack_pane.getWidth());
-                } else if(main_stack_pane.getWidth()-mouseEvent.getX()<=rectangle_cursor_change_margin && (verse_position_mode == Verse_position_mode.MIDDLE || verse_position_mode == Verse_position_mode.START)){
-                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.EAST,mouseEvent.getX(),true,main_stack_pane.getLayoutX(),main_stack_pane.getLayoutX()+main_stack_pane.getWidth(),main_stack_pane.getWidth());
+                if (mouseEvent.getX() <= rectangle_cursor_change_margin && (verse_position_mode == Verse_position_mode.MIDDLE || verse_position_mode == Verse_position_mode.END)) {
+                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.WEST, mouseEvent.getX(), true, main_stack_pane, previous_stack_pane, next_stack_pane);
+                } else if (main_stack_pane.getWidth() - mouseEvent.getX() <= rectangle_cursor_change_margin && (verse_position_mode == Verse_position_mode.MIDDLE || verse_position_mode == Verse_position_mode.START)) {
+                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.EAST, mouseEvent.getX(), true, main_stack_pane, previous_stack_pane, next_stack_pane);
                 } else {
                     verse_resize_info[0] = new Verse_resize_info(false);
                 }
@@ -8333,16 +8337,35 @@ public class HelloApplication extends Application {
         main_stack_pane.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                if(verse_resize_info[0]!=null && verse_resize_info[0].isSet()){
-                    if(verse_resize_info[0].getResizing_mode() == Resizing_mode.EAST){
+                if (verse_resize_info[0] != null && verse_resize_info[0].isSet()) {
+                    if (verse_resize_info[0].getResizing_mode() == Resizing_mode.EAST) {
                         double new_width = verse_resize_info[0].getVerse_width() + mouseEvent.getX() - verse_resize_info[0].getInitial_mouse_x_position();
-                        new_width = Math.max(new_width,nanoseconds_to_pixels(time_line_pane_data,TimeUnit.MILLISECONDS.toNanos(250)));
+                        new_width = Math.max(new_width, nanoseconds_to_pixels(time_line_pane_data, TimeUnit.MILLISECONDS.toNanos(250)));
+                        if(verse_resize_info[0].getNext_verse_width() + verse_resize_info[0].getVerse_width() - new_width < nanoseconds_to_pixels(time_line_pane_data, TimeUnit.MILLISECONDS.toNanos(250))){
+                            new_width = verse_resize_info[0].getNext_verse_width() + verse_resize_info[0].getVerse_width() - nanoseconds_to_pixels(time_line_pane_data, TimeUnit.MILLISECONDS.toNanos(250));
+                        }
                         main_stack_pane.setPrefWidth(new_width);
                         main_stack_pane.setMinWidth(new_width);
                         main_stack_pane.setMaxWidth(new_width);
-                        rectangle.setWidth(new_width);
-                    } else if(verse_resize_info[0].getResizing_mode() == Resizing_mode.WEST){
+                        main_rectangle.setWidth(new_width);
 
+                        double width_difference = verse_resize_info[0].getVerse_width() - new_width;
+                        next_stack_pane.setPrefWidth(verse_resize_info[0].getNext_verse_width() + width_difference);
+                        next_stack_pane.setMinWidth(verse_resize_info[0].getNext_verse_width() + width_difference);
+                        next_stack_pane.setMaxWidth(verse_resize_info[0].getNext_verse_width() + width_difference);
+                        next_rectangle.setWidth(verse_resize_info[0].getNext_verse_width() + width_difference);
+
+                        next_stack_pane.setLayoutX(verse_resize_info[0].getNext_verse_start_x() - width_difference);
+                    } else if (verse_resize_info[0].getResizing_mode() == Resizing_mode.WEST) {
+                        double new_width = verse_resize_info[0].getVerse_width() - mouseEvent.getX() + verse_resize_info[0].getInitial_mouse_x_position();
+                        new_width = Math.max(new_width, nanoseconds_to_pixels(time_line_pane_data, TimeUnit.MILLISECONDS.toNanos(250)));
+
+                        main_stack_pane.setPrefWidth(new_width);
+                        main_stack_pane.setMinWidth(new_width);
+                        main_stack_pane.setMaxWidth(new_width);
+                        main_rectangle.setWidth(new_width);
+
+                        main_stack_pane.setLayoutX(verse_resize_info[0].getVerse_start_x() + mouseEvent.getX() - verse_resize_info[0].getInitial_mouse_x_position());
                     }
                 }
             }
