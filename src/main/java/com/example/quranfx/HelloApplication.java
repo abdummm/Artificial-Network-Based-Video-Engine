@@ -8360,6 +8360,9 @@ public class HelloApplication extends Application {
                         next_rectangle.setWidth(verse_resize_info[0].getNext_verse_width() + width_difference);
 
                         next_stack_pane.setLayoutX(verse_resize_info[0].getNext_verse_start_x() - width_difference);
+
+                        ayats_processed[verse_array_number].setDuration(pixels_to_nanoseconds(time_line_pane_data,new_width));
+                        ayats_processed[verse_array_number+1].setDuration(pixels_to_nanoseconds(time_line_pane_data,verse_resize_info[0].getNext_verse_width() + width_difference));
                     } else if (verse_resize_info[0].getResizing_mode() == Resizing_mode.WEST) {
                         double new_width = verse_resize_info[0].getVerse_width() - mouseEvent.getSceneX() + verse_resize_info[0].getInitial_scene_mouse_x_position();
                         new_width = Math.max(new_width, nanoseconds_to_pixels(time_line_pane_data, TimeUnit.MILLISECONDS.toNanos(250)));
@@ -8380,6 +8383,9 @@ public class HelloApplication extends Application {
 
                         double new_layout_x = verse_resize_info[0].getVerse_end_x() - new_width;
                         main_stack_pane.setLayoutX(new_layout_x);
+
+                        ayats_processed[verse_array_number].setDuration(pixels_to_nanoseconds(time_line_pane_data,new_width));
+                        ayats_processed[verse_array_number+1].setDuration(pixels_to_nanoseconds(time_line_pane_data,verse_resize_info[0].getPrevious_verse_width() - width_difference));
                     }
                 }
             }
