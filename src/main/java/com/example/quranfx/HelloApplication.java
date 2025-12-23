@@ -2913,6 +2913,7 @@ public class HelloApplication extends Application {
                         which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, mouseEvent.getX() - time_line_pane_data.getTime_line_base_line()));
                         set_up_everything_image_view_time_line_x_pos(helloController, mouseEvent.getX(), Type_of_Image.FULL_QUALITY);
                     }
+                    helloController.list_view_with_all_of_the_languages.refresh();
                 } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
                     empty_tile_pane_context_menu.show(helloController.tile_pane_media_pool, mouseEvent.getScreenX(), mouseEvent.getScreenY());
                 }
@@ -2987,6 +2988,7 @@ public class HelloApplication extends Application {
                 }
                 Point2D point_2d_relative_to_the_time_line = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY());
                 set_up_everything_image_view_time_line_x_pos(helloController, point_2d_relative_to_the_time_line.getX(), Type_of_Image.FULL_QUALITY);
+                helloController.list_view_with_all_of_the_languages.refresh();
             }
         });
         polygon.setOnMouseDragged(new EventHandler<MouseEvent>() {
