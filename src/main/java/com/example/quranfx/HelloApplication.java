@@ -2827,13 +2827,13 @@ public class HelloApplication extends Application {
         if(/*sound_mode == Sound_mode.UPLOADED*/true){ // TODO this should be changed
             for (int i = 0; i < array_of_verse_stack_panes.length; i++) {
                 if (i == 0 && i == array_of_verse_stack_panes.length - 1) {
-                    listen_to_mouse_moved_inside_rectangle(time_line_pane_data, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), empty_stack_pane, empty_rectangle, empty_stack_pane, empty_rectangle, Verse_position_mode.START_AND_END);
+                    listen_to_mouse_moved_inside_rectangle(time_line_pane_data,i, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), empty_stack_pane, empty_rectangle, empty_stack_pane, empty_rectangle, Verse_position_mode.START_AND_END);
                 } else if (i == 0) {
-                    listen_to_mouse_moved_inside_rectangle(time_line_pane_data, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), empty_stack_pane, empty_rectangle, array_of_verse_stack_panes[i + 1], (Rectangle) array_of_verse_stack_panes[i + 1].getChildren().getFirst(), Verse_position_mode.START);
+                    listen_to_mouse_moved_inside_rectangle(time_line_pane_data,i, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), empty_stack_pane, empty_rectangle, array_of_verse_stack_panes[i + 1], (Rectangle) array_of_verse_stack_panes[i + 1].getChildren().getFirst(), Verse_position_mode.START);
                 } else if (i == array_of_verse_stack_panes.length - 1) {
-                    listen_to_mouse_moved_inside_rectangle(time_line_pane_data, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), array_of_verse_stack_panes[i - 1], (Rectangle) array_of_verse_stack_panes[i - 1].getChildren().getFirst(), empty_stack_pane, empty_rectangle, Verse_position_mode.END);
+                    listen_to_mouse_moved_inside_rectangle(time_line_pane_data,i, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), array_of_verse_stack_panes[i - 1], (Rectangle) array_of_verse_stack_panes[i - 1].getChildren().getFirst(), empty_stack_pane, empty_rectangle, Verse_position_mode.END);
                 } else {
-                    listen_to_mouse_moved_inside_rectangle(time_line_pane_data, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), array_of_verse_stack_panes[i - 1], (Rectangle) array_of_verse_stack_panes[i - 1].getChildren().getFirst(), array_of_verse_stack_panes[i + 1], (Rectangle) array_of_verse_stack_panes[i + 1].getChildren().getFirst(), Verse_position_mode.MIDDLE);
+                    listen_to_mouse_moved_inside_rectangle(time_line_pane_data,i, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), array_of_verse_stack_panes[i - 1], (Rectangle) array_of_verse_stack_panes[i - 1].getChildren().getFirst(), array_of_verse_stack_panes[i + 1], (Rectangle) array_of_verse_stack_panes[i + 1].getChildren().getFirst(), Verse_position_mode.MIDDLE);
                 }
             }
         }
@@ -4955,7 +4955,7 @@ public class HelloApplication extends Application {
     }
 
     private void set_up_the_languages(HelloController helloController, HashMap<String, ArrayList<String>> hashMap_with_all_of_the_translations_of_verses) {
-        ObservableList items = FXCollections.observableArrayList();
+        ObservableList<Language_info> items = FXCollections.observableArrayList();
         for (String key : hash_map_with_the_translations.keySet()) {
             if (!key.equals("english")) {
                 items.add(new Language_info(key, return_the_formatted_text_item_from_array_list(hashMap_with_all_of_the_translations_of_verses.get(key))));
@@ -8311,7 +8311,7 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void listen_to_mouse_moved_inside_rectangle(Time_line_pane_data time_line_pane_data, StackPane main_stack_pane, Rectangle main_rectangle, StackPane previous_stack_pane, Rectangle previous_rectangle, StackPane next_stack_pane, Rectangle next_rectangle, Verse_position_mode verse_position_mode) {
+    private void listen_to_mouse_moved_inside_rectangle(Time_line_pane_data time_line_pane_data,int verse_array_number, StackPane main_stack_pane, Rectangle main_rectangle, StackPane previous_stack_pane, Rectangle previous_rectangle, StackPane next_stack_pane, Rectangle next_rectangle, Verse_position_mode verse_position_mode) {
         final double rectangle_cursor_change_margin = 12.5D;
         final Verse_resize_info[] verse_resize_info = new Verse_resize_info[1];
         main_stack_pane.setOnMouseMoved(new EventHandler<MouseEvent>() {
