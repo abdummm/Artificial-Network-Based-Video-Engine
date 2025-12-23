@@ -16,8 +16,9 @@ public class Verse_resize_info {
     private double next_verse_start_x;
     private double next_verse_end_x;
     private double next_verse_width;
+    private Polygon_position polygon_position;
 
-    public Verse_resize_info(Resizing_mode resizing_mode, double initial_mouse_x_position,double initial_scene_mouse_x_position, boolean set, StackPane main_stack_pane, StackPane previous_stack_pane, StackPane next_stack_pane) {
+    public Verse_resize_info(Resizing_mode resizing_mode, double initial_mouse_x_position,double initial_scene_mouse_x_position, boolean set, StackPane main_stack_pane, StackPane previous_stack_pane, StackPane next_stack_pane,Polygon_position polygon_position) {
         this.resizing_mode = resizing_mode;
         this.initial_mouse_x_position = initial_mouse_x_position;
         this.initial_scene_mouse_x_position = initial_scene_mouse_x_position;
@@ -31,6 +32,7 @@ public class Verse_resize_info {
         this.next_verse_start_x = next_stack_pane==null ? 0 : next_stack_pane.getLayoutX();
         this.next_verse_end_x = next_stack_pane==null ? 0 : next_stack_pane.getLayoutX() + next_stack_pane.getWidth();
         this.next_verse_width = next_stack_pane==null ? 0 :next_stack_pane.getWidth();
+        this.polygon_position = polygon_position;
     }
 
     public Verse_resize_info(boolean set) {
@@ -91,5 +93,13 @@ public class Verse_resize_info {
 
     public double getInitial_scene_mouse_x_position() {
         return initial_scene_mouse_x_position;
+    }
+
+    public Polygon_position getPolygon_position() {
+        return polygon_position;
+    }
+
+    public void setPolygon_position(Polygon_position polygon_position) {
+        this.polygon_position = polygon_position;
     }
 }
