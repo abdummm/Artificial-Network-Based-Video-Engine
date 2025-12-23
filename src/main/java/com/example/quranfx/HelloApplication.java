@@ -2824,15 +2824,17 @@ public class HelloApplication extends Application {
         }
         StackPane empty_stack_pane = new StackPane();
         Rectangle empty_rectangle = new Rectangle();
-        for (int i = 0; i < array_of_verse_stack_panes.length; i++) {
-            if (i == 0 && i == array_of_verse_stack_panes.length - 1) {
-                listen_to_mouse_moved_inside_rectangle(time_line_pane_data, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), empty_stack_pane, empty_rectangle, empty_stack_pane, empty_rectangle, Verse_position_mode.START_AND_END);
-            } else if (i == 0) {
-                listen_to_mouse_moved_inside_rectangle(time_line_pane_data, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), empty_stack_pane, empty_rectangle, array_of_verse_stack_panes[i + 1], (Rectangle) array_of_verse_stack_panes[i + 1].getChildren().getFirst(), Verse_position_mode.START);
-            } else if (i == array_of_verse_stack_panes.length - 1) {
-                listen_to_mouse_moved_inside_rectangle(time_line_pane_data, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), array_of_verse_stack_panes[i - 1], (Rectangle) array_of_verse_stack_panes[i - 1].getChildren().getFirst(), empty_stack_pane, empty_rectangle, Verse_position_mode.END);
-            } else {
-                listen_to_mouse_moved_inside_rectangle(time_line_pane_data, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), array_of_verse_stack_panes[i - 1], (Rectangle) array_of_verse_stack_panes[i - 1].getChildren().getFirst(), array_of_verse_stack_panes[i + 1], (Rectangle) array_of_verse_stack_panes[i + 1].getChildren().getFirst(), Verse_position_mode.MIDDLE);
+        if(/*sound_mode == Sound_mode.UPLOADED*/true){ // TODO this should be changed
+            for (int i = 0; i < array_of_verse_stack_panes.length; i++) {
+                if (i == 0 && i == array_of_verse_stack_panes.length - 1) {
+                    listen_to_mouse_moved_inside_rectangle(time_line_pane_data, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), empty_stack_pane, empty_rectangle, empty_stack_pane, empty_rectangle, Verse_position_mode.START_AND_END);
+                } else if (i == 0) {
+                    listen_to_mouse_moved_inside_rectangle(time_line_pane_data, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), empty_stack_pane, empty_rectangle, array_of_verse_stack_panes[i + 1], (Rectangle) array_of_verse_stack_panes[i + 1].getChildren().getFirst(), Verse_position_mode.START);
+                } else if (i == array_of_verse_stack_panes.length - 1) {
+                    listen_to_mouse_moved_inside_rectangle(time_line_pane_data, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), array_of_verse_stack_panes[i - 1], (Rectangle) array_of_verse_stack_panes[i - 1].getChildren().getFirst(), empty_stack_pane, empty_rectangle, Verse_position_mode.END);
+                } else {
+                    listen_to_mouse_moved_inside_rectangle(time_line_pane_data, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), array_of_verse_stack_panes[i - 1], (Rectangle) array_of_verse_stack_panes[i - 1].getChildren().getFirst(), array_of_verse_stack_panes[i + 1], (Rectangle) array_of_verse_stack_panes[i + 1].getChildren().getFirst(), Verse_position_mode.MIDDLE);
+                }
             }
         }
     }
