@@ -2824,7 +2824,7 @@ public class HelloApplication extends Application {
         }
         StackPane empty_stack_pane = new StackPane();
         Rectangle empty_rectangle = new Rectangle();
-        if (/*sound_mode == Sound_mode.UPLOADED*/true) { // TODO this should be changed
+        if (sound_mode == Sound_mode.UPLOADED) { // TODO this should be changed
             for (int i = 0; i < array_of_verse_stack_panes.length; i++) {
                 if (i == 0 && i == array_of_verse_stack_panes.length - 1) {
                     listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, i, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), empty_stack_pane, empty_rectangle, empty_stack_pane, empty_rectangle, Verse_position_mode.START_AND_END);
@@ -8313,6 +8313,8 @@ public class HelloApplication extends Application {
 
     private void listen_to_mouse_moved_inside_rectangle(HelloController helloController, Time_line_pane_data time_line_pane_data, int verse_array_number, StackPane main_stack_pane, Rectangle main_rectangle, StackPane previous_stack_pane, Rectangle previous_rectangle, StackPane next_stack_pane, Rectangle next_rectangle, Verse_position_mode verse_position_mode) {
         final double rectangle_cursor_change_margin = 12.5D;
+        final long auto_scroll_waiting_threshold = 50;
+        final double auto_scroll_move_by = 20;
         final Verse_resize_info[] verse_resize_info = new Verse_resize_info[1];
         main_stack_pane.setOnMouseMoved(new EventHandler<MouseEvent>() {
             @Override
@@ -8427,6 +8429,17 @@ public class HelloApplication extends Application {
                             verse_resize_info[0].setPolygon_position(Polygon_position.BEFORE);
                             which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, verse_resize_info[0].getInitial_polygon_x_position() - time_line_pane_data.getTime_line_base_line()));
                             helloController.list_view_with_all_of_the_languages.refresh();
+                        }
+
+                        if(mouseEvent.getSceneX()==0 && System.currentTimeMillis()-verse_resize_info[0].getLast_out_of_scene_update()>=auto_scroll_waiting_threshold){
+                            verse_resize_info[0].setLast_out_of_scene_update(System.currentTimeMillis());
+                            double contentWidth = helloController.scroll_pane_hosting_the_time_line.getContent().getBoundsInLocal().getWidth();
+                            double viewportWidth = helloController.scroll_pane_hosting_the_time_line.getViewportBounds().getWidth();
+                            double old_x_value = helloController.scroll_pane_hosting_the_time_line.getHvalue() * (contentWidth - viewportWidth);
+                            double new_x_value = old_x_value - auto_scroll_move_by;
+                            double new_h_value = new_x_value / (contentWidth - viewportWidth);
+                            new_h_value = Math.max(0,new_h_value);
+                            helloController.scroll_pane_hosting_the_time_line.setHvalue(new_h_value);
                         }
                     }
                 }
