@@ -2824,16 +2824,16 @@ public class HelloApplication extends Application {
         }
         StackPane empty_stack_pane = new StackPane();
         Rectangle empty_rectangle = new Rectangle();
-        if(/*sound_mode == Sound_mode.UPLOADED*/true){ // TODO this should be changed
+        if (/*sound_mode == Sound_mode.UPLOADED*/true) { // TODO this should be changed
             for (int i = 0; i < array_of_verse_stack_panes.length; i++) {
                 if (i == 0 && i == array_of_verse_stack_panes.length - 1) {
-                    listen_to_mouse_moved_inside_rectangle(time_line_pane_data,i, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), empty_stack_pane, empty_rectangle, empty_stack_pane, empty_rectangle, Verse_position_mode.START_AND_END);
+                    listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, i, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), empty_stack_pane, empty_rectangle, empty_stack_pane, empty_rectangle, Verse_position_mode.START_AND_END);
                 } else if (i == 0) {
-                    listen_to_mouse_moved_inside_rectangle(time_line_pane_data,i, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), empty_stack_pane, empty_rectangle, array_of_verse_stack_panes[i + 1], (Rectangle) array_of_verse_stack_panes[i + 1].getChildren().getFirst(), Verse_position_mode.START);
+                    listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, i, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), empty_stack_pane, empty_rectangle, array_of_verse_stack_panes[i + 1], (Rectangle) array_of_verse_stack_panes[i + 1].getChildren().getFirst(), Verse_position_mode.START);
                 } else if (i == array_of_verse_stack_panes.length - 1) {
-                    listen_to_mouse_moved_inside_rectangle(time_line_pane_data,i, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), array_of_verse_stack_panes[i - 1], (Rectangle) array_of_verse_stack_panes[i - 1].getChildren().getFirst(), empty_stack_pane, empty_rectangle, Verse_position_mode.END);
+                    listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, i, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), array_of_verse_stack_panes[i - 1], (Rectangle) array_of_verse_stack_panes[i - 1].getChildren().getFirst(), empty_stack_pane, empty_rectangle, Verse_position_mode.END);
                 } else {
-                    listen_to_mouse_moved_inside_rectangle(time_line_pane_data,i, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), array_of_verse_stack_panes[i - 1], (Rectangle) array_of_verse_stack_panes[i - 1].getChildren().getFirst(), array_of_verse_stack_panes[i + 1], (Rectangle) array_of_verse_stack_panes[i + 1].getChildren().getFirst(), Verse_position_mode.MIDDLE);
+                    listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, i, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), array_of_verse_stack_panes[i - 1], (Rectangle) array_of_verse_stack_panes[i - 1].getChildren().getFirst(), array_of_verse_stack_panes[i + 1], (Rectangle) array_of_verse_stack_panes[i + 1].getChildren().getFirst(), Verse_position_mode.MIDDLE);
                 }
             }
         }
@@ -8311,7 +8311,7 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void listen_to_mouse_moved_inside_rectangle(Time_line_pane_data time_line_pane_data,int verse_array_number, StackPane main_stack_pane, Rectangle main_rectangle, StackPane previous_stack_pane, Rectangle previous_rectangle, StackPane next_stack_pane, Rectangle next_rectangle, Verse_position_mode verse_position_mode) {
+    private void listen_to_mouse_moved_inside_rectangle(HelloController helloController, Time_line_pane_data time_line_pane_data, int verse_array_number, StackPane main_stack_pane, Rectangle main_rectangle, StackPane previous_stack_pane, Rectangle previous_rectangle, StackPane next_stack_pane, Rectangle next_rectangle, Verse_position_mode verse_position_mode) {
         final double rectangle_cursor_change_margin = 12.5D;
         final Verse_resize_info[] verse_resize_info = new Verse_resize_info[1];
         main_stack_pane.setOnMouseMoved(new EventHandler<MouseEvent>() {
@@ -8332,20 +8332,20 @@ public class HelloApplication extends Application {
                 double polygon_x_position = return_polygon_middle_position(time_line_pane_data);
                 if (mouseEvent.getX() <= rectangle_cursor_change_margin && (verse_position_mode == Verse_position_mode.MIDDLE || verse_position_mode == Verse_position_mode.END)) {
                     Polygon_position polygon_position;
-                    if(polygon_x_position<=main_stack_pane.getLayoutX()){
+                    if (polygon_x_position <= main_stack_pane.getLayoutX()) {
                         polygon_position = Polygon_position.BEFORE;
                     } else {
                         polygon_position = Polygon_position.AFTER;
                     }
-                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.WEST, mouseEvent.getX(), mouseEvent.getSceneX(), true, main_stack_pane, previous_stack_pane, next_stack_pane,polygon_position,polygon_x_position);
+                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.WEST, mouseEvent.getX(), mouseEvent.getSceneX(), true, main_stack_pane, previous_stack_pane, next_stack_pane, polygon_position, polygon_x_position);
                 } else if (main_stack_pane.getWidth() - mouseEvent.getX() <= rectangle_cursor_change_margin && (verse_position_mode == Verse_position_mode.MIDDLE || verse_position_mode == Verse_position_mode.START)) {
                     Polygon_position polygon_position;
-                    if(polygon_x_position<=main_stack_pane.getLayoutX()+main_stack_pane.getWidth()){
+                    if (polygon_x_position <= main_stack_pane.getLayoutX() + main_stack_pane.getWidth()) {
                         polygon_position = Polygon_position.BEFORE;
                     } else {
                         polygon_position = Polygon_position.AFTER;
                     }
-                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.EAST, mouseEvent.getX(), mouseEvent.getSceneX(), true, main_stack_pane, previous_stack_pane, next_stack_pane,polygon_position,polygon_x_position);
+                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.EAST, mouseEvent.getX(), mouseEvent.getSceneX(), true, main_stack_pane, previous_stack_pane, next_stack_pane, polygon_position, polygon_x_position);
                 } else {
                     verse_resize_info[0] = new Verse_resize_info(false);
                 }
@@ -8376,16 +8376,26 @@ public class HelloApplication extends Application {
 
                         next_stack_pane.setLayoutX(next_verse_start);
 
-                        ayats_processed[verse_array_number].setDuration(pixels_to_nanoseconds(time_line_pane_data,new_width));
+                        ayats_processed[verse_array_number].setDuration(pixels_to_nanoseconds(time_line_pane_data, new_width));
 
-                        ayats_processed[verse_array_number+1].setStart_millisecond(pixels_to_nanoseconds(time_line_pane_data,next_verse_start-time_line_pane_data.getTime_line_base_line()));
-                        ayats_processed[verse_array_number+1].setDuration(pixels_to_nanoseconds(time_line_pane_data,next_verse_new_width));
-                        start_millisecond_of_each_verse[verse_array_number+1] = ayats_processed[verse_array_number+1].getStart_millisecond();
+                        ayats_processed[verse_array_number + 1].setStart_millisecond(pixels_to_nanoseconds(time_line_pane_data, next_verse_start - time_line_pane_data.getTime_line_base_line()));
+                        ayats_processed[verse_array_number + 1].setDuration(pixels_to_nanoseconds(time_line_pane_data, next_verse_new_width));
+                        start_millisecond_of_each_verse[verse_array_number + 1] = ayats_processed[verse_array_number + 1].getStart_millisecond();
+
+                        if (main_stack_pane.getLayoutX()+main_stack_pane.getWidth() < verse_resize_info[0].getInitial_polygon_x_position() && verse_resize_info[0].getPolygon_position() == Polygon_position.AFTER) {
+                            verse_resize_info[0].setPolygon_position(Polygon_position.BEFORE);
+                            which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, verse_resize_info[0].getInitial_polygon_x_position() - time_line_pane_data.getTime_line_base_line()));
+                            helloController.list_view_with_all_of_the_languages.refresh();
+                        } else if(main_stack_pane.getLayoutX()+main_stack_pane.getWidth() >=verse_resize_info[0].getInitial_polygon_x_position() && verse_resize_info[0].getPolygon_position() == Polygon_position.BEFORE){
+                            verse_resize_info[0].setPolygon_position(Polygon_position.AFTER);
+                            which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, verse_resize_info[0].getInitial_polygon_x_position() - time_line_pane_data.getTime_line_base_line()));
+                            helloController.list_view_with_all_of_the_languages.refresh();
+                        }
                     } else if (verse_resize_info[0].getResizing_mode() == Resizing_mode.WEST) {
                         double new_width = verse_resize_info[0].getVerse_width() - mouseEvent.getSceneX() + verse_resize_info[0].getInitial_scene_mouse_x_position();
                         new_width = Math.max(new_width, nanoseconds_to_pixels(time_line_pane_data, TimeUnit.MILLISECONDS.toNanos(250)));
-                        if(verse_resize_info[0].getPrevious_verse_width() - new_width + verse_resize_info[0].getVerse_width() < nanoseconds_to_pixels(time_line_pane_data, TimeUnit.MILLISECONDS.toNanos(250))){
-                            new_width = verse_resize_info[0].getPrevious_verse_width() - nanoseconds_to_pixels(time_line_pane_data, TimeUnit.MILLISECONDS.toNanos(250)) +verse_resize_info[0].getVerse_width();
+                        if (verse_resize_info[0].getPrevious_verse_width() - new_width + verse_resize_info[0].getVerse_width() < nanoseconds_to_pixels(time_line_pane_data, TimeUnit.MILLISECONDS.toNanos(250))) {
+                            new_width = verse_resize_info[0].getPrevious_verse_width() - nanoseconds_to_pixels(time_line_pane_data, TimeUnit.MILLISECONDS.toNanos(250)) + verse_resize_info[0].getVerse_width();
                         }
 
                         main_stack_pane.setPrefWidth(new_width);
@@ -8393,7 +8403,7 @@ public class HelloApplication extends Application {
                         main_stack_pane.setMaxWidth(new_width);
                         main_rectangle.setWidth(new_width);
 
-                        double width_difference = new_width - verse_resize_info[0].getVerse_width() ;
+                        double width_difference = new_width - verse_resize_info[0].getVerse_width();
                         double new_previous_verse_width = verse_resize_info[0].getPrevious_verse_width() - width_difference;
                         previous_stack_pane.setPrefWidth(new_previous_verse_width);
                         previous_stack_pane.setMinWidth(new_previous_verse_width);
@@ -8403,15 +8413,20 @@ public class HelloApplication extends Application {
                         double new_layout_x = verse_resize_info[0].getVerse_end_x() - new_width;
                         main_stack_pane.setLayoutX(new_layout_x);
 
-                        ayats_processed[verse_array_number].setStart_millisecond(pixels_to_nanoseconds(time_line_pane_data,new_layout_x-time_line_pane_data.getTime_line_base_line()));
-                        ayats_processed[verse_array_number].setDuration(pixels_to_nanoseconds(time_line_pane_data,new_width));
+                        ayats_processed[verse_array_number].setStart_millisecond(pixels_to_nanoseconds(time_line_pane_data, new_layout_x - time_line_pane_data.getTime_line_base_line()));
+                        ayats_processed[verse_array_number].setDuration(pixels_to_nanoseconds(time_line_pane_data, new_width));
                         start_millisecond_of_each_verse[verse_array_number] = ayats_processed[verse_array_number].getStart_millisecond();
 
-                        ayats_processed[verse_array_number-1].setDuration(pixels_to_nanoseconds(time_line_pane_data,new_previous_verse_width));
+                        ayats_processed[verse_array_number - 1].setDuration(pixels_to_nanoseconds(time_line_pane_data, new_previous_verse_width));
 
-                        if(main_stack_pane.getLayoutX()<verse_resize_info[0].getInitial_polygon_x_position() && verse_resize_info[0].getPolygon_position() == Polygon_position.BEFORE){
+                        if (main_stack_pane.getLayoutX() < verse_resize_info[0].getInitial_polygon_x_position() && verse_resize_info[0].getPolygon_position() == Polygon_position.BEFORE) {
                             verse_resize_info[0].setPolygon_position(Polygon_position.AFTER);
-
+                            which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, verse_resize_info[0].getInitial_polygon_x_position() - time_line_pane_data.getTime_line_base_line()));
+                            helloController.list_view_with_all_of_the_languages.refresh();
+                        } else if(main_stack_pane.getLayoutX() >=verse_resize_info[0].getInitial_polygon_x_position() && verse_resize_info[0].getPolygon_position() == Polygon_position.AFTER){
+                            verse_resize_info[0].setPolygon_position(Polygon_position.BEFORE);
+                            which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, verse_resize_info[0].getInitial_polygon_x_position() - time_line_pane_data.getTime_line_base_line()));
+                            helloController.list_view_with_all_of_the_languages.refresh();
                         }
                     }
                 }
