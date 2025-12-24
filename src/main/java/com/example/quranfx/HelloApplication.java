@@ -8329,10 +8329,23 @@ public class HelloApplication extends Application {
         main_stack_pane.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                double polygon_x_position = return_polygon_middle_position(time_line_pane_data);
                 if (mouseEvent.getX() <= rectangle_cursor_change_margin && (verse_position_mode == Verse_position_mode.MIDDLE || verse_position_mode == Verse_position_mode.END)) {
-                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.WEST, mouseEvent.getX(), mouseEvent.getSceneX(), true, main_stack_pane, previous_stack_pane, next_stack_pane);
+                    Polygon_position polygon_position;
+                    if(polygon_x_position<=main_stack_pane.getLayoutX()){
+                        polygon_position = Polygon_position.BEFORE;
+                    } else {
+                        polygon_position = Polygon_position.AFTER;
+                    }
+                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.WEST, mouseEvent.getX(), mouseEvent.getSceneX(), true, main_stack_pane, previous_stack_pane, next_stack_pane,polygon_position,polygon_x_position);
                 } else if (main_stack_pane.getWidth() - mouseEvent.getX() <= rectangle_cursor_change_margin && (verse_position_mode == Verse_position_mode.MIDDLE || verse_position_mode == Verse_position_mode.START)) {
-                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.EAST, mouseEvent.getX(), mouseEvent.getSceneX(), true, main_stack_pane, previous_stack_pane, next_stack_pane);
+                    Polygon_position polygon_position;
+                    if(polygon_x_position<=main_stack_pane.getLayoutX()+main_stack_pane.getWidth()){
+                        polygon_position = Polygon_position.BEFORE;
+                    } else {
+                        polygon_position = Polygon_position.AFTER;
+                    }
+                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.EAST, mouseEvent.getX(), mouseEvent.getSceneX(), true, main_stack_pane, previous_stack_pane, next_stack_pane,polygon_position,polygon_x_position);
                 } else {
                     verse_resize_info[0] = new Verse_resize_info(false);
                 }
@@ -8395,6 +8408,11 @@ public class HelloApplication extends Application {
                         start_millisecond_of_each_verse[verse_array_number] = ayats_processed[verse_array_number].getStart_millisecond();
 
                         ayats_processed[verse_array_number-1].setDuration(pixels_to_nanoseconds(time_line_pane_data,new_previous_verse_width));
+
+                        if(main_stack_pane.getLayoutX()<verse_resize_info[0].getInitial_polygon_x_position() && verse_resize_info[0].getPolygon_position() == Polygon_position.BEFORE){
+                            verse_resize_info[0].setPolygon_position(Polygon_position.AFTER);
+
+                        }
                     }
                 }
             }
