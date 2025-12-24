@@ -545,7 +545,6 @@ public class HelloApplication extends Application {
         int start_ayat = return_start_ayat(helloController);
         int end_ayat = return_end_ayat(helloController);
         int surat_number = helloController.choose_the_surat.getSelectionModel().getSelectedIndex() + 1;
-        Reciters_info reciters_info = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().get(0);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(new Runnable() {
             @Override
@@ -554,6 +553,7 @@ public class HelloApplication extends Application {
                 ayats_processed = new Verse_class_final[number_of_ayats];
                 start_millisecond_of_each_verse = new long[number_of_ayats];
                 if (sound_path.isEmpty()) {
+                    Reciters_info reciters_info = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().getFirst();
                     sound_mode = Sound_mode.CHOSEN;
                     get_the_sound_and_concat_them_into_one(start_ayat, end_ayat, surat_number, reciters_info);
                 } else {
