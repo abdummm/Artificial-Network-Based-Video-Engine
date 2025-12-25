@@ -2824,7 +2824,7 @@ public class HelloApplication extends Application {
         }
         StackPane empty_stack_pane = new StackPane();
         Rectangle empty_rectangle = new Rectangle();
-        if (sound_mode == Sound_mode.UPLOADED) {
+        if (sound_mode == Sound_mode.UPLOADED || true) { // TODO the true should be removed.
             for (int i = 0; i < array_of_verse_stack_panes.length; i++) {
                 if (i == 0 && i == array_of_verse_stack_panes.length - 1) {
                     listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, i, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), empty_stack_pane, empty_rectangle, empty_stack_pane, empty_rectangle, Verse_position_mode.START_AND_END);
@@ -8363,6 +8363,7 @@ public class HelloApplication extends Application {
         main_stack_pane.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                Point2D time_line_mouse_position = main_stack_pane.localToParent(mouseEvent.getX(),mouseEvent.getY());
                 double polygon_x_position = return_polygon_middle_position(time_line_pane_data);
                 if (mouseEvent.getX() <= rectangle_cursor_change_margin && (verse_position_mode == Verse_position_mode.MIDDLE || verse_position_mode == Verse_position_mode.END)) {
                     Polygon_position polygon_position;
@@ -8371,7 +8372,7 @@ public class HelloApplication extends Application {
                     } else {
                         polygon_position = Polygon_position.AFTER;
                     }
-                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.WEST, mouseEvent.getX(), mouseEvent.getSceneX(), true, main_stack_pane, previous_stack_pane, next_stack_pane, polygon_position, polygon_x_position);
+                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.WEST, time_line_mouse_position.getX(), true, main_stack_pane, previous_stack_pane, next_stack_pane, polygon_position, polygon_x_position);
                 } else if (main_stack_pane.getWidth() - mouseEvent.getX() <= rectangle_cursor_change_margin && (verse_position_mode == Verse_position_mode.MIDDLE || verse_position_mode == Verse_position_mode.START)) {
                     Polygon_position polygon_position;
                     if (polygon_x_position <= main_stack_pane.getLayoutX() + main_stack_pane.getWidth()) {
@@ -8379,7 +8380,7 @@ public class HelloApplication extends Application {
                     } else {
                         polygon_position = Polygon_position.AFTER;
                     }
-                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.EAST, mouseEvent.getX(), mouseEvent.getSceneX(), true, main_stack_pane, previous_stack_pane, next_stack_pane, polygon_position, polygon_x_position);
+                    verse_resize_info[0] = new Verse_resize_info(Resizing_mode.EAST, time_line_mouse_position.getX(), true, main_stack_pane, previous_stack_pane, next_stack_pane, polygon_position, polygon_x_position);
                 } else {
                     verse_resize_info[0] = new Verse_resize_info(false);
                 }
@@ -8389,9 +8390,10 @@ public class HelloApplication extends Application {
         main_stack_pane.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                Point2D time_line_mouse_position = main_stack_pane.localToParent(mouseEvent.getX(),mouseEvent.getY());
                 if (verse_resize_info[0] != null && verse_resize_info[0].isSet()) {
                     if (verse_resize_info[0].getResizing_mode() == Resizing_mode.EAST) {
-                        double new_width = verse_resize_info[0].getVerse_width() + mouseEvent.getX() - verse_resize_info[0].getInitial_mouse_x_position();
+                        double new_width = verse_resize_info[0].getVerse_width() + time_line_mouse_position.getX() - verse_resize_info[0].getInitial_mouse_x_position();
                         new_width = Math.max(new_width, nanoseconds_to_pixels(time_line_pane_data, TimeUnit.MILLISECONDS.toNanos(250)));
                         if (verse_resize_info[0].getNext_verse_width() + verse_resize_info[0].getVerse_width() - new_width < nanoseconds_to_pixels(time_line_pane_data, TimeUnit.MILLISECONDS.toNanos(250))) {
                             new_width = verse_resize_info[0].getNext_verse_width() + verse_resize_info[0].getVerse_width() - nanoseconds_to_pixels(time_line_pane_data, TimeUnit.MILLISECONDS.toNanos(250));
@@ -8429,7 +8431,7 @@ public class HelloApplication extends Application {
                         last_seen_mouse_x_position[0] = mouseEvent.getSceneX();
                         last_seen_x_position_set[0] = true;
                     } else if (verse_resize_info[0].getResizing_mode() == Resizing_mode.WEST) {
-                        double new_width = verse_resize_info[0].getVerse_width() - mouseEvent.getSceneX() + verse_resize_info[0].getInitial_scene_mouse_x_position();
+                        double new_width = verse_resize_info[0].getVerse_width() - time_line_mouse_position.getX() + verse_resize_info[0].getInitial_mouse_x_position();
                         new_width = Math.max(new_width, nanoseconds_to_pixels(time_line_pane_data, TimeUnit.MILLISECONDS.toNanos(250)));
                         if (verse_resize_info[0].getPrevious_verse_width() - new_width + verse_resize_info[0].getVerse_width() < nanoseconds_to_pixels(time_line_pane_data, TimeUnit.MILLISECONDS.toNanos(250))) {
                             new_width = verse_resize_info[0].getPrevious_verse_width() - nanoseconds_to_pixels(time_line_pane_data, TimeUnit.MILLISECONDS.toNanos(250)) + verse_resize_info[0].getVerse_width();
