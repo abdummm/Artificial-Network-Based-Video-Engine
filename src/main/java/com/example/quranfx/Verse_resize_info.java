@@ -5,7 +5,6 @@ import javafx.scene.layout.StackPane;
 public class Verse_resize_info {
     private Resizing_mode resizing_mode;
     private double initial_mouse_x_position;
-    private double initial_scene_mouse_x_position;
     private boolean set;
     private double verse_start_x;
     private double verse_end_x;
@@ -20,10 +19,9 @@ public class Verse_resize_info {
     private double initial_polygon_x_position;
     private long last_out_of_scene_update = 0;
 
-    public Verse_resize_info(Resizing_mode resizing_mode, double initial_mouse_x_position,double initial_scene_mouse_x_position, boolean set, StackPane main_stack_pane, StackPane previous_stack_pane, StackPane next_stack_pane,Polygon_position polygon_position,double initial_polygon_x_position) {
+    public Verse_resize_info(Resizing_mode resizing_mode, double initial_mouse_x_position, boolean set, StackPane main_stack_pane, StackPane previous_stack_pane, StackPane next_stack_pane,Polygon_position polygon_position,double initial_polygon_x_position) {
         this.resizing_mode = resizing_mode;
         this.initial_mouse_x_position = initial_mouse_x_position;
-        this.initial_scene_mouse_x_position = initial_scene_mouse_x_position;
         this.set = set;
         this.verse_start_x = main_stack_pane.getLayoutX();
         this.verse_end_x = main_stack_pane.getLayoutX() + main_stack_pane.getWidth();
@@ -93,10 +91,6 @@ public class Verse_resize_info {
 
     public double getNext_verse_width() {
         return next_verse_width;
-    }
-
-    public double getInitial_scene_mouse_x_position() {
-        return initial_scene_mouse_x_position;
     }
 
     public Polygon_position getPolygon_position() {
