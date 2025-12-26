@@ -291,6 +291,7 @@ public class HelloApplication extends Application {
         add_fast_forward_tool_tip(helloController);*/
         listen_to_split_verse(helloController);
         set_the_buttons_color_change_when_hovered(helloController);
+        close_everything_on_close(main_stage);
     }
 
     /*public static void main(String[] args) {
@@ -4269,8 +4270,7 @@ public class HelloApplication extends Application {
     }
 
     private void set_the_logo_at_the_start(HelloController helloController) {
-        File file = new File("src/main/resources/Sabrly mini.png");
-        Image image = new Image(file.toURI().toString());
+        Image image = new Image(Objects.requireNonNull(HelloApplication.class.getResourceAsStream("/Sabrly_mini.png")));
         helloController.logo_at_the_start_of_the_app.setImage(image);
     }
 
@@ -8486,5 +8486,12 @@ public class HelloApplication extends Application {
                 last_seen_x_position_set[0] = true;
             }
         }
+    }
+
+    private void close_everything_on_close(Stage stage){
+        stage.setOnCloseRequest(e -> {
+            Platform.exit();
+            System.exit(0);
+        });
     }
 }
