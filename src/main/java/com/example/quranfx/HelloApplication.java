@@ -8075,7 +8075,7 @@ public class HelloApplication extends Application {
 
     private void set_up_everything_image_view_time_line_shape_object_time_line(HelloController helloController, Shape_object_time_line shape_object_time_line, Type_of_Image type_of_image) {
         if (shape_object_time_line != null) {
-            set_the_chatgpt_image_view(helloController, shape_object_time_line.getImage_id(), Type_of_Image.FULL_QUALITY);
+            set_the_chatgpt_image_view(helloController, shape_object_time_line.getImage_id(), type_of_image);
             set_up_the_image_controller_enable_disable(helloController, shape_object_time_line);
             set_the_opacity_of_image_view_considering_everything(helloController, shape_object_time_line);
         } else {
