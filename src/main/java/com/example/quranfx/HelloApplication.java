@@ -8344,7 +8344,7 @@ public class HelloApplication extends Application {
                         double new_h_value = new_x_value / (contentWidth - viewportWidth);
                         new_h_value = Math.min(1, new_h_value);
                         helloController.scroll_pane_hosting_the_time_line.setHvalue(new_h_value);
-                        update_the_verse_stack_pane_based_on_mouse(helloController,verse_resize_info[0],time_line_pane_data,new_x_value,time_lane_start_margin + helloController.scroll_pane_hosting_the_time_line.getViewportBounds().getWidth(),verse_array_number,main_stack_pane,main_rectangle,next_stack_pane,next_rectangle,previous_stack_pane,previous_rectangle,last_seen_mouse_x_position,last_seen_x_position_set);
+                        update_the_verse_stack_pane_based_on_mouse(helloController,verse_resize_info[0],time_line_pane_data,new_x_value + viewportWidth,time_lane_start_margin + helloController.scroll_pane_hosting_the_time_line.getViewportBounds().getWidth(),verse_array_number,main_stack_pane,main_rectangle,next_stack_pane,next_rectangle,previous_stack_pane,previous_rectangle,last_seen_mouse_x_position,last_seen_x_position_set);
                     }
                 }
             }
