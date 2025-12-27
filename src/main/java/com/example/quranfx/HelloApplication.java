@@ -292,6 +292,7 @@ public class HelloApplication extends Application {
         listen_to_split_verse(helloController);
         set_the_buttons_color_change_when_hovered(helloController);
         close_everything_on_close(main_stage);
+        CrashLog.install();
     }
 
     /*public static void main(String[] args) {
