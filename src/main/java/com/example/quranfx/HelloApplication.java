@@ -7412,7 +7412,11 @@ public class HelloApplication extends Application {
         helloController.check_box_saying_help_spread_the_app.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                if (helloController.check_box_saying_help_spread_the_app.isSelected()) {
 
+                } else {
+
+                }
             }
         });
     }
@@ -8334,7 +8338,7 @@ public class HelloApplication extends Application {
                         double new_h_value = new_x_value / (contentWidth - viewportWidth);
                         new_h_value = Math.max(0, new_h_value);
                         helloController.scroll_pane_hosting_the_time_line.setHvalue(new_h_value);
-                        update_the_verse_stack_pane_based_on_mouse(helloController,verse_resize_info[0],time_line_pane_data,new_x_value,0,verse_array_number,main_stack_pane,main_rectangle,next_stack_pane,next_rectangle,previous_stack_pane,previous_rectangle,last_seen_mouse_x_position,last_seen_x_position_set);
+                        update_the_verse_stack_pane_based_on_mouse(helloController, verse_resize_info[0], time_line_pane_data, new_x_value, 0, verse_array_number, main_stack_pane, main_rectangle, next_stack_pane, next_rectangle, previous_stack_pane, previous_rectangle, last_seen_mouse_x_position, last_seen_x_position_set);
                     }
                     if (last_seen_mouse_x_position[0] >= time_lane_start_margin + helloController.scroll_pane_hosting_the_time_line.getViewportBounds().getWidth() && System.currentTimeMillis() - verse_resize_info[0].getLast_out_of_scene_update() >= auto_scroll_waiting_threshold) {
                         verse_resize_info[0].setLast_out_of_scene_update(System.currentTimeMillis());
@@ -8345,7 +8349,7 @@ public class HelloApplication extends Application {
                         double new_h_value = new_x_value / (contentWidth - viewportWidth);
                         new_h_value = Math.min(1, new_h_value);
                         helloController.scroll_pane_hosting_the_time_line.setHvalue(new_h_value);
-                        update_the_verse_stack_pane_based_on_mouse(helloController,verse_resize_info[0],time_line_pane_data,new_x_value + viewportWidth,time_lane_start_margin + helloController.scroll_pane_hosting_the_time_line.getViewportBounds().getWidth(),verse_array_number,main_stack_pane,main_rectangle,next_stack_pane,next_rectangle,previous_stack_pane,previous_rectangle,last_seen_mouse_x_position,last_seen_x_position_set);
+                        update_the_verse_stack_pane_based_on_mouse(helloController, verse_resize_info[0], time_line_pane_data, new_x_value + viewportWidth, time_lane_start_margin + helloController.scroll_pane_hosting_the_time_line.getViewportBounds().getWidth(), verse_array_number, main_stack_pane, main_rectangle, next_stack_pane, next_rectangle, previous_stack_pane, previous_rectangle, last_seen_mouse_x_position, last_seen_x_position_set);
                     }
                 }
             }
@@ -8394,7 +8398,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 Point2D time_line_mouse_position = main_stack_pane.localToParent(mouseEvent.getX(), mouseEvent.getY());
-                update_the_verse_stack_pane_based_on_mouse(helloController,verse_resize_info[0],time_line_pane_data,time_line_mouse_position.getX(),mouseEvent.getSceneX(),verse_array_number,main_stack_pane,main_rectangle,next_stack_pane,next_rectangle,previous_stack_pane,previous_rectangle,last_seen_mouse_x_position,last_seen_x_position_set);
+                update_the_verse_stack_pane_based_on_mouse(helloController, verse_resize_info[0], time_line_pane_data, time_line_mouse_position.getX(), mouseEvent.getSceneX(), verse_array_number, main_stack_pane, main_rectangle, next_stack_pane, next_rectangle, previous_stack_pane, previous_rectangle, last_seen_mouse_x_position, last_seen_x_position_set);
             }
         });
         main_stack_pane.setOnMouseReleased(new EventHandler<MouseEvent>() {
@@ -8407,7 +8411,7 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void update_the_verse_stack_pane_based_on_mouse(HelloController helloController, Verse_resize_info verse_resize_info, Time_line_pane_data time_line_pane_data, double time_line_mouse_position,double mouse_event_last_seen_scene_x_position, int verse_array_number, StackPane main_stack_pane, Rectangle main_rectangle, StackPane next_stack_pane, Rectangle next_rectangle, StackPane previous_stack_pane, Rectangle previous_rectangle,Double[] last_seen_mouse_x_position,Boolean[] last_seen_x_position_set) {
+    private void update_the_verse_stack_pane_based_on_mouse(HelloController helloController, Verse_resize_info verse_resize_info, Time_line_pane_data time_line_pane_data, double time_line_mouse_position, double mouse_event_last_seen_scene_x_position, int verse_array_number, StackPane main_stack_pane, Rectangle main_rectangle, StackPane next_stack_pane, Rectangle next_rectangle, StackPane previous_stack_pane, Rectangle previous_rectangle, Double[] last_seen_mouse_x_position, Boolean[] last_seen_x_position_set) {
         if (verse_resize_info != null && verse_resize_info.isSet()) {
             if (verse_resize_info.getResizing_mode() == Resizing_mode.EAST) {
                 double new_width = verse_resize_info.getVerse_width() + time_line_mouse_position - verse_resize_info.getInitial_mouse_x_position();
@@ -8489,10 +8493,16 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void close_everything_on_close(Stage stage){
+    private void close_everything_on_close(Stage stage) {
         stage.setOnCloseRequest(e -> {
             Platform.exit();
             System.exit(0);
         });
+    }
+
+    private void set_up_help_spread_app_canvas(HelloController helloController) {
+        helloController.canvas_holding_help_spread_app.setHeight(1920);
+        helloController.canvas_holding_help_spread_app.setWidth(1080);
+        bind_the_canvas_to_the_image_view(helloController, helloController.canvas_holding_help_spread_app);
     }
 }
