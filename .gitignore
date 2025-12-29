@@ -11,6 +11,7 @@ target/
 *.iws
 *.iml
 *.ipr
+.idea
 
 ### Eclipse ###
 .apt_generated
@@ -39,5 +40,3 @@ build/
 /src/main/java/com/example/quranfx/Quran_api_secrets.java
 
 /out/artifacts/
-/.idea/artifacts/
-/.idea/AICommit.xml
