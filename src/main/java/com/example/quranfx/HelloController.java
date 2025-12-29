@@ -233,4 +233,7 @@ public class HelloController {
 
     @FXML
     public JFXButton split_verse_button;
+
+    @FXML
+    public Canvas canvas_holding_help_spread_app;
 }
