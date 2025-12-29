@@ -40,3 +40,4 @@ build/
 /src/main/java/com/example/quranfx/Quran_api_secrets.java
 
 /out/artifacts/
+/src/main/resources/META-INF/
