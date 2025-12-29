@@ -445,7 +445,7 @@
                                         <CheckBox fx:id="check_box_saying_help_spread_the_app"
                                                   text="Help spread Sabrly"/>
                                         <JFXButton fx:id="setting_beside_help_spread_the_app"
-                                                   focusTraversable="false">
+                                                   focusTraversable="false" visible="false" managed="false">
                                             <HBox.margin>
                                                 <Insets left="5.0"/>
                                             </HBox.margin>
