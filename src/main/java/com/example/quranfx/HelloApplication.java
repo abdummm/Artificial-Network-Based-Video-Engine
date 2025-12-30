@@ -292,7 +292,8 @@ public class HelloApplication extends Application {
         listen_to_split_verse(helloController);
         set_the_buttons_color_change_when_hovered(helloController);
         close_everything_on_close(main_stage);
-        CrashLog.install();
+        //CrashLog.install();
+        set_up_help_spread_app_canvas(helloController);
     }
 
     /*public static void main(String[] args) {
@@ -1379,7 +1380,11 @@ public class HelloApplication extends Application {
     }
 
     private long get_duration() {
-        return TimeUnit.MILLISECONDS.toNanos((long) media.getDuration().toMillis());
+        if(media!=null){
+            return TimeUnit.MILLISECONDS.toNanos((long) media.getDuration().toMillis());
+        } else {
+            throw new RuntimeException("Media is null when getting duration");
+        }
     }
 
     private void get_the_sound_and_concat_them_into_one(int start_ayat, int end_ayat, int surat_number_int, Reciters_info recitersInfo) {
@@ -7409,14 +7414,11 @@ public class HelloApplication extends Application {
     }
 
     private void listen_to_help_app_spread_check_mark(HelloController helloController) {
-        helloController.check_box_saying_help_spread_the_app.setOnAction(new EventHandler<ActionEvent>() {
+        System.out.println("first call");
+        helloController.check_box_saying_help_spread_the_app.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
-            public void handle(ActionEvent actionEvent) {
-                if (helloController.check_box_saying_help_spread_the_app.isSelected()) {
-
-                } else {
-
-                }
+            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean old_state, Boolean new_state) {
+                helloController.canvas_holding_help_spread_app.setVisible(new_state);
             }
         });
     }
@@ -8504,5 +8506,6 @@ public class HelloApplication extends Application {
         helloController.canvas_holding_help_spread_app.setHeight(1920);
         helloController.canvas_holding_help_spread_app.setWidth(1080);
         bind_the_canvas_to_the_image_view(helloController, helloController.canvas_holding_help_spread_app);
+        place_the_canvas_text(helloController.canvas_holding_help_spread_app,new Text_item("Made using sabrly.com", javafx.scene.paint.Color.WHITE,new Text_accessory_info(Accessory_type.STROKE,1,Global_default_values.max_stroke_weight),new Text_accessory_info(Accessory_type.SHADOW,1,Global_default_values.max_shadow_weight),new Point2D(1080D/2D,1920D*0.75D),0,Long.MAX_VALUE));
     }
 }
