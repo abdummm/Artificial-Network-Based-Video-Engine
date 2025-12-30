@@ -696,7 +696,9 @@ public class HelloApplication extends Application {
         selected_verse = 0;
         sound_path = "";
         array_list_with_times.clear();
-        Arrays.fill(ayats_processed, null);
+        if(ayats_processed!=null){
+            Arrays.fill(ayats_processed, null);
+        }
 
         clear_temp_directory();
     }
@@ -7414,7 +7416,6 @@ public class HelloApplication extends Application {
     }
 
     private void listen_to_help_app_spread_check_mark(HelloController helloController) {
-        System.out.println("first call");
         helloController.check_box_saying_help_spread_the_app.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean old_state, Boolean new_state) {
