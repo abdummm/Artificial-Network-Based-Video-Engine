@@ -1,5 +1,6 @@
 package com.example.quranfx;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.time.*;
 
@@ -13,7 +14,7 @@ public class CrashLog {
 
             // Redirect stdout/stderr to the log (append mode)
             FileOutputStream fos = new FileOutputStream(logFile.toFile(), true);
-            PrintStream ps = new PrintStream(fos, true, "UTF-8");
+            PrintStream ps = new PrintStream(fos, true, StandardCharsets.UTF_8);
 
             System.setOut(ps);
             System.setErr(ps);
