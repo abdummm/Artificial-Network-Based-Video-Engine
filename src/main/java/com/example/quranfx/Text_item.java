@@ -68,7 +68,7 @@ public class Text_item {
         this.text_box_info = new Text_box_info(this, new Point2D(video_width / 2D, video_height / 2D), adjusted_verse_text, font, true);
     }
 
-    public Text_item(String verse_text,Color color,Text_accessory_info stroke_info,Text_accessory_info shadow_info,Point2D point2D, long start_time, long end_time) {
+    /*public Text_item(String verse_text,Color color,Text_accessory_info stroke_info,Text_accessory_info shadow_info,Point2D point2D, long start_time, long end_time) {
         this.original_verse_text = verse_text;
         this.verse_text = verse_text;
         this.font = return_default_font(font_size);
@@ -84,7 +84,7 @@ public class Text_item {
         this.fade_in = 0;
         this.fade_out = 0;
         this.text_box_info = new Text_box_info(this, point2D, adjusted_verse_text, font, true);
-    }
+    }*/
 
     private io.github.humbleui.skija.Font return_default_font(double font_size) {
         Typeface type_face = FontMgr.getDefault().matchFamilyStyle("Arial", FontStyle.NORMAL);
