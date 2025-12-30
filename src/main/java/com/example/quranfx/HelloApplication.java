@@ -8509,8 +8509,12 @@ public class HelloApplication extends Application {
         bind_the_canvas_to_the_image_view(helloController, helloController.canvas_holding_help_spread_app);
         Text_item made_with_sabrly_text_item = new Text_item("Made using sabrly.com",0,Long.MAX_VALUE);
         made_with_sabrly_text_item.setColor(javafx.scene.paint.Color.WHITE);
-        made_with_sabrly_text_item.setStroke_info(new Text_accessory_info(Accessory_type.STROKE,10,Global_default_values.max_stroke_weight));
-        made_with_sabrly_text_item.setShadow_info(new Text_accessory_info(Accessory_type.SHADOW,10,Global_default_values.max_stroke_weight));
+        Text_accessory_info stroke_info = new Text_accessory_info(Accessory_type.STROKE,7.5,Global_default_values.max_stroke_weight);
+        Text_accessory_info shadow_info = new Text_accessory_info(Accessory_type.SHADOW,12.5,Global_default_values.max_shadow_weight);
+        stroke_info.setIs_the_accessory_on(true);
+        shadow_info.setIs_the_accessory_on(true);
+        made_with_sabrly_text_item.setStroke_info(stroke_info);
+        made_with_sabrly_text_item.setShadow_info(shadow_info);
         made_with_sabrly_text_item.getText_box_info().setCenter_position(new Point2D(1080D/2D,1920D*0.925D));
         made_with_sabrly_text_item.setFont_size(28);
         place_the_canvas_text(helloController.canvas_holding_help_spread_app,made_with_sabrly_text_item);
