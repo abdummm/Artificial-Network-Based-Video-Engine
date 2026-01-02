@@ -32,6 +32,7 @@ module com.example.quranfx {
     requires io.github.humbleui.skija.shared;
     requires io.github.humbleui.types;
     requires java.prefs;
+    requires java.net.http;
 
 
     opens com.example.quranfx to javafx.fxml;
