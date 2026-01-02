@@ -75,6 +75,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.prefs.Preferences;
 
 import javafx.util.Duration;
 import net.coobird.thumbnailator.Thumbnails;
@@ -8518,5 +8519,21 @@ public class HelloApplication extends Application {
         made_with_sabrly_text_item.getText_box_info().setCenter_position(new Point2D(1080D/2D,1920D*0.95D));
         made_with_sabrly_text_item.setFont_size(28);
         place_the_canvas_text(helloController.canvas_holding_help_spread_app,made_with_sabrly_text_item);
+    }
+
+    private String create_and_save_client_id_if_it_doesnt_exist(){
+        try {
+            Preferences prefs = Preferences.userRoot().node("sabrly");
+            String id = prefs.get("sabrly_client_id_key", null);
+
+            if (id == null) {
+                id = UUID.randomUUID().toString();
+                prefs.put("sabrly_client_id_key", id);
+                prefs.flush();
+            }
+            return id;
+        } catch (Exception e) {
+            return UUID.randomUUID().toString();
+        }
     }
 }
