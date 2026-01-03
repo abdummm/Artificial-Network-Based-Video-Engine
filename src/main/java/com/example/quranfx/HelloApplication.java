@@ -3132,6 +3132,7 @@ public class HelloApplication extends Application {
             public void handle(ActionEvent actionEvent) {
                 //showEmailPopupWithReply();
                 show_feedback_settings_dialog("Feedback");
+                send_analytics_event("give_feedback_button_clicked",1);
             }
         });
     }
