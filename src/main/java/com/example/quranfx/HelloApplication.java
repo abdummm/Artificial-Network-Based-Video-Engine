@@ -141,6 +141,12 @@ public class HelloApplication extends Application {
     private final static String discord_invite_link = "https://discord.gg/ZzPgNx8U95";
     private final static String app_name = "Sabrly";
     private final static String app_version = "1.0";
+    private final static String clientId_pre_live = Quran_api_secrets.clientId_pre_live;
+    private final static String clientSecret_pre_live = Quran_api_secrets.clientSecret_pre_live;
+    private final static String clientId_live = Quran_api_secrets.clientId_live;
+    private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
+    private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
+    private final static Running_mode running_mode = Running_mode.DEBUG;
 
     private final static int image_view_in_tile_pane_width = 90;
     private final static int image_view_in_tile_pane_height = 160;
@@ -150,11 +156,6 @@ public class HelloApplication extends Application {
     private final static int min_rectnagle_width = 3;
     private final static int next_prev_button_size = 26;
     private final static int next_prev_circle_size = 50;
-    private final static String clientId_pre_live = Quran_api_secrets.clientId_pre_live;
-    private final static String clientSecret_pre_live = Quran_api_secrets.clientSecret_pre_live;
-    private final static String clientId_live = Quran_api_secrets.clientId_live;
-    private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
-    private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
     private final static double screen_width_multiplier = 0.55D;
     private final static double screen_height_multiplier = 0.55D;
     private final static int scroll_pane_hosting_time_line_border_width = 1;
@@ -8544,7 +8545,9 @@ public class HelloApplication extends Application {
     }
 
     private void send_analytics_event(String event_name,int count) {
-
+        if(running_mode == Running_mode.DEBUG){
+            return;
+        }
         try {
             HttpClient HTTP = HttpClient.newHttpClient();
             String json = """
