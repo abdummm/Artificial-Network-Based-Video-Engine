@@ -3132,7 +3132,7 @@ public class HelloApplication extends Application {
             public void handle(ActionEvent actionEvent) {
                 //showEmailPopupWithReply();
                 show_feedback_settings_dialog("Feedback");
-                send_analytics_event("give_feedback_button_clicked",1);
+                send_analytics_event("give_feedback",1);
             }
         });
     }
@@ -8547,8 +8547,18 @@ public class HelloApplication extends Application {
     }
 
     private void send_analytics_event(String event_name,int count) {
+        send_analytics_event(event_name,"count",count);
+    }
+
+    private void send_analytics_event(String event_name,String params_name,int count) {
         if(running_mode == Running_mode.DEBUG){
             return;
+        }
+        if(event_name.length()>=40 ){
+            throw new RuntimeException("Event name can't be greater than or equal to 40 characters");
+        }
+        if(params_name.length()>=40){
+            throw new RuntimeException("Params name can't be greater than or equal to 40 characters");
         }
         try {
             HttpClient HTTP = HttpClient.newHttpClient();
@@ -8558,11 +8568,11 @@ public class HelloApplication extends Application {
               "events": [{
                 "name": "%s",
                 "params": {
-                  "count": %d
+                  "%s": %d
                 }
               }]
             }
-            """.formatted(create_and_save_client_id_if_it_doesnt_exist(),event_name,count);
+            """.formatted(create_and_save_client_id_if_it_doesnt_exist(),event_name,params_name,count);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(
