@@ -8123,6 +8123,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 show_feedback_settings_dialog("Settings");
+                send_analytics_event("settings_button_clicked",1);
             }
         });
     }
