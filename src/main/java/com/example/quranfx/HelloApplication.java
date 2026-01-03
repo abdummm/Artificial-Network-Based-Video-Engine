@@ -64,7 +64,11 @@ import java.awt.FontMetrics;
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.io.*;
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -295,6 +299,7 @@ public class HelloApplication extends Application {
         close_everything_on_close(main_stage);
         //CrashLog.install();
         set_up_help_spread_app_canvas(helloController);
+        send_analytics_event("app_launched",1);
     }
 
     /*public static void main(String[] args) {
@@ -8534,6 +8539,39 @@ public class HelloApplication extends Application {
             return id;
         } catch (Exception e) {
             return UUID.randomUUID().toString();
+        }
+    }
+
+    private void send_analytics_event(String event_name,int count) {
+
+        try {
+            HttpClient HTTP = HttpClient.newHttpClient();
+            String json = """
+            {
+              "client_id": "%s",
+              "events": [{
+                "name": "%s",
+                "params": {
+                  "count": %d
+                }
+              }]
+            }
+            """.formatted(create_and_save_client_id_if_it_doesnt_exist(),event_name,count);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(
+                            "https://www.google-analytics.com/mp/collect" +
+                                    "?measurement_id=" + Quran_api_secrets.analytics_measurement_id +
+                                    "&api_secret=" + Quran_api_secrets.analytics_api_secret))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
+                    .build();
+
+            HTTP.sendAsync(request, HttpResponse.BodyHandlers.discarding());
+
+        } catch (Exception exception) {
+            // analytics must never break the app
+            System.err.println(exception.toString());
         }
     }
 }
