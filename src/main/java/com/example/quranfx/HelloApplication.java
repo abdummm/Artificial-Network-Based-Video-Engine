@@ -300,6 +300,7 @@ public class HelloApplication extends Application {
         //CrashLog.install();
         set_up_help_spread_app_canvas(helloController);
         send_analytics_event("app_launched",1);
+        check_if_this_is_the_first_launch_and_send_an_event_if_so();
     }
 
     /*public static void main(String[] args) {
@@ -8572,6 +8573,15 @@ public class HelloApplication extends Application {
         } catch (Exception exception) {
             // analytics must never break the app
             System.err.println(exception.toString());
+        }
+    }
+
+    private void check_if_this_is_the_first_launch_and_send_an_event_if_so(){
+        Preferences prefs = Preferences.userRoot().node("sabrly");
+        boolean first_time_app_opened = prefs.getBoolean("app_opened_for_the_first_time", true);
+        if(first_time_app_opened){
+            send_analytics_event("app_opened_for_the_first_time",1);
+            prefs.putBoolean("first_time_app_opened", false);
         }
     }
 }
