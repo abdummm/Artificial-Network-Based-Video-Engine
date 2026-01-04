@@ -74,6 +74,7 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.Normalizer;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
@@ -460,7 +461,7 @@ public class HelloApplication extends Application {
                     helloController.choose_surat_screen.setVisible(false);
                     helloController.choose_ayat_screen.setVisible(true);
                     set_up_second_screen(helloController, helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
-                    send_surat_analytics_event(helloController.choose_the_surat.getSelectionModel().getSelectedIndex()+1);
+                    send_surat_analytics_event(helloController.choose_the_surat.getSelectionModel().getSelectedIndex() + 1);
                     send_analytics_event("second_screen_opened");
                 }
             }
@@ -832,7 +833,6 @@ public class HelloApplication extends Application {
         listen_to_end_of_audio_fourth_screen(helloController);
         set_up_the_width_and_height_of_the_image_in_fourth_screen(helloController);
         animation_timer(helloController);
-        send_analytics_event("last_screen_opened");
     }
 
     /*private void set_the_visibility_of_the_buttons(HelloController helloController, int position) {
@@ -8592,7 +8592,7 @@ public class HelloApplication extends Application {
         if (chapter_number <= 0) {
             throw new RuntimeException("surat number can't be less than or equal to 0");
         }
-        if(chapter_number>114){
+        if (chapter_number > 114) {
             throw new RuntimeException("surat number can't be greater than 114");
         }
         try {
@@ -8626,6 +8626,55 @@ public class HelloApplication extends Application {
         }
     }
 
+    private void send_last_screen_analytics_event(int chapter_number, int start_verse, int end_verse,) {
+        if (running_mode == Running_mode.DEBUG) {
+            return;
+        }
+        if (chapter_number <= 0) {
+            throw new RuntimeException("surat number can't be less than or equal to 0");
+        }
+        if (chapter_number > 114) {
+            throw new RuntimeException("surat number can't be greater than 114");
+        }
+        if (start_verse <= 0) {
+            throw new RuntimeException("start verse can't be less than or equal to 0");
+        }
+        if (end_verse <= 0) {
+            throw new RuntimeException("end verse can't be less than or equal to 0");
+        }
+        int verses_generated = end_verse - start_verse + 1;
+        try {
+            HttpClient HTTP = HttpClient.newHttpClient();
+            String json = """
+                    {
+                      "client_id": "%s",
+                      "events": [{
+                        "name": "last_screen_opened"
+                        "params": {
+                          "chapter": %d
+                          "verses_generated": %d
+                        }
+                      }]
+                    }
+                    """.formatted(create_and_save_client_id_if_it_doesnt_exist(),chapter_number, verses_generated);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(
+                            "https://www.google-analytics.com/mp/collect" +
+                                    "?measurement_id=" + Quran_api_secrets.analytics_measurement_id +
+                                    "&api_secret=" + Quran_api_secrets.analytics_api_secret))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
+                    .build();
+
+            HTTP.sendAsync(request, HttpResponse.BodyHandlers.discarding());
+
+        } catch (Exception exception) {
+            // analytics must never break the app
+            System.err.println(exception.toString());
+        }
+    }
+
     private void check_if_this_is_the_first_launch_and_send_an_event_if_so() {
         String first_time_app_open_prefs = "app_opened_for_the_first_time";
         Preferences prefs = Preferences.userRoot().node("sabrly");
@@ -8634,5 +8683,51 @@ public class HelloApplication extends Application {
             send_analytics_event("first_time_launch");
             prefs.putBoolean(first_time_app_open_prefs, false);
         }
+    }
+
+    public int countArabicLetters(String input) {
+        if (input == null || input.isEmpty()) return 0;
+
+        // Normalize so diacritics become separate code points
+        String s = Normalizer.normalize(input, Normalizer.Form.NFD);
+
+        int count = 0;
+
+        for (int i = 0; i < s.length(); ) {
+            int cp = s.codePointAt(i);
+            i += Character.charCount(cp);
+
+            // Skip tashkeel & Quranic marks (all combining marks)
+            int type = Character.getType(cp);
+            if (type == Character.NON_SPACING_MARK
+                    || type == Character.COMBINING_SPACING_MARK
+                    || type == Character.ENCLOSING_MARK) {
+                continue;
+            }
+
+            // Skip tatweel
+            if (cp == 0x0640) continue;
+
+            // Count Arabic letters only
+            if (isArabicLetter(cp)) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    private boolean isArabicLetter(int cp) {
+        Character.UnicodeBlock block = Character.UnicodeBlock.of(cp);
+
+        if (block == Character.UnicodeBlock.ARABIC
+                || block == Character.UnicodeBlock.ARABIC_SUPPLEMENT
+                || block == Character.UnicodeBlock.ARABIC_EXTENDED_A
+                || block == Character.UnicodeBlock.ARABIC_PRESENTATION_FORMS_A
+                || block == Character.UnicodeBlock.ARABIC_PRESENTATION_FORMS_B) {
+
+            return Character.isLetter(cp);
+        }
+        return false;
     }
 }
