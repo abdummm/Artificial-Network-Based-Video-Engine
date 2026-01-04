@@ -832,6 +832,7 @@ public class HelloApplication extends Application {
         listen_to_end_of_audio_fourth_screen(helloController);
         set_up_the_width_and_height_of_the_image_in_fourth_screen(helloController);
         animation_timer(helloController);
+        send_analytics_event("last_screen_opened");
     }
 
     /*private void set_the_visibility_of_the_buttons(HelloController helloController, int position) {
