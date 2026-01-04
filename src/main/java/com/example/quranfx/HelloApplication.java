@@ -300,7 +300,7 @@ public class HelloApplication extends Application {
         close_everything_on_close(main_stage);
         //CrashLog.install();
         set_up_help_spread_app_canvas(helloController);
-        send_analytics_event("app_launched",1);
+        send_analytics_event("app_launched");
         check_if_this_is_the_first_launch_and_send_an_event_if_so();
     }
 
@@ -460,6 +460,8 @@ public class HelloApplication extends Application {
                     helloController.choose_surat_screen.setVisible(false);
                     helloController.choose_ayat_screen.setVisible(true);
                     set_up_second_screen(helloController, helloController.choose_the_surat.getSelectionModel().getSelectedIndex());
+                    send_surat_analytics_event(helloController.choose_the_surat.getSelectionModel().getSelectedIndex()+1);
+                    send_analytics_event("second_screen_opened");
                 }
             }
         });
@@ -704,7 +706,7 @@ public class HelloApplication extends Application {
         selected_verse = 0;
         sound_path = "";
         array_list_with_times.clear();
-        if(ayats_processed!=null){
+        if (ayats_processed != null) {
             Arrays.fill(ayats_processed, null);
         }
 
@@ -1390,7 +1392,7 @@ public class HelloApplication extends Application {
     }
 
     private long get_duration() {
-        if(media!=null){
+        if (media != null) {
             return TimeUnit.MILLISECONDS.toNanos((long) media.getDuration().toMillis());
         } else {
             throw new RuntimeException("Media is null when getting duration");
@@ -3132,7 +3134,7 @@ public class HelloApplication extends Application {
             public void handle(ActionEvent actionEvent) {
                 //showEmailPopupWithReply();
                 show_feedback_settings_dialog("Feedback");
-                send_analytics_event("give_feedback",1);
+                send_analytics_event("feedback_clicked");
             }
         });
     }
@@ -8124,7 +8126,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 show_feedback_settings_dialog("Settings");
-                send_analytics_event("settings_button_clicked",1);
+                send_analytics_event("settings_clicked");
             }
         });
     }
@@ -8517,20 +8519,20 @@ public class HelloApplication extends Application {
         helloController.canvas_holding_help_spread_app.setHeight(1920);
         helloController.canvas_holding_help_spread_app.setWidth(1080);
         bind_the_canvas_to_the_image_view(helloController, helloController.canvas_holding_help_spread_app);
-        Text_item made_with_sabrly_text_item = new Text_item("Made using sabrly.com",0,Long.MAX_VALUE);
+        Text_item made_with_sabrly_text_item = new Text_item("Made using sabrly.com", 0, Long.MAX_VALUE);
         made_with_sabrly_text_item.setColor(javafx.scene.paint.Color.WHITE);
-        Text_accessory_info stroke_info = new Text_accessory_info(Accessory_type.STROKE,6,Global_default_values.max_stroke_weight);
-        Text_accessory_info shadow_info = new Text_accessory_info(Accessory_type.SHADOW,10,Global_default_values.max_shadow_weight);
+        Text_accessory_info stroke_info = new Text_accessory_info(Accessory_type.STROKE, 6, Global_default_values.max_stroke_weight);
+        Text_accessory_info shadow_info = new Text_accessory_info(Accessory_type.SHADOW, 10, Global_default_values.max_shadow_weight);
         stroke_info.setIs_the_accessory_on(true);
         shadow_info.setIs_the_accessory_on(true);
         made_with_sabrly_text_item.setStroke_info(stroke_info);
         made_with_sabrly_text_item.setShadow_info(shadow_info);
-        made_with_sabrly_text_item.getText_box_info().setCenter_position(new Point2D(1080D/2D,1920D*0.95D));
+        made_with_sabrly_text_item.getText_box_info().setCenter_position(new Point2D(1080D / 2D, 1920D * 0.95D));
         made_with_sabrly_text_item.setFont_size(28);
-        place_the_canvas_text(helloController.canvas_holding_help_spread_app,made_with_sabrly_text_item);
+        place_the_canvas_text(helloController.canvas_holding_help_spread_app, made_with_sabrly_text_item);
     }
 
-    private String create_and_save_client_id_if_it_doesnt_exist(){
+    private String create_and_save_client_id_if_it_doesnt_exist() {
         try {
             Preferences prefs = Preferences.userRoot().node("sabrly");
             String id = prefs.get("sabrly_client_id_key", null);
@@ -8546,33 +8548,24 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void send_analytics_event(String event_name,int count) {
-        send_analytics_event(event_name,"count",count);
-    }
 
-    private void send_analytics_event(String event_name,String params_name,int count) {
-        if(running_mode == Running_mode.DEBUG){
+    private void send_analytics_event(String event_name) {
+        if (running_mode == Running_mode.DEBUG) {
             return;
         }
-        if(event_name.length()>=40 ){
+        if (event_name.length() >= 40) {
             throw new RuntimeException("Event name can't be greater than or equal to 40 characters");
-        }
-        if(params_name.length()>=40){
-            throw new RuntimeException("Params name can't be greater than or equal to 40 characters");
         }
         try {
             HttpClient HTTP = HttpClient.newHttpClient();
             String json = """
-            {
-              "client_id": "%s",
-              "events": [{
-                "name": "%s",
-                "params": {
-                  "%s": %d
-                }
-              }]
-            }
-            """.formatted(create_and_save_client_id_if_it_doesnt_exist(),event_name,params_name,count);
+                    {
+                      "client_id": "%s",
+                      "events": [{
+                        "name": "%s"
+                      }]
+                    }
+                    """.formatted(create_and_save_client_id_if_it_doesnt_exist(), event_name);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(
@@ -8591,12 +8584,54 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void check_if_this_is_the_first_launch_and_send_an_event_if_so(){
+    private void send_surat_analytics_event(int chapter_number) {
+        if (running_mode == Running_mode.DEBUG) {
+            return;
+        }
+        if (chapter_number <= 0) {
+            throw new RuntimeException("surat number can't be less than or equal to 0");
+        }
+        if(chapter_number>114){
+            throw new RuntimeException("surat number can't be greater than 114");
+        }
+        try {
+            HttpClient HTTP = HttpClient.newHttpClient();
+            String json = """
+                    {
+                      "client_id": "%s",
+                      "events": [{
+                        "name": "surat_chosen"
+                        "params": {
+                          "chapter": %d
+                        }
+                      }]
+                    }
+                    """.formatted(create_and_save_client_id_if_it_doesnt_exist(), chapter_number);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(
+                            "https://www.google-analytics.com/mp/collect" +
+                                    "?measurement_id=" + Quran_api_secrets.analytics_measurement_id +
+                                    "&api_secret=" + Quran_api_secrets.analytics_api_secret))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
+                    .build();
+
+            HTTP.sendAsync(request, HttpResponse.BodyHandlers.discarding());
+
+        } catch (Exception exception) {
+            // analytics must never break the app
+            System.err.println(exception.toString());
+        }
+    }
+
+    private void check_if_this_is_the_first_launch_and_send_an_event_if_so() {
+        String first_time_app_open_prefs = "app_opened_for_the_first_time";
         Preferences prefs = Preferences.userRoot().node("sabrly");
-        boolean first_time_app_opened = prefs.getBoolean("app_opened_for_the_first_time", true);
-        if(first_time_app_opened){
-            send_analytics_event("app_opened_for_the_first_time",1);
-            prefs.putBoolean("first_time_app_opened", false);
+        boolean first_time_app_opened = prefs.getBoolean(first_time_app_open_prefs, true);
+        if (first_time_app_opened) {
+            send_analytics_event("first_time_launch");
+            prefs.putBoolean(first_time_app_open_prefs, false);
         }
     }
 }
