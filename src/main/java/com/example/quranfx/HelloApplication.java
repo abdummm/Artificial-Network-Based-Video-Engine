@@ -582,6 +582,11 @@ public class HelloApplication extends Application {
                     call_verses_api(helloController, id, i, hashMap_with_all_of_the_translations_of_verses);
                 }
                 set_up_the_languages(helloController, hashMap_with_all_of_the_translations_of_verses);
+                if(sound_mode == Sound_mode.CHOSEN){
+                    send_last_screen_analytics_event(id+1,start_ayat,end_ayat,sound_mode,helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().getFirst().getName());
+                } else {
+                    send_last_screen_analytics_event(id+1,start_ayat,end_ayat,sound_mode,"upload");
+                }
                 //update_the_translations(helloController, hashMap_with_all_of_the_translations_of_verses);
                 Platform.runLater(new Runnable() {
                     @Override
@@ -2105,20 +2110,8 @@ public class HelloApplication extends Application {
         helloController.add_media_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                /*ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-                executor.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                upload_media_has_been_clicked(helloController);
-                            }
-                        });
-                    }
-                }, 85, TimeUnit.MILLISECONDS);
-                executor.shutdown();*/
                 upload_media_has_been_clicked(helloController);
+                send_analytics_event("upload_media_clicked");
             }
         });
     }
@@ -8601,7 +8594,7 @@ public class HelloApplication extends Application {
                     {
                       "client_id": "%s",
                       "events": [{
-                        "name": "surat_chosen"
+                        "name": "surat_chosen",
                         "params": {
                           "chapter": %d
                         }
@@ -8626,7 +8619,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void send_last_screen_analytics_event(int chapter_number, int start_verse, int end_verse,) {
+    private void send_last_screen_analytics_event(int chapter_number, int start_verse, int end_verse,Sound_mode sound_mode,String reciter_name) {
         if (running_mode == Running_mode.DEBUG) {
             return;
         }
@@ -8643,20 +8636,28 @@ public class HelloApplication extends Application {
             throw new RuntimeException("end verse can't be less than or equal to 0");
         }
         int verses_generated = end_verse - start_verse + 1;
+        String sound_mode_string;
+        if(sound_mode == Sound_mode.CHOSEN){
+            sound_mode_string = "chosen";
+        } else {
+            sound_mode_string = "uploaded";
+        }
         try {
             HttpClient HTTP = HttpClient.newHttpClient();
             String json = """
                     {
                       "client_id": "%s",
                       "events": [{
-                        "name": "last_screen_opened"
+                        "name": "last_screen_opened",
                         "params": {
-                          "chapter": %d
-                          "verses_generated": %d
+                          "chapter": %d,
+                          "verses_generated": %d,
+                          "sound_mode": %s,
+                          "reciter": %s
                         }
                       }]
                     }
-                    """.formatted(create_and_save_client_id_if_it_doesnt_exist(),chapter_number, verses_generated);
+                    """.formatted(create_and_save_client_id_if_it_doesnt_exist(),chapter_number, verses_generated,sound_mode_string,reciter_name);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(
