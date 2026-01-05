@@ -7255,6 +7255,7 @@ public class HelloApplication extends Application {
                 //helloController.list_view_with_all_of_the_languages.refresh();
                 loop_through_all_verses_and_update(helloController.list_view_with_all_of_the_languages);
                 set_up_everything_image_view_time_line_time(helloController, new_time, Type_of_Image.FULL_QUALITY);
+                send_analytics_event("fast_rewind");
             }
         });
     }
@@ -7270,6 +7271,7 @@ public class HelloApplication extends Application {
                     //helloController.list_view_with_all_of_the_languages.refresh();
                     loop_through_all_verses_and_update(helloController.list_view_with_all_of_the_languages);
                     set_up_everything_image_view_time_line_time(helloController, ayats_processed[selected_verse].getStart_millisecond(), Type_of_Image.FULL_QUALITY);
+                    send_analytics_event("rewind");
                 }
             }
         });
@@ -7280,6 +7282,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 play_or_pause_the_video_after_click(helloController);
+                send_analytics_event("play/pause");
             }
         });
     }
@@ -7295,6 +7298,7 @@ public class HelloApplication extends Application {
                     //helloController.list_view_with_all_of_the_languages.refresh();
                     loop_through_all_verses_and_update(helloController.list_view_with_all_of_the_languages);
                     set_up_everything_image_view_time_line_time(helloController, ayats_processed[selected_verse].getStart_millisecond(), Type_of_Image.FULL_QUALITY);
+                    send_analytics_event("forward");
                 }
             }
         });
@@ -7312,6 +7316,7 @@ public class HelloApplication extends Application {
                 //helloController.list_view_with_all_of_the_languages.refresh();
                 loop_through_all_verses_and_update(helloController.list_view_with_all_of_the_languages);
                 set_up_everything_image_view_time_line_time(helloController, new_time, Type_of_Image.FULL_QUALITY);
+                send_analytics_event("fast_forward");
             }
         });
     }
