@@ -8681,6 +8681,41 @@ public class HelloApplication extends Application {
         }
     }
 
+    private void send_language_expanded_analytics_event(String language_name) {
+        if (running_mode == Running_mode.DEBUG) {
+            return;
+        }
+        try {
+            HttpClient HTTP = HttpClient.newHttpClient();
+            String json = """
+                    {
+                      "client_id": "%s",
+                      "events": [{
+                        "name": "language_expanded",
+                        "params": {
+                          "language": %s
+                        }
+                      }]
+                    }
+                    """.formatted(create_and_save_client_id_if_it_doesnt_exist(),language_name);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(
+                            "https://www.google-analytics.com/mp/collect" +
+                                    "?measurement_id=" + Quran_api_secrets.analytics_measurement_id +
+                                    "&api_secret=" + Quran_api_secrets.analytics_api_secret))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
+                    .build();
+
+            HTTP.sendAsync(request, HttpResponse.BodyHandlers.discarding());
+
+        } catch (Exception exception) {
+            // analytics must never break the app
+            System.err.println(exception.toString());
+        }
+    }
+
     private void check_if_this_is_the_first_launch_and_send_an_event_if_so() {
         String first_time_app_open_prefs = "app_opened_for_the_first_time";
         Preferences prefs = Preferences.userRoot().node("sabrly");
