@@ -6153,6 +6153,7 @@ public class HelloApplication extends Application {
                                         make_the_language_translation_extended(stackPane_extended_with_all_of_the_info, down_or_left_image_view, item, true);
                                         item.setItem_extended(true);
                                     }
+                                    send_language_expanded_analytics_event(item.getLanguage_name());
                                 }
                             });
 
