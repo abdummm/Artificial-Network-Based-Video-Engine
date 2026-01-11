@@ -583,10 +583,10 @@ public class HelloApplication extends Application {
                     call_verses_api(helloController, id, i, hashMap_with_all_of_the_translations_of_verses);
                 }
                 set_up_the_languages(helloController, hashMap_with_all_of_the_translations_of_verses);
-                if(sound_mode == Sound_mode.CHOSEN){
-                    send_last_screen_analytics_event(id+1,start_ayat,end_ayat,sound_mode,helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().getFirst().getName());
+                if (sound_mode == Sound_mode.CHOSEN) {
+                    send_last_screen_analytics_event(id + 1, start_ayat, end_ayat, sound_mode, helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().getFirst().getName());
                 } else {
-                    send_last_screen_analytics_event(id+1,start_ayat,end_ayat,sound_mode,"upload");
+                    send_last_screen_analytics_event(id + 1, start_ayat, end_ayat, sound_mode, "upload");
                 }
                 //update_the_translations(helloController, hashMap_with_all_of_the_translations_of_verses);
                 Platform.runLater(new Runnable() {
@@ -8557,42 +8557,17 @@ public class HelloApplication extends Application {
         if (event_name.length() >= 40) {
             throw new RuntimeException("Event name can't be greater than or equal to 40 characters");
         }
-        try {
-            HttpClient HTTP = HttpClient.newHttpClient();
-            String json = """
-                    {
-                      "client_id": "%s",
-                      "events": [{
-                        "name": "%s"
-                      }]
-                    }
-                    """.formatted(create_and_save_client_id_if_it_doesnt_exist(), event_name);
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(
-                            "https://www.google-analytics.com/mp/collect" +
-                                    "?measurement_id=" + Quran_api_secrets.analytics_measurement_id +
-                                    "&api_secret=" + Quran_api_secrets.analytics_api_secret))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(json))
-                    .build();
-
-            HTTP.sendAsync(request, HttpResponse.BodyHandlers.discarding());
-
-        } catch (Exception exception) {
-            // analytics must never break the app
-            System.err.println(exception.toString());
-        }
+        send_analytics_event(event_name, new HashMap<>());
     }
 
-    private void send_analytics_event(String event_name, HashMap<String,Object> items) {
+    private void send_analytics_event(String event_name, HashMap<String, Object> items) {
         if (running_mode == Running_mode.DEBUG) {
             return;
         }
         if (event_name.length() >= 40) {
             throw new RuntimeException("Event name can't be greater than or equal to 40 characters");
         }
-        for(String key :items.keySet()){
+        for (String key : items.keySet()) {
             if (key.length() >= 40) {
                 throw new RuntimeException("Parameter name can't be greater than or equal to 40 characters");
             }
@@ -8600,15 +8575,15 @@ public class HelloApplication extends Application {
         try {
             HttpClient HTTP = HttpClient.newHttpClient();
             String json;
-            if(items.isEmpty()){
+            if (items.isEmpty()) {
                 json = """
-                    {
-                      "client_id": "%s",
-                      "events": [{
-                        "name": "%s"
-                      }]
-                    }
-                    """.formatted(create_and_save_client_id_if_it_doesnt_exist(), event_name);
+                        {
+                          "client_id": "%s",
+                          "events": [{
+                            "name": "%s"
+                          }]
+                        }
+                        """.formatted(create_and_save_client_id_if_it_doesnt_exist(), event_name);
             } else {
                 ObjectMapper mapper = new ObjectMapper();
 
@@ -8622,7 +8597,7 @@ public class HelloApplication extends Application {
 
                 // Params
                 ObjectNode params = mapper.createObjectNode();
-                for(String key :items.keySet()){
+                for (String key : items.keySet()) {
                     Object value = items.get(key);
                     if (value instanceof String) {
                         params.put(key, (String) value);
@@ -8643,6 +8618,7 @@ public class HelloApplication extends Application {
                 events.add(event);
 
                 root.set("events", events);
+                json = mapper.writeValueAsString(root);
             }
 
             HttpRequest request = HttpRequest.newBuilder()
@@ -8672,38 +8648,12 @@ public class HelloApplication extends Application {
         if (chapter_number > 114) {
             throw new RuntimeException("surat number can't be greater than 114");
         }
-        try {
-            HttpClient HTTP = HttpClient.newHttpClient();
-            String json = """
-                    {
-                      "client_id": "%s",
-                      "events": [{
-                        "name": "surat_chosen",
-                        "params": {
-                          "chapter": %d
-                        }
-                      }]
-                    }
-                    """.formatted(create_and_save_client_id_if_it_doesnt_exist(), chapter_number);
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(
-                            "https://www.google-analytics.com/mp/collect" +
-                                    "?measurement_id=" + Quran_api_secrets.analytics_measurement_id +
-                                    "&api_secret=" + Quran_api_secrets.analytics_api_secret))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(json))
-                    .build();
-
-            HTTP.sendAsync(request, HttpResponse.BodyHandlers.discarding());
-
-        } catch (Exception exception) {
-            // analytics must never break the app
-            System.err.println(exception.toString());
-        }
+        HashMap<String,Object> chapter_hash_map = new HashMap<>();
+        chapter_hash_map.put("chapter",chapter_number);
+        send_analytics_event("surat_chosen",chapter_hash_map);
     }
 
-    private void send_last_screen_analytics_event(int chapter_number, int start_verse, int end_verse,Sound_mode sound_mode,String reciter_name) {
+    private void send_last_screen_analytics_event(int chapter_number, int start_verse, int end_verse, Sound_mode sound_mode, String reciter_name) {
         if (running_mode == Running_mode.DEBUG) {
             return;
         }
@@ -8721,78 +8671,26 @@ public class HelloApplication extends Application {
         }
         int verses_generated = end_verse - start_verse + 1;
         String sound_mode_string;
-        if(sound_mode == Sound_mode.CHOSEN){
+        if (sound_mode == Sound_mode.CHOSEN) {
             sound_mode_string = "chosen";
         } else {
             sound_mode_string = "uploaded";
         }
-        try {
-            HttpClient HTTP = HttpClient.newHttpClient();
-            String json = """
-                    {
-                      "client_id": "%s",
-                      "events": [{
-                        "name": "last_screen_opened",
-                        "params": {
-                          "chapter": %d,
-                          "verses_generated": %d,
-                          "sound_mode": %s,
-                          "reciter": %s
-                        }
-                      }]
-                    }
-                    """.formatted(create_and_save_client_id_if_it_doesnt_exist(),chapter_number, verses_generated,sound_mode_string,reciter_name);
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(
-                            "https://www.google-analytics.com/mp/collect" +
-                                    "?measurement_id=" + Quran_api_secrets.analytics_measurement_id +
-                                    "&api_secret=" + Quran_api_secrets.analytics_api_secret))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(json))
-                    .build();
-
-            HTTP.sendAsync(request, HttpResponse.BodyHandlers.discarding());
-
-        } catch (Exception exception) {
-            // analytics must never break the app
-            System.err.println(exception.toString());
-        }
+        HashMap<String,Object> event_hashmap = new HashMap<>();
+        event_hashmap.put("chapter",chapter_number);
+        event_hashmap.put("verses_generated",verses_generated);
+        event_hashmap.put("sound_mode",sound_mode_string);
+        event_hashmap.put("reciter",reciter_name);
+        send_analytics_event("last_screen_opened",event_hashmap);
     }
 
     private void send_language_expanded_analytics_event(String language_name) {
         if (running_mode == Running_mode.DEBUG) {
             return;
         }
-        try {
-            HttpClient HTTP = HttpClient.newHttpClient();
-            String json = """
-                    {
-                      "client_id": "%s",
-                      "events": [{
-                        "name": "language_expanded",
-                        "params": {
-                          "language": %s
-                        }
-                      }]
-                    }
-                    """.formatted(create_and_save_client_id_if_it_doesnt_exist(),language_name);
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(
-                            "https://www.google-analytics.com/mp/collect" +
-                                    "?measurement_id=" + Quran_api_secrets.analytics_measurement_id +
-                                    "&api_secret=" + Quran_api_secrets.analytics_api_secret))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(json))
-                    .build();
-
-            HTTP.sendAsync(request, HttpResponse.BodyHandlers.discarding());
-
-        } catch (Exception exception) {
-            // analytics must never break the app
-            System.err.println(exception.toString());
-        }
+        HashMap<String,Object> event_hashmap = new HashMap<>();
+        event_hashmap.put("language",language_name);
+        send_analytics_event("language_expanded",event_hashmap);
     }
 
     private void check_if_this_is_the_first_launch_and_send_an_event_if_so() {
