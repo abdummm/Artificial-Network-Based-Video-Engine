@@ -7,6 +7,7 @@ import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jfoenix.controls.JFXButton;
 import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.Paint;
@@ -8566,6 +8567,83 @@ public class HelloApplication extends Application {
                       }]
                     }
                     """.formatted(create_and_save_client_id_if_it_doesnt_exist(), event_name);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(
+                            "https://www.google-analytics.com/mp/collect" +
+                                    "?measurement_id=" + Quran_api_secrets.analytics_measurement_id +
+                                    "&api_secret=" + Quran_api_secrets.analytics_api_secret))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
+                    .build();
+
+            HTTP.sendAsync(request, HttpResponse.BodyHandlers.discarding());
+
+        } catch (Exception exception) {
+            // analytics must never break the app
+            System.err.println(exception.toString());
+        }
+    }
+
+    private void send_analytics_event(String event_name, HashMap<String,Object> items) {
+        if (running_mode == Running_mode.DEBUG) {
+            return;
+        }
+        if (event_name.length() >= 40) {
+            throw new RuntimeException("Event name can't be greater than or equal to 40 characters");
+        }
+        for(String key :items.keySet()){
+            if (key.length() >= 40) {
+                throw new RuntimeException("Parameter name can't be greater than or equal to 40 characters");
+            }
+        }
+        try {
+            HttpClient HTTP = HttpClient.newHttpClient();
+            String json;
+            if(items.isEmpty()){
+                json = """
+                    {
+                      "client_id": "%s",
+                      "events": [{
+                        "name": "%s"
+                      }]
+                    }
+                    """.formatted(create_and_save_client_id_if_it_doesnt_exist(), event_name);
+            } else {
+                ObjectMapper mapper = new ObjectMapper();
+
+                ObjectNode root = mapper.createObjectNode();
+                root.put("client_id", create_and_save_client_id_if_it_doesnt_exist());
+
+                // Events array
+                ArrayNode events = mapper.createArrayNode();
+                ObjectNode event = mapper.createObjectNode();
+                event.put("name", event_name);
+
+                // Params
+                ObjectNode params = mapper.createObjectNode();
+                for(String key :items.keySet()){
+                    Object value = items.get(key);
+                    if (value instanceof String) {
+                        params.put(key, (String) value);
+                    } else if (value instanceof Integer) {
+                        params.put(key, (Integer) value);
+                    } else if (value instanceof Long) {
+                        params.put(key, (Long) value);
+                    } else if (value instanceof Float) {
+                        params.put(key, ((Float) value).doubleValue());
+                    } else if (value instanceof Double) {
+                        params.put(key, (Double) value);
+                    } else if (value instanceof Boolean) {
+                        params.put(key, (Boolean) value);
+                    }
+                }
+
+                event.set("params", params);
+                events.add(event);
+
+                root.set("events", events);
+            }
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(
