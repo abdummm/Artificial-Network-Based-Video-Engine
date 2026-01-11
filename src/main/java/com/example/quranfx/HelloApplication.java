@@ -584,10 +584,11 @@ public class HelloApplication extends Application {
                 }
                 set_up_the_languages(helloController, hashMap_with_all_of_the_translations_of_verses);
                 if (sound_mode == Sound_mode.CHOSEN) {
-                    send_last_screen_analytics_event(id + 1, start_ayat, end_ayat, sound_mode, helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().getFirst().getName());
+                    send_last_screen_analytics_event(id + 1, start_ayat, end_ayat, sound_mode, helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().getFirst().getName(),hashMap_with_all_of_the_translations_of_verses.get("arabic"));
                 } else {
-                    send_last_screen_analytics_event(id + 1, start_ayat, end_ayat, sound_mode, "upload");
+                    send_last_screen_analytics_event(id + 1, start_ayat, end_ayat, sound_mode, "upload",hashMap_with_all_of_the_translations_of_verses.get("arabic"));
                 }
+                send_analytics_event("third_screen_opened");
                 //update_the_translations(helloController, hashMap_with_all_of_the_translations_of_verses);
                 Platform.runLater(new Runnable() {
                     @Override
@@ -8653,7 +8654,7 @@ public class HelloApplication extends Application {
         send_analytics_event("surat_chosen",chapter_hash_map);
     }
 
-    private void send_last_screen_analytics_event(int chapter_number, int start_verse, int end_verse, Sound_mode sound_mode, String reciter_name) {
+    private void send_last_screen_analytics_event(int chapter_number, int start_verse, int end_verse, Sound_mode sound_mode, String reciter_name,ArrayList<String> arabic_verses) {
         if (running_mode == Running_mode.DEBUG) {
             return;
         }
@@ -8676,11 +8677,16 @@ public class HelloApplication extends Application {
         } else {
             sound_mode_string = "uploaded";
         }
+        StringBuilder arabic_verses_string_builder = new StringBuilder();
+        for(String verse : arabic_verses){
+            arabic_verses_string_builder.append(verse).append(' ');
+        }
         HashMap<String,Object> event_hashmap = new HashMap<>();
         event_hashmap.put("chapter",chapter_number);
         event_hashmap.put("verses_generated",verses_generated);
         event_hashmap.put("sound_mode",sound_mode_string);
         event_hashmap.put("reciter",reciter_name);
+        event_hashmap.put("arabic_letters",countArabicLetters(arabic_verses_string_builder.toString()));
         send_analytics_event("last_screen_opened",event_hashmap);
     }
 
