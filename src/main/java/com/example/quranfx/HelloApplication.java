@@ -615,6 +615,7 @@ public class HelloApplication extends Application {
             }
             {
                 String arabic_ayat = String.valueOf(arrayNode.get(i).get("text_uthmani"));
+                System.out.println(arabic_ayat);
                 ArrayList<String> arabic_verses = hashMap_with_all_of_the_translations_of_the_verses.getOrDefault("arabic", new ArrayList<>());
                 arabic_verses.add(arabic_ayat);
                 hashMap_with_all_of_the_translations_of_the_verses.put("arabic", arabic_verses);
@@ -623,10 +624,12 @@ public class HelloApplication extends Application {
             for (JsonNode translation : translations_array_node) {
                 int id = translation.get("resource_id").asInt();
                 String language_name = hashMap_id_to_language_name_text.get(id);
-                String verse_text = translation.get("text").asText();
-                ArrayList<String> translated_verses = hashMap_with_all_of_the_translations_of_the_verses.getOrDefault(language_name, new ArrayList<>());
-                translated_verses.add(verse_text);
-                hashMap_with_all_of_the_translations_of_the_verses.put(language_name, translated_verses);
+                if(!language_name.equals("arabic")){
+                    String verse_text = translation.get("text").asText();
+                    ArrayList<String> translated_verses = hashMap_with_all_of_the_translations_of_the_verses.getOrDefault(language_name, new ArrayList<>());
+                    translated_verses.add(verse_text);
+                    hashMap_with_all_of_the_translations_of_the_verses.put(language_name, translated_verses);
+                }
             }
             ayats_processed[ayat_number - start_ayat].setVerse_number(ayat_number);
         }
@@ -4972,7 +4975,7 @@ public class HelloApplication extends Application {
     private void set_up_the_languages(HelloController helloController, HashMap<String, ArrayList<String>> hashMap_with_all_of_the_translations_of_verses) {
         ObservableList<Language_info> items = FXCollections.observableArrayList();
         for (String key : hash_map_with_the_translations.keySet()) {
-            if (!key.equals("english")) {
+            if (!key.equals("english") && !key.equals("arabic")) {
                 items.add(new Language_info(key, return_the_formatted_text_item_from_array_list(hashMap_with_all_of_the_translations_of_verses.get(key))));
             }
         }
@@ -4986,6 +4989,9 @@ public class HelloApplication extends Application {
                 return o1.getLanguage_name().compareTo(o2.getLanguage_name());
             }
         });
+        for(String verse : hashMap_with_all_of_the_translations_of_verses.get("arabic")){
+            System.out.println(verse);
+        }
         items.add(0, new Language_info("arabic", return_the_formatted_text_item_from_array_list(hashMap_with_all_of_the_translations_of_verses.get("arabic"))));
         items.add(1, new Language_info("english", return_the_formatted_text_item_from_array_list(hashMap_with_all_of_the_translations_of_verses.get("english"))));
         helloController.list_view_with_all_of_the_languages.setItems(items);
