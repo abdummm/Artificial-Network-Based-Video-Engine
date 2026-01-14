@@ -615,7 +615,6 @@ public class HelloApplication extends Application {
             }
             {
                 String arabic_ayat = String.valueOf(arrayNode.get(i).get("text_uthmani"));
-                System.out.println(arabic_ayat);
                 ArrayList<String> arabic_verses = hashMap_with_all_of_the_translations_of_the_verses.getOrDefault("arabic", new ArrayList<>());
                 arabic_verses.add(arabic_ayat);
                 hashMap_with_all_of_the_translations_of_the_verses.put("arabic", arabic_verses);
@@ -4989,9 +4988,6 @@ public class HelloApplication extends Application {
                 return o1.getLanguage_name().compareTo(o2.getLanguage_name());
             }
         });
-        for(String verse : hashMap_with_all_of_the_translations_of_verses.get("arabic")){
-            System.out.println(verse);
-        }
         items.add(0, new Language_info("arabic", return_the_formatted_text_item_from_array_list(hashMap_with_all_of_the_translations_of_verses.get("arabic"))));
         items.add(1, new Language_info("english", return_the_formatted_text_item_from_array_list(hashMap_with_all_of_the_translations_of_verses.get("english"))));
         helloController.list_view_with_all_of_the_languages.setItems(items);
