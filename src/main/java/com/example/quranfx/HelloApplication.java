@@ -7435,6 +7435,7 @@ public class HelloApplication extends Application {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean old_state, Boolean new_state) {
                 helloController.canvas_holding_help_spread_app.setVisible(new_state);
+                send_analytics_event("help_spread_sabrly_clicked");
             }
         });
     }
@@ -8701,6 +8702,15 @@ public class HelloApplication extends Application {
         send_analytics_event("language_expanded",event_hashmap);
     }
 
+    private void send_language_selected_analytics_event(String language_name) {
+        if (running_mode == Running_mode.DEBUG) {
+            return;
+        }
+        HashMap<String,Object> event_hashmap = new HashMap<>();
+        event_hashmap.put("language",language_name);
+        send_analytics_event("language_expanded",event_hashmap);
+    }
+
     private void check_if_this_is_the_first_launch_and_send_an_event_if_so() {
         String first_time_app_open_prefs = "app_opened_for_the_first_time";
         Preferences prefs = Preferences.userRoot().node("sabrly");
@@ -8712,7 +8722,9 @@ public class HelloApplication extends Application {
     }
 
     public int countArabicLetters(String input) {
-        if (input == null || input.isEmpty()) return 0;
+        if (input == null || input.isEmpty()) {
+            return 0;
+        }
 
         // Normalize so diacritics become separate code points
         String s = Normalizer.normalize(input, Normalizer.Form.NFD);
