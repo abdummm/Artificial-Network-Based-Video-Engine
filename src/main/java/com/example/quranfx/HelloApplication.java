@@ -6167,6 +6167,7 @@ public class HelloApplication extends Application {
                                     item.setVisible_check_mark_checked(check_box_is_the_langauge_enabled.isSelected());
                                     select_or_un_select_the_language(item, jfxButton, language_name, check_box_is_the_langauge_enabled, down_or_left_image_view, helloController, v_box_with_all_of_the_controls_except_check_box);
                                     set_up_or_hide_the_canvas(helloController, item);
+                                    send_language_selected_analytics_event(item.getLanguage_name());
                                 }
                             });
 
