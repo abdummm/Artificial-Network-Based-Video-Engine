@@ -2115,7 +2115,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 upload_media_has_been_clicked(helloController);
-                send_analytics_event("upload_media_clicked");
+                send_analytics_event("Media uploaded");
             }
         });
     }
