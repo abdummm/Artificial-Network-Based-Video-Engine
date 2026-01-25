@@ -6502,6 +6502,7 @@ public class HelloApplication extends Application {
                                 public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
                                     label_holding_fade_in_time_for_verse.setText(return_formatted_string_to_1_decimal_place_always(new_number.doubleValue()) + unit_sign_beside_fade_in_fade_out);
                                     text_item_of_the_selected_verse.setFade_in(new_number.doubleValue());
+                                    send_analytics_event("fade_adjusted");
                                 }
                             };
                             fade_in_slider_for_verse.valueProperty().addListener(verse_fade_in_listener);
@@ -6513,6 +6514,7 @@ public class HelloApplication extends Application {
                                 public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
                                     label_holding_fade_out_time_for_verse.setText(return_formatted_string_to_1_decimal_place_always(new_number.doubleValue()) + unit_sign_beside_fade_in_fade_out);
                                     text_item_of_the_selected_verse.setFade_out(new_number.doubleValue());
+                                    send_analytics_event("fade_adjusted");
                                 }
                             };
                             fade_out_slider_for_verse.valueProperty().addListener(verse_fade_out_listener);
