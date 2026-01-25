@@ -6304,14 +6304,14 @@ public class HelloApplication extends Application {
                             reset_everything_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-
+                                    send_analytics_event("reset_everything_clicked");
                                 }
                             });
 
                             apply_to_all_verses_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-
+                                    send_analytics_event("apply_to_all_clicked");
                                 }
                             });
 
@@ -6536,6 +6536,7 @@ public class HelloApplication extends Application {
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     item.setText_box_showing(true);
+                                    send_analytics_event("verse_text_display_updated");
                                 }
                             };
                             verse_text_area.textProperty().addListener(verse_text_area_change_listener);
