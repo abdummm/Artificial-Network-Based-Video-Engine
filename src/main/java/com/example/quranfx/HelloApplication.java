@@ -6435,6 +6435,7 @@ public class HelloApplication extends Application {
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     item.setText_box_showing(true);
+                                    send_analytics_event("stroke_adjusted");
                                 }
                             };
                             stroke_color_picker.valueProperty().addListener(change_listener_for_stroke_color);
@@ -6450,6 +6451,7 @@ public class HelloApplication extends Application {
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     item.setText_box_showing(true);
                                     label_hosting_the_percentage_of_weight.setText(return_formatted_string_to_1_decimal_place_always(stroke_weight_slider.getValue()));
+                                    send_analytics_event("stroke_adjusted");
                                 }
                             };
                             stroke_weight_slider.valueProperty().addListener(change_listener_for_stroke_weight);
@@ -6521,6 +6523,7 @@ public class HelloApplication extends Application {
                             fade_out_slider_for_verse.valueProperty().addListener(verse_fade_out_listener);
                             item.setVerse_fade_out_listener(verse_fade_out_listener);
 
+                            //text_area_change_listener
                             ChangeListener<? super String> verse_text_area_change_listener = new ChangeListener<String>() {
                                 @Override
                                 public void changed(ObservableValue<? extends String> observableValue, String old_string, String new_string) {
