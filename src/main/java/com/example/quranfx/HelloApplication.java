@@ -6254,6 +6254,7 @@ public class HelloApplication extends Application {
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     item.setText_box_showing(true);
                                     x_position_of_text.setText(String.valueOf((int) x_pos));
+                                    send_analytics_event("position_centered");
                                 }
                             });
 
@@ -6268,6 +6269,7 @@ public class HelloApplication extends Application {
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     item.setText_box_showing(true);
                                     y_position_of_text.setText(String.valueOf((int) y_pos));
+                                    send_analytics_event("position_centered");
                                 }
                             });
 
@@ -6323,6 +6325,7 @@ public class HelloApplication extends Application {
                                     place_the_canvas_text(item.getLanguage_canvas(), local_text_item);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), local_text_item);
                                     item.setText_box_showing(true);
+                                    send_analytics_event("position_changed");
                                 }
                             };
                             x_position_of_text.textProperty().addListener(x_pos_text_feild_change_listener);
@@ -6342,6 +6345,7 @@ public class HelloApplication extends Application {
                                     place_the_canvas_text(item.getLanguage_canvas(), local_text_item);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), local_text_item);
                                     item.setText_box_showing(true);
+                                    send_analytics_event("position_changed");
                                 }
                             };
                             y_position_of_text.textProperty().addListener(y_pos_text_feild_change_listener);
@@ -6356,6 +6360,7 @@ public class HelloApplication extends Application {
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     item.setText_box_showing(true);
+                                    send_analytics_event("color_changed");
                                 }
                             };
                             color_picker.valueProperty().addListener(color_picker_change_listener);
@@ -6393,6 +6398,7 @@ public class HelloApplication extends Application {
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     item.setText_box_showing(true);
                                     //combox_of_all_of_fonts_sub_choices.setVisibleRowCount(sub_fonts.getFont_names().size());
+                                    send_analytics_event("font_changed");
                                 }
                             };
                             combox_of_all_of_fonts.valueProperty().addListener(change_listener_for_font);
@@ -6409,6 +6415,7 @@ public class HelloApplication extends Application {
                                         place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                         place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                         item.setText_box_showing(true);
+                                        send_analytics_event("sub_font_changed");
                                     }
                                 }
                             };
