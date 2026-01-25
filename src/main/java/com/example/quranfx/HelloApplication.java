@@ -6284,6 +6284,7 @@ public class HelloApplication extends Application {
                                     remove_all_of_the_text_boxes(helloController.list_view_with_all_of_the_languages);
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    send_analytics_event("shadow_checked");
                                 }
                             });
 
