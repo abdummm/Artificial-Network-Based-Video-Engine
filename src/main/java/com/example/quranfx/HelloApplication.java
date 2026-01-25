@@ -7585,6 +7585,7 @@ public class HelloApplication extends Application {
         helloController.stack_pane_of_image_view_and_text.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                send_analytics_event("verse_text_position_updated");
                 remove_all_of_the_text_boxes(helloController.list_view_with_all_of_the_languages); // TODO this is not efficient. might need to check if text box is visible before disabling it.
                 ObservableList<Language_info> all_of_the_languages = helloController.list_view_with_all_of_the_languages.getItems();
                 Smallest_text_box_info smallest_text_box_info = return_the_smallest_text_box_info(all_of_the_languages, mouseEvent);
