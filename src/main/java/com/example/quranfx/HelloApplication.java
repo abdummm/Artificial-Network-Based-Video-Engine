@@ -6480,6 +6480,7 @@ public class HelloApplication extends Application {
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     item.setText_box_showing(true);
+                                    send_analytics_event("shadow_adjusted");
                                 }
                             };
                             shadow_color_picker.valueProperty().addListener(shadow_color_change_listener);
@@ -6495,6 +6496,7 @@ public class HelloApplication extends Application {
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     item.setText_box_showing(true);
+                                    send_analytics_event("shadow_adjusted");
                                 }
                             };
                             shadow_slider.valueProperty().addListener(shadow_weight_change_listener);
