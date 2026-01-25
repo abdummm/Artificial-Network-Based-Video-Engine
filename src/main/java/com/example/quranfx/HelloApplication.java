@@ -6461,6 +6461,7 @@ public class HelloApplication extends Application {
                                     holds_advnaced_options.setVisible(new_value);
                                     holds_advnaced_options.setManaged(new_value);
                                     item.setAdvanced_options_selected(new_value);
+                                    send_analytics_event("advanced_options_selected");
                                 }
                             };
                             toggle_switch_for_advanced_options.selectedProperty().addListener(change_listener_for_advanced_options);
