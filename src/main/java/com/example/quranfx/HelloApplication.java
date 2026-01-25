@@ -6304,14 +6304,14 @@ public class HelloApplication extends Application {
                             reset_everything_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    send_analytics_event("reset_everything_clicked");
+                                    send_analytics_event("reset_everything_used");
                                 }
                             });
 
                             apply_to_all_verses_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    send_analytics_event("apply_to_all_clicked");
+                                    send_analytics_event("apply_to_all_used");
                                 }
                             });
 
