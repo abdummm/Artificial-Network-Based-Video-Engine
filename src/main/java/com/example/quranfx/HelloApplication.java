@@ -6180,6 +6180,7 @@ public class HelloApplication extends Application {
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     item.setText_box_showing(true);
+                                    send_analytics_event("font_size_changed");
                                 }
                             });
 
@@ -6192,6 +6193,7 @@ public class HelloApplication extends Application {
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     item.setText_box_showing(true);
+                                    send_analytics_event("font_size_changed");
                                 }
                             });
 
@@ -6380,6 +6382,7 @@ public class HelloApplication extends Application {
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     item.setText_box_showing(true);
+                                    send_analytics_event("font_size_changed");
                                 }
                             };
                             text_field_for_font_size.textProperty().addListener(font_size_change_listen);
