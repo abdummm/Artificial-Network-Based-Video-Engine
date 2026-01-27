@@ -138,6 +138,7 @@ public class HelloApplication extends Application {
     private Stage learn_more_about_app_stage;
     private Stage app_settings_information_stage;
     private WritableImage cached_text_image;
+    private HashMap<String,Long> analytics_cool_down_hashmap = new HashMap<>();
 
     private final static String help_email = "sabrlyhelp@gmail.com";
     private final static String discord_invite_link = "https://discord.gg/ZzPgNx8U95";
@@ -173,6 +174,7 @@ public class HelloApplication extends Application {
     private final static String unit_sign_beside_opacity = "%";
     private final static String unit_sign_beside_fade_in_fade_out = "s";
     private final static double distance_for_resize_arrow_text_on_cavnas = 15D;
+
 
     //private final static double circle_button_radius = 20D;
 
@@ -7944,6 +7946,7 @@ public class HelloApplication extends Application {
                     helloController.label_holding_the_opacity_percentage.setText(String.valueOf(new_number.intValue()) + "%");
                     opacity_settings.setOpacity(new_number.doubleValue());
                     helloController.rectangle_on_top_of_chat_gpt_image_view_for_opacity_tint.setOpacity(opacity_settings.return_total_opacity(time_difference_compared_to_start(shape_object_time_line, helloController.time_line_pane), time_difference_compared_to_end(shape_object_time_line, helloController.time_line_pane)));
+                    send_analytics_event("Image opacity altered");
                 }
             };
             listener_info.setChange_listener(opacity_change_listener);
@@ -7968,6 +7971,7 @@ public class HelloApplication extends Application {
                     set_the_opacity_of_image_view_considering_everything(helloController, shape_object_time_line);
                     Media_pool media_pool = hashMap_with_media_pool_items.get(shape_object_time_line.getImage_id());
                     set_up_the_image_rectangle((Rectangle) shape_object_time_line.getShape(), remove_transparent_pixels(media_pool.getThumbnail()), helloController.time_line_pane, opacity_settings);
+                    send_analytics_event("Image fade in altered");
                 }
             };
             listener_info.setChange_listener(fade_in_change_listener);
@@ -7992,6 +7996,7 @@ public class HelloApplication extends Application {
                     set_the_opacity_of_image_view_considering_everything(helloController, shape_object_time_line);
                     Media_pool media_pool = hashMap_with_media_pool_items.get(shape_object_time_line.getImage_id());
                     set_up_the_image_rectangle((Rectangle) shape_object_time_line.getShape(), remove_transparent_pixels(media_pool.getThumbnail()), helloController.time_line_pane, opacity_settings);
+                    send_analytics_event("Image fade out altered");
                 }
             };
             listener_info.setChange_listener(fade_out_change_listener);
@@ -8591,6 +8596,9 @@ public class HelloApplication extends Application {
         if (running_mode == Running_mode.DEBUG) {
             return;
         }
+        if(!has_enough_time_passed_to_send_an_analytics_event(event_name)){
+            return;
+        }
         if (event_name.length() >= 40) {
             throw new RuntimeException("Event name can't be greater than or equal to 40 characters");
         }
@@ -8790,5 +8798,19 @@ public class HelloApplication extends Application {
             return Character.isLetter(cp);
         }
         return false;
+    }
+
+    private boolean has_enough_time_passed_to_send_an_analytics_event(String analytics_name){
+        if(analytics_cool_down_hashmap.containsKey(analytics_name)){
+            if(System.currentTimeMillis() - analytics_cool_down_hashmap.get(analytics_name) >= TimeUnit.SECONDS.toMillis(5)){
+                analytics_cool_down_hashmap.put(analytics_name,System.currentTimeMillis());
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            analytics_cool_down_hashmap.put(analytics_name,System.currentTimeMillis());
+            return true;
+        }
     }
 }
