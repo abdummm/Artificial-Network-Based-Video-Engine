@@ -107,7 +107,7 @@ public class HelloApplication extends Application {
     private int number_of_prompts_per_minute = 5;
     private ArrayList<Long> array_list_with_times = new ArrayList<>();
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-    private Verse_class_final[] ayats_processed;
+    private ArrayList<Verse_class_final> ayats_processed = new ArrayList<>();
 
     private int chat_gpt_processed_ayats = 0;
     private int selected_verse = 0;
@@ -133,7 +133,7 @@ public class HelloApplication extends Application {
     private HashMap<String, ArrayList<Integer>> hash_map_with_the_translations = new HashMap<>();
     private HashMap<Integer, String> hashMap_id_to_language_name_text = new HashMap<>();
     private Sound_mode sound_mode;
-    private long[] start_millisecond_of_each_verse;
+    private ArrayList<Long> start_millisecond_of_each_verse = new ArrayList<>();
     private ArrayList<Listener_info> array_list_with_all_of_the_image_control_listeners = new ArrayList<>();
     private Stage learn_more_about_app_stage;
     private Stage app_settings_information_stage;
@@ -7404,6 +7404,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 learn_more_about_spreading_the_app_dialog();
+                send_analytics_event("Help spread sabrly info used");
             }
         });
     }
@@ -7901,7 +7902,7 @@ public class HelloApplication extends Application {
         helloController.setting_beside_help_spread_the_app.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-
+                send_analytics_event("Help spread sabrly settings used");
             }
         });
     }
