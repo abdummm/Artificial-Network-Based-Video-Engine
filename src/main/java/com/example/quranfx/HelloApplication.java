@@ -566,7 +566,9 @@ public class HelloApplication extends Application {
         executor.submit(new Runnable() {
             @Override
             public void run() {
+                // TODO following lines should be removed
                 int number_of_ayats = end_ayat - start_ayat + 1;
+                ayats_processed.add(new Verse_class_final());
                 ayats_processed = new Verse_class_final[number_of_ayats];
                 start_millisecond_of_each_verse = new long[number_of_ayats];
                 if (sound_path.isEmpty()) {
@@ -632,7 +634,7 @@ public class HelloApplication extends Application {
                     hashMap_with_all_of_the_translations_of_the_verses.put(language_name, translated_verses);
                 }
             }
-            ayats_processed[ayat_number - start_ayat].setVerse_number(ayat_number);
+            ayats_processed.get(ayat_number - start_ayat).setVerse_number(ayat_number);
         }
     }
 
@@ -719,7 +721,7 @@ public class HelloApplication extends Application {
         sound_path = "";
         array_list_with_times.clear();
         if (ayats_processed != null) {
-            Arrays.fill(ayats_processed, null);
+            ayats_processed.clear();
         }
 
         clear_temp_directory();
@@ -890,7 +892,7 @@ public class HelloApplication extends Application {
     }*/
 
     private void set_selected_verse_text(HelloController helloController, int verse_position) {
-        set_the_verse_text_fourth_screen(helloController, ayats_processed[verse_position].getVerse_number(), surat_name_selected);
+        set_the_verse_text_fourth_screen(helloController, ayats_processed.get(verse_position).getVerse_number(), surat_name_selected);
     }
 
     private void set_the_verse_text_fourth_screen(HelloController helloController, int verse, String surat) {
@@ -957,7 +959,7 @@ public class HelloApplication extends Application {
         mediaPlayer.setOnEndOfMedia(new Runnable() {
             @Override
             public void run() {
-                selected_verse = ayats_processed.length - 1;
+                selected_verse = ayats_processed.size() - 1;
                 set_the_play_pause_button(helloController, Audio_status.PLAYING);
 //                helloController.sound_slider_fourth_screen.setValue(helloController.sound_slider_fourth_screen.getMax());
                 timer.stop();
@@ -1480,7 +1482,7 @@ public class HelloApplication extends Application {
                             }
                             File new_wav_file = convert_mp3_to_wav(tempFile, String.format("%03d.wav", verse_number));
                             new_wav_file.deleteOnExit();
-                            ayats_processed[verse_number - start_ayat] = new Verse_class_final(getDurationWithFFmpeg(new_wav_file));
+                            ayats_processed.set(verse_number - start_ayat,new Verse_class_final(getDurationWithFFmpeg(new_wav_file)));
                         } catch (IOException e) {
                             e.printStackTrace();
                             Thread.sleep(500L * (final_i + 1)); // exponential backoff
@@ -1501,12 +1503,12 @@ public class HelloApplication extends Application {
         File tempFile = new File("temp/sound", String.format("%03d.wav", start_ayat));
         audio_frequncy_of_the_sound = get_frequency_of_audio(tempFile.getAbsolutePath());
         int get_the_number_of_audio_channels_local = set_the_number_of_audio_channels(getNumberOfChannels(tempFile.getAbsolutePath()));
-        ayats_processed[0].setStart_millisecond(0);
+        ayats_processed.getFirst().setStart_millisecond(0);
         long start_millisecond = 0;
         if (number_of_ayats > 1) {
             for (int i = 1; i < number_of_ayats; i++) {
-                start_millisecond += ayats_processed[i - 1].getDuration();
-                ayats_processed[i].setStart_millisecond(start_millisecond);
+                start_millisecond += ayats_processed.get(i - 1).getDuration();
+                ayats_processed.get(i).setStart_millisecond(start_millisecond);
             }
         }
         File listFile = new File("temp/sound", "list.txt");
@@ -1675,7 +1677,7 @@ public class HelloApplication extends Application {
     private void scroll_to_specific_verse_time(HelloController helloController) {
         Polygon polygon = get_the_polygon_from_the_time_line_over_lay(helloController);
         Polygon_data polygon_data = (Polygon_data) polygon.getUserData();
-        long time_in_milliseconds = ayats_processed[selected_verse].getStart_millisecond();
+        long time_in_milliseconds = ayats_processed.get(selected_verse).getStart_millisecond();
         if (!polygon_data.isShould_the_polygon_be_fixed_in_the_middle()) {
             set_the_scroll_pane_h_value_auto_scroll(helloController, return_the_real_x_position_based_on_time(helloController, time_in_milliseconds));
             update_the_time_line_indicator(helloController, time_in_milliseconds);
@@ -2820,18 +2822,18 @@ public class HelloApplication extends Application {
     private void set_up_the_verses_time_line(HelloController helloController, Pane pane, double base_time_line, double pixels_in_between_each_line, long time_between_every_line) {
         //double adjustor = pixels_in_between_each_line / time_between_every_line;
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
-        StackPane[] array_of_verse_stack_panes = new StackPane[ayats_processed.length];
-        for (int i = 0; i < ayats_processed.length; i++) {
-            Label verse_text = new Label("Verse ".concat(String.valueOf(ayats_processed[i].getVerse_number())));
-            double start_x = base_time_line + (nanoseconds_to_pixels(time_line_pane_data, ayats_processed[i].getStart_millisecond()));
+        StackPane[] array_of_verse_stack_panes = new StackPane[ayats_processed.size()];
+        for (int i = 0; i < ayats_processed.size(); i++) {
+            Label verse_text = new Label("Verse ".concat(String.valueOf(ayats_processed.get(i).getVerse_number())));
+            double start_x = base_time_line + (nanoseconds_to_pixels(time_line_pane_data, ayats_processed.get(i).getStart_millisecond()));
             StackPane stackPane = new StackPane();
-            stackPane.setPrefWidth(nanoseconds_to_pixels(time_line_pane_data, ayats_processed[i].getDuration()));
-            stackPane.setMinWidth(nanoseconds_to_pixels(time_line_pane_data, ayats_processed[i].getDuration()));
-            stackPane.setMaxWidth(nanoseconds_to_pixels(time_line_pane_data, ayats_processed[i].getDuration()));
+            stackPane.setPrefWidth(nanoseconds_to_pixels(time_line_pane_data, ayats_processed.get(i).getDuration()));
+            stackPane.setMinWidth(nanoseconds_to_pixels(time_line_pane_data, ayats_processed.get(i).getDuration()));
+            stackPane.setMaxWidth(nanoseconds_to_pixels(time_line_pane_data, ayats_processed.get(i).getDuration()));
             stackPane.setPrefHeight(30);
             stackPane.setLayoutX(start_x);
             stackPane.setLayoutY(30);
-            Rectangle rectangle = new Rectangle(nanoseconds_to_pixels(time_line_pane_data, ayats_processed[i].getDuration()), 20);
+            Rectangle rectangle = new Rectangle(nanoseconds_to_pixels(time_line_pane_data, ayats_processed.get(i).getDuration()), 20);
             rectangle.setStrokeWidth(1);
             rectangle.setStroke(javafx.scene.paint.Color.BLACK);
             rectangle.setArcHeight(5);
@@ -3297,10 +3299,10 @@ public class HelloApplication extends Application {
     }
 
     private void is_it_time_to_change_verses(HelloController helloController, double milliseconds) {
-        if (ayats_processed.length - 1 == selected_verse) {
+        if (ayats_processed.size() - 1 == selected_verse) {
             return;
         }
-        if (milliseconds > ayats_processed[selected_verse + 1].getStart_millisecond()) {
+        if (milliseconds > ayats_processed.get(selected_verse + 1).getStart_millisecond()) {
             selected_verse++;
             the_verse_changed(helloController, selected_verse);
         }
@@ -8521,8 +8523,8 @@ public class HelloApplication extends Application {
                 double new_layout_x = verse_resize_info.getVerse_end_x() - new_width;
                 main_stack_pane.setLayoutX(new_layout_x);
 
-                ayats_processed[verse_array_number].setStart_millisecond(pixels_to_nanoseconds(time_line_pane_data, new_layout_x - time_line_pane_data.getTime_line_base_line()));
-                ayats_processed[verse_array_number].setDuration(pixels_to_nanoseconds(time_line_pane_data, new_width));
+                ayats_processed.get(verse_array_number).setStart_millisecond(pixels_to_nanoseconds(time_line_pane_data, new_layout_x - time_line_pane_data.getTime_line_base_line()));
+                ayats_processed.get(verse_array_number).setDuration(pixels_to_nanoseconds(time_line_pane_data, new_width));
                 start_millisecond_of_each_verse[verse_array_number] = ayats_processed[verse_array_number].getStart_millisecond();
 
                 ayats_processed[verse_array_number - 1].setDuration(pixels_to_nanoseconds(time_line_pane_data, new_previous_verse_width));
