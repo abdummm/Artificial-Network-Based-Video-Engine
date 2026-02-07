@@ -133,7 +133,6 @@ public class HelloApplication extends Application {
     private HashMap<String, ArrayList<Integer>> hash_map_with_the_translations = new HashMap<>();
     private HashMap<Integer, String> hashMap_id_to_language_name_text = new HashMap<>();
     private Sound_mode sound_mode;
-    private ArrayList<Long> start_millisecond_of_each_verse = new ArrayList<>();
     private ArrayList<Listener_info> array_list_with_all_of_the_image_control_listeners = new ArrayList<>();
     private Stage learn_more_about_app_stage;
     private Stage app_settings_information_stage;
@@ -570,7 +569,6 @@ public class HelloApplication extends Application {
                 int number_of_ayats = end_ayat - start_ayat + 1;
                 ayats_processed.add(new Verse_class_final());
                 ayats_processed = new Verse_class_final[number_of_ayats];
-                start_millisecond_of_each_verse = new long[number_of_ayats];
                 if (sound_path.isEmpty()) {
                     Reciters_info reciters_info = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().getFirst();
                     sound_mode = Sound_mode.CHOSEN;
@@ -579,7 +577,6 @@ public class HelloApplication extends Application {
                     sound_mode = Sound_mode.UPLOADED;
                     set_up_sound_for_chosen_verses(start_ayat, end_ayat);
                 }
-                set_up_the_start_millisecond_of_each_verse_duplicate_array();
                 int start_ayat_section = (int) Math.ceil(start_ayat / 50D);
                 int end_ayat_section = (int) Math.ceil(end_ayat / 50D);
                 HashMap<String, ArrayList<String>> hashMap_with_all_of_the_translations_of_verses = new HashMap<>();
@@ -3278,7 +3275,12 @@ public class HelloApplication extends Application {
     }
 
     private void which_verse_am_i_on_milliseconds(HelloController helloController, long milliseconds) {
-        int index = Arrays.binarySearch(start_millisecond_of_each_verse, milliseconds);
+        int index = Collections.binarySearch(ayats_processed, new Verse_class_final(milliseconds), new Comparator<Verse_class_final>() {
+            @Override
+            public int compare(Verse_class_final object_1, Verse_class_final object_2) {
+                return Long.compare(object_1.getStart_millisecond(), object_2.getStart_millisecond()); // or a.getMilliseconds()
+            }
+        });
         if (index >= 0) {
             selected_verse = index;
             the_verse_changed(helloController, selected_verse);
@@ -4586,12 +4588,6 @@ public class HelloApplication extends Application {
                         return null;
                     }
                 });
-    }
-
-    private void set_up_the_start_millisecond_of_each_verse_duplicate_array() {
-        for (int i = 0; i < ayats_processed.length; i++) {
-            start_millisecond_of_each_verse[i] = ayats_processed[i].getStart_millisecond();
-        }
     }
 
     private void scroll_pane_time_line_h_vlaue_listener(HelloController helloController) {
@@ -8485,12 +8481,10 @@ public class HelloApplication extends Application {
 
                 next_stack_pane.setLayoutX(next_verse_start);
 
-                ayats_processed[verse_array_number].setDuration(pixels_to_nanoseconds(time_line_pane_data, new_width));
+                ayats_processed.get(verse_array_number).setDuration(pixels_to_nanoseconds(time_line_pane_data, new_width));
 
-                ayats_processed[verse_array_number + 1].setStart_millisecond(pixels_to_nanoseconds(time_line_pane_data, next_verse_start - time_line_pane_data.getTime_line_base_line()));
-                ayats_processed[verse_array_number + 1].setDuration(pixels_to_nanoseconds(time_line_pane_data, next_verse_new_width));
-                start_millisecond_of_each_verse[verse_array_number + 1] = ayats_processed[verse_array_number + 1].getStart_millisecond();
-
+                ayats_processed.get(verse_array_number + 1).setStart_millisecond(pixels_to_nanoseconds(time_line_pane_data, next_verse_start - time_line_pane_data.getTime_line_base_line()));
+                ayats_processed.get(verse_array_number + 1).setDuration(pixels_to_nanoseconds(time_line_pane_data, next_verse_new_width));
                 if (main_stack_pane.getLayoutX() + main_stack_pane.getWidth() < verse_resize_info.getInitial_polygon_x_position() && verse_resize_info.getPolygon_position() == Polygon_position.AFTER) {
                     verse_resize_info.setPolygon_position(Polygon_position.BEFORE);
                     which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, verse_resize_info.getInitial_polygon_x_position() - time_line_pane_data.getTime_line_base_line()));
@@ -8525,9 +8519,8 @@ public class HelloApplication extends Application {
 
                 ayats_processed.get(verse_array_number).setStart_millisecond(pixels_to_nanoseconds(time_line_pane_data, new_layout_x - time_line_pane_data.getTime_line_base_line()));
                 ayats_processed.get(verse_array_number).setDuration(pixels_to_nanoseconds(time_line_pane_data, new_width));
-                start_millisecond_of_each_verse[verse_array_number] = ayats_processed[verse_array_number].getStart_millisecond();
 
-                ayats_processed[verse_array_number - 1].setDuration(pixels_to_nanoseconds(time_line_pane_data, new_previous_verse_width));
+                ayats_processed.get(verse_array_number - 1).setDuration(pixels_to_nanoseconds(time_line_pane_data, new_previous_verse_width));
 
                 if (main_stack_pane.getLayoutX() < verse_resize_info.getInitial_polygon_x_position() && verse_resize_info.getPolygon_position() == Polygon_position.BEFORE) {
                     verse_resize_info.setPolygon_position(Polygon_position.AFTER);
