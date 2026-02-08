@@ -137,7 +137,7 @@ public class HelloApplication extends Application {
     private Stage learn_more_about_app_stage;
     private Stage app_settings_information_stage;
     private WritableImage cached_text_image;
-    private HashMap<String,Long> analytics_cool_down_hashmap = new HashMap<>();
+    private HashMap<String, Long> analytics_cool_down_hashmap = new HashMap<>();
 
     private final static String help_email = "sabrlyhelp@gmail.com";
     private final static String discord_invite_link = "https://discord.gg/ZzPgNx8U95";
@@ -565,7 +565,7 @@ public class HelloApplication extends Application {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                // TODO following lines should be removed
+                System.out.println("third screen is being set up");
                 if (sound_path.isEmpty()) {
                     Reciters_info reciters_info = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().getFirst();
                     sound_mode = Sound_mode.CHOSEN;
@@ -574,6 +574,7 @@ public class HelloApplication extends Application {
                     sound_mode = Sound_mode.UPLOADED;
                     set_up_sound_for_chosen_verses(start_ayat, end_ayat);
                 }
+                System.out.println("setting_up_sound_is_done");
                 int start_ayat_section = (int) Math.ceil(start_ayat / 50D);
                 int end_ayat_section = (int) Math.ceil(end_ayat / 50D);
                 HashMap<String, ArrayList<String>> hashMap_with_all_of_the_translations_of_verses = new HashMap<>();
@@ -582,15 +583,16 @@ public class HelloApplication extends Application {
                 }
                 set_up_the_languages(helloController, hashMap_with_all_of_the_translations_of_verses);
                 if (sound_mode == Sound_mode.CHOSEN) {
-                    send_last_screen_analytics_event(id + 1, start_ayat, end_ayat, sound_mode, helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().getFirst().getName(),hashMap_with_all_of_the_translations_of_verses.get("arabic"));
+                    send_last_screen_analytics_event(id + 1, start_ayat, end_ayat, sound_mode, helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().getFirst().getName(), hashMap_with_all_of_the_translations_of_verses.get("arabic"));
                 } else {
-                    send_last_screen_analytics_event(id + 1, start_ayat, end_ayat, sound_mode, "upload",hashMap_with_all_of_the_translations_of_verses.get("arabic"));
+                    send_last_screen_analytics_event(id + 1, start_ayat, end_ayat, sound_mode, "upload", hashMap_with_all_of_the_translations_of_verses.get("arabic"));
                 }
                 send_analytics_event("third_screen_opened");
                 //update_the_translations(helloController, hashMap_with_all_of_the_translations_of_verses);
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
+                        System.out.println("fouth screen is being set up");
                         set_up_the_fourth_screen(helloController);
                     }
                 });
@@ -621,7 +623,7 @@ public class HelloApplication extends Application {
             for (JsonNode translation : translations_array_node) {
                 int id = translation.get("resource_id").asInt();
                 String language_name = hashMap_id_to_language_name_text.get(id);
-                if(!language_name.equals("arabic")){
+                if (!language_name.equals("arabic")) {
                     String verse_text = translation.get("text").asText();
                     ArrayList<String> translated_verses = hashMap_with_all_of_the_translations_of_the_verses.getOrDefault(language_name, new ArrayList<>());
                     translated_verses.add(verse_text);
@@ -1437,6 +1439,9 @@ public class HelloApplication extends Application {
             verseQueue.offer(full_ayat);
             tie_verses_to_indexes.put(full_ayat, i);
         }
+        for(int i = 0;i<number_of_ayats;i++){
+            ayats_processed.add(new Verse_class_final());
+        }
         ExecutorService executor = Executors.newFixedThreadPool(number_of_threads);
         for (int i = 0; i < number_of_threads; i++) {
             int final_i = i;
@@ -1476,12 +1481,13 @@ public class HelloApplication extends Application {
                             }
                             File new_wav_file = convert_mp3_to_wav(tempFile, String.format("%03d.wav", verse_number));
                             new_wav_file.deleteOnExit();
-                            ayats_processed.set(verse_number - start_ayat,new Verse_class_final(getDurationWithFFmpeg(new_wav_file)));
+                            ayats_processed.set(verse_number - start_ayat, new Verse_class_final(getDurationWithFFmpeg(new_wav_file)));
                         } catch (IOException e) {
                             e.printStackTrace();
                             Thread.sleep(500L * (final_i + 1)); // exponential backoff
                         }
                     } catch (InterruptedException e) {
+                        System.err.println(e.getMessage());
                         Thread.currentThread().interrupt();
                         break;
                     }
@@ -8590,7 +8596,7 @@ public class HelloApplication extends Application {
         if (running_mode == Running_mode.DEBUG) {
             return;
         }
-        if(!has_enough_time_passed_to_send_an_analytics_event(event_name)){
+        if (!has_enough_time_passed_to_send_an_analytics_event(event_name)) {
             return;
         }
         if (event_name.length() >= 40) {
@@ -8677,12 +8683,12 @@ public class HelloApplication extends Application {
         if (chapter_number > 114) {
             throw new RuntimeException("surat number can't be greater than 114");
         }
-        HashMap<String,Object> chapter_hash_map = new HashMap<>();
-        chapter_hash_map.put("chapter",chapter_number);
-        send_analytics_event("surat_chosen",chapter_hash_map);
+        HashMap<String, Object> chapter_hash_map = new HashMap<>();
+        chapter_hash_map.put("chapter", chapter_number);
+        send_analytics_event("surat_chosen", chapter_hash_map);
     }
 
-    private void send_last_screen_analytics_event(int chapter_number, int start_verse, int end_verse, Sound_mode sound_mode, String reciter_name,ArrayList<String> arabic_verses) {
+    private void send_last_screen_analytics_event(int chapter_number, int start_verse, int end_verse, Sound_mode sound_mode, String reciter_name, ArrayList<String> arabic_verses) {
         if (running_mode == Running_mode.DEBUG) {
             return;
         }
@@ -8706,34 +8712,34 @@ public class HelloApplication extends Application {
             sound_mode_string = "uploaded";
         }
         StringBuilder arabic_verses_string_builder = new StringBuilder();
-        for(String verse : arabic_verses){
+        for (String verse : arabic_verses) {
             arabic_verses_string_builder.append(verse).append(' ');
         }
-        HashMap<String,Object> event_hashmap = new HashMap<>();
-        event_hashmap.put("chapter",chapter_number);
-        event_hashmap.put("verses_generated",verses_generated);
-        event_hashmap.put("sound_mode",sound_mode_string);
-        event_hashmap.put("reciter",reciter_name);
-        event_hashmap.put("arabic_letters",countArabicLetters(arabic_verses_string_builder.toString()));
-        send_analytics_event("last_screen_opened",event_hashmap);
+        HashMap<String, Object> event_hashmap = new HashMap<>();
+        event_hashmap.put("chapter", chapter_number);
+        event_hashmap.put("verses_generated", verses_generated);
+        event_hashmap.put("sound_mode", sound_mode_string);
+        event_hashmap.put("reciter", reciter_name);
+        event_hashmap.put("arabic_letters", countArabicLetters(arabic_verses_string_builder.toString()));
+        send_analytics_event("last_screen_opened", event_hashmap);
     }
 
     private void send_language_expanded_analytics_event(String language_name) {
         if (running_mode == Running_mode.DEBUG) {
             return;
         }
-        HashMap<String,Object> event_hashmap = new HashMap<>();
-        event_hashmap.put("language",language_name);
-        send_analytics_event("language_expanded",event_hashmap);
+        HashMap<String, Object> event_hashmap = new HashMap<>();
+        event_hashmap.put("language", language_name);
+        send_analytics_event("language_expanded", event_hashmap);
     }
 
     private void send_language_selected_analytics_event(String language_name) {
         if (running_mode == Running_mode.DEBUG) {
             return;
         }
-        HashMap<String,Object> event_hashmap = new HashMap<>();
-        event_hashmap.put("language",language_name);
-        send_analytics_event("language_expanded",event_hashmap);
+        HashMap<String, Object> event_hashmap = new HashMap<>();
+        event_hashmap.put("language", language_name);
+        send_analytics_event("language_expanded", event_hashmap);
     }
 
     private void check_if_this_is_the_first_launch_and_send_an_event_if_so() {
@@ -8794,16 +8800,16 @@ public class HelloApplication extends Application {
         return false;
     }
 
-    private boolean has_enough_time_passed_to_send_an_analytics_event(String analytics_name){
-        if(analytics_cool_down_hashmap.containsKey(analytics_name)){
-            if(System.currentTimeMillis() - analytics_cool_down_hashmap.get(analytics_name) >= TimeUnit.SECONDS.toMillis(5)){
-                analytics_cool_down_hashmap.put(analytics_name,System.currentTimeMillis());
+    private boolean has_enough_time_passed_to_send_an_analytics_event(String analytics_name) {
+        if (analytics_cool_down_hashmap.containsKey(analytics_name)) {
+            if (System.currentTimeMillis() - analytics_cool_down_hashmap.get(analytics_name) >= TimeUnit.SECONDS.toMillis(5)) {
+                analytics_cool_down_hashmap.put(analytics_name, System.currentTimeMillis());
                 return true;
             } else {
                 return false;
             }
         } else {
-            analytics_cool_down_hashmap.put(analytics_name,System.currentTimeMillis());
+            analytics_cool_down_hashmap.put(analytics_name, System.currentTimeMillis());
             return true;
         }
     }
