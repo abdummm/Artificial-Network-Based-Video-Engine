@@ -8,6 +8,10 @@ public class Verse_class_final {
     private long duration;
     private long start_millisecond;
 
+    public Verse_class_final() {
+
+    }
+
     public Verse_class_final(long duration) {
         this.duration = duration;
     }
