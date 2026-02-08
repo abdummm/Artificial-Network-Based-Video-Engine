@@ -568,7 +568,6 @@ public class HelloApplication extends Application {
                 // TODO following lines should be removed
                 int number_of_ayats = end_ayat - start_ayat + 1;
                 ayats_processed.add(new Verse_class_final());
-                ayats_processed = new Verse_class_final[number_of_ayats];
                 if (sound_path.isEmpty()) {
                     Reciters_info reciters_info = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().getFirst();
                     sound_mode = Sound_mode.CHOSEN;
@@ -3275,7 +3274,9 @@ public class HelloApplication extends Application {
     }
 
     private void which_verse_am_i_on_milliseconds(HelloController helloController, long milliseconds) {
-        int index = Collections.binarySearch(ayats_processed, new Verse_class_final(milliseconds), new Comparator<Verse_class_final>() {
+        Verse_class_final verse_class_final_with_current_ms_to_be_comapred = new Verse_class_final();
+        verse_class_final_with_current_ms_to_be_comapred.setStart_millisecond(milliseconds);
+        int index = Collections.binarySearch(ayats_processed, verse_class_final_with_current_ms_to_be_comapred, new Comparator<Verse_class_final>() {
             @Override
             public int compare(Verse_class_final object_1, Verse_class_final object_2) {
                 return Long.compare(object_1.getStart_millisecond(), object_2.getStart_millisecond()); // or a.getMilliseconds()
@@ -4396,12 +4397,11 @@ public class HelloApplication extends Application {
     private void set_up_sound_for_chosen_verses(int start_ayat, int end_ayat) {
         long total_duration = getDurationWithFFmpeg(new File(sound_path));
         int total_ayats = end_ayat - start_ayat + 1;
-        ayats_processed = new Verse_class_final[total_ayats];
         long duration_per_verse = total_duration / total_ayats;
         for (int i = 0; i < total_ayats; i++) {
             Verse_class_final verseClassFinal = new Verse_class_final(duration_per_verse);
             verseClassFinal.setStart_millisecond(duration_per_verse * i);
-            ayats_processed[i] = verseClassFinal;
+            ayats_processed.add(verseClassFinal);
         }
     }
 
@@ -6726,7 +6726,7 @@ public class HelloApplication extends Application {
             if (array_list_with_verses != null) {
                 ArrayList<Text_item> array_list_with_text_items = new ArrayList<>(array_list_with_verses.size());
                 for (int j = 0; j < array_list_with_verses.size(); j++) {
-                    Text_item text_item = new Text_item(edit_the_verses_before_adding_them(array_list_with_verses.get(j)), ayats_processed[j].getStart_millisecond(), ayats_processed[j].getStart_millisecond() + ayats_processed[j].getDuration());
+                    Text_item text_item = new Text_item(edit_the_verses_before_adding_them(array_list_with_verses.get(j)), ayats_processed.get(j).getStart_millisecond(), ayats_processed.get(j).getStart_millisecond() + ayats_processed.get(j).getDuration());
                     array_list_with_text_items.add(text_item);
                 }
                 languageInfo.setArrayList_of_all_of_the_translations(array_list_with_text_items);
@@ -7223,7 +7223,7 @@ public class HelloApplication extends Application {
     private ArrayList<Text_item> return_the_formatted_text_item_from_array_list(ArrayList<String> arrayList_of_strings) {
         ArrayList<Text_item> array_list_to_be_returned = new ArrayList<>(arrayList_of_strings.size());
         for (int i = 0; i < arrayList_of_strings.size(); i++) {
-            Text_item text_item = new Text_item(edit_the_verses_before_adding_them(arrayList_of_strings.get(i)), ayats_processed[i].getStart_millisecond(), ayats_processed[i].getStart_millisecond() + ayats_processed[i].getDuration());
+            Text_item text_item = new Text_item(edit_the_verses_before_adding_them(arrayList_of_strings.get(i)), ayats_processed.get(i).getStart_millisecond(), ayats_processed.get(i).getStart_millisecond() + ayats_processed.get(i).getDuration());
             array_list_to_be_returned.add(text_item);
         }
         return array_list_to_be_returned;
@@ -7297,7 +7297,7 @@ public class HelloApplication extends Application {
                     scroll_to_specific_verse_time(helloController);
                     //helloController.list_view_with_all_of_the_languages.refresh();
                     loop_through_all_verses_and_update(helloController.list_view_with_all_of_the_languages);
-                    set_up_everything_image_view_time_line_time(helloController, ayats_processed[selected_verse].getStart_millisecond(), Type_of_Image.FULL_QUALITY);
+                    set_up_everything_image_view_time_line_time(helloController, ayats_processed.get(selected_verse).getStart_millisecond(), Type_of_Image.FULL_QUALITY);
                     send_analytics_event("rewind");
                 }
             }
@@ -7318,13 +7318,13 @@ public class HelloApplication extends Application {
         helloController.forward_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                if (selected_verse < ayats_processed.length - 1) {
+                if (selected_verse < ayats_processed.size() - 1) {
                     selected_verse++;
                     the_verse_changed(helloController, selected_verse);
                     scroll_to_specific_verse_time(helloController);
                     //helloController.list_view_with_all_of_the_languages.refresh();
                     loop_through_all_verses_and_update(helloController.list_view_with_all_of_the_languages);
-                    set_up_everything_image_view_time_line_time(helloController, ayats_processed[selected_verse].getStart_millisecond(), Type_of_Image.FULL_QUALITY);
+                    set_up_everything_image_view_time_line_time(helloController, ayats_processed.get(selected_verse).getStart_millisecond(), Type_of_Image.FULL_QUALITY);
                     send_analytics_event("forward");
                 }
             }
