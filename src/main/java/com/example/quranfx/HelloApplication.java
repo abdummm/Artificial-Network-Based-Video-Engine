@@ -566,8 +566,6 @@ public class HelloApplication extends Application {
             @Override
             public void run() {
                 // TODO following lines should be removed
-                int number_of_ayats = end_ayat - start_ayat + 1;
-                ayats_processed.add(new Verse_class_final());
                 if (sound_path.isEmpty()) {
                     Reciters_info reciters_info = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().getFirst();
                     sound_mode = Sound_mode.CHOSEN;
