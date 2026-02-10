@@ -236,4 +236,7 @@ public class HelloController {
 
     @FXML
     public Canvas canvas_holding_help_spread_app;
+
+    @FXML
+    public StackPane time_line_stack_pane;
 }
