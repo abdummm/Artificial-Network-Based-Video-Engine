@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXSnackbar;
 import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.Paint;
 import javafx.animation.AnimationTimer;
@@ -105,7 +106,6 @@ public class HelloApplication extends Application {
     private String basic_prompt = "Create a 9:16 image based on this. Do not portray god or any human or add any text.";
 
     private int number_of_prompts_per_minute = 5;
-    private ArrayList<Long> array_list_with_times = new ArrayList<>();
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
     private ArrayList<Verse_class_final> ayats_processed = new ArrayList<>();
 
@@ -715,7 +715,6 @@ public class HelloApplication extends Application {
         }
         selected_verse = 0;
         sound_path = "";
-        array_list_with_times.clear();
         if (ayats_processed != null) {
             ayats_processed.clear();
         }
@@ -8359,10 +8358,39 @@ public class HelloApplication extends Application {
     }
 
     private void listen_to_split_verse(HelloController helloController) {
+        JFXSnackbar cant_split_snack_bar = new JFXSnackbar(helloController.pane_overlying_the_time_line_pane_for_polygon_indicator);
+        StackPane stack_pane_with_bottom_inset = new StackPane();
+
+        StackPane snack_bar_stack_pane = new StackPane();
+
+        Label verse_segment_cant_be_short_stack_pane = new Label("Verse segment can't be shorter than one second.");
+        StackPane.setMargin(verse_segment_cant_be_short_stack_pane,new Insets(7.5,10,7.5,10));
+
+        Rectangle snack_bar_background = new Rectangle();
+        snack_bar_background.setArcWidth(7.5);
+        snack_bar_background.setArcHeight(7.5);
+        snack_bar_background.setFill(new javafx.scene.paint.Color(1,1,1,1));
+
+        snack_bar_background.widthProperty().bind(snack_bar_stack_pane.widthProperty());
+        snack_bar_background.heightProperty().bind(snack_bar_stack_pane.heightProperty());
+
+        snack_bar_stack_pane.getChildren().addAll(snack_bar_background,verse_segment_cant_be_short_stack_pane);
+
+        StackPane.setMargin(snack_bar_stack_pane,new Insets(0,0,10,0));
+
+        stack_pane_with_bottom_inset.getChildren().add(snack_bar_stack_pane);
+
+        Duration snack_bar_duration = new Duration(3000);
         helloController.split_verse_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-
+                Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
+                long polygon_time_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(pixels_to_nanoseconds(time_line_pane_data,return_polygon_middle_position(time_line_pane_data) - time_line_pane_data.getTime_line_base_line()));
+                if(polygon_time_in_milliseconds - ayats_processed.get(selected_verse).getStart_millisecond() < 1000 || ayats_processed.get(selected_verse).getStart_millisecond() + ayats_processed.get(selected_verse).getDuration() - polygon_time_in_milliseconds < 1000){
+                    cant_split_snack_bar.enqueue(new JFXSnackbar.SnackbarEvent(stack_pane_with_bottom_inset,snack_bar_duration));
+                } else {
+                    split_the_verse_time_line(helloController);
+                }
             }
         });
     }
@@ -8812,5 +8840,9 @@ public class HelloApplication extends Application {
             analytics_cool_down_hashmap.put(analytics_name, System.currentTimeMillis());
             return true;
         }
+    }
+
+    private void split_the_verse_time_line(HelloController helloController){
+
     }
 }
