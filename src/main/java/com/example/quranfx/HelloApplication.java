@@ -8388,7 +8388,7 @@ public class HelloApplication extends Application {
                 if(polygon_time_in_milliseconds - verse_start_in_milliseconds < 1000 || verse_start_in_milliseconds + verse_duration_in_milliseconds - polygon_time_in_milliseconds < 1000){
                     cant_split_snack_bar.enqueue(new JFXSnackbar.SnackbarEvent(stack_pane_with_bottom_inset,snack_bar_duration));
                 } else {
-                    split_the_verse_time_line(helloController);
+                    split_the_verse_time_line(helloController,polygon_time_in_milliseconds);
                 }
             }
         });
@@ -8841,7 +8841,8 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void split_the_verse_time_line(HelloController helloController){
-
+    private void split_the_verse_time_line(HelloController helloController,long polygon_time_in_milliseconds){
+        long polygon_time_in_nano_seconds = TimeUnit.MILLISECONDS.toNanos(polygon_time_in_milliseconds)
+        ayats_processed.get(selected_verse).setDuration(polygon_time_in_nano_seconds);
     }
 }
