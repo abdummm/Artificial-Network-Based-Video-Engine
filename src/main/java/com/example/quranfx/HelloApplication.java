@@ -8384,7 +8384,7 @@ public class HelloApplication extends Application {
                 Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
                 long polygon_time_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(pixels_to_nanoseconds(time_line_pane_data,return_polygon_middle_position(time_line_pane_data) - time_line_pane_data.getTime_line_base_line()));
                 long verse_start_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(ayats_processed.get(selected_verse).getStart_millisecond());
-                long verse_duration_in_milliseconds = TimeUnit.NANOSECONDS.toSeconds(ayats_processed.get(selected_verse).getDuration());
+                long verse_duration_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(ayats_processed.get(selected_verse).getDuration());
                 if(polygon_time_in_milliseconds - verse_start_in_milliseconds < 1000 || verse_start_in_milliseconds + verse_duration_in_milliseconds - polygon_time_in_milliseconds < 1000){
                     cant_split_snack_bar.enqueue(new JFXSnackbar.SnackbarEvent(stack_pane_with_bottom_inset,snack_bar_duration));
                 } else {
