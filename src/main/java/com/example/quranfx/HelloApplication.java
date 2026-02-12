@@ -565,7 +565,6 @@ public class HelloApplication extends Application {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                System.out.println("third screen is being set up");
                 if (sound_path.isEmpty()) {
                     Reciters_info reciters_info = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().getFirst();
                     sound_mode = Sound_mode.CHOSEN;
@@ -574,7 +573,6 @@ public class HelloApplication extends Application {
                     sound_mode = Sound_mode.UPLOADED;
                     set_up_sound_for_chosen_verses(start_ayat, end_ayat);
                 }
-                System.out.println("setting_up_sound_is_done");
                 int start_ayat_section = (int) Math.ceil(start_ayat / 50D);
                 int end_ayat_section = (int) Math.ceil(end_ayat / 50D);
                 HashMap<String, ArrayList<String>> hashMap_with_all_of_the_translations_of_verses = new HashMap<>();
@@ -592,7 +590,6 @@ public class HelloApplication extends Application {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        System.out.println("fouth screen is being set up");
                         set_up_the_fourth_screen(helloController);
                     }
                 });
@@ -8386,7 +8383,9 @@ public class HelloApplication extends Application {
             public void handle(ActionEvent actionEvent) {
                 Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
                 long polygon_time_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(pixels_to_nanoseconds(time_line_pane_data,return_polygon_middle_position(time_line_pane_data) - time_line_pane_data.getTime_line_base_line()));
-                if(polygon_time_in_milliseconds - ayats_processed.get(selected_verse).getStart_millisecond() < 1000 || ayats_processed.get(selected_verse).getStart_millisecond() + ayats_processed.get(selected_verse).getDuration() - polygon_time_in_milliseconds < 1000){
+                long verse_start_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(ayats_processed.get(selected_verse).getStart_millisecond());
+                long verse_duration_in_milliseconds = TimeUnit.NANOSECONDS.toSeconds(ayats_processed.get(selected_verse).getDuration());
+                if(polygon_time_in_milliseconds - verse_start_in_milliseconds < 1000 || verse_start_in_milliseconds + verse_duration_in_milliseconds - polygon_time_in_milliseconds < 1000){
                     cant_split_snack_bar.enqueue(new JFXSnackbar.SnackbarEvent(stack_pane_with_bottom_inset,snack_bar_duration));
                 } else {
                     split_the_verse_time_line(helloController);
