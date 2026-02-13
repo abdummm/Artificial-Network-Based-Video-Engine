@@ -8843,8 +8843,10 @@ public class HelloApplication extends Application {
 
     private void split_the_verse_time_line(HelloController helloController){
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
-        long polygon_position_in_nano_seconds = pixels_to_nanoseconds(time_line_pane_data,return_polygon_middle_position(time_line_pane_data) - time_line_pane_data.getTime_line_base_line())
+        long polygon_position_in_nano_seconds = pixels_to_nanoseconds(time_line_pane_data,return_polygon_middle_position(time_line_pane_data) - time_line_pane_data.getTime_line_base_line());
+        long original_verse_start = ayats_processed.get(selected_verse).getStart_millisecond();
+        long original_verse_end = ayats_processed.get(selected_verse).getStart_millisecond() + ayats_processed.get(selected_verse).getDuration();
         ayats_processed.get(selected_verse).setDuration(polygon_position_in_nano_seconds - ayats_processed.get(selected_verse).getStart_millisecond());
-        ayats_processed.add(selected_verse+1,new Verse_class_final());
+        ayats_processed.add(selected_verse+1,new Verse_class_final(ayats_processed.get(selected_verse).getVerse_number()+1,original_verse_end-polygon_position_in_nano_seconds,polygon_position_in_nano_seconds));
     }
 }
