@@ -8388,7 +8388,7 @@ public class HelloApplication extends Application {
                 if(polygon_time_in_milliseconds - verse_start_in_milliseconds < 1000 || verse_start_in_milliseconds + verse_duration_in_milliseconds - polygon_time_in_milliseconds < 1000){
                     cant_split_snack_bar.enqueue(new JFXSnackbar.SnackbarEvent(stack_pane_with_bottom_inset,snack_bar_duration));
                 } else {
-                    split_the_verse_time_line(helloController,polygon_time_in_milliseconds);
+                    split_the_verse_time_line(helloController);
                 }
             }
         });
@@ -8841,8 +8841,10 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void split_the_verse_time_line(HelloController helloController,long polygon_time_in_milliseconds){
-        long polygon_time_in_nano_seconds = TimeUnit.MILLISECONDS.toNanos(polygon_time_in_milliseconds)
-        ayats_processed.get(selected_verse).setDuration(polygon_time_in_nano_seconds);
+    private void split_the_verse_time_line(HelloController helloController){
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
+        long polygon_position_in_nano_seconds = pixels_to_nanoseconds(time_line_pane_data,return_polygon_middle_position(time_line_pane_data) - time_line_pane_data.getTime_line_base_line())
+        ayats_processed.get(selected_verse).setDuration(polygon_position_in_nano_seconds - ayats_processed.get(selected_verse).getStart_millisecond());
+        ayats_processed.add(selected_verse+1,new Verse_class_final());
     }
 }

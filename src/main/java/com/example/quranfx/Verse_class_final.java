@@ -9,11 +9,16 @@ public class Verse_class_final {
     private long start_millisecond;
 
     public Verse_class_final() {
-
     }
 
     public Verse_class_final(long duration) {
         this.duration = duration;
+    }
+
+    public Verse_class_final(Integer verse_number, long duration, long start_millisecond) {
+        this.verse_number = verse_number;
+        this.duration = duration;
+        this.start_millisecond = start_millisecond;
     }
 
     public Integer getVerse_number() {
