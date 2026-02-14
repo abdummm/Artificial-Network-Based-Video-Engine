@@ -4400,8 +4400,7 @@ public class HelloApplication extends Application {
         int total_ayats = end_ayat - start_ayat + 1;
         long duration_per_verse = total_duration / total_ayats;
         for (int i = 0; i < total_ayats; i++) {
-            Verse_class_final verseClassFinal = new Verse_class_final(duration_per_verse);
-            verseClassFinal.setStart_millisecond(duration_per_verse * i);
+            Verse_class_final verseClassFinal = new Verse_class_final(i+1,duration_per_verse,duration_per_verse * i);
             ayats_processed.add(verseClassFinal);
         }
     }
