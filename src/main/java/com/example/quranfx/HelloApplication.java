@@ -2838,6 +2838,7 @@ public class HelloApplication extends Application {
             stackPane.getChildren().addAll(rectangle, verse_text);
             pane.getChildren().add(stackPane);
             array_of_verse_stack_panes[i] = stackPane;
+            ayats_processed.get(i).setStack_pane_hosting_rectangle(stackPane);
         }
         StackPane empty_stack_pane = new StackPane();
         Rectangle empty_rectangle = new Rectangle();
@@ -8846,7 +8847,14 @@ public class HelloApplication extends Application {
         long polygon_position_in_nano_seconds = pixels_to_nanoseconds(time_line_pane_data,return_polygon_middle_position(time_line_pane_data) - time_line_pane_data.getTime_line_base_line());
         long original_verse_start = ayats_processed.get(selected_verse).getStart_millisecond();
         long original_verse_end = ayats_processed.get(selected_verse).getStart_millisecond() + ayats_processed.get(selected_verse).getDuration();
+        long original_verse_new_width_in_nano_seconds = polygon_position_in_nano_seconds - original_verse_start;
+        double original_verse_new_width_in_pixels = nanoseconds_to_pixels(time_line_pane_data,original_verse_new_width_in_nano_seconds);
+        StackPane main_verse_stack_pane = ayats_processed.get(selected_verse).getStack_pane_hosting_rectangle();
         ayats_processed.get(selected_verse).setDuration(polygon_position_in_nano_seconds - ayats_processed.get(selected_verse).getStart_millisecond());
+        main_verse_stack_pane.setMinWidth(original_verse_new_width_in_pixels);
+        main_verse_stack_pane.setPrefWidth(original_verse_new_width_in_pixels);
+        main_verse_stack_pane.setMaxWidth(original_verse_new_width_in_pixels);
+        ((Rectangle) main_verse_stack_pane.getChildren().getFirst()).setWidth(original_verse_new_width_in_pixels);
         ayats_processed.add(selected_verse+1,new Verse_class_final(ayats_processed.get(selected_verse).getVerse_number()+1,original_verse_end-polygon_position_in_nano_seconds,polygon_position_in_nano_seconds));
     }
 }
