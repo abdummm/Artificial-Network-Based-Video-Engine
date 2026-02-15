@@ -8862,5 +8862,25 @@ public class HelloApplication extends Application {
         StackPane new_stack_pane_with_new_verse = return_the_stack_pane_for_the_verse_rectangle(ayats_processed.get(selected_verse).getVerse_number()-1,time_line_pane_data,return_polygon_middle_position(time_line_pane_data),created_verse_width);
         helloController.time_line_pane.getChildren().add(new_stack_pane_with_new_verse);
         ayats_processed.add(selected_verse + 1, new Verse_class_final(ayats_processed.get(selected_verse).getVerse_number(), original_verse_end - polygon_position_in_nano_seconds, polygon_position_in_nano_seconds,new_stack_pane_with_new_verse));
+        rename_the_verse_rectangle_of_the_same_verse();
+    }
+
+    private void rename_the_verse_rectangle_of_the_same_verse(){
+        HashMap<Integer,ArrayList<Verse_class_final>> hashMap_with_verse_class_final_tied_to_verse_number = new HashMap<>();
+        for(int i = 0;i<ayats_processed.size();i++){
+            ArrayList<Verse_class_final> local_array_list = hashMap_with_verse_class_final_tied_to_verse_number.getOrDefault(ayats_processed.get(i).getVerse_number(),new ArrayList<>());
+            local_array_list.add(ayats_processed.get(i));
+            hashMap_with_verse_class_final_tied_to_verse_number.put(ayats_processed.get(i).getVerse_number(),local_array_list);
+        }
+        for(int key : hashMap_with_verse_class_final_tied_to_verse_number.keySet()){
+            ArrayList<Verse_class_final> value = hashMap_with_verse_class_final_tied_to_verse_number.get(key);
+            if(value.size()==1){
+                continue;
+            }
+            for(int i = 0;i<value.size();i++){
+                Label verse_text = new Label("Verse ".concat(String.valueOf(key)).concat(" - ").concat(String.valueOf(i+1)));
+                value.get(i).getStack_pane_hosting_rectangle().getChildren().set(1,verse_text);
+            }
+        }
     }
 }
