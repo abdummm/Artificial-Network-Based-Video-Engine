@@ -1435,7 +1435,7 @@ public class HelloApplication extends Application {
             verseQueue.offer(full_ayat);
             tie_verses_to_indexes.put(full_ayat, i);
         }
-        for(int i = 0;i<number_of_ayats;i++){
+        for (int i = 0; i < number_of_ayats; i++) {
             ayats_processed.add(new Verse_class_final());
         }
         ExecutorService executor = Executors.newFixedThreadPool(number_of_threads);
@@ -2768,7 +2768,7 @@ public class HelloApplication extends Application {
             }
         }*/
         time_line_pane_data.setTime_line_end_base_line(base_time_line + (number_of_dividors - 1) * pixels_in_between_each_line);
-        set_up_the_verses_time_line(helloController, main_pane, base_time_line, pixels_in_between_each_line, time_between_every_line);
+        set_up_the_verses_time_line(helloController, main_pane, base_time_line, time_between_every_line);
         Polygon polygon = set_up_the_polygon_for_the_overlaying_pane(helloController, base_time_line, time_line_indicitor_color, main_pane);
         time_line_pane_data.setPolygon(polygon);
         //set_up_time_line_indicator(main_pane, base_time_line, time_line_indicitor_color);
@@ -2815,27 +2815,12 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void set_up_the_verses_time_line(HelloController helloController, Pane pane, double base_time_line, double pixels_in_between_each_line, long time_between_every_line) {
+    private void set_up_the_verses_time_line(HelloController helloController, Pane pane, double pixels_in_between_each_line, long time_between_every_line) {
         //double adjustor = pixels_in_between_each_line / time_between_every_line;
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         StackPane[] array_of_verse_stack_panes = new StackPane[ayats_processed.size()];
         for (int i = 0; i < ayats_processed.size(); i++) {
-            Label verse_text = new Label("Verse ".concat(String.valueOf(ayats_processed.get(i).getVerse_number())));
-            double start_x = base_time_line + (nanoseconds_to_pixels(time_line_pane_data, ayats_processed.get(i).getStart_millisecond()));
-            StackPane stackPane = new StackPane();
-            stackPane.setPrefWidth(nanoseconds_to_pixels(time_line_pane_data, ayats_processed.get(i).getDuration()));
-            stackPane.setMinWidth(nanoseconds_to_pixels(time_line_pane_data, ayats_processed.get(i).getDuration()));
-            stackPane.setMaxWidth(nanoseconds_to_pixels(time_line_pane_data, ayats_processed.get(i).getDuration()));
-            stackPane.setPrefHeight(30);
-            stackPane.setLayoutX(start_x);
-            stackPane.setLayoutY(30);
-            Rectangle rectangle = new Rectangle(nanoseconds_to_pixels(time_line_pane_data, ayats_processed.get(i).getDuration()), 20);
-            rectangle.setStrokeWidth(1);
-            rectangle.setStroke(javafx.scene.paint.Color.BLACK);
-            rectangle.setArcHeight(5);
-            rectangle.setArcWidth(5);
-            rectangle.setFill(javafx.scene.paint.Color.WHITE);
-            stackPane.getChildren().addAll(rectangle, verse_text);
+            StackPane stackPane = return_the_stack_pane_for_the_verse_rectangle(i,time_line_pane_data,time_line_pane_data.getTime_line_base_line() + (nanoseconds_to_pixels(time_line_pane_data, ayats_processed.get(i).getStart_millisecond())),nanoseconds_to_pixels(time_line_pane_data, ayats_processed.get(i).getDuration()));
             pane.getChildren().add(stackPane);
             array_of_verse_stack_panes[i] = stackPane;
             ayats_processed.get(i).setStack_pane_hosting_rectangle(stackPane);
@@ -2855,6 +2840,25 @@ public class HelloApplication extends Application {
                 }
             }
         }
+    }
+
+    private StackPane return_the_stack_pane_for_the_verse_rectangle(int local_selected_verse,Time_line_pane_data time_line_pane_data,double start_x,double duration_in_pixels){
+        Label verse_text = new Label("Verse ".concat(String.valueOf(ayats_processed.get(local_selected_verse).getVerse_number())));
+        StackPane stackPane = new StackPane();
+        stackPane.setPrefWidth(duration_in_pixels);
+        stackPane.setMinWidth(duration_in_pixels);
+        stackPane.setMaxWidth(duration_in_pixels);
+        stackPane.setPrefHeight(30);
+        stackPane.setLayoutX(start_x);
+        stackPane.setLayoutY(30);
+        Rectangle rectangle = new Rectangle(duration_in_pixels, 20);
+        rectangle.setStrokeWidth(1);
+        rectangle.setStroke(javafx.scene.paint.Color.BLACK);
+        rectangle.setArcHeight(5);
+        rectangle.setArcWidth(5);
+        rectangle.setFill(javafx.scene.paint.Color.WHITE);
+        stackPane.getChildren().addAll(rectangle, verse_text);
+        return stackPane;
     }
 
     private void set_up_time_line_indicator(Pane pane, double start_x, javafx.scene.paint.Color color) {
@@ -4400,7 +4404,7 @@ public class HelloApplication extends Application {
         int total_ayats = end_ayat - start_ayat + 1;
         long duration_per_verse = total_duration / total_ayats;
         for (int i = 0; i < total_ayats; i++) {
-            Verse_class_final verseClassFinal = new Verse_class_final(i+1,duration_per_verse,duration_per_verse * i);
+            Verse_class_final verseClassFinal = new Verse_class_final(i + 1, duration_per_verse, duration_per_verse * i);
             ayats_processed.add(verseClassFinal);
         }
     }
@@ -8361,19 +8365,19 @@ public class HelloApplication extends Application {
         StackPane snack_bar_stack_pane = new StackPane();
 
         Label verse_segment_cant_be_short_stack_pane = new Label("Verse segment can't be shorter than one second.");
-        StackPane.setMargin(verse_segment_cant_be_short_stack_pane,new Insets(7.5,10,7.5,10));
+        StackPane.setMargin(verse_segment_cant_be_short_stack_pane, new Insets(7.5, 10, 7.5, 10));
 
         Rectangle snack_bar_background = new Rectangle();
         snack_bar_background.setArcWidth(7.5);
         snack_bar_background.setArcHeight(7.5);
-        snack_bar_background.setFill(new javafx.scene.paint.Color(1,1,1,1));
+        snack_bar_background.setFill(new javafx.scene.paint.Color(1, 1, 1, 1));
 
         snack_bar_background.widthProperty().bind(snack_bar_stack_pane.widthProperty());
         snack_bar_background.heightProperty().bind(snack_bar_stack_pane.heightProperty());
 
-        snack_bar_stack_pane.getChildren().addAll(snack_bar_background,verse_segment_cant_be_short_stack_pane);
+        snack_bar_stack_pane.getChildren().addAll(snack_bar_background, verse_segment_cant_be_short_stack_pane);
 
-        StackPane.setMargin(snack_bar_stack_pane,new Insets(0,0,10,0));
+        StackPane.setMargin(snack_bar_stack_pane, new Insets(0, 0, 10, 0));
 
         stack_pane_with_bottom_inset.getChildren().add(snack_bar_stack_pane);
 
@@ -8382,11 +8386,11 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
-                long polygon_time_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(pixels_to_nanoseconds(time_line_pane_data,return_polygon_middle_position(time_line_pane_data) - time_line_pane_data.getTime_line_base_line()));
+                long polygon_time_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(pixels_to_nanoseconds(time_line_pane_data, return_polygon_middle_position(time_line_pane_data) - time_line_pane_data.getTime_line_base_line()));
                 long verse_start_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(ayats_processed.get(selected_verse).getStart_millisecond());
                 long verse_duration_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(ayats_processed.get(selected_verse).getDuration());
-                if(polygon_time_in_milliseconds - verse_start_in_milliseconds < 1000 || verse_start_in_milliseconds + verse_duration_in_milliseconds - polygon_time_in_milliseconds < 1000){
-                    cant_split_snack_bar.enqueue(new JFXSnackbar.SnackbarEvent(stack_pane_with_bottom_inset,snack_bar_duration));
+                if (polygon_time_in_milliseconds - verse_start_in_milliseconds < 1000 || verse_start_in_milliseconds + verse_duration_in_milliseconds - polygon_time_in_milliseconds < 1000) {
+                    cant_split_snack_bar.enqueue(new JFXSnackbar.SnackbarEvent(stack_pane_with_bottom_inset, snack_bar_duration));
                 } else {
                     split_the_verse_time_line(helloController);
                 }
@@ -8841,19 +8845,22 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void split_the_verse_time_line(HelloController helloController){
+    private void split_the_verse_time_line(HelloController helloController) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
-        long polygon_position_in_nano_seconds = pixels_to_nanoseconds(time_line_pane_data,return_polygon_middle_position(time_line_pane_data) - time_line_pane_data.getTime_line_base_line());
+        long polygon_position_in_nano_seconds = pixels_to_nanoseconds(time_line_pane_data, return_polygon_middle_position(time_line_pane_data) - time_line_pane_data.getTime_line_base_line());
         long original_verse_start = ayats_processed.get(selected_verse).getStart_millisecond();
         long original_verse_end = ayats_processed.get(selected_verse).getStart_millisecond() + ayats_processed.get(selected_verse).getDuration();
         long original_verse_new_width_in_nano_seconds = polygon_position_in_nano_seconds - original_verse_start;
-        double original_verse_new_width_in_pixels = nanoseconds_to_pixels(time_line_pane_data,original_verse_new_width_in_nano_seconds);
+        double original_verse_new_width_in_pixels = nanoseconds_to_pixels(time_line_pane_data, original_verse_new_width_in_nano_seconds);
+        double created_verse_width = nanoseconds_to_pixels(time_line_pane_data,original_verse_end - polygon_position_in_nano_seconds);
         StackPane main_verse_stack_pane = ayats_processed.get(selected_verse).getStack_pane_hosting_rectangle();
         ayats_processed.get(selected_verse).setDuration(polygon_position_in_nano_seconds - ayats_processed.get(selected_verse).getStart_millisecond());
         main_verse_stack_pane.setMinWidth(original_verse_new_width_in_pixels);
         main_verse_stack_pane.setPrefWidth(original_verse_new_width_in_pixels);
         main_verse_stack_pane.setMaxWidth(original_verse_new_width_in_pixels);
         ((Rectangle) main_verse_stack_pane.getChildren().getFirst()).setWidth(original_verse_new_width_in_pixels);
-        ayats_processed.add(selected_verse+1,new Verse_class_final(ayats_processed.get(selected_verse).getVerse_number()+1,original_verse_end-polygon_position_in_nano_seconds,polygon_position_in_nano_seconds));
+        StackPane new_stack_pane_with_new_verse = return_the_stack_pane_for_the_verse_rectangle(ayats_processed.get(selected_verse).getVerse_number()+1,time_line_pane_data,return_polygon_middle_position(time_line_pane_data),created_verse_width);
+        helloController.time_line_pane.getChildren().add(new_stack_pane_with_new_verse);
+        ayats_processed.add(selected_verse + 1, new Verse_class_final(ayats_processed.get(selected_verse).getVerse_number() + 1, original_verse_end - polygon_position_in_nano_seconds, polygon_position_in_nano_seconds,new_stack_pane_with_new_verse));
     }
 }
