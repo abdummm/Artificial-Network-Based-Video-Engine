@@ -8859,8 +8859,8 @@ public class HelloApplication extends Application {
         main_verse_stack_pane.setPrefWidth(original_verse_new_width_in_pixels);
         main_verse_stack_pane.setMaxWidth(original_verse_new_width_in_pixels);
         ((Rectangle) main_verse_stack_pane.getChildren().getFirst()).setWidth(original_verse_new_width_in_pixels);
-        StackPane new_stack_pane_with_new_verse = return_the_stack_pane_for_the_verse_rectangle(ayats_processed.get(selected_verse).getVerse_number()+1,time_line_pane_data,return_polygon_middle_position(time_line_pane_data),created_verse_width);
+        StackPane new_stack_pane_with_new_verse = return_the_stack_pane_for_the_verse_rectangle(ayats_processed.get(selected_verse).getVerse_number()-1,time_line_pane_data,return_polygon_middle_position(time_line_pane_data),created_verse_width);
         helloController.time_line_pane.getChildren().add(new_stack_pane_with_new_verse);
-        ayats_processed.add(selected_verse + 1, new Verse_class_final(ayats_processed.get(selected_verse).getVerse_number() + 1, original_verse_end - polygon_position_in_nano_seconds, polygon_position_in_nano_seconds,new_stack_pane_with_new_verse));
+        ayats_processed.add(selected_verse + 1, new Verse_class_final(ayats_processed.get(selected_verse).getVerse_number(), original_verse_end - polygon_position_in_nano_seconds, polygon_position_in_nano_seconds,new_stack_pane_with_new_verse));
     }
 }
