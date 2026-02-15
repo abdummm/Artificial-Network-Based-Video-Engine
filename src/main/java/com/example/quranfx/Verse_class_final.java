@@ -25,6 +25,13 @@ public class Verse_class_final {
         this.start_millisecond = start_millisecond;
     }
 
+    public Verse_class_final(Integer verse_number, long duration, long start_millisecond,StackPane stack_pane_hosting_rectangle) {
+        this.verse_number = verse_number;
+        this.duration = duration;
+        this.start_millisecond = start_millisecond;
+        this.stack_pane_hosting_rectangle = stack_pane_hosting_rectangle;
+    }
+
     public Integer getVerse_number() {
         return verse_number;
     }
