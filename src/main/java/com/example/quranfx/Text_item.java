@@ -17,47 +17,27 @@ public class Text_item {
     private io.github.humbleui.skija.Font font;
     private double font_size = default_font_size;
     private Color color;
-    private long start_time;
-    private long end_time;
+    //private long start_time;
+    //private long end_time;
     private Text_on_canvas_mode text_on_canvas_mode;
     private Text_accessory_info stroke_info;
     private Text_accessory_info shadow_info;
     private double left_margin;
     private double right_margin;
     private Text_box_info text_box_info;
-    private double video_height = 1920;
-    private double video_width = 1080;
-    private double extra_width_padding = 25;
-    private double extra_height_padding = 20;
+    private final double video_height = 1920;
+    private final double video_width = 1080;
+    private final double extra_width_padding = 25;
+    private final double extra_height_padding = 20;
     private double fade_in;
     private double fade_out;
 
-    /*public Text_item(String verse_text,String adjusted_verse_text, Point2D point2D, double font_size, Font font, Color color, long start_time, long end_time, double width, double height, Text_on_canvas_mode text_on_canvas_mode, Stroke_text strokeText, double left_margin, double right_margin) {
-        this.verse_text = verse_text;
-        this.adjusted_verse_text = adjusted_verse_text;
-        this.point2D = point2D;
-        this.font_size = font_size;
-        this.font = font;
-        this.color = color;
-        this.start_time = start_time;
-        this.end_time = end_time;
-        this.width = width;
-        this.height = height;
-        this.text_on_canvas_mode = text_on_canvas_mode;
-        this.strokeText = strokeText;
-        this.left_margin = left_margin;
-        this.right_margin = right_margin;
-        this.text_box_info = new Text_box_info(new Point2D(0,0),0,0);
-    }*/
-
-    public Text_item(String verse_text, long start_time, long end_time) {
+    public Text_item(String verse_text) {
         this.original_verse_text = verse_text;
         this.verse_text = verse_text;
         this.font = return_default_font(font_size);
         this.adjusted_verse_text = Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(verse_text, font, video_width - extra_width_padding, left_margin, right_margin);
         this.color = Color.WHITE;
-        this.start_time = start_time;
-        this.end_time = end_time;
         text_on_canvas_mode = Text_on_canvas_mode.CENTER;
         this.stroke_info = new Text_accessory_info(Accessory_type.STROKE,Global_default_values.stroke_weight,Global_default_values.max_stroke_weight);
         this.shadow_info = new Text_accessory_info(Accessory_type.SHADOW,Global_default_values.shadow_weight,Global_default_values.max_shadow_weight);
@@ -68,6 +48,22 @@ public class Text_item {
         this.text_box_info = new Text_box_info(this, new Point2D(video_width / 2D, video_height / 2D), adjusted_verse_text, font, true);
     }
 
+    public Text_item(Text_item text_item) {
+        this.original_verse_text = text_item.getOriginal_verse_text();
+        this.verse_text = text_item.getVerse_text();
+        this.adjusted_verse_text = text_item.getAdjusted_verse_text();
+        this.font = text_item.getFont();
+        this.font_size = text_item.getFont_size();
+        this.color = new Color(text_item.getColor().getRed(),text_item.getColor().getGreen(),text_item.getColor().getBlue(),text_item.getColor().getOpacity());
+        this.text_on_canvas_mode = text_item.getText_on_canvas_mode();
+        this.stroke_info = new Text_accessory_info(text_item.getStroke_info().getAccessory_type(),text_item.getStroke_info().isIs_the_accessory_on(),text_item.getStroke_info().getAccessory_color(),text_item.getStroke_info().getAccessory_weight(),text_item.getStroke_info().getMax_accessory_weight());
+        this.shadow_info = new Text_accessory_info(text_item.getShadow_info().getAccessory_type(),text_item.getShadow_info().isIs_the_accessory_on(),text_item.getShadow_info().getAccessory_color(),text_item.getShadow_info().getAccessory_weight(),text_item.getShadow_info().getMax_accessory_weight());
+        this.left_margin = text_item.getLeft_margin();
+        this.right_margin = text_item.getRight_margin();
+        this.text_box_info = new Text_box_info(text_item.getText_box_info(),text_item);
+        this.fade_in = text_item.getFade_in();
+        this.fade_out = text_item.getFade_out();
+    }
 
     private io.github.humbleui.skija.Font return_default_font(double font_size) {
         Typeface type_face = FontMgr.getDefault().matchFamilyStyle("Arial", FontStyle.NORMAL);
@@ -156,16 +152,8 @@ public class Text_item {
         return extra_width_padding;
     }
 
-    public void setExtra_width_padding(double extra_width_padding) {
-        this.extra_width_padding = extra_width_padding;
-    }
-
     public double getExtra_height_padding() {
         return extra_height_padding;
-    }
-
-    public void setExtra_height_padding(double extra_height_padding) {
-        this.extra_height_padding = extra_height_padding;
     }
 
     public Text_accessory_info getShadow_info() {
@@ -194,10 +182,6 @@ public class Text_item {
 
     public void setVerse_text(String verse_text) {
         this.verse_text = verse_text;
-    }
-
-    public double getVideo_height() {
-        return video_height;
     }
 
     public double getVideo_width() {
