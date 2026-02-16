@@ -3538,7 +3538,9 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 mouseEvent.consume();
-                if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
+                if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+                    contextMenu.hide();
+                } else if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
                     contextMenu.show(rectangle, mouseEvent.getScreenX(), mouseEvent.getScreenY());
                 }
             }
