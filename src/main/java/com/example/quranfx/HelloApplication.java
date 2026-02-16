@@ -4982,7 +4982,7 @@ public class HelloApplication extends Application {
                 items.add(new Language_info(key, return_the_formatted_text_item_from_array_list(hashMap_with_all_of_the_translations_of_verses.get(key))));
             }
         }
-        HashMap<String, Integer> ranking_languages_hash_map = get_the_language_ranking();
+        //HashMap<String, Integer> ranking_languages_hash_map = get_the_language_ranking();
         items.sort(new Comparator<Language_info>() {
             @Override
             public int compare(Language_info o1, Language_info o2) {
@@ -6730,7 +6730,7 @@ public class HelloApplication extends Application {
             if (array_list_with_verses != null) {
                 ArrayList<Text_item> array_list_with_text_items = new ArrayList<>(array_list_with_verses.size());
                 for (int j = 0; j < array_list_with_verses.size(); j++) {
-                    Text_item text_item = new Text_item(edit_the_verses_before_adding_them(array_list_with_verses.get(j)), ayats_processed.get(j).getStart_millisecond(), ayats_processed.get(j).getStart_millisecond() + ayats_processed.get(j).getDuration());
+                    Text_item text_item = new Text_item(edit_the_verses_before_adding_them(array_list_with_verses.get(j)));
                     array_list_with_text_items.add(text_item);
                 }
                 languageInfo.setArrayList_of_all_of_the_translations(array_list_with_text_items);
@@ -7227,7 +7227,7 @@ public class HelloApplication extends Application {
     private ArrayList<Text_item> return_the_formatted_text_item_from_array_list(ArrayList<String> arrayList_of_strings) {
         ArrayList<Text_item> array_list_to_be_returned = new ArrayList<>(arrayList_of_strings.size());
         for (int i = 0; i < arrayList_of_strings.size(); i++) {
-            Text_item text_item = new Text_item(edit_the_verses_before_adding_them(arrayList_of_strings.get(i)), ayats_processed.get(i).getStart_millisecond(), ayats_processed.get(i).getStart_millisecond() + ayats_processed.get(i).getDuration());
+            Text_item text_item = new Text_item(edit_the_verses_before_adding_them(arrayList_of_strings.get(i)));
             array_list_to_be_returned.add(text_item);
         }
         return array_list_to_be_returned;
@@ -8583,7 +8583,7 @@ public class HelloApplication extends Application {
         helloController.canvas_holding_help_spread_app.setHeight(1920);
         helloController.canvas_holding_help_spread_app.setWidth(1080);
         bind_the_canvas_to_the_image_view(helloController, helloController.canvas_holding_help_spread_app);
-        Text_item made_with_sabrly_text_item = new Text_item("Made using sabrly.com", 0, Long.MAX_VALUE);
+        Text_item made_with_sabrly_text_item = new Text_item("Made using sabrly.com");
         made_with_sabrly_text_item.setColor(javafx.scene.paint.Color.WHITE);
         Text_accessory_info stroke_info = new Text_accessory_info(Accessory_type.STROKE, 6, Global_default_values.max_stroke_weight);
         Text_accessory_info shadow_info = new Text_accessory_info(Accessory_type.SHADOW, 10, Global_default_values.max_shadow_weight);
@@ -8863,6 +8863,7 @@ public class HelloApplication extends Application {
         helloController.time_line_pane.getChildren().add(new_stack_pane_with_new_verse);
         ayats_processed.add(selected_verse + 1, new Verse_class_final(ayats_processed.get(selected_verse).getVerse_number(), original_verse_end - polygon_position_in_nano_seconds, polygon_position_in_nano_seconds,new_stack_pane_with_new_verse));
         rename_the_verse_rectangle_of_the_same_verse();
+        duplicate_the_text_item_of_every_language(helloController,selected_verse);
     }
 
     private void rename_the_verse_rectangle_of_the_same_verse(){
@@ -8881,6 +8882,14 @@ public class HelloApplication extends Application {
                 Label verse_text = new Label("Verse ".concat(String.valueOf(key)).concat(" - ").concat(String.valueOf(i+1)));
                 value.get(i).getStack_pane_hosting_rectangle().getChildren().set(1,verse_text);
             }
+        }
+    }
+
+    private void duplicate_the_text_item_of_every_language(HelloController helloController,int index){
+        ObservableList<Language_info> all_of_the_language_info_items = helloController.list_view_with_all_of_the_languages.getItems();
+        for(int i = 0;i<all_of_the_language_info_items.size();i++){
+            ArrayList<Text_item> local = all_of_the_language_info_items.get(i).getArrayList_of_all_of_the_translations();
+            local.add(index,new Text_item(local.get(index)));
         }
     }
 }
