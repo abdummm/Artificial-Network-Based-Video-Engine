@@ -35,6 +35,21 @@ public class Text_box_info {
         this.text_item = text_item;
     }
 
+    public Text_box_info(Text_box_info text_box_info,Text_item text_item) {
+        this.center_position = new Point2D(text_box_info.getCenter_position().getX(),text_box_info.getCenter_position().getY());
+        this.text_box_width = text_box_info.getText_box_width();
+        this.text_box_height = text_box_info.getText_box_height();
+        this.visible = text_box_info.isVisible();
+        this.min_x_point = text_box_info.getMin_x_point();
+        this.max_x_point = text_box_info.getMax_x_point();
+        this.min_y_point = text_box_info.getMin_y_point();
+        this.max_y_point = text_box_info.getMax_x_point();
+        this.set = text_box_info.isSet();
+        this.min_width = text_box_info.getMin_width();
+        this.min_height = text_box_info.getMin_height();
+        this.text_item = text_item;
+    }
+
     public double getText_box_width() {
         return text_box_width;
     }
