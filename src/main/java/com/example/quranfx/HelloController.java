@@ -239,4 +239,7 @@ public class HelloController {
 
     @FXML
     public StackPane time_line_stack_pane;
+
+    @FXML
+    public HBox h_box_bottom_border_pane_time_line;
 }
