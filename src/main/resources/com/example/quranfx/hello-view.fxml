@@ -469,7 +469,7 @@
             <bottom>
                 <StackPane fx:id="bottom_stack_pane_fourth_screen">
                     <VBox alignment="CENTER">
-                        <HBox alignment="CENTER">
+                        <HBox alignment="CENTER" fx:id="h_box_bottom_border_pane_time_line">
                             <VBox.margin>
                                 <Insets top="10.0" bottom="20.0"/>
                             </VBox.margin>
