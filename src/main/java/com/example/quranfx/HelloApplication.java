@@ -305,6 +305,7 @@ public class HelloApplication extends Application {
         set_up_help_spread_app_canvas(helloController);
         send_analytics_event("app_launched");
         check_if_this_is_the_first_launch_and_send_an_event_if_so();
+        listen_to_mouse_leaving_and_entering_time_line(helloController);
     }
 
     /*public static void main(String[] args) {
@@ -2820,7 +2821,7 @@ public class HelloApplication extends Application {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         StackPane[] array_of_verse_stack_panes = new StackPane[ayats_processed.size()];
         for (int i = 0; i < ayats_processed.size(); i++) {
-            StackPane stackPane = return_the_stack_pane_for_the_verse_rectangle(i,time_line_pane_data,time_line_pane_data.getTime_line_base_line() + (nanoseconds_to_pixels(time_line_pane_data, ayats_processed.get(i).getStart_millisecond())),nanoseconds_to_pixels(time_line_pane_data, ayats_processed.get(i).getDuration()));
+            StackPane stackPane = return_the_stack_pane_for_the_verse_rectangle(i, time_line_pane_data, time_line_pane_data.getTime_line_base_line() + (nanoseconds_to_pixels(time_line_pane_data, ayats_processed.get(i).getStart_millisecond())), nanoseconds_to_pixels(time_line_pane_data, ayats_processed.get(i).getDuration()));
             pane.getChildren().add(stackPane);
             array_of_verse_stack_panes[i] = stackPane;
             ayats_processed.get(i).setStack_pane_hosting_rectangle(stackPane);
@@ -2842,7 +2843,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    private StackPane return_the_stack_pane_for_the_verse_rectangle(int local_selected_verse,Time_line_pane_data time_line_pane_data,double start_x,double duration_in_pixels){
+    private StackPane return_the_stack_pane_for_the_verse_rectangle(int local_selected_verse, Time_line_pane_data time_line_pane_data, double start_x, double duration_in_pixels) {
         Label verse_text = new Label("Verse ".concat(String.valueOf(ayats_processed.get(local_selected_verse).getVerse_number())));
         StackPane stackPane = new StackPane();
         stackPane.setPrefWidth(duration_in_pixels);
@@ -3538,7 +3539,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 mouseEvent.consume();
-                if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+                if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                     contextMenu.hide();
                 } else if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
                     contextMenu.show(rectangle, mouseEvent.getScreenX(), mouseEvent.getScreenY());
@@ -8585,7 +8586,7 @@ public class HelloApplication extends Application {
         helloController.canvas_holding_help_spread_app.setHeight(1920);
         helloController.canvas_holding_help_spread_app.setWidth(1080);
         bind_the_canvas_to_the_image_view(helloController, helloController.canvas_holding_help_spread_app);
-        Text_item made_with_sabrly_text_item = new Text_item("Made using sabrly.com");
+        Text_item made_with_sabrly_text_item = new Text_item("Made with sabrly.com");
         made_with_sabrly_text_item.setColor(javafx.scene.paint.Color.WHITE);
         Text_accessory_info stroke_info = new Text_accessory_info(Accessory_type.STROKE, 6, Global_default_values.max_stroke_weight);
         Text_accessory_info shadow_info = new Text_accessory_info(Accessory_type.SHADOW, 10, Global_default_values.max_shadow_weight);
@@ -8854,44 +8855,60 @@ public class HelloApplication extends Application {
         long original_verse_end = ayats_processed.get(selected_verse).getStart_millisecond() + ayats_processed.get(selected_verse).getDuration();
         long original_verse_new_width_in_nano_seconds = polygon_position_in_nano_seconds - original_verse_start;
         double original_verse_new_width_in_pixels = nanoseconds_to_pixels(time_line_pane_data, original_verse_new_width_in_nano_seconds);
-        double created_verse_width = nanoseconds_to_pixels(time_line_pane_data,original_verse_end - polygon_position_in_nano_seconds);
+        double created_verse_width = nanoseconds_to_pixels(time_line_pane_data, original_verse_end - polygon_position_in_nano_seconds);
         StackPane main_verse_stack_pane = ayats_processed.get(selected_verse).getStack_pane_hosting_rectangle();
         ayats_processed.get(selected_verse).setDuration(polygon_position_in_nano_seconds - ayats_processed.get(selected_verse).getStart_millisecond());
         main_verse_stack_pane.setMinWidth(original_verse_new_width_in_pixels);
         main_verse_stack_pane.setPrefWidth(original_verse_new_width_in_pixels);
         main_verse_stack_pane.setMaxWidth(original_verse_new_width_in_pixels);
         ((Rectangle) main_verse_stack_pane.getChildren().getFirst()).setWidth(original_verse_new_width_in_pixels);
-        StackPane new_stack_pane_with_new_verse = return_the_stack_pane_for_the_verse_rectangle(ayats_processed.get(selected_verse).getVerse_number()-1,time_line_pane_data,return_polygon_middle_position(time_line_pane_data),created_verse_width);
+        StackPane new_stack_pane_with_new_verse = return_the_stack_pane_for_the_verse_rectangle(ayats_processed.get(selected_verse).getVerse_number() - 1, time_line_pane_data, return_polygon_middle_position(time_line_pane_data), created_verse_width);
         helloController.time_line_pane.getChildren().add(new_stack_pane_with_new_verse);
-        ayats_processed.add(selected_verse + 1, new Verse_class_final(ayats_processed.get(selected_verse).getVerse_number(), original_verse_end - polygon_position_in_nano_seconds, polygon_position_in_nano_seconds,new_stack_pane_with_new_verse));
+        ayats_processed.add(selected_verse + 1, new Verse_class_final(ayats_processed.get(selected_verse).getVerse_number(), original_verse_end - polygon_position_in_nano_seconds, polygon_position_in_nano_seconds, new_stack_pane_with_new_verse));
         rename_the_verse_rectangle_of_the_same_verse();
-        duplicate_the_text_item_of_every_language(helloController,selected_verse);
+        duplicate_the_text_item_of_every_language(helloController, selected_verse);
     }
 
-    private void rename_the_verse_rectangle_of_the_same_verse(){
-        HashMap<Integer,ArrayList<Verse_class_final>> hashMap_with_verse_class_final_tied_to_verse_number = new HashMap<>();
-        for(int i = 0;i<ayats_processed.size();i++){
-            ArrayList<Verse_class_final> local_array_list = hashMap_with_verse_class_final_tied_to_verse_number.getOrDefault(ayats_processed.get(i).getVerse_number(),new ArrayList<>());
+    private void rename_the_verse_rectangle_of_the_same_verse() {
+        HashMap<Integer, ArrayList<Verse_class_final>> hashMap_with_verse_class_final_tied_to_verse_number = new HashMap<>();
+        for (int i = 0; i < ayats_processed.size(); i++) {
+            ArrayList<Verse_class_final> local_array_list = hashMap_with_verse_class_final_tied_to_verse_number.getOrDefault(ayats_processed.get(i).getVerse_number(), new ArrayList<>());
             local_array_list.add(ayats_processed.get(i));
-            hashMap_with_verse_class_final_tied_to_verse_number.put(ayats_processed.get(i).getVerse_number(),local_array_list);
+            hashMap_with_verse_class_final_tied_to_verse_number.put(ayats_processed.get(i).getVerse_number(), local_array_list);
         }
-        for(int key : hashMap_with_verse_class_final_tied_to_verse_number.keySet()){
+        for (int key : hashMap_with_verse_class_final_tied_to_verse_number.keySet()) {
             ArrayList<Verse_class_final> value = hashMap_with_verse_class_final_tied_to_verse_number.get(key);
-            if(value.size()==1){
+            if (value.size() == 1) {
                 continue;
             }
-            for(int i = 0;i<value.size();i++){
-                Label verse_text = new Label("Verse ".concat(String.valueOf(key)).concat(" - ").concat(String.valueOf(i+1)));
-                value.get(i).getStack_pane_hosting_rectangle().getChildren().set(1,verse_text);
+            for (int i = 0; i < value.size(); i++) {
+                Label verse_text = new Label("Verse ".concat(String.valueOf(key)).concat(" - ").concat(String.valueOf(i + 1)));
+                value.get(i).getStack_pane_hosting_rectangle().getChildren().set(1, verse_text);
             }
         }
     }
 
-    private void duplicate_the_text_item_of_every_language(HelloController helloController,int index){
+    private void duplicate_the_text_item_of_every_language(HelloController helloController, int index) {
         ObservableList<Language_info> all_of_the_language_info_items = helloController.list_view_with_all_of_the_languages.getItems();
-        for(int i = 0;i<all_of_the_language_info_items.size();i++){
+        for (int i = 0; i < all_of_the_language_info_items.size(); i++) {
             ArrayList<Text_item> local = all_of_the_language_info_items.get(i).getArrayList_of_all_of_the_translations();
-            local.add(index,new Text_item(local.get(index)));
+            local.add(index, new Text_item(local.get(index)));
         }
+    }
+
+    private void listen_to_mouse_leaving_and_entering_time_line(HelloController helloController) {
+        helloController.parent_stack_pane.setOnMouseMoved(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                Insets margin = VBox.getMargin(helloController.h_box_bottom_border_pane_time_line);
+                double pane_height = helloController.show_the_result_screen.getBottom().getLayoutBounds().getHeight();
+                Point2D bottom_coordinates = helloController.show_the_result_screen.getBottom().sceneToLocal(mouseEvent.getX(), mouseEvent.getY());
+                if (bottom_coordinates.getY() >= margin.getTop() && bottom_coordinates.getY() <= pane_height - margin.getBottom() && helloController.show_the_result_screen.getBottom().contains(bottom_coordinates)) {
+                    helloController.split_verse_button.setVisible(true);
+                } else {
+                    helloController.split_verse_button.setVisible(false);
+                }
+            }
+        });
     }
 }
