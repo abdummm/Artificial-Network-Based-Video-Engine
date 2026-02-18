@@ -2828,7 +2828,7 @@ public class HelloApplication extends Application {
         }
         StackPane empty_stack_pane = new StackPane();
         Rectangle empty_rectangle = new Rectangle();
-        if (sound_mode == Sound_mode.UPLOADED) { // TODO the true should be removed.
+        if (sound_mode == Sound_mode.UPLOADED) {
             for (int i = 0; i < array_of_verse_stack_panes.length; i++) {
                 if (i == 0 && i == array_of_verse_stack_panes.length - 1) {
                     listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, i, array_of_verse_stack_panes[i], (Rectangle) array_of_verse_stack_panes[i].getChildren().getFirst(), empty_stack_pane, empty_rectangle, empty_stack_pane, empty_rectangle, Verse_position_mode.START_AND_END);
