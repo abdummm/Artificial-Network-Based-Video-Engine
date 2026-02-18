@@ -43,7 +43,7 @@ public class Text_box_info {
         this.min_x_point = text_box_info.getMin_x_point();
         this.max_x_point = text_box_info.getMax_x_point();
         this.min_y_point = text_box_info.getMin_y_point();
-        this.max_y_point = text_box_info.getMax_x_point();
+        this.max_y_point = text_box_info.getMax_y_point();
         this.set = text_box_info.isSet();
         this.min_width = text_box_info.getMin_width();
         this.min_height = text_box_info.getMin_height();
