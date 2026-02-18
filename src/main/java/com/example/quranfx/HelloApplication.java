@@ -7832,6 +7832,7 @@ public class HelloApplication extends Application {
                 close_to_bottom = true;
                 number_of_edges_the_mouse_is_close_to++;
             }
+            System.out.println(number_of_edges_the_mouse_is_close_to);
             if (number_of_edges_the_mouse_is_close_to == 0) {
                 return Type_of_cursor.CENTER;
             } else {
