@@ -8868,6 +8868,26 @@ public class HelloApplication extends Application {
         ayats_processed.add(selected_verse + 1, new Verse_class_final(ayats_processed.get(selected_verse).getVerse_number(), original_verse_end - polygon_position_in_nano_seconds, polygon_position_in_nano_seconds, new_stack_pane_with_new_verse));
         rename_the_verse_rectangle_of_the_same_verse();
         duplicate_the_text_item_of_every_language(helloController, selected_verse);
+        StackPane empty_stackPane = new StackPane();
+        Rectangle empty_rectangle = new Rectangle();
+        if(sound_mode == Sound_mode.CHOSEN){
+            if (selected_verse == 0) {
+                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse+1,new_stack_pane_with_new_verse,(Rectangle) new_stack_pane_with_new_verse.getChildren().getFirst(),main_verse_stack_pane,(Rectangle) main_verse_stack_pane.getChildren().getFirst(),empty_stackPane,empty_rectangle,Verse_position_mode.END);
+                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse,new_stack_pane_with_new_verse,(Rectangle) new_stack_pane_with_new_verse.getChildren().getFirst(),main_verse_stack_pane,(Rectangle) main_verse_stack_pane.getChildren().getFirst(),empty_stackPane,empty_rectangle,Verse_position_mode.START);
+            } else if (selected_verse == ayats_processed.size() - 1) {
+                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse+1,new_stack_pane_with_new_verse,(Rectangle) new_stack_pane_with_new_verse.getChildren().getFirst(),main_verse_stack_pane,(Rectangle) main_verse_stack_pane.getChildren().getFirst(),empty_stackPane,empty_rectangle,Verse_position_mode.END);
+            } else {
+
+            }
+        } else if(sound_mode == Sound_mode.UPLOADED){
+            if (selected_verse == 0) {
+                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse,new_stack_pane_with_new_verse,(Rectangle) new_stack_pane_with_new_verse.getChildren().getFirst(),main_verse_stack_pane,(Rectangle) main_verse_stack_pane.getChildren().getFirst(),empty_stackPane,empty_rectangle,Verse_position_mode.MIDDLE);
+            } else if (selected_verse == ayats_processed.size() - 1) {
+
+            } else {
+
+            }
+        }
     }
 
     private void rename_the_verse_rectangle_of_the_same_verse() {
