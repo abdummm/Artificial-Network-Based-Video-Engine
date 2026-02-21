@@ -8873,16 +8873,17 @@ public class HelloApplication extends Application {
         Rectangle empty_rectangle = new Rectangle();
         if(sound_mode == Sound_mode.CHOSEN){
             if (selected_verse == 0) {
-                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse,main_verse_stack_pane,main_verse_rectangle,empty_stackPane,empty_rectangle,new_stack_pane_with_new_verse, (Rectangle) new_stack_pane_with_new_verse.getChildren().getFirst(),Verse_position_mode.START);
-                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse+1,new_stack_pane_with_new_verse,(Rectangle) new_stack_pane_with_new_verse.getChildren().getFirst(),main_verse_stack_pane,main_verse_rectangle,empty_stackPane,empty_rectangle,Verse_position_mode.END);
+                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse,main_verse_stack_pane,main_verse_rectangle,empty_stackPane,empty_rectangle,new_stack_pane_with_new_verse, new_verse_rectangle,Verse_position_mode.START);
+                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse+1,new_stack_pane_with_new_verse,new_verse_rectangle,main_verse_stack_pane,main_verse_rectangle,empty_stackPane,empty_rectangle,Verse_position_mode.END);
             } else if (selected_verse == ayats_processed.size() - 1) {
-                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse,main_verse_stack_pane,main_verse_rectangle,empty_stackPane,empty_rectangle,new_stack_pane_with_new_verse, (Rectangle) new_stack_pane_with_new_verse.getChildren().getFirst(),Verse_position_mode.END);
+                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse,main_verse_stack_pane,main_verse_rectangle,new_stack_pane_with_new_verse,new_verse_rectangle,empty_stackPane, empty_rectangle,Verse_position_mode.START);
+                listen_to_mouse_moved_inside_rectangle(helloController,time_line_pane_data,selected_verse+1,new_stack_pane_with_new_verse,new_verse_rectangle,empty_stackPane,empty_rectangle,main_verse_stack_pane,main_verse_rectangle,Verse_position_mode.END);
             } else {
 
             }
         } else if(sound_mode == Sound_mode.UPLOADED){
             if (selected_verse == 0) {
-                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse,new_stack_pane_with_new_verse,(Rectangle) new_stack_pane_with_new_verse.getChildren().getFirst(),main_verse_stack_pane,main_verse_rectangle,empty_stackPane,empty_rectangle,Verse_position_mode.MIDDLE);
+                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse,new_stack_pane_with_new_verse,new_verse_rectangle,main_verse_stack_pane,main_verse_rectangle,empty_stackPane,empty_rectangle,Verse_position_mode.MIDDLE);
             } else if (selected_verse == ayats_processed.size() - 1) {
 
             } else {
