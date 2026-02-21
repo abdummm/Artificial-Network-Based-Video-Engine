@@ -7832,7 +7832,6 @@ public class HelloApplication extends Application {
                 close_to_bottom = true;
                 number_of_edges_the_mouse_is_close_to++;
             }
-            System.out.println(number_of_edges_the_mouse_is_close_to);
             if (number_of_edges_the_mouse_is_close_to == 0) {
                 return Type_of_cursor.CENTER;
             } else {
@@ -8858,11 +8857,12 @@ public class HelloApplication extends Application {
         double original_verse_new_width_in_pixels = nanoseconds_to_pixels(time_line_pane_data, original_verse_new_width_in_nano_seconds);
         double created_verse_width = nanoseconds_to_pixels(time_line_pane_data, original_verse_end - polygon_position_in_nano_seconds);
         StackPane main_verse_stack_pane = ayats_processed.get(selected_verse).getStack_pane_hosting_rectangle();
+        Rectangle main_verse_rectangle = (Rectangle) main_verse_stack_pane.getChildren().getFirst();
         ayats_processed.get(selected_verse).setDuration(polygon_position_in_nano_seconds - ayats_processed.get(selected_verse).getStart_millisecond());
         main_verse_stack_pane.setMinWidth(original_verse_new_width_in_pixels);
         main_verse_stack_pane.setPrefWidth(original_verse_new_width_in_pixels);
         main_verse_stack_pane.setMaxWidth(original_verse_new_width_in_pixels);
-        ((Rectangle) main_verse_stack_pane.getChildren().getFirst()).setWidth(original_verse_new_width_in_pixels);
+        main_verse_rectangle.setWidth(original_verse_new_width_in_pixels);
         StackPane new_stack_pane_with_new_verse = return_the_stack_pane_for_the_verse_rectangle(ayats_processed.get(selected_verse).getVerse_number() - 1, time_line_pane_data, return_polygon_middle_position(time_line_pane_data), created_verse_width);
         helloController.time_line_pane.getChildren().add(new_stack_pane_with_new_verse);
         ayats_processed.add(selected_verse + 1, new Verse_class_final(ayats_processed.get(selected_verse).getVerse_number(), original_verse_end - polygon_position_in_nano_seconds, polygon_position_in_nano_seconds, new_stack_pane_with_new_verse));
@@ -8872,16 +8872,16 @@ public class HelloApplication extends Application {
         Rectangle empty_rectangle = new Rectangle();
         if(sound_mode == Sound_mode.CHOSEN){
             if (selected_verse == 0) {
-                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse+1,new_stack_pane_with_new_verse,(Rectangle) new_stack_pane_with_new_verse.getChildren().getFirst(),main_verse_stack_pane,(Rectangle) main_verse_stack_pane.getChildren().getFirst(),empty_stackPane,empty_rectangle,Verse_position_mode.END);
-                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse,new_stack_pane_with_new_verse,(Rectangle) new_stack_pane_with_new_verse.getChildren().getFirst(),main_verse_stack_pane,(Rectangle) main_verse_stack_pane.getChildren().getFirst(),empty_stackPane,empty_rectangle,Verse_position_mode.START);
+                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse,main_verse_stack_pane,main_verse_rectangle,empty_stackPane,empty_rectangle,new_stack_pane_with_new_verse, (Rectangle) new_stack_pane_with_new_verse.getChildren().getFirst(),Verse_position_mode.START);
+                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse+1,new_stack_pane_with_new_verse,(Rectangle) new_stack_pane_with_new_verse.getChildren().getFirst(),main_verse_stack_pane,main_verse_rectangle,empty_stackPane,empty_rectangle,Verse_position_mode.END);
             } else if (selected_verse == ayats_processed.size() - 1) {
-                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse+1,new_stack_pane_with_new_verse,(Rectangle) new_stack_pane_with_new_verse.getChildren().getFirst(),main_verse_stack_pane,(Rectangle) main_verse_stack_pane.getChildren().getFirst(),empty_stackPane,empty_rectangle,Verse_position_mode.END);
+                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse,main_verse_stack_pane,main_verse_rectangle,empty_stackPane,empty_rectangle,new_stack_pane_with_new_verse, (Rectangle) new_stack_pane_with_new_verse.getChildren().getFirst(),Verse_position_mode.END);
             } else {
 
             }
         } else if(sound_mode == Sound_mode.UPLOADED){
             if (selected_verse == 0) {
-                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse,new_stack_pane_with_new_verse,(Rectangle) new_stack_pane_with_new_verse.getChildren().getFirst(),main_verse_stack_pane,(Rectangle) main_verse_stack_pane.getChildren().getFirst(),empty_stackPane,empty_rectangle,Verse_position_mode.MIDDLE);
+                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse,new_stack_pane_with_new_verse,(Rectangle) new_stack_pane_with_new_verse.getChildren().getFirst(),main_verse_stack_pane,main_verse_rectangle,empty_stackPane,empty_rectangle,Verse_position_mode.MIDDLE);
             } else if (selected_verse == ayats_processed.size() - 1) {
 
             } else {
