@@ -32,7 +32,7 @@ public class Verse_class_final {
         this.stack_pane_hosting_rectangle = stack_pane_hosting_rectangle;
     }
 
-    public Integer getVerse_number() {
+    public int getVerse_number() {
         return verse_number;
     }
 
