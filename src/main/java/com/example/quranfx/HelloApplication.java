@@ -8873,18 +8873,6 @@ public class HelloApplication extends Application {
         StackPane empty_stackPane = new StackPane();
         Rectangle empty_rectangle = new Rectangle();
         if(sound_mode == Sound_mode.CHOSEN){
-            /*int[] selected_verse_number_and_array_list_size = return_the_relative_verse_number(ayats_processed.get(selected_verse));
-            int local_selected_verse = selected_verse_number_and_array_list_size[0];
-            int local_verse_array_list_size = selected_verse_number_and_array_list_size[1];
-            if (local_selected_verse == 0) {
-                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse,main_verse_stack_pane,main_verse_rectangle,empty_stackPane,empty_rectangle,new_stack_pane_with_new_verse, new_verse_rectangle,Verse_position_mode.START);
-                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse+1,new_stack_pane_with_new_verse,new_verse_rectangle,main_verse_stack_pane,main_verse_rectangle,empty_stackPane,empty_rectangle,Verse_position_mode.END);
-            } else if (local_selected_verse+1 == local_verse_array_list_size - 1) {
-                listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse,main_verse_stack_pane,main_verse_rectangle,new_stack_pane_with_new_verse,new_verse_rectangle,empty_stackPane, empty_rectangle,Verse_position_mode.START);
-                listen_to_mouse_moved_inside_rectangle(helloController,time_line_pane_data,selected_verse+1,new_stack_pane_with_new_verse,new_verse_rectangle,empty_stackPane,empty_rectangle,main_verse_stack_pane,main_verse_rectangle,Verse_position_mode.END);
-            } else {
-
-            }*/
             {
                 StackPane[] previous_and_next_stack_pane = return_prev_and_next_stack_pane(ayats_processed.get(selected_verse));
                 StackPane previous_stack_pane = previous_and_next_stack_pane[0];
