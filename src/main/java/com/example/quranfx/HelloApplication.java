@@ -8929,7 +8929,8 @@ public class HelloApplication extends Application {
                 continue;
             }
             for (int i = 0; i < value.size(); i++) {
-                Label verse_text = new Label("Verse ".concat(String.valueOf(key)).concat(" - ").concat(String.valueOf(i + 1)));
+                Label verse_text = (Label) value.get(i).getStack_pane_hosting_rectangle().getChildren().get(1);
+                verse_text.setText("Verse ".concat(String.valueOf(key)).concat(" - ").concat(String.valueOf(i + 1)));
                 value.get(i).getStack_pane_hosting_rectangle().getChildren().set(1, verse_text);
             }
         }
