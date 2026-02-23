@@ -8888,6 +8888,12 @@ public class HelloApplication extends Application {
                 listen_to_mouse_moved_inside_rectangle(helloController,time_line_pane_data,selected_verse+1,new_stack_pane_with_new_verse,new_verse_rectangle,main_verse_stack_pane,main_verse_rectangle,next_stack_pane,next_rectangle,Verse_position_mode.MIDDLE);
                 if(selected_verse+2<ayats_processed.size()){
                     StackPane next_next_stack_pane = return_next_stack_pane(ayats_processed.get(selected_verse+2));
+                    Rectangle next_next_rectangle = (Rectangle) next_next_stack_pane.getChildren().getFirst();
+                    if(next_next_stack_pane.getChildren().isEmpty()){
+                        listen_to_mouse_moved_inside_rectangle(helloController,time_line_pane_data,selected_verse+2,next_stack_pane,next_rectangle,new_stack_pane_with_new_verse,new_verse_rectangle,next_next_stack_pane,next_next_rectangle,Verse_position_mode.END);
+                    } else {
+                        listen_to_mouse_moved_inside_rectangle(helloController,time_line_pane_data,selected_verse+2,next_stack_pane,next_rectangle,new_stack_pane_with_new_verse,new_verse_rectangle,next_next_stack_pane,next_next_rectangle,Verse_position_mode.MIDDLE);
+                    }
                 }
             }
         } else if(sound_mode == Sound_mode.UPLOADED){
