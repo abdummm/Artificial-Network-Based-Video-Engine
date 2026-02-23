@@ -8961,39 +8961,30 @@ public class HelloApplication extends Application {
         return new StackPane();
     }
 
-    private StackPane[] return_prev_and_next_stack_pane_for_uploaded_sounds(Verse_class_final verse_class_final) {
-        StackPane empty_stack_pane = new StackPane();
-        ArrayList<Verse_class_final> ayats_processed_tied_to_verse_number = new ArrayList<>();
-        for(int i = 0 ; i < ayats_processed.size() ; i++){
-            if(ayats_processed.get(i).getVerse_number() > verse_class_final.getVerse_number()){
-                break;
-            }
-            if(ayats_processed.get(i).getVerse_number() == verse_class_final.getVerse_number()){
-                ayats_processed_tied_to_verse_number.add(ayats_processed.get(i));
-            }
-        }
-        int index_of_verse_first_split = ayats_processed.indexOf(ayats_processed_tied_to_verse_number.getFirst());
-        int index_of_verse_last_split = index_of_verse_first_split + ayats_processed_tied_to_verse_number.size();
-        for(int i = 0;i<ayats_processed_tied_to_verse_number.size();i++){
-            if(ayats_processed_tied_to_verse_number.get(i) == verse_class_final){
+    private StackPane return_prev_stack_pane_uploaded_sound(Verse_class_final verse_class_final) {
+        for(int i = 0;i<ayats_processed.size();i++){
+            if(ayats_processed.get(i) == verse_class_final){
                 if(i == 0){
-                    if(index_of_verse_first_split == 0){
-                        return new StackPane[]{empty_stack_pane,ayats_processed_tied_to_verse_number.get(i+1).getStack_pane_hosting_rectangle()};
-                    } else {
-                        return new StackPane[]{ayats_processed.get(index_of_verse_first_split-1).getStack_pane_hosting_rectangle(),ayats_processed_tied_to_verse_number.get(i+1).getStack_pane_hosting_rectangle()};
-                    }
-                } else if(i == ayats_processed_tied_to_verse_number.size() - 1){
-                    if(index_of_verse_last_split == ayats_processed.size()-1){
-                        return new StackPane[]{ayats_processed_tied_to_verse_number.get(i-1).getStack_pane_hosting_rectangle(),empty_stack_pane};
-                    } else {
-                        return new StackPane[]{ayats_processed_tied_to_verse_number.get(i-1).getStack_pane_hosting_rectangle(),ayats_processed.get(index_of_verse_last_split+1).getStack_pane_hosting_rectangle()};
-                    }
+                    return new StackPane();
                 } else {
-                    return new StackPane[]{ayats_processed_tied_to_verse_number.get(i-1).getStack_pane_hosting_rectangle(),ayats_processed_tied_to_verse_number.get(i+1).getStack_pane_hosting_rectangle()};
+                    return ayats_processed.get(i-1).getStack_pane_hosting_rectangle();
                 }
             }
         }
-        return new StackPane[]{empty_stack_pane,empty_stack_pane};
+        return new StackPane();
+    }
+
+    private StackPane return_next_stack_pane_uploaded_sound(Verse_class_final verse_class_final) {
+        for(int i = 0;i<ayats_processed.size();i++){
+            if(ayats_processed.get(i) == verse_class_final){
+                if(i == ayats_processed.size()-1){
+                    return new StackPane();
+                } else {
+                    return ayats_processed.get(i+1).getStack_pane_hosting_rectangle();
+                }
+            }
+        }
+        return new StackPane();
     }
 
     private void duplicate_the_text_item_of_every_language(HelloController helloController, int index) {
