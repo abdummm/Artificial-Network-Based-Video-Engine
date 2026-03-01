@@ -5856,6 +5856,8 @@ public class HelloApplication extends Application {
                         //verse_text_area.setPrefRowCount(3);
                         verse_text_area.setWrapText(true);
                         bind_an_item_to_a_property(verse_text_area, root.widthProperty(), start_and_end_margin * 2);
+                        verse_text_area.setNodeOrientation(NodeOrientation.INHERIT);
+
                         //reset_text_area_and_verse_to_original_verse_button
                         reset_text_area_and_verse_to_original_verse_button.setText("Reset");
                         bind_an_item_to_a_property(reset_text_area_and_verse_to_original_verse_button, root.widthProperty(), start_and_end_margin * 2);
@@ -6154,12 +6156,10 @@ public class HelloApplication extends Application {
 
                                 verse_text_area.replaceText(text_item_of_the_selected_verse.getVerse_text());
                             }
-                            if (item.getLanguage_name().equals("arabic") ||) {
+                            if (is_language_right_to_left(item.getLanguage_name()) ) {
                                 verse_text_area.getStyleClass().add("verse-text-area-arabic");
-                                verse_text_area.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
                             } else {
                                 verse_text_area.getStyleClass().add("verse-text-area-english");
-                                verse_text_area.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
                             }
                             jfxButton.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
