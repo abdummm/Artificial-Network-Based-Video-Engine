@@ -5856,8 +5856,6 @@ public class HelloApplication extends Application {
                         //verse_text_area.setPrefRowCount(3);
                         verse_text_area.setWrapText(true);
                         bind_an_item_to_a_property(verse_text_area, root.widthProperty(), start_and_end_margin * 2);
-                        //verse_text_area.setNodeOrientation(NodeOrientation.INHERIT);
-
                         //reset_text_area_and_verse_to_original_verse_button
                         reset_text_area_and_verse_to_original_verse_button.setText("Reset");
                         bind_an_item_to_a_property(reset_text_area_and_verse_to_original_verse_button, root.widthProperty(), start_and_end_margin * 2);
@@ -6156,9 +6154,11 @@ public class HelloApplication extends Application {
 
                                 verse_text_area.replaceText(text_item_of_the_selected_verse.getVerse_text());
                             }
-                            if(item.getLanguage_name().equals("arabic")){
+                            if (item.getLanguage_name().equals("arabic") ||) {
+                                verse_text_area.getStyleClass().add("verse-text-area-arabic");
                                 verse_text_area.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
                             } else {
+                                verse_text_area.getStyleClass().add("verse-text-area-english");
                                 verse_text_area.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
                             }
                             jfxButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -7151,6 +7151,7 @@ public class HelloApplication extends Application {
     private void add_the_css_files_at_the_start(Scene scene) {
         add_style_sheet_to_the_scene(scene, "my-separator.css");
         add_style_sheet_to_the_scene(scene, "toggle_switch_style.css");
+        add_style_sheet_to_the_scene(scene, "verse-text-area.css");
     }
 
     private void format_the_text_filed_to_only_accept_positive_integers(TextField textField) {
@@ -8871,7 +8872,7 @@ public class HelloApplication extends Application {
         main_verse_stack_pane.setMaxWidth(original_verse_new_width_in_pixels);
         main_verse_rectangle.setWidth(original_verse_new_width_in_pixels);
         StackPane new_stack_pane_with_new_verse = return_the_stack_pane_for_the_verse_rectangle(ayats_processed.get(selected_verse).getVerse_number() - 1, return_polygon_middle_position(time_line_pane_data), created_verse_width);
-        Rectangle new_verse_rectangle = (Rectangle)  new_stack_pane_with_new_verse.getChildren().getFirst();
+        Rectangle new_verse_rectangle = (Rectangle) new_stack_pane_with_new_verse.getChildren().getFirst();
         helloController.time_line_pane.getChildren().add(new_stack_pane_with_new_verse);
         ayats_processed.add(selected_verse + 1, new Verse_class_final(ayats_processed.get(selected_verse).getVerse_number(), original_verse_end - polygon_position_in_nano_seconds, polygon_position_in_nano_seconds, new_stack_pane_with_new_verse));
         rename_the_verse_rectangle_of_the_same_verse();
@@ -8918,7 +8919,7 @@ public class HelloApplication extends Application {
             }
             {
                 StackPane next_stack_pane = return_next_stack_pane_uploaded_sound(ayats_processed.get(selected_verse + 1));
-                if(next_stack_pane.getChildren().isEmpty()){
+                if (next_stack_pane.getChildren().isEmpty()) {
                     listen_to_mouse_moved_inside_rectangle(helloController, time_line_pane_data, selected_verse + 1, new_stack_pane_with_new_verse, new_verse_rectangle, main_verse_stack_pane, main_verse_rectangle, empty_stackPane, empty_rectangle, Verse_position_mode.END);
                 } else {
                     Rectangle next_rectangle = (Rectangle) next_stack_pane.getChildren().getFirst();
@@ -9031,5 +9032,23 @@ public class HelloApplication extends Application {
                 }
             }
         });
+    }
+
+    private boolean is_language_right_to_left(String name_of_language) {
+        if (name_of_language.equals("arabic") ||
+                name_of_language.equals("hebrew") ||
+                name_of_language.equals("persian") ||
+                name_of_language.equals("dari") ||
+                name_of_language.equals("urdu") ||
+                name_of_language.equals("pashto") ||
+                name_of_language.equals("sindhi") ||
+                name_of_language.equals("kurdish (sorani)") ||
+                name_of_language.equals("uyghur") ||
+                name_of_language.equals("divehi")
+        ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
