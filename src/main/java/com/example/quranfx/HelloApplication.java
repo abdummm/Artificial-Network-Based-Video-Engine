@@ -5116,7 +5116,7 @@ public class HelloApplication extends Application {
                     private HBox hbox_holding_verse_fade_out_and_slider;
                     private Label label_saying_verse;
                     private HBox hbox_holding_the_verse_label;
-                    private InlineCssTextArea verse_text_area;
+                    private TextArea verse_text_area;
                     private JFXButton reset_text_area_and_verse_to_original_verse_button;
                     private Separator separator_under_shadow;
 
@@ -5233,7 +5233,7 @@ public class HelloApplication extends Application {
                         hbox_holding_verse_fade_out_and_slider = new HBox();
                         label_saying_verse = new Label();
                         hbox_holding_the_verse_label = new HBox();
-                        verse_text_area = new InlineCssTextArea();
+                        verse_text_area = new TextArea();
                         reset_text_area_and_verse_to_original_verse_button = new JFXButton();
                         separator_under_shadow = new Separator();
 
@@ -6154,12 +6154,7 @@ public class HelloApplication extends Application {
                                 fade_out_slider_for_verse.setValue(text_item_of_the_selected_verse.getFade_out());
                                 label_holding_fade_out_time_for_verse.setText(return_formatted_string_to_1_decimal_place_always(text_item_of_the_selected_verse.getFade_out()).concat(unit_sign_beside_fade_in_fade_out));
 
-                                verse_text_area.replaceText(text_item_of_the_selected_verse.getVerse_text());
-                            }
-                            if (is_language_right_to_left(item.getLanguage_name()) ) {
-                                verse_text_area.getStyleClass().add("verse-text-area-arabic");
-                            } else {
-                                verse_text_area.getStyleClass().add("verse-text-area-english");
+                                verse_text_area.setText(text_item_of_the_selected_verse.getVerse_text());
                             }
                             jfxButton.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
@@ -6311,7 +6306,7 @@ public class HelloApplication extends Application {
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     item.setText_box_showing(true);
-                                    verse_text_area.replaceText(text_item_of_the_selected_verse.getOriginal_verse_text());
+                                    verse_text_area.setText(text_item_of_the_selected_verse.getOriginal_verse_text());
                                 }
                             });
 
