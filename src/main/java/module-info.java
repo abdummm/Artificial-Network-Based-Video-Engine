@@ -33,7 +33,6 @@ module com.example.quranfx {
     requires io.github.humbleui.types;
     requires java.prefs;
     requires java.net.http;
-    requires org.fxmisc.richtext;
 
 
     opens com.example.quranfx to javafx.fxml;
