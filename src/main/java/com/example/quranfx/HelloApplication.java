@@ -92,6 +92,7 @@ import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.ToggleSwitch;
+import org.fxmisc.richtext.InlineCssTextArea;
 import org.imgscalr.Scalr;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
@@ -5115,7 +5116,7 @@ public class HelloApplication extends Application {
                     private HBox hbox_holding_verse_fade_out_and_slider;
                     private Label label_saying_verse;
                     private HBox hbox_holding_the_verse_label;
-                    private TextArea verse_text_area;
+                    private InlineCssTextArea verse_text_area;
                     private JFXButton reset_text_area_and_verse_to_original_verse_button;
                     private Separator separator_under_shadow;
 
@@ -5232,7 +5233,7 @@ public class HelloApplication extends Application {
                         hbox_holding_verse_fade_out_and_slider = new HBox();
                         label_saying_verse = new Label();
                         hbox_holding_the_verse_label = new HBox();
-                        verse_text_area = new TextArea();
+                        verse_text_area = new InlineCssTextArea();
                         reset_text_area_and_verse_to_original_verse_button = new JFXButton();
                         separator_under_shadow = new Separator();
 
@@ -5852,10 +5853,10 @@ public class HelloApplication extends Application {
 
                         //verse_text_area
                         VBox.setMargin(verse_text_area, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
-                        verse_text_area.setPrefRowCount(3);
+                        //verse_text_area.setPrefRowCount(3);
                         verse_text_area.setWrapText(true);
                         bind_an_item_to_a_property(verse_text_area, root.widthProperty(), start_and_end_margin * 2);
-                        verse_text_area.setNodeOrientation(NodeOrientation.INHERIT);
+                        //verse_text_area.setNodeOrientation(NodeOrientation.INHERIT);
 
                         //reset_text_area_and_verse_to_original_verse_button
                         reset_text_area_and_verse_to_original_verse_button.setText("Reset");
@@ -6153,7 +6154,12 @@ public class HelloApplication extends Application {
                                 fade_out_slider_for_verse.setValue(text_item_of_the_selected_verse.getFade_out());
                                 label_holding_fade_out_time_for_verse.setText(return_formatted_string_to_1_decimal_place_always(text_item_of_the_selected_verse.getFade_out()).concat(unit_sign_beside_fade_in_fade_out));
 
-                                verse_text_area.setText(text_item_of_the_selected_verse.getVerse_text());
+                                verse_text_area.replaceText(text_item_of_the_selected_verse.getVerse_text());
+                            }
+                            if(item.getLanguage_name().equals("arabic")){
+                                verse_text_area.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
+                            } else {
+                                verse_text_area.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
                             }
                             jfxButton.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
@@ -6305,7 +6311,7 @@ public class HelloApplication extends Application {
                                     place_the_canvas_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     item.setText_box_showing(true);
-                                    verse_text_area.setText(text_item_of_the_selected_verse.getOriginal_verse_text());
+                                    verse_text_area.replaceText(text_item_of_the_selected_verse.getOriginal_verse_text());
                                 }
                             });
 
