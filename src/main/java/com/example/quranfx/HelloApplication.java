@@ -8368,7 +8368,7 @@ public class HelloApplication extends Application {
 
         StackPane snack_bar_stack_pane = new StackPane();
 
-        Label verse_segment_cant_be_short_stack_pane = new Label("Verse segment can't be shorter than one second.");
+        Label verse_segment_cant_be_short_stack_pane = new Label("Verse segment can't be shorter than 250 milliseconds.");
         StackPane.setMargin(verse_segment_cant_be_short_stack_pane, new Insets(7.5, 10, 7.5, 10));
 
         Rectangle snack_bar_background = new Rectangle();
@@ -8393,7 +8393,7 @@ public class HelloApplication extends Application {
                 long polygon_time_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(pixels_to_nanoseconds(time_line_pane_data, return_polygon_middle_position(time_line_pane_data) - time_line_pane_data.getTime_line_base_line()));
                 long verse_start_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(ayats_processed.get(selected_verse).getStart_millisecond());
                 long verse_duration_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(ayats_processed.get(selected_verse).getDuration());
-                if (polygon_time_in_milliseconds - verse_start_in_milliseconds < 1000 || verse_start_in_milliseconds + verse_duration_in_milliseconds - polygon_time_in_milliseconds < 1000) {
+                if (polygon_time_in_milliseconds - verse_start_in_milliseconds < 250 || verse_start_in_milliseconds + verse_duration_in_milliseconds - polygon_time_in_milliseconds < 250) {
                     cant_split_snack_bar.enqueue(new JFXSnackbar.SnackbarEvent(stack_pane_with_bottom_inset, snack_bar_duration));
                 } else {
                     split_the_verse_time_line(helloController);
