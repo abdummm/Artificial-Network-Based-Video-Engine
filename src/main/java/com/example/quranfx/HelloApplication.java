@@ -92,7 +92,6 @@ import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.ToggleSwitch;
-import org.fxmisc.richtext.InlineCssTextArea;
 import org.imgscalr.Scalr;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
@@ -5853,7 +5852,7 @@ public class HelloApplication extends Application {
 
                         //verse_text_area
                         VBox.setMargin(verse_text_area, new Insets(top_margin_in_vbox_control, start_and_end_margin, 0, start_and_end_margin));
-                        //verse_text_area.setPrefRowCount(3);
+                        verse_text_area.setPrefRowCount(3);
                         verse_text_area.setWrapText(true);
                         bind_an_item_to_a_property(verse_text_area, root.widthProperty(), start_and_end_margin * 2);
                         verse_text_area.setNodeOrientation(NodeOrientation.INHERIT);
