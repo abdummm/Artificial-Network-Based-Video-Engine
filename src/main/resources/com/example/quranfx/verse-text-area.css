@@ -1,0 +1,17 @@
+.verse-text-area-arabic {
+    -fx-border-color: #000000;
+    -fx-border-width: 2;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-background-color: white;
+    -fx-padding: 8;
+}
+
+.verse-text-area-english {
+    -fx-border-color: #000000;
+    -fx-border-width: 2;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-background-color: white;
+    -fx-padding: 8;
+}
