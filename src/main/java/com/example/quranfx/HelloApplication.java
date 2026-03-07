@@ -899,7 +899,7 @@ public class HelloApplication extends Application {
 //        set_the_image_fourth_screen(helloController, selected_verse);
         set_selected_verse_text(helloController, selected_verse);
         loop_through_all_verses_and_update(helloController,helloController.list_view_with_all_of_the_languages);
-        //helloController.list_view_with_all_of_the_languages.refresh();
+        helloController.list_view_with_all_of_the_languages.refresh();
     }
 
     private void set_up_the_media(HelloController helloController) {
@@ -3113,6 +3113,7 @@ public class HelloApplication extends Application {
                     set_the_scroll_pane_h_value_auto_scroll(helloController, return_the_real_x_position_based_on_time(helloController, time_in_nanos));
                     make_the_time_line_in_the_middle(helloController, x_position_of_polygon);
                     is_it_time_to_change_verses(helloController, time_in_nanos);
+                    loop_through_all_verses_and_update(helloController,helloController.list_view_with_all_of_the_languages);
                     if (last_seen_image_vid_is_playing == null || time_in_nanos > last_seen_image_vid_is_playing.getEnd_time()) {
                         last_seen_image_vid_is_playing = return_the_shape_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, time_in_nanos) + time_line_pane_data.getTime_line_base_line());
                         if (last_seen_image_vid_is_playing == null) {
