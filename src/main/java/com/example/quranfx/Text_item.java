@@ -65,6 +65,21 @@ public class Text_item {
         this.fade_out = text_item.getFade_out();
     }
 
+    public void reset_text_item(){
+        font_size = default_font_size;
+        this.font = return_default_font(font_size);
+        this.adjusted_verse_text = Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(verse_text, font, video_width - extra_width_padding, left_margin, right_margin);
+        this.color = Color.WHITE;
+        text_on_canvas_mode = Text_on_canvas_mode.CENTER;
+        this.stroke_info = new Text_accessory_info(Accessory_type.STROKE,Global_default_values.stroke_weight,Global_default_values.max_stroke_weight);
+        this.shadow_info = new Text_accessory_info(Accessory_type.SHADOW,Global_default_values.shadow_weight,Global_default_values.max_shadow_weight);
+        this.left_margin = 0;
+        this.right_margin = 0;
+        this.fade_in = 0;
+        this.fade_out = 0;
+        this.text_box_info = new Text_box_info(this, new Point2D(video_width / 2D, video_height / 2D), adjusted_verse_text, font, true);
+    }
+
     private io.github.humbleui.skija.Font return_default_font(double font_size) {
         Typeface type_face = FontMgr.getDefault().matchFamilyStyle("Arial", FontStyle.NORMAL);
         return new Font(type_face, (float) font_size);
