@@ -6991,9 +6991,9 @@ public class HelloApplication extends Application {
     }
 
     private double return_the_text_opacity(HelloController helloController,Text_item text_item){
-        if(text_item.getFade_in() == 0 && text_item.getFade_out() == 0){
+        /*if(text_item.getFade_in() == 0 && text_item.getFade_out() == 0){
             return 1D;
-        }
+        }*/
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
         long time_at_start = ayats_processed.get(selected_verse).getStart_millisecond();
         long time_at_end = ayats_processed.get(selected_verse).getStart_millisecond() + ayats_processed.get(selected_verse).getDuration();
