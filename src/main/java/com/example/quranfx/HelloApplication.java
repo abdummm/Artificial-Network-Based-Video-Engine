@@ -6313,6 +6313,9 @@ public class HelloApplication extends Application {
                             reset_everything_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
+                                    reset_verse_settings(text_item_of_the_selected_verse);
+                                    place_the_canvas_text(helloController,item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     send_analytics_event("reset_everything_used");
                                 }
                             });
@@ -6655,6 +6658,10 @@ public class HelloApplication extends Application {
             }
         }
     }*/
+
+    private void reset_verse_settings(Text_item text_item){
+        text_item.reset_text_item();
+    }
 
     private void change_text_size_by_increment(TextField text_field_for_font_size, Text_item text_item_of_the_selected_verse, Language_info item, double plus_minus_font_increments_local) {
         String verse_text = text_item_of_the_selected_verse.getVerse_text();
