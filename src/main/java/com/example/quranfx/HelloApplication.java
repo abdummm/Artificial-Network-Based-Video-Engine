@@ -6991,9 +6991,9 @@ public class HelloApplication extends Application {
     }
 
     private double return_the_text_opacity(HelloController helloController,Text_item text_item){
-        /*if(text_item.getFade_in() == 0 && text_item.getFade_out() == 0){
+        if(text_item.getFade_in() == 0 && text_item.getFade_out() == 0){
             return 1D;
-        }*/
+        }
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
         long time_at_start = ayats_processed.get(selected_verse).getStart_millisecond();
         long time_at_end = ayats_processed.get(selected_verse).getStart_millisecond() + ayats_processed.get(selected_verse).getDuration();
@@ -7011,11 +7011,13 @@ public class HelloApplication extends Application {
             fade_in_multiplier = 1;
         } else {
             fade_in_multiplier = Math.min(1, time_since_start / (text_item.getFade_in() * TimeUnit.SECONDS.toNanos(1)));
+            fade_in_multiplier = Math.max(0,fade_in_multiplier);
         }
         if (text_item.getFade_out() == 0) {
             fade_out_multiplier = 1;
         } else {
             fade_out_multiplier = Math.min(1, time_till_end / (text_item.getFade_out() * TimeUnit.SECONDS.toNanos(1)));
+            fade_out_multiplier = Math.max(0,fade_out_multiplier);
         }
         System.out.println("result: " + fade_in_multiplier * fade_out_multiplier);
         System.out.println();
