@@ -6316,6 +6316,7 @@ public class HelloApplication extends Application {
                                     reset_verse_settings(text_item_of_the_selected_verse);
                                     place_the_canvas_text(helloController,item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    helloController.list_view_with_all_of_the_languages.refresh();
                                     send_analytics_event("reset_everything_used");
                                 }
                             });
