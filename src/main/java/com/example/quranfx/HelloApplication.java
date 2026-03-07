@@ -6516,6 +6516,8 @@ public class HelloApplication extends Application {
                                 public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
                                     label_holding_fade_in_time_for_verse.setText(return_formatted_string_to_1_decimal_place_always(new_number.doubleValue()) + unit_sign_beside_fade_in_fade_out);
                                     text_item_of_the_selected_verse.setFade_in(new_number.doubleValue());
+                                    place_the_canvas_text(helloController,item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     send_analytics_event("fade_adjusted");
                                 }
                             };
@@ -6528,6 +6530,8 @@ public class HelloApplication extends Application {
                                 public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
                                     label_holding_fade_out_time_for_verse.setText(return_formatted_string_to_1_decimal_place_always(new_number.doubleValue()) + unit_sign_beside_fade_in_fade_out);
                                     text_item_of_the_selected_verse.setFade_out(new_number.doubleValue());
+                                    place_the_canvas_text(helloController,item.getLanguage_canvas(), text_item_of_the_selected_verse);
+                                    place_the_box_surrounding_the_text(item.getLanguage_canvas(), text_item_of_the_selected_verse);
                                     send_analytics_event("fade_adjusted");
                                 }
                             };
@@ -6901,6 +6905,7 @@ public class HelloApplication extends Application {
         double text_opacity = return_the_text_opacity(helloController,text_item);
         color_of_text = new javafx.scene.paint.Color(color_of_text.getRed(), color_of_text.getGreen(), color_of_text.getBlue(), color_of_text.getOpacity()*text_opacity);
         Paint paint = new Paint().setAntiAlias(true).setColor(colorToInt(color_of_text));
+        stroke_color = new javafx.scene.paint.Color(stroke_color.getRed(),stroke_color.getGreen(),stroke_color.getBlue(),stroke_color.getOpacity()*text_opacity);
         Paint strokePaint = new Paint().setAntiAlias(true).setStroke(true).setStrokeWidth((float) stroke_weight).setColor(colorToInt(stroke_color)).setStrokeJoin(PaintStrokeJoin.ROUND).setStrokeCap(PaintStrokeCap.ROUND);
         Paint shadowPaint;
         double t = 0; // Declare t outside to use it in the loop
