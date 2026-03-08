@@ -7024,10 +7024,6 @@ public class HelloApplication extends Application {
         long time_at_end = ayats_processed.get(selected_verse).getStart_millisecond() + ayats_processed.get(selected_verse).getDuration();
         double polygon_x_pos = return_polygon_middle_position(time_line_pane_data);
         double x_pos_time = pixels_to_nanoseconds(time_line_pane_data, polygon_x_pos - time_line_pane_data.getTime_line_base_line());
-        System.out.println("time_at_start = " + time_at_start);
-        System.out.println("time_at_end = " + time_at_end);
-        System.out.println("polygon_x_pos = " + polygon_x_pos);
-        System.out.println("x_pos_time = " + x_pos_time);
         double time_since_start = x_pos_time - time_at_start;
         double time_till_end = time_at_end - x_pos_time;
         double fade_in_multiplier;
