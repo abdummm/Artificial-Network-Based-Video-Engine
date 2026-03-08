@@ -65,6 +65,23 @@ public class Text_item {
         this.fade_out = text_item.getFade_out();
     }
 
+    public Text_item(Text_item text_item,String original_verse_text,String verse_text) {
+        this.original_verse_text = original_verse_text;
+        this.verse_text = verse_text;
+        this.font = text_item.getFont();
+        this.font_size = text_item.getFont_size();
+        this.adjusted_verse_text = Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(verse_text, font, video_width - extra_width_padding, left_margin, right_margin);;
+        this.color = new Color(text_item.getColor().getRed(),text_item.getColor().getGreen(),text_item.getColor().getBlue(),text_item.getColor().getOpacity());
+        this.text_on_canvas_mode = text_item.getText_on_canvas_mode();
+        this.stroke_info = new Text_accessory_info(text_item.getStroke_info().getAccessory_type(),text_item.getStroke_info().isIs_the_accessory_on(),text_item.getStroke_info().getAccessory_color(),text_item.getStroke_info().getAccessory_weight(),text_item.getStroke_info().getMax_accessory_weight());
+        this.shadow_info = new Text_accessory_info(text_item.getShadow_info().getAccessory_type(),text_item.getShadow_info().isIs_the_accessory_on(),text_item.getShadow_info().getAccessory_color(),text_item.getShadow_info().getAccessory_weight(),text_item.getShadow_info().getMax_accessory_weight());
+        this.left_margin = text_item.getLeft_margin();
+        this.right_margin = text_item.getRight_margin();
+        this.text_box_info = new Text_box_info(text_item.getText_box_info(),text_item);
+        this.fade_in = text_item.getFade_in();
+        this.fade_out = text_item.getFade_out();
+    }
+
     public void reset_text_item(){
         font_size = default_font_size;
         this.font = return_default_font(font_size);
