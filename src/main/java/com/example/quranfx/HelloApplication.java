@@ -6324,6 +6324,7 @@ public class HelloApplication extends Application {
                             apply_to_all_verses_button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
+                                    apply_to_all_verse_settings(text_item_of_the_selected_verse,item.getArrayList_of_all_of_the_translations());
                                     send_analytics_event("apply_to_all_used");
                                 }
                             });
@@ -6662,6 +6663,16 @@ public class HelloApplication extends Application {
 
     private void reset_verse_settings(Text_item text_item){
         text_item.reset_text_item();
+    }
+
+    private void apply_to_all_verse_settings(Text_item text_item,ArrayList<Text_item> array_list_of_all_of_the_text_items){
+        for(int i = 0;i<array_list_of_all_of_the_text_items.size();i++){
+            Text_item local_text_item = array_list_of_all_of_the_text_items.get(i);
+            if(local_text_item.equals(text_item)){
+               continue;
+            }
+            array_list_of_all_of_the_text_items.set(i,new Text_item(text_item,local_text_item.getOriginal_verse_text(),local_text_item.getOriginal_verse_text()));
+        }
     }
 
     private void change_text_size_by_increment(TextField text_field_for_font_size, Text_item text_item_of_the_selected_verse, Language_info item, double plus_minus_font_increments_local) {
