@@ -88,7 +88,8 @@ public class Text_item {
     }
 
     public void reset_text_item(){
-        font_size = default_font_size;
+        this.verse_text = original_verse_text;
+        this.font_size = default_font_size;
         this.font = return_default_font(font_size);
         this.adjusted_verse_text = Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(verse_text, font, video_width - extra_width_padding, left_margin, right_margin);
         this.color = Color.WHITE;
