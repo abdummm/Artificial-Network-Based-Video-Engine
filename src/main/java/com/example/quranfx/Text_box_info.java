@@ -50,8 +50,8 @@ public class Text_box_info {
         this.text_item = text_item;
     }
 
-    public Text_box_info(Text_item text_item, double min_width, double min_height, double text_box_width, double text_box_height) {
-        this.center_position = new Point2D(text_item.getText_box_info().getCenter_position().getX(), text_item.getText_box_info().getCenter_position().getY());
+    public Text_box_info(Text_item text_item, double min_width, double min_height, double text_box_width, double text_box_height,Point2D center_position) {
+        this.center_position = new Point2D(center_position.getX(), center_position.getY());
         this.min_width = min_width;
         this.min_height = min_height;
         this.text_box_width = text_box_width;
@@ -168,5 +168,23 @@ public class Text_box_info {
         text_box_height = /*Math.max(min_height, text_box_height);*/ min_height;
         update_the_x_points();
         update_the_y_points();
+    }
+
+    @Override
+    public String toString() {
+        return "Text_box_info{" +
+                "center_position=" + center_position +
+                ", text_box_width=" + text_box_width +
+                ", text_box_height=" + text_box_height +
+                ", visible=" + visible +
+                ", min_x_point=" + min_x_point +
+                ", max_x_point=" + max_x_point +
+                ", min_y_point=" + min_y_point +
+                ", max_y_point=" + max_y_point +
+                ", set=" + set +
+                ", min_width=" + min_width +
+                ", min_height=" + min_height +
+                ", text_item=" + text_item +
+                '}';
     }
 }
