@@ -248,9 +248,9 @@
             </VBox>
             <VBox>
                 <HBox alignment="CENTER">
-                    <JFXButton fx:id="previous_page_second_screen" text="Previous Page"
+                    <JFXButton fx:id="previous_page_second_screen" text="Go Back"
                                style="-fx-background-color: #000000; -fx-text-fill: white;"/>
-                    <JFXButton fx:id="next_page_second_screen" text="Next Page"
+                    <JFXButton fx:id="next_page_second_screen" text="Continue"
                                style="-fx-background-color: #000000; -fx-text-fill: white;">
                         <HBox.margin>
                             <Insets left="40.0"/>
