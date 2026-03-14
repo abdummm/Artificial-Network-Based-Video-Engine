@@ -51,9 +51,9 @@ public class Text_item {
     public Text_item(Text_item text_item) {
         this.original_verse_text = text_item.getOriginal_verse_text();
         this.verse_text = text_item.getVerse_text();
-        this.adjusted_verse_text = text_item.getAdjusted_verse_text();
-        this.font = text_item.getFont();
+        this.font = new Font(text_item.getFont().getTypeface(),(float) text_item.getFont_size());
         this.font_size = text_item.getFont_size();
+        this.adjusted_verse_text = text_item.getAdjusted_verse_text();
         this.color = new Color(text_item.getColor().getRed(),text_item.getColor().getGreen(),text_item.getColor().getBlue(),text_item.getColor().getOpacity());
         this.text_on_canvas_mode = text_item.getText_on_canvas_mode();
         this.stroke_info = new Text_accessory_info(text_item.getStroke_info().getAccessory_type(),text_item.getStroke_info().isIs_the_accessory_on(),text_item.getStroke_info().getAccessory_color(),text_item.getStroke_info().getAccessory_weight(),text_item.getStroke_info().getMax_accessory_weight());
@@ -70,13 +70,13 @@ public class Text_item {
         this.verse_text = verse_text;
         double min_width = Text_sizing.getInstance().return_the_min_width(original_verse_text, text_item.getFont()) + text_item.getExtra_width_padding();
         double text_box_width = Math.max(min_width,text_item.text_box_info.getText_box_width());
-        this.adjusted_verse_text = Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(verse_text, text_item.getFont(), text_box_width - extra_width_padding, left_margin, right_margin);
+        this.adjusted_verse_text = Text_sizing.getInstance().do_i_need_to_resize_the_verse_text(verse_text, text_item.getFont(), text_box_width - text_item.getExtra_width_padding(), text_item.getLeft_margin(), text_item.getRight_margin());
         double[] width_and_height = Text_sizing.getInstance().get_width_and_height_of_string(this.adjusted_verse_text, text_item.getFont());
         double min_height = width_and_height[1] + text_item.getExtra_height_padding();
         double text_box_height = Math.max(min_height,text_item.text_box_info.getText_box_height());
         this.text_box_info = new Text_box_info(text_item,min_width,min_height,text_box_width,text_box_height);
-        this.font = text_item.getFont();
         this.font_size = text_item.getFont_size();
+        this.font = new Font(text_item.getFont().getTypeface(),(float) font_size);
         this.color = new Color(text_item.getColor().getRed(),text_item.getColor().getGreen(),text_item.getColor().getBlue(),text_item.getColor().getOpacity());
         this.text_on_canvas_mode = text_item.getText_on_canvas_mode();
         this.stroke_info = new Text_accessory_info(text_item.getStroke_info().getAccessory_type(),text_item.getStroke_info().isIs_the_accessory_on(),text_item.getStroke_info().getAccessory_color(),text_item.getStroke_info().getAccessory_weight(),text_item.getStroke_info().getMax_accessory_weight());
