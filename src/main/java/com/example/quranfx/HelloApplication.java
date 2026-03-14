@@ -7040,8 +7040,6 @@ public class HelloApplication extends Application {
             fade_out_multiplier = Math.min(1, time_till_end / (text_item.getFade_out() * TimeUnit.SECONDS.toNanos(1)));
             fade_out_multiplier = Math.max(0,fade_out_multiplier);
         }
-        System.out.println("result: " + fade_in_multiplier * fade_out_multiplier);
-        System.out.println();
         return fade_in_multiplier * fade_out_multiplier;
     }
 
