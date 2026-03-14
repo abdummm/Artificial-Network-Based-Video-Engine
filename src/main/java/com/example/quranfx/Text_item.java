@@ -60,7 +60,7 @@ public class Text_item {
         this.shadow_info = new Text_accessory_info(text_item.getShadow_info().getAccessory_type(),text_item.getShadow_info().isIs_the_accessory_on(),text_item.getShadow_info().getAccessory_color(),text_item.getShadow_info().getAccessory_weight(),text_item.getShadow_info().getMax_accessory_weight());
         this.left_margin = text_item.getLeft_margin();
         this.right_margin = text_item.getRight_margin();
-        this.text_box_info = new Text_box_info(text_item.getText_box_info(),text_item);
+        this.text_box_info = new Text_box_info(text_item.getText_box_info(),this);
         this.fade_in = text_item.getFade_in();
         this.fade_out = text_item.getFade_out();
     }
@@ -74,7 +74,7 @@ public class Text_item {
         double[] width_and_height = Text_sizing.getInstance().get_width_and_height_of_string(this.adjusted_verse_text, text_item.getFont());
         double min_height = width_and_height[1] + text_item.getExtra_height_padding();
         double text_box_height = Math.max(min_height,text_item.text_box_info.getText_box_height());
-        this.text_box_info = new Text_box_info(text_item,min_width,min_height,text_box_width,text_box_height);
+        this.text_box_info = new Text_box_info(this,min_width,min_height,text_box_width,text_box_height,text_item.getText_box_info().getCenter_position());
         this.font_size = text_item.getFont_size();
         this.font = new Font(text_item.getFont().getTypeface(),(float) font_size);
         this.color = new Color(text_item.getColor().getRed(),text_item.getColor().getGreen(),text_item.getColor().getBlue(),text_item.getColor().getOpacity());
