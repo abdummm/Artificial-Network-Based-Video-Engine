@@ -138,6 +138,7 @@ public class HelloApplication extends Application {
     private Stage app_settings_information_stage;
     private WritableImage cached_text_image;
     private HashMap<String, Long> analytics_cool_down_hashmap = new HashMap<>();
+    private long last_text_update_time = 0;
 
     private final static String help_email = "sabrlyhelp@gmail.com";
     private final static String discord_invite_link = "https://discord.gg/ZzPgNx8U95";
@@ -3113,7 +3114,10 @@ public class HelloApplication extends Application {
                     set_the_scroll_pane_h_value_auto_scroll(helloController, return_the_real_x_position_based_on_time(helloController, time_in_nanos));
                     make_the_time_line_in_the_middle(helloController, x_position_of_polygon);
                     is_it_time_to_change_verses(helloController, time_in_nanos);
-                    loop_through_all_verses_and_update(helloController,helloController.list_view_with_all_of_the_languages);
+                    if(System.currentTimeMillis() - last_text_update_time >50 ){
+                        loop_through_all_verses_and_update(helloController,helloController.list_view_with_all_of_the_languages);
+                        last_text_update_time = System.currentTimeMillis();
+                    }
                     if (last_seen_image_vid_is_playing == null || time_in_nanos > last_seen_image_vid_is_playing.getEnd_time()) {
                         last_seen_image_vid_is_playing = return_the_shape_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, time_in_nanos) + time_line_pane_data.getTime_line_base_line());
                         if (last_seen_image_vid_is_playing == null) {
