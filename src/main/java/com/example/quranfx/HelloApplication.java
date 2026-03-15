@@ -1910,11 +1910,11 @@ public class HelloApplication extends Application {
             Process process = processBuilder.start();
 
             // Optional: Read output if you want to debug
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            /*BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
-            }
+            }*/
             int exitCode = process.waitFor();
             if (exitCode != 0) {
                 show_alert("HEIC to JPG image conversion failed");
