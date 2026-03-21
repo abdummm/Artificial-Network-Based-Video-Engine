@@ -96,6 +96,13 @@ import org.imgscalr.Scalr;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import ws.schild.jave.Encoder;
+import ws.schild.jave.EncoderException;
+import ws.schild.jave.MultimediaObject;
+import ws.schild.jave.encode.AudioAttributes;
+import ws.schild.jave.encode.EncodingAttributes;
+import ws.schild.jave.info.MultimediaInfo;
+import ws.schild.jave.process.ffmpeg.DefaultFFMPEGLocator;
 
 import javax.imageio.ImageIO;
 
@@ -1029,7 +1036,7 @@ public class HelloApplication extends Application {
                 if (file != null) {
                     String check_if_mp3 = file.getAbsolutePath().toLowerCase();
                     if (check_if_mp3.endsWith(".mp3")) {
-                        audio_frequncy_of_the_sound = get_frequency_of_audio(file.getAbsolutePath());
+                        audio_frequncy_of_the_sound = get_sample_rate_using_jave(file);
                         sound_path = convert_mp3_to_wav(file, "converted.wav").getAbsolutePath();
                     } else {
                         sound_path = file.getAbsolutePath();
@@ -1499,8 +1506,9 @@ public class HelloApplication extends Application {
             throw new RuntimeException(e);
         }
         File tempFile = new File("temp/sound", String.format("%03d.wav", start_ayat));
-        audio_frequncy_of_the_sound = get_frequency_of_audio(tempFile.getAbsolutePath());
-        int get_the_number_of_audio_channels_local = set_the_number_of_audio_channels(getNumberOfChannels(tempFile.getAbsolutePath()));
+        audio_frequncy_of_the_sound = get_sample_rate_using_jave(tempFile);
+        int get_the_number_of_audio_channels_local = get_number_of_channels_using_jave(tempFile);
+        //int get_the_number_of_audio_channels_local = set_the_number_of_audio_channels(getNumberOfChannels(tempFile.getAbsolutePath()));
         ayats_processed.getFirst().setStart_millisecond(0);
         long start_millisecond = 0;
         if (number_of_ayats > 1) {
@@ -1520,26 +1528,26 @@ public class HelloApplication extends Application {
             throw new RuntimeException(e);
         }
         try {
+            DefaultFFMPEGLocator locator = new DefaultFFMPEGLocator();
+            String ffmpegPath = locator.getExecutablePath();
+
+            // Use ProcessBuilder with the bundled ffmpeg binary
             ProcessBuilder pb = new ProcessBuilder(
-                    "ffmpeg", "-f", "concat", "-safe", "0",
-                    "-i", "temp/sound/list.txt",
-                    "-c:a", "pcm_s16le",  // <-- WAV encoding
-                    "-ar", String.valueOf(audio_frequncy_of_the_sound),       // <-- 44.1kHz sample rate (standard)
-                    "-ac", String.valueOf(get_the_number_of_audio_channels_local),           // <-- 2 channels (stereo); use "1" if you want mono
+                    ffmpegPath,
+                    "-f", "concat",
+                    "-safe", "0",
+                    "-i", listFile.getAbsolutePath(),
+                    "-c:a", "pcm_s16le",
+                    "-ar", String.valueOf(audio_frequncy_of_the_sound),
+                    "-ac", String.valueOf(number_of_audio_channels),
                     "temp/sound/combined.wav"
             );
-            pb.redirectErrorStream(true); // Combine stderr with stdout
+            pb.redirectErrorStream(true);
             Process process = pb.start();
+            process.getInputStream().transferTo(OutputStream.nullOutputStream());
             int exitCode = process.waitFor();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            StringBuilder output = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                output.append(line).append("\n");
-            }
             if (exitCode != 0) {
                 System.err.println("FFmpeg failed with exit code " + exitCode);
-                System.err.println("FFmpeg output:\n" + output);
                 show_alert("Audio encoding failed. FFMPEG");
             } else {
                 File out_put_file = new File("temp/sound/combined.wav");
@@ -1598,23 +1606,11 @@ public class HelloApplication extends Application {
 
     private long getDurationWithFFmpeg(File wavFile) {
         try {
-            ProcessBuilder pb = new ProcessBuilder(
-                    "ffprobe", "-v", "error",
-                    "-show_entries", "stream=duration",
-                    "-of", "default=noprint_wrappers=1:nokey=1",
-                    wavFile.getAbsolutePath()
-            );
-            pb.redirectErrorStream(true);
-            Process process = pb.start();
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                String line = reader.readLine();
-                process.waitFor();
-                if (line != null) {
-                    double seconds = Double.parseDouble(line.trim());
-                    return (long) (seconds * 1000000000L); // convert to milliseconds
-                }
-            }
-        } catch (Exception e) {
+            MultimediaObject media = new MultimediaObject(wavFile);
+            MultimediaInfo info = media.getInfo();
+            long durationMillis = info.getDuration();
+            return TimeUnit.MILLISECONDS.toNanos(durationMillis);
+        } catch (EncoderException e) {
             System.err.println("Failed to get duration: " + e.getMessage());
         }
         return 0;
@@ -1699,31 +1695,6 @@ public class HelloApplication extends Application {
 
     private Pic_aspect_ratio return_the_aspect_ratio_as_an_object(HelloController helloController) {
         return Pic_aspect_ratio.aspect_vertical_9_16;
-    }
-
-    private int getNumberOfChannels(String audioFilePath) {
-        try {
-            ProcessBuilder pb = new ProcessBuilder(
-                    "ffprobe",
-                    "-v", "error",
-                    "-select_streams", "a:0",
-                    "-show_entries", "stream=channels",
-                    "-of", "default=noprint_wrappers=1:nokey=1",
-                    audioFilePath
-            );
-            pb.redirectErrorStream(true);
-            Process process = pb.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line = reader.readLine();
-            process.waitFor();
-
-            if (line != null) {
-                return Integer.parseInt(line.trim());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return -1; // Return -1 if error
     }
 
     private int getExifOrientation(File file) {
@@ -1826,29 +1797,56 @@ public class HelloApplication extends Application {
 
     private File convert_mp3_to_wav(File input_file, String output_name) {
         String output_file_path = "temp/sound/".concat(output_name);
-        int audio_frequncy_of_the_sound = get_frequency_of_audio(input_file.getAbsolutePath());
-        int number_of_audio_channels_local = set_the_number_of_audio_channels(getNumberOfChannels(input_file.getAbsolutePath()));
-        ProcessBuilder pb = new ProcessBuilder(
-                "ffmpeg",
-                "-i", input_file.getAbsolutePath(),              // <-- the path to the one MP3 file
-                "-c:a", "pcm_s16le",               // WAV encoding
-                "-ar", String.valueOf(audio_frequncy_of_the_sound),                    // 44.1kHz sample rate
-                "-ac", String.valueOf(number_of_audio_channels_local), // 2 or 1 channels
-                output_file_path                  // example: "temp/sound/combined.wav"
-        );
-        pb.redirectErrorStream(true); // Combine stderr with stdout
-        try {
-            Process process = pb.start();
-            int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                show_alert("Audio encoding failed. FFMPEG. Can't convert from mp3 to wav");
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        int sample_rate = get_sample_rate_using_jave(input_file);
+        int number_of_audio_channels_local = get_number_of_channels_using_jave(input_file);
+        try{
+            /*DefaultFFMPEGLocator locator = new DefaultFFMPEGLocator();
+            String ffmpegPath = locator.getExecutablePath();
+
+            // Use ProcessBuilder with the bundled ffmpeg binary
+            ProcessBuilder pb = new ProcessBuilder(
+                    ffmpegPath,
+                    "-i", input_file.getAbsolutePath(),
+                    "-c:a", "pcm_s16le",
+                    "-ar", String.valueOf(sample_rate),
+                    "-ac", String.valueOf(number_of_audio_channels_local)
+                    output_file_path
+            );*/
+            AudioAttributes audio = new AudioAttributes();
+            audio.setCodec("pcm_s16le");
+            audio.setSamplingRate(sample_rate);
+            audio.setChannels(number_of_audio_channels_local);
+
+            EncodingAttributes attrs = new EncodingAttributes();
+            attrs.setOutputFormat("wav");
+            attrs.setAudioAttributes(audio);
+
+            Encoder encoder = new Encoder();
+            encoder.encode(new MultimediaObject(input_file), new File(output_file_path), attrs);
+        } catch (Exception exception){
+            System.err.println("Error while converting mp3 file to WAV" + exception.getMessage());
         }
         return new File(output_file_path);
+    }
+
+    private int get_sample_rate_using_jave(File audioFile) {
+        try {
+            MultimediaInfo info = new MultimediaObject(audioFile).getInfo();
+            return info.getAudio().getSamplingRate();
+        } catch (Exception exception){
+            System.err.println(exception.getMessage());
+            return 0;
+        }
+    }
+
+    public static int get_number_of_channels_using_jave(File audioFile) {
+        MultimediaInfo info = null;
+        try {
+            info = new MultimediaObject(audioFile).getInfo();
+        } catch (EncoderException e) {
+            throw new RuntimeException(e);
+        }
+        return info.getAudio().getChannels();
     }
 
     private int set_the_number_of_audio_channels(int get_the_number_of_audio_channels) {
@@ -1858,31 +1856,6 @@ public class HelloApplication extends Application {
             number_of_audio_channels = get_the_number_of_audio_channels;
         }
         return number_of_audio_channels;
-    }
-
-    private int get_frequency_of_audio(String audioFilePath) {
-        try {
-            ProcessBuilder pb = new ProcessBuilder(
-                    "ffprobe",
-                    "-v", "error",
-                    "-select_streams", "a:0",
-                    "-show_entries", "stream=sample_rate",
-                    "-of", "default=noprint_wrappers=1:nokey=1",
-                    audioFilePath
-            );
-            pb.redirectErrorStream(true);
-            Process process = pb.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line = reader.readLine();
-            process.waitFor();
-
-            if (line != null) {
-                return Integer.parseInt(line.trim());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return -1; // Return -1 if error
     }
 
     private boolean is_this_a_mac_device() {
