@@ -7932,7 +7932,18 @@ public class HelloApplication extends Application {
         helloController.render_video.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-
+                new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(final ActionEvent e) {
+                        final DirectoryChooser directoryChooser =
+                                new DirectoryChooser();
+                        final File selectedDirectory =
+                                directoryChooser.showDialog(main_stage);
+                        if (selectedDirectory != null) {
+                            selectedDirectory.getAbsolutePath();
+                        }
+                    }
+                }
             }
         });
     }
