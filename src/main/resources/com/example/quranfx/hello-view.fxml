@@ -364,7 +364,7 @@
                                         <Insets top="15.0" left="15.0" right="15.0" bottom="15.0"/>
                                     </StackPane.margin>
                                     <HBox alignment="CENTER_RIGHT">
-                                        <JFXButton fx:id="render_video" text="Render Video"
+                                        <JFXButton fx:id="render_video" text="Render"
                                                    style="-fx-font-size: 14px;"/>
                                     </HBox>
                                     <HBox alignment="CENTER_LEFT">
