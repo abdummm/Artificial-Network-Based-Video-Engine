@@ -143,6 +143,7 @@ public class HelloApplication extends Application {
     private ArrayList<Listener_info> array_list_with_all_of_the_image_control_listeners = new ArrayList<>();
     private Stage learn_more_about_app_stage;
     private Stage app_settings_information_stage;
+    private Stage render_video_dialogue_stage;
     private WritableImage cached_text_image;
     private HashMap<String, Long> analytics_cool_down_hashmap = new HashMap<>();
     private long last_text_update_time = 0;
@@ -7932,18 +7933,7 @@ public class HelloApplication extends Application {
         helloController.render_video.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(final ActionEvent e) {
-                        final DirectoryChooser directoryChooser =
-                                new DirectoryChooser();
-                        final File selectedDirectory =
-                                directoryChooser.showDialog(main_stage);
-                        if (selectedDirectory != null) {
-                            selectedDirectory.getAbsolutePath();
-                        }
-                    }
-                }
+                show_a_dialogue_asking_user_to_choose_video_render_save_location();
             }
         });
     }
@@ -9087,5 +9077,43 @@ public class HelloApplication extends Application {
         } else {
             return false;
         }
+    }
+
+    private void show_a_dialogue_asking_user_to_choose_video_render_save_location(){
+        if(render_video_dialogue_stage != null && render_video_dialogue_stage.isShowing()){
+            render_video_dialogue_stage.toFront();
+            return;
+        }
+        render_video_dialogue_stage = new Stage();
+        render_video_dialogue_stage.initOwner(main_stage);
+        render_video_dialogue_stage.initStyle(StageStyle.DECORATED);
+        VBox vBox = new VBox(10);
+        vBox.setAlignment(Pos.CENTER);
+
+        Label choose_where_to_save_the_output_label = new Label("Choose a directory where the output will be saved");
+
+        JFXButton choose_directory_button = new JFXButton();
+        choose_directory_button.setText("Choose a directory");
+        choose_directory_button.setStyle("-fx-background-color: #000000; -fx-text-fill: white;");
+        choose_directory_button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                open_the_file_chooser_to_select_a_dialog();
+            }
+        });
+
+        vBox.getChildren().addAll(choose_where_to_save_the_output_label,choose_directory_button);
+
+        Scene scene = new Scene(vBox);
+        render_video_dialogue_stage.setScene(scene);
+        render_video_dialogue_stage.sizeToScene();
+        render_video_dialogue_stage.setTitle("Choose a directory");
+        render_video_dialogue_stage.show();
+    }
+
+    private File open_the_file_chooser_to_select_a_dialog(){
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Choose a directory for the output to be saved in");
+        return chooser.showOpenDialog(new Stage());
     }
 }
