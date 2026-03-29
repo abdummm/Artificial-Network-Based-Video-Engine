@@ -9096,10 +9096,17 @@ public class HelloApplication extends Application {
         VBox.setMargin(choose_where_to_save_the_output_label,new Insets(0,10,0,10));
 
         HBox file_name_h_box = new HBox(10);
-        Label label_saying_file_name = new Label("File name:");
+        Label label_saying_file_name = new Label("File name: ");
         TextField file_name_text_field = new TextField();
         file_name_text_field.setText("untitled");
         file_name_h_box.getChildren().addAll(label_saying_file_name,file_name_text_field);
+
+        HBox file_location_h_box = new HBox(10);
+        Label label_saying_file_location = new Label("File location: ");
+        TextField file_location_text_field = new TextField();
+        file_location_text_field.setText("");
+        file_location_text_field.setEditable(false);
+        file_name_h_box.getChildren().addAll(label_saying_file_location,file_location_text_field);
 
         Label current_directory_for_the_file = new Label();
         VBox.setMargin(current_directory_for_the_file,new Insets(0,10,0,10));
@@ -9127,7 +9134,7 @@ public class HelloApplication extends Application {
 
         set_up_render_path_items(render_video_location(),current_directory_for_the_file,render_button);
 
-        vBox.getChildren().addAll(choose_where_to_save_the_output_label,file_name_h_box, current_directory_for_the_file, choose_directory_button);
+        vBox.getChildren().addAll(choose_where_to_save_the_output_label,file_name_h_box,file_location_h_box, choose_directory_button);
 
         stackPane.getChildren().addAll(vBox, render_button);
         Scene scene = new Scene(stackPane, 450, 225);
