@@ -9116,6 +9116,11 @@ public class HelloApplication extends Application {
         render_button.setStyle("-fx-font-size: 14px;");
         StackPane.setAlignment(render_button, Pos.BOTTOM_RIGHT);
         StackPane.setMargin(render_button, new Insets(0, 10, 10, 0));
+        if(render_video_location() == null){
+            render_button.setDisable(true);
+        } else {
+            render_button.setDisable(false);
+        }
 
         vBox.getChildren().addAll(choose_where_to_save_the_output_label, current_directory_for_the_file, choose_directory_button);
 
