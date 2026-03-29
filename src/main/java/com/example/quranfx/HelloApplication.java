@@ -9104,7 +9104,7 @@ public class HelloApplication extends Application {
 
         vBox.getChildren().addAll(choose_where_to_save_the_output_label,choose_directory_button);
 
-        Scene scene = new Scene(vBox);
+        Scene scene = new Scene(vBox, 450, 225);
         render_video_dialogue_stage.setScene(scene);
         render_video_dialogue_stage.sizeToScene();
         render_video_dialogue_stage.setTitle("Choose a directory");
