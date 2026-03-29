@@ -74,6 +74,7 @@ import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.Normalizer;
@@ -9094,12 +9095,12 @@ public class HelloApplication extends Application {
         Label choose_where_to_save_the_output_label = new Label("Choose a directory where the output will be saved");
 
         Label current_directory_for_the_file = new Label();
-        String render_video_location = render_video_location();
-        if (render_video_location == null) {
-            current_directory_for_the_file.setText("Current directory: No directory chosen");
-        } else {
-            current_directory_for_the_file.setText("Current directory: ".concat(render_video_location));
-        }
+
+        JFXButton render_button = new JFXButton();
+        render_button.setText("Render");
+        render_button.setStyle("-fx-font-size: 14px;");
+        StackPane.setAlignment(render_button, Pos.BOTTOM_RIGHT);
+        StackPane.setMargin(render_button, new Insets(0, 10, 10, 0));
 
         JFXButton choose_directory_button = new JFXButton();
         choose_directory_button.setText("Choose a directory");
@@ -9107,20 +9108,16 @@ public class HelloApplication extends Application {
         choose_directory_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                open_the_file_chooser_to_select_a_dialog();
+                File chosen_directory = open_the_file_chooser_to_select_a_dialog();
+                try {
+                    set_up_render_path_items(chosen_directory.getCanonicalPath(),current_directory_for_the_file,render_button);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
-        JFXButton render_button = new JFXButton();
-        render_button.setText("Render");
-        render_button.setStyle("-fx-font-size: 14px;");
-        StackPane.setAlignment(render_button, Pos.BOTTOM_RIGHT);
-        StackPane.setMargin(render_button, new Insets(0, 10, 10, 0));
-        if(render_video_location() == null){
-            render_button.setDisable(true);
-        } else {
-            render_button.setDisable(false);
-        }
+        set_up_render_path_items(render_video_location(),current_directory_for_the_file,render_button);
 
         vBox.getChildren().addAll(choose_where_to_save_the_output_label, current_directory_for_the_file, choose_directory_button);
 
@@ -9133,13 +9130,28 @@ public class HelloApplication extends Application {
     }
 
     private File open_the_file_chooser_to_select_a_dialog() {
-        FileChooser chooser = new FileChooser();
+        DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Choose a directory for the output to be saved in");
-        return chooser.showOpenDialog(new Stage());
+        return chooser.showDialog(new Stage());
     }
 
     private String render_video_location() {
         Preferences prefs = Preferences.userRoot().node("sabrly");
-        return prefs.get("render_directory", null);
+        String file_path = prefs.get("render_directory", null);
+        if(file_path == null || !Files.exists(Paths.get(file_path))) {
+            return null;
+        } else {
+            return file_path;
+        }
+    }
+
+    private void set_up_render_path_items(String path, Label chosen_directory_label, JFXButton render_button){
+        if(path == null){
+            chosen_directory_label.setText("Current directory: no directory chosen");
+            render_button.setDisable(true);
+        } else {
+            chosen_directory_label.setText("Current directory: ".concat(path));
+            render_button.setDisable(false);
+        }
     }
 }
