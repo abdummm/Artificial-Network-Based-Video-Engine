@@ -9087,6 +9087,7 @@ public class HelloApplication extends Application {
         render_video_dialogue_stage = new Stage();
         render_video_dialogue_stage.initOwner(main_stage);
         render_video_dialogue_stage.initStyle(StageStyle.DECORATED);
+        StackPane stackPane = new StackPane();
         VBox vBox = new VBox(10);
         vBox.setAlignment(Pos.CENTER);
 
@@ -9102,9 +9103,14 @@ public class HelloApplication extends Application {
             }
         });
 
+        JFXButton render_button = new JFXButton();
+        render_button.setStyle("-fx-font-size: 14px;");
+        StackPane.setAlignment(render_button,Pos.BOTTOM_RIGHT);
+
         vBox.getChildren().addAll(choose_where_to_save_the_output_label,choose_directory_button);
 
-        Scene scene = new Scene(vBox, 450, 225);
+        stackPane.getChildren().addAll(vBox,render_button);
+        Scene scene = new Scene(stackPane, 450, 225);
         render_video_dialogue_stage.setScene(scene);
         render_video_dialogue_stage.sizeToScene();
         render_video_dialogue_stage.setTitle("Choose a directory");
