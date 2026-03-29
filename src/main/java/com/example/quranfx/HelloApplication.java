@@ -9104,8 +9104,10 @@ public class HelloApplication extends Application {
         });
 
         JFXButton render_button = new JFXButton();
+        render_button.setText("Render");
         render_button.setStyle("-fx-font-size: 14px;");
-        StackPane.setAlignment(render_button,Pos.BOTTOM_RIGHT);
+        StackPane.setAlignment(render_button, Pos.BOTTOM_RIGHT);
+        StackPane.setMargin(render_button,new Insets(0,10,10,0));
 
         vBox.getChildren().addAll(choose_where_to_save_the_output_label,choose_directory_button);
 
