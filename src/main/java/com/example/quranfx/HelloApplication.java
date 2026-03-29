@@ -9097,18 +9097,29 @@ public class HelloApplication extends Application {
 
         HBox file_name_h_box = new HBox(10);
         file_name_h_box.setAlignment(Pos.CENTER);
+        StackPane stack_pane_holding_label_name = new StackPane();
         Label label_saying_file_name = new Label("File name: ");
+        Label fake_label_saying_file_location = new Label("File location: ");
+        fake_label_saying_file_location.setVisible(false);
         TextField file_name_text_field = new TextField();
         file_name_text_field.setText("untitled");
-        file_name_h_box.getChildren().addAll(label_saying_file_name,file_name_text_field);
+        JFXButton fake_browse_button = new JFXButton("Browse");
+        fake_browse_button.setVisible(false);
+        stack_pane_holding_label_name.getChildren().addAll(label_saying_file_name,fake_label_saying_file_location);
+        file_name_h_box.getChildren().addAll(stack_pane_holding_label_name,file_name_text_field,fake_browse_button);
 
         HBox file_location_h_box = new HBox(10);
         file_location_h_box.setAlignment(Pos.CENTER);
+        StackPane stack_pane_holding_label_location = new StackPane();
         Label label_saying_file_location = new Label("File location: ");
+        Label fake_label_saying_file_name = new Label("File name: ");
+        fake_label_saying_file_name.setVisible(false);
         TextField file_location_text_field = new TextField();
         file_location_text_field.setText("");
         file_location_text_field.setEditable(false);
-        file_location_h_box.getChildren().addAll(label_saying_file_location,file_location_text_field);
+        JFXButton browse_button = new JFXButton("Browse");
+        stack_pane_holding_label_location.getChildren().addAll(label_saying_file_location,fake_label_saying_file_name);
+        file_location_h_box.getChildren().addAll(stack_pane_holding_label_location,file_location_text_field,browse_button);
 
         Label current_directory_for_the_file = new Label();
         VBox.setMargin(current_directory_for_the_file,new Insets(0,10,0,10));
@@ -9119,10 +9130,7 @@ public class HelloApplication extends Application {
         StackPane.setAlignment(render_button, Pos.BOTTOM_RIGHT);
         StackPane.setMargin(render_button, new Insets(0, 10, 10, 0));
 
-        JFXButton choose_directory_button = new JFXButton();
-        choose_directory_button.setText("Choose a directory");
-        choose_directory_button.setStyle("-fx-background-color: #000000; -fx-text-fill: white;");
-        choose_directory_button.setOnAction(new EventHandler<ActionEvent>() {
+        browse_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 File chosen_directory = open_the_file_chooser_to_select_a_dialog();
@@ -9136,7 +9144,7 @@ public class HelloApplication extends Application {
 
         set_up_render_path_items(render_video_location(),current_directory_for_the_file,render_button);
 
-        vBox.getChildren().addAll(choose_where_to_save_the_output_label,file_name_h_box,file_location_h_box, choose_directory_button);
+        vBox.getChildren().addAll(choose_where_to_save_the_output_label,file_name_h_box,file_location_h_box);
 
         stackPane.getChildren().addAll(vBox, render_button);
         Scene scene = new Scene(stackPane, 450, 225);
