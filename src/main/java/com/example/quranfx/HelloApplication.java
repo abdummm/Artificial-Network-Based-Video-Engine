@@ -9096,12 +9096,14 @@ public class HelloApplication extends Application {
         VBox.setMargin(choose_where_to_save_the_output_label,new Insets(0,10,0,10));
 
         HBox file_name_h_box = new HBox(10);
+        file_name_h_box.setAlignment(Pos.CENTER);
         Label label_saying_file_name = new Label("File name: ");
         TextField file_name_text_field = new TextField();
         file_name_text_field.setText("untitled");
         file_name_h_box.getChildren().addAll(label_saying_file_name,file_name_text_field);
 
         HBox file_location_h_box = new HBox(10);
+        file_location_h_box.setAlignment(Pos.CENTER);
         Label label_saying_file_location = new Label("File location: ");
         TextField file_location_text_field = new TextField();
         file_location_text_field.setText("");
