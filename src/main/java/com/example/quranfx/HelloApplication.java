@@ -9106,7 +9106,7 @@ public class HelloApplication extends Application {
         TextField file_location_text_field = new TextField();
         file_location_text_field.setText("");
         file_location_text_field.setEditable(false);
-        file_name_h_box.getChildren().addAll(label_saying_file_location,file_location_text_field);
+        file_location_h_box.getChildren().addAll(label_saying_file_location,file_location_text_field);
 
         Label current_directory_for_the_file = new Label();
         VBox.setMargin(current_directory_for_the_file,new Insets(0,10,0,10));
