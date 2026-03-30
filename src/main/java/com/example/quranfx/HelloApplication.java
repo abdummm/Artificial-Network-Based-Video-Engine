@@ -9111,7 +9111,7 @@ public class HelloApplication extends Application {
 
         HBox file_location_h_box = new HBox(10);
         file_location_h_box.setAlignment(Pos.CENTER);
-        VBox.setMargin(file_name_h_box,new Insets(0,10,0,10));
+        VBox.setMargin(file_location_h_box,new Insets(0,10,0,10));
         StackPane stack_pane_holding_label_location = new StackPane();
         Label label_saying_file_location = new Label("File location: ");
         Label fake_label_saying_file_name = new Label("File name: ");
@@ -9129,15 +9129,15 @@ public class HelloApplication extends Application {
         StackPane.setAlignment(render_button, Pos.BOTTOM_RIGHT);
         StackPane.setMargin(render_button, new Insets(0, 10, 10, 0));
 
+        if(render_video_location() != null){
+            file_location_text_field.setText(render_video_location());
+        }
+
         browse_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 File chosen_directory = open_the_file_chooser_to_select_a_dialog();
-                try {
-                    set_up_render_path_items(chosen_directory.getCanonicalPath(),file_location_text_field,render_button);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                file_location_text_field.setText(chosen_directory.getAbsolutePath());
             }
         });
 
@@ -9167,7 +9167,6 @@ public class HelloApplication extends Application {
             }
         });
 
-        set_up_render_path_items(render_video_location(),file_location_text_field,render_button);
 
         vBox.getChildren().addAll(choose_where_to_save_the_output_label,file_name_h_box,file_location_h_box);
 
@@ -9192,17 +9191,6 @@ public class HelloApplication extends Application {
             return null;
         } else {
             return file_path;
-        }
-    }
-
-    private void set_up_render_path_items(String path, TextField file_location_text_field, JFXButton render_button){
-        if(path == null){
-            file_location_text_field.setText("");
-            render_button.setDisable(true);
-        } else {
-            file_location_text_field.setText(path);
-            file_location_text_field.end();
-            render_button.setDisable(false);
         }
     }
 }
