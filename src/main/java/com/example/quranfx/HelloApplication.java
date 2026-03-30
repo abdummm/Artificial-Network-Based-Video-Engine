@@ -9141,6 +9141,32 @@ public class HelloApplication extends Application {
             }
         });
 
+        file_name_text_field.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String old_value, String new_value) {
+                if(new_value.isEmpty()){
+                    render_button.setDisable(true);
+                } else {
+                    if(!file_location_text_field.getText().isEmpty()){
+                        render_button.setDisable(false);
+                    }
+                }
+            }
+        });
+
+        file_location_text_field.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String old_value, String new_value) {
+                if(new_value.isEmpty()){
+                    render_button.setDisable(true);
+                } else {
+                    if(!file_name_text_field.getText().isEmpty()){
+                        render_button.setDisable(false);
+                    }
+                }
+            }
+        });
+
         set_up_render_path_items(render_video_location(),file_location_text_field,render_button);
 
         vBox.getChildren().addAll(choose_where_to_save_the_output_label,file_name_h_box,file_location_h_box);
