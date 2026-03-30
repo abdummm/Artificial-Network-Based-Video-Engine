@@ -9097,6 +9097,7 @@ public class HelloApplication extends Application {
 
         HBox file_name_h_box = new HBox(10);
         file_name_h_box.setAlignment(Pos.CENTER);
+        VBox.setMargin(file_name_h_box,new Insets(0,10,0,10));
         StackPane stack_pane_holding_label_name = new StackPane();
         Label label_saying_file_name = new Label("File name: ");
         Label fake_label_saying_file_location = new Label("File location: ");
@@ -9110,6 +9111,7 @@ public class HelloApplication extends Application {
 
         HBox file_location_h_box = new HBox(10);
         file_location_h_box.setAlignment(Pos.CENTER);
+        VBox.setMargin(file_name_h_box,new Insets(0,10,0,10));
         StackPane stack_pane_holding_label_location = new StackPane();
         Label label_saying_file_location = new Label("File location: ");
         Label fake_label_saying_file_name = new Label("File name: ");
@@ -9120,9 +9122,6 @@ public class HelloApplication extends Application {
         JFXButton browse_button = new JFXButton("Browse");
         stack_pane_holding_label_location.getChildren().addAll(label_saying_file_location,fake_label_saying_file_name);
         file_location_h_box.getChildren().addAll(stack_pane_holding_label_location,file_location_text_field,browse_button);
-
-        Label current_directory_for_the_file = new Label();
-        VBox.setMargin(current_directory_for_the_file,new Insets(0,10,0,10));
 
         JFXButton render_button = new JFXButton();
         render_button.setText("Render");
@@ -9135,14 +9134,14 @@ public class HelloApplication extends Application {
             public void handle(ActionEvent actionEvent) {
                 File chosen_directory = open_the_file_chooser_to_select_a_dialog();
                 try {
-                    set_up_render_path_items(chosen_directory.getCanonicalPath(),current_directory_for_the_file,render_button);
+                    set_up_render_path_items(chosen_directory.getCanonicalPath(),file_location_text_field,render_button);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
         });
 
-        set_up_render_path_items(render_video_location(),current_directory_for_the_file,render_button);
+        set_up_render_path_items(render_video_location(),file_location_text_field,render_button);
 
         vBox.getChildren().addAll(choose_where_to_save_the_output_label,file_name_h_box,file_location_h_box);
 
@@ -9170,12 +9169,13 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void set_up_render_path_items(String path, Label chosen_directory_label, JFXButton render_button){
+    private void set_up_render_path_items(String path, TextField file_location_text_field, JFXButton render_button){
         if(path == null){
-            chosen_directory_label.setText("Current directory: no directory chosen");
+            file_location_text_field.setText("");
             render_button.setDisable(true);
         } else {
-            chosen_directory_label.setText("Current directory: ".concat(path));
+            file_location_text_field.setText(path);
+            file_location_text_field.end();
             render_button.setDisable(false);
         }
     }
