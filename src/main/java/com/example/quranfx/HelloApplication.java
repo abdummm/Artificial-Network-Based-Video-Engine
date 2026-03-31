@@ -9129,9 +9129,7 @@ public class HelloApplication extends Application {
         StackPane.setAlignment(render_button, Pos.BOTTOM_RIGHT);
         StackPane.setMargin(render_button, new Insets(0, 10, 10, 0));
 
-        if(render_video_location() == null){
-            render_button.setDisable(true);
-        } else {
+        if(render_video_location() != null){
             file_location_text_field.setText(render_video_location());
         }
 
@@ -9220,5 +9218,9 @@ public class HelloApplication extends Application {
 
     private boolean is_this_a_valid_file_name(String file_name){
         return !file_name.matches(".*[\\\\/:*?\"<>|.].*");
+    }
+
+    private void start_the_rendering_engine(){
+
     }
 }
