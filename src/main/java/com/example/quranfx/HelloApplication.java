@@ -92,6 +92,10 @@ import okhttp3.*;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.io.FileUtils;
+import org.bytedeco.ffmpeg.global.avcodec;
+import org.bytedeco.javacv.FFmpegFrameRecorder;
+import org.bytedeco.javacv.Frame;
+import org.bytedeco.javacv.Java2DFrameConverter;
 import org.controlsfx.control.ToggleSwitch;
 import org.imgscalr.Scalr;
 import org.jetbrains.annotations.NotNull;
@@ -9185,7 +9189,7 @@ public class HelloApplication extends Application {
                     showToast(render_video_dialogue_stage, "File location can't be empty", 3000);
                     return;
                 }
-
+                start_the_rendering_engine(file_location_text_field.getText());
             }
         });
 
@@ -9220,7 +9224,24 @@ public class HelloApplication extends Application {
         return !file_name.matches(".*[\\\\/:*?\"<>|.].*");
     }
 
-    private void start_the_rendering_engine(){
-
+    private void start_the_rendering_engine(String file_name){
+        final int frames_per_second = 60;
+        FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_name.concat(".mp4"), 2160, 3840);
+        recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
+        recorder.setFrameRate(frames_per_second);
+        recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
+        try {
+            recorder.start();
+            Java2DFrameConverter converter = new Java2DFrameConverter();
+            long number_of_frames = frames_per_second * get_duration()/(TimeUnit.SECONDS.toNanos(1));
+            for(int i = 0;i<number_of_frames;i++){
+                Frame frame = new Frame();
+                frame.image =
+                recorder.record();  // frame-by-frame
+            }
+            recorder.stop();
+        } catch (Exception exception) {
+            System.err.println("The rendering engine ran into a problem. " + exception.getMessage());
+        }
     }
 }
