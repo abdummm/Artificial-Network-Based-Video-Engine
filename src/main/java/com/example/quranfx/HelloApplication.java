@@ -9129,7 +9129,9 @@ public class HelloApplication extends Application {
         StackPane.setAlignment(render_button, Pos.BOTTOM_RIGHT);
         StackPane.setMargin(render_button, new Insets(0, 10, 10, 0));
 
-        if(render_video_location() != null){
+        if(render_video_location() == null){
+            render_button.setDisable(true);
+        } else {
             file_location_text_field.setText(render_video_location());
         }
 
@@ -9137,14 +9139,17 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 File chosen_directory = open_the_file_chooser_to_select_a_dialog();
-                file_location_text_field.setText(chosen_directory.getAbsolutePath());
+                if(chosen_directory!=null){
+                    file_location_text_field.setText(chosen_directory.getAbsolutePath());
+                    file_location_text_field.end();
+                }
             }
         });
 
         file_name_text_field.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String old_value, String new_value) {
-                if(new_value.isEmpty()){
+                if(new_value.trim().isEmpty()){
                     render_button.setDisable(true);
                 } else {
                     if(!file_location_text_field.getText().isEmpty()){
@@ -9160,9 +9165,20 @@ public class HelloApplication extends Application {
                 if(new_value.isEmpty()){
                     render_button.setDisable(true);
                 } else {
-                    if(!file_name_text_field.getText().isEmpty()){
+                    if(!file_name_text_field.getText().trim().isEmpty()){
                         render_button.setDisable(false);
                     }
+                }
+            }
+        });
+
+        render_button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if(is_this_a_valid_file_name(file_name_text_field.getText())){
+
+                } else {
+
                 }
             }
         });
@@ -9192,5 +9208,9 @@ public class HelloApplication extends Application {
         } else {
             return file_path;
         }
+    }
+
+    private boolean is_this_a_valid_file_name(String file_name){
+        return !file_name.matches(".*[\\\\/:*?\"<>|.].*");
     }
 }
