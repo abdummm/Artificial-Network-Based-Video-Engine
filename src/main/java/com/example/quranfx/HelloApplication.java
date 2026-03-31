@@ -9146,7 +9146,7 @@ public class HelloApplication extends Application {
             }
         });
 
-        file_name_text_field.textProperty().addListener(new ChangeListener<String>() {
+        /*file_name_text_field.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String old_value, String new_value) {
                 if(new_value.trim().isEmpty()){
@@ -9170,16 +9170,24 @@ public class HelloApplication extends Application {
                     }
                 }
             }
-        });
+        });*/
 
         render_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                if(is_this_a_valid_file_name(file_name_text_field.getText())){
-
-                } else {
-
+                if(!is_this_a_valid_file_name(file_name_text_field.getText())){
+                    showToast(render_video_dialogue_stage, "File name not valid", 3000);
+                    return;
                 }
+                if(file_name_text_field.getText().trim().isEmpty()){
+                    showToast(render_video_dialogue_stage, "File name can't be empty", 3000);
+                    return;
+                }
+                if(file_location_text_field.getText().trim().isEmpty()){
+                    showToast(render_video_dialogue_stage, "File location can't be empty", 3000);
+                    return;
+                }
+
             }
         });
 
