@@ -9241,24 +9241,30 @@ public class HelloApplication extends Application {
             Java2DFrameConverter converter = new Java2DFrameConverter();
             long number_of_frames = frames_per_second * get_duration() / (TimeUnit.SECONDS.toNanos(1));
             for (int i = 0; i < number_of_frames; i++) {
-                Frame current_frame;
+                BufferedImage bufferedImage;
                 long time_in_nanoseconds = i / frames_per_second * (TimeUnit.SECONDS.toNanos(1));
                 String image_id = return_the_image_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, time_in_nanoseconds));
                 if (image_id.equals(no_image_found)) {
-                    current_frame = converter.getFrame(image_to_buffered_image(blacked_out_image));
+                    bufferedImage= image_to_buffered_image(blacked_out_image);
                 } else {
                     Media_pool media_pool = hashMap_with_media_pool_items.get(image_id);
                     if (media_pool.isDid_the_image_get_down_scaled()) {
                         Path path = Paths.get("temp/images/scaled", image_id.concat(".raw"));
                         Image image = readRawImage(path.toString(), 1080, 1920);
-                        current_frame = converter.convert(image_to_buffered_image(image));
+                        bufferedImage = image_to_buffered_image(image);
                     } else {
                         Path path = Paths.get("temp/images/base", image_id.concat(".raw"));
                         Image image = readRawImage(path.toString(), media_pool.getWidth(), media_pool.getHeight());
-                        current_frame = converter.convert(image_to_buffered_image(image));
+                        bufferedImage = image_to_buffered_image(image);
                     }
                 }
-                recorder.record(current_frame);  // frame-by-frame
+                for(Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()){
+                    if(language_info.isVisible_check_mark_checked()){
+
+                    }
+                }
+                Frame current_frame = converter.convert(bufferedImage);
+                recorder.record(current_frame);
             }
             recorder.stop();
         } catch (Exception exception) {
