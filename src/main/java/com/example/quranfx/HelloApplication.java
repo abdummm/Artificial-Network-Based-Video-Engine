@@ -9085,7 +9085,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void show_a_dialogue_asking_user_to_choose_video_render_save_location() {
+    private void show_a_dialogue_asking_user_to_choose_video_render_save_location(HelloController helloController) {
         if (render_video_dialogue_stage != null && render_video_dialogue_stage.isShowing()) {
             render_video_dialogue_stage.toFront();
             return;
@@ -9190,7 +9190,7 @@ public class HelloApplication extends Application {
                     showToast(render_video_dialogue_stage, "File location can't be empty", 3000);
                     return;
                 }
-                start_the_rendering_engine(file_location_text_field.getText());
+                start_the_rendering_engine(helloController, file_location_text_field.getText());
             }
         });
 
