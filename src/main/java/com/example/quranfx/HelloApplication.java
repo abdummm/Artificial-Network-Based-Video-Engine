@@ -9241,8 +9241,7 @@ public class HelloApplication extends Application {
                 long time_in_nanoseconds = i/frames_per_second * (TimeUnit.SECONDS.toNanos(1));
                 String image_id = return_the_image_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data,time_in_nanoseconds));
                 if(image_id.equals(no_image_found)){
-                    BufferedImage bufferedImage = new BufferedImage(1080,1920,BufferedImage.TYPE_INT_ARGB);
-
+                    current_frame = converter.getFrame(image_to_buffered_image(blacked_out_image));
                 } else {
                     Media_pool media_pool = hashMap_with_media_pool_items.get(image_id);
                     if (media_pool.isDid_the_image_get_down_scaled()) {
