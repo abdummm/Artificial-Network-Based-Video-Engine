@@ -6839,8 +6839,7 @@ public class HelloApplication extends Application {
         Canvas canvas = new Canvas(1080, 1920);
         return canvas;
     }
-
-    private void place_the_canvas_text(HelloController helloController, Canvas canvas, Text_item text_item) {
+    private void place_the_canvas_text(HelloController helloController, Canvas canvas, Text_item text_item,long current_nano_seconds) {
         String adjusted_verse_text = text_item.getAdjusted_verse_text();
         Point2D point2D_of_the_text = text_item.getText_box_info().getCenter_position();
         javafx.scene.paint.Color color_of_text = text_item.getColor();
@@ -6853,60 +6852,8 @@ public class HelloApplication extends Application {
         double stroke_weight = strokeText.getAccessory_weight();
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        /*if (is_stroke_enabled && stroke_weight > 0) {
-            if (text_on_canvas_mode == Text_on_canvas_mode.CENTER) {
-                gc.setTextAlign(TextAlignment.CENTER);
-                gc.setTextBaseline(VPos.CENTER);
-            } else if (text_on_canvas_mode == Text_on_canvas_mode.TOP_LEFT) {
-                gc.setTextAlign(TextAlignment.LEFT);   // horizontal: left edge
-                gc.setTextBaseline(VPos.TOP);          // vertical: top edge
-            }
-            gc.setFont(font_for_verse);
-            if (shadow_info.isIs_the_accessory_on() && shadow_info.getAccessory_weight() > 0) {
-                DropShadow dropShadow = get_drop_shadow_based_on_intensity(shadow_info.getAccessory_weight(), shadow_info.getAccessory_color());
-                gc.save();
-                gc.setEffect(dropShadow);
-            }
-            if (is_stroke_enabled && stroke_weight > 0) {
-                gc.setLineJoin(StrokeLineJoin.ROUND);
-                gc.setMiterLimit(1.0);
-                gc.setLineCap(StrokeLineCap.ROUND);
-                gc.setStroke(stroke_color);
-                gc.setLineWidth(stroke_weight);
-                gc.strokeText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());
-            }
-            gc.setFill(color_of_text);
-            gc.fillText(adjusted_verse_text, point2D_of_the_text.getX(), point2D_of_the_text.getY());
-            gc.restore();
-        } else {
-            Text text = new Text();
-            text.setText(adjusted_verse_text);
-            text.setFill(color_of_text);
-            text.setFont(font_for_verse);
-            text.setTextAlignment(TextAlignment.CENTER);
-            text.setFontSmoothingType(FontSmoothingType.GRAY);
-            if (is_stroke_enabled && stroke_weight > 0) {
-                text.setStroke(stroke_color);
-                text.setStrokeWidth(stroke_weight);
-                text.setStrokeType(StrokeType.OUTSIDE);
-                text.setStrokeLineJoin(StrokeLineJoin.ROUND);
-                text.setStrokeLineCap(StrokeLineCap.ROUND);
-                text.setStrokeMiterLimit(1.0);
-            }
-            if (shadow_info.isIs_the_accessory_on() && shadow_info.getAccessory_weight() > 0) {
-                DropShadow dropShadow = get_drop_shadow_based_on_intensity(shadow_info.getAccessory_weight(), shadow_info.getAccessory_color());
-                text.setEffect(dropShadow);
-            }
-            SnapshotParameters snapshot_parameters = new SnapshotParameters();
-            snapshot_parameters.setFill(javafx.scene.paint.Color.TRANSPARENT); // preserve transparency
-
-            WritableImage text_image = text.snapshot(snapshot_parameters, null);
-            gc.drawImage(text_image, point2D_of_the_text.getX() - text_image.getWidth() / 2, point2D_of_the_text.getY() - text_image.getHeight() / 2);
-        }*/
-        /*Typeface type_face = FontMgr.getDefault().matchFamilyStyle("SF Arabic Rounded", FontStyle.NORMAL);
-        io.github.humbleui.skija.Font font = new io.github.humbleui.skija.Font(type_face, (float) font_for_verse.getSize());*/
         double weight = shadow_info.getAccessory_weight(); // 0–15
-        double text_opacity = return_the_text_opacity(helloController, text_item);
+        double text_opacity = return_the_text_opacity(helloController, text_item,current_nano_seconds);
         color_of_text = new javafx.scene.paint.Color(color_of_text.getRed(), color_of_text.getGreen(), color_of_text.getBlue(), color_of_text.getOpacity() * text_opacity);
         Paint paint = new Paint().setAntiAlias(true).setColor(colorToInt(color_of_text));
         stroke_color = new javafx.scene.paint.Color(stroke_color.getRed(), stroke_color.getGreen(), stroke_color.getBlue(), stroke_color.getOpacity() * text_opacity);
@@ -6980,6 +6927,13 @@ public class HelloApplication extends Application {
         gc.drawImage(fxImage, point2D_of_the_text.getX() - fxImage.getWidth() / 2D, point2D_of_the_text.getY() - fxImage.getHeight() / 2D);
     }
 
+    private void place_the_canvas_text(HelloController helloController, Canvas canvas, Text_item text_item) {
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
+        double polygon_x_pos = return_polygon_middle_position(time_line_pane_data);
+        long x_pos_time = pixels_to_nanoseconds(time_line_pane_data, polygon_x_pos - time_line_pane_data.getTime_line_base_line());
+        place_the_canvas_text(helloController, canvas, text_item, x_pos_time);
+    }
+
     private Image convertSkijaToFx(Surface surface) {
         io.github.humbleui.skija.Image skImage = surface.makeImageSnapshot();
         Bitmap bitmap = Bitmap.makeFromImage(skImage);
@@ -6999,17 +6953,14 @@ public class HelloApplication extends Application {
         return cached_text_image;
     }
 
-    private double return_the_text_opacity(HelloController helloController, Text_item text_item) {
+    private double return_the_text_opacity(HelloController helloController, Text_item text_item, long x_pos_time) {
         if (text_item.getFade_in() == 0 && text_item.getFade_out() == 0) {
             return 1D;
         }
-        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
         long time_at_start = ayats_processed.get(selected_verse).getStart_millisecond();
         long time_at_end = ayats_processed.get(selected_verse).getStart_millisecond() + ayats_processed.get(selected_verse).getDuration();
-        double polygon_x_pos = return_polygon_middle_position(time_line_pane_data);
-        double x_pos_time = pixels_to_nanoseconds(time_line_pane_data, polygon_x_pos - time_line_pane_data.getTime_line_base_line());
-        double time_since_start = x_pos_time - time_at_start;
-        double time_till_end = time_at_end - x_pos_time;
+        long time_since_start = x_pos_time - time_at_start;
+        long time_till_end = time_at_end - x_pos_time;
         double fade_in_multiplier;
         double fade_out_multiplier;
         if (text_item.getFade_in() == 0) {
@@ -9258,11 +9209,16 @@ public class HelloApplication extends Application {
                         bufferedImage = image_to_buffered_image(image);
                     }
                 }
+                Graphics2D graphics2D = bufferedImage.createGraphics();
                 for(Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()){
                     if(language_info.isVisible_check_mark_checked()){
-
+                        place_the_canvas_text(helloController,language_info.getLanguage_canvas(),language_info.getArrayList_of_all_of_the_translations().get(0));
+                        Image canvas_image = language_info.getLanguage_canvas().snapshot(null, null);
+                        BufferedImage canvas_buffered_image = image_to_buffered_image(canvas_image);
+                        graphics2D.drawImage(canvas_buffered_image,null,0,0);
                     }
                 }
+                graphics2D.dispose();
                 Frame current_frame = converter.convert(bufferedImage);
                 recorder.record(current_frame);
             }
