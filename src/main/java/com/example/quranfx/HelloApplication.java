@@ -9225,10 +9225,11 @@ public class HelloApplication extends Application {
         return !file_name.matches(".*[\\\\/:*?\"<>|.].*");
     }
 
-    private void start_the_rendering_engine(HelloController helloController, String file_name) {
+    private void start_the_rendering_engine(HelloController helloController, String file_name,String file_location) {
+        Path file_path = Paths.get(file_location,file_name);
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
         final int frames_per_second = 60;
-        FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(filefile_name.concat(".mp4"), 2160, 3840);
+        FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_path.toUri().getPath().concat(".mp4"), 2160, 3840);
         recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
         recorder.setFrameRate(frames_per_second);
         recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
