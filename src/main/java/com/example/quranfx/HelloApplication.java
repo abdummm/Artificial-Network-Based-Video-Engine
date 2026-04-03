@@ -9190,7 +9190,7 @@ public class HelloApplication extends Application {
                     showToast(render_video_dialogue_stage, "File location can't be empty", 3000);
                     return;
                 }
-                start_the_rendering_engine(helloController, file_location_text_field.getText());
+                start_the_rendering_engine(helloController, file_name_text_field.getText());
             }
         });
 
