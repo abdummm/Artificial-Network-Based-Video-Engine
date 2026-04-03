@@ -9233,6 +9233,9 @@ public class HelloApplication extends Application {
         recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
         recorder.setFrameRate(frames_per_second);
         recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
+        recorder.setSampleRate(44100);
+        recorder.setAudioChannels(2);
+        recorder.setAudioBitrate(192000);
         try {
             recorder.start();
             Java2DFrameConverter converter = new Java2DFrameConverter();
