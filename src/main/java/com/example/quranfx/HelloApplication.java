@@ -9098,11 +9098,11 @@ public class HelloApplication extends Application {
         vBox.setAlignment(Pos.CENTER);
 
         Label choose_where_to_save_the_output_label = new Label("Choose a directory where the output will be saved");
-        VBox.setMargin(choose_where_to_save_the_output_label,new Insets(0,10,0,10));
+        VBox.setMargin(choose_where_to_save_the_output_label, new Insets(0, 10, 0, 10));
 
         HBox file_name_h_box = new HBox(10);
         file_name_h_box.setAlignment(Pos.CENTER);
-        VBox.setMargin(file_name_h_box,new Insets(0,10,0,10));
+        VBox.setMargin(file_name_h_box, new Insets(0, 10, 0, 10));
         StackPane stack_pane_holding_label_name = new StackPane();
         Label label_saying_file_name = new Label("File name: ");
         Label fake_label_saying_file_location = new Label("File location: ");
@@ -9111,12 +9111,12 @@ public class HelloApplication extends Application {
         file_name_text_field.setText("untitled");
         JFXButton fake_browse_button = new JFXButton("Browse");
         fake_browse_button.setVisible(false);
-        stack_pane_holding_label_name.getChildren().addAll(label_saying_file_name,fake_label_saying_file_location);
-        file_name_h_box.getChildren().addAll(stack_pane_holding_label_name,file_name_text_field,fake_browse_button);
+        stack_pane_holding_label_name.getChildren().addAll(label_saying_file_name, fake_label_saying_file_location);
+        file_name_h_box.getChildren().addAll(stack_pane_holding_label_name, file_name_text_field, fake_browse_button);
 
         HBox file_location_h_box = new HBox(10);
         file_location_h_box.setAlignment(Pos.CENTER);
-        VBox.setMargin(file_location_h_box,new Insets(0,10,0,10));
+        VBox.setMargin(file_location_h_box, new Insets(0, 10, 0, 10));
         StackPane stack_pane_holding_label_location = new StackPane();
         Label label_saying_file_location = new Label("File location: ");
         Label fake_label_saying_file_name = new Label("File name: ");
@@ -9125,8 +9125,8 @@ public class HelloApplication extends Application {
         file_location_text_field.setText("");
         file_location_text_field.setEditable(false);
         JFXButton browse_button = new JFXButton("Browse");
-        stack_pane_holding_label_location.getChildren().addAll(label_saying_file_location,fake_label_saying_file_name);
-        file_location_h_box.getChildren().addAll(stack_pane_holding_label_location,file_location_text_field,browse_button);
+        stack_pane_holding_label_location.getChildren().addAll(label_saying_file_location, fake_label_saying_file_name);
+        file_location_h_box.getChildren().addAll(stack_pane_holding_label_location, file_location_text_field, browse_button);
 
         JFXButton render_button = new JFXButton();
         render_button.setText("Render");
@@ -9134,7 +9134,7 @@ public class HelloApplication extends Application {
         StackPane.setAlignment(render_button, Pos.BOTTOM_RIGHT);
         StackPane.setMargin(render_button, new Insets(0, 10, 10, 0));
 
-        if(render_video_location() != null){
+        if (render_video_location() != null) {
             file_location_text_field.setText(render_video_location());
         }
 
@@ -9142,7 +9142,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 File chosen_directory = open_the_file_chooser_to_select_a_dialog();
-                if(chosen_directory!=null){
+                if (chosen_directory != null) {
                     file_location_text_field.setText(chosen_directory.getAbsolutePath());
                     file_location_text_field.end();
                 }
@@ -9178,24 +9178,24 @@ public class HelloApplication extends Application {
         render_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                if(!is_this_a_valid_file_name(file_name_text_field.getText())){
+                if (!is_this_a_valid_file_name(file_name_text_field.getText())) {
                     showToast(render_video_dialogue_stage, "File name not valid", 3000);
                     return;
                 }
-                if(file_name_text_field.getText().trim().isEmpty()){
+                if (file_name_text_field.getText().trim().isEmpty()) {
                     showToast(render_video_dialogue_stage, "File name can't be empty", 3000);
                     return;
                 }
-                if(file_location_text_field.getText().trim().isEmpty()){
+                if (file_location_text_field.getText().trim().isEmpty()) {
                     showToast(render_video_dialogue_stage, "File location can't be empty", 3000);
                     return;
                 }
-                start_the_rendering_engine(helloController, file_name_text_field.getText());
+                start_the_rendering_engine(helloController, file_name_text_field.getText(), file_location_text_field.getText());
             }
         });
 
 
-        vBox.getChildren().addAll(choose_where_to_save_the_output_label,file_name_h_box,file_location_h_box);
+        vBox.getChildren().addAll(choose_where_to_save_the_output_label, file_name_h_box, file_location_h_box);
 
         stackPane.getChildren().addAll(vBox, render_button);
         Scene scene = new Scene(stackPane, 450, 225);
@@ -9214,33 +9214,33 @@ public class HelloApplication extends Application {
     private String render_video_location() {
         Preferences prefs = Preferences.userRoot().node("sabrly");
         String file_path = prefs.get("render_directory", null);
-        if(file_path == null || !Files.exists(Paths.get(file_path))) {
+        if (file_path == null || !Files.exists(Paths.get(file_path))) {
             return null;
         } else {
             return file_path;
         }
     }
 
-    private boolean is_this_a_valid_file_name(String file_name){
+    private boolean is_this_a_valid_file_name(String file_name) {
         return !file_name.matches(".*[\\\\/:*?\"<>|.].*");
     }
 
-    private void start_the_rendering_engine(HelloController helloController, String file_name){
+    private void start_the_rendering_engine(HelloController helloController, String file_name) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
         final int frames_per_second = 60;
-        FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_name.concat(".mp4"), 2160, 3840);
+        FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(filefile_name.concat(".mp4"), 2160, 3840);
         recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
         recorder.setFrameRate(frames_per_second);
         recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
         try {
             recorder.start();
             Java2DFrameConverter converter = new Java2DFrameConverter();
-            long number_of_frames = frames_per_second * get_duration()/(TimeUnit.SECONDS.toNanos(1));
-            for(int i = 0;i<number_of_frames;i++){
+            long number_of_frames = frames_per_second * get_duration() / (TimeUnit.SECONDS.toNanos(1));
+            for (int i = 0; i < number_of_frames; i++) {
                 Frame current_frame;
-                long time_in_nanoseconds = i/frames_per_second * (TimeUnit.SECONDS.toNanos(1));
-                String image_id = return_the_image_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data,time_in_nanoseconds));
-                if(image_id.equals(no_image_found)){
+                long time_in_nanoseconds = i / frames_per_second * (TimeUnit.SECONDS.toNanos(1));
+                String image_id = return_the_image_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, time_in_nanoseconds));
+                if (image_id.equals(no_image_found)) {
                     current_frame = converter.getFrame(image_to_buffered_image(blacked_out_image));
                 } else {
                     Media_pool media_pool = hashMap_with_media_pool_items.get(image_id);
