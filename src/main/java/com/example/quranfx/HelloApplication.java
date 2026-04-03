@@ -2433,6 +2433,7 @@ public class HelloApplication extends Application {
                             } else {
                                 set_the_chatgpt_image_view(helloController, return_the_image_on_click(helloController.time_line_pane, polygon_x_pos), Type_of_Image.FULL_QUALITY);
                                 if (media_pool_item_dragged.isDid_this_change_the_image()) {
+                                    // TODO look at this
                                 }
                             }
                         } else {
@@ -9224,7 +9225,8 @@ public class HelloApplication extends Application {
         return !file_name.matches(".*[\\\\/:*?\"<>|.].*");
     }
 
-    private void start_the_rendering_engine(String file_name){
+    private void start_the_rendering_engine(HelloController helloController, String file_name){
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
         final int frames_per_second = 60;
         FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_name.concat(".mp4"), 2160, 3840);
         recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
@@ -9235,9 +9237,25 @@ public class HelloApplication extends Application {
             Java2DFrameConverter converter = new Java2DFrameConverter();
             long number_of_frames = frames_per_second * get_duration()/(TimeUnit.SECONDS.toNanos(1));
             for(int i = 0;i<number_of_frames;i++){
-                Frame frame = new Frame();
-                frame.image =
-                recorder.record();  // frame-by-frame
+                Frame current_frame;
+                long time_in_nanoseconds = i/frames_per_second * (TimeUnit.SECONDS.toNanos(1));
+                String image_id = return_the_image_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data,time_in_nanoseconds));
+                if(image_id.equals(no_image_found)){
+                    BufferedImage bufferedImage = new BufferedImage(1080,1920,BufferedImage.TYPE_INT_ARGB);
+
+                } else {
+                    Media_pool media_pool = hashMap_with_media_pool_items.get(image_id);
+                    if (media_pool.isDid_the_image_get_down_scaled()) {
+                        Path path = Paths.get("temp/images/scaled", image_id.concat(".raw"));
+                        Image image = readRawImage(path.toString(), 1080, 1920);
+                        current_frame = converter.convert(image_to_buffered_image(image));
+                    } else {
+                        Path path = Paths.get("temp/images/base", image_id.concat(".raw"));
+                        Image image = readRawImage(path.toString(), media_pool.getWidth(), media_pool.getHeight());
+                        current_frame = converter.convert(image_to_buffered_image(image));
+                    }
+                }
+                recorder.record(current_frame);  // frame-by-frame
             }
             recorder.stop();
         } catch (Exception exception) {
