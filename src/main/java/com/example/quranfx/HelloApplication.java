@@ -7939,7 +7939,7 @@ public class HelloApplication extends Application {
         helloController.render_video.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                show_a_dialogue_asking_user_to_choose_video_render_save_location();
+                show_a_dialogue_asking_user_to_choose_video_render_save_location(helloController);
             }
         });
     }
