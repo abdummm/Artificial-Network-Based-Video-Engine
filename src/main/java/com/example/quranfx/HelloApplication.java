@@ -9245,6 +9245,10 @@ public class HelloApplication extends Application {
         canvas.scaleYProperty().unbind();
         canvas.translateXProperty().unbind();
         canvas.translateYProperty().unbind();
+        canvas.setScaleX(1);
+        canvas.setScaleY(1);
+        canvas.setTranslateX(0);
+        canvas.setTranslateY(0);
         SnapshotParameters params = new SnapshotParameters();
         params.setFill(javafx.scene.paint.Color.TRANSPARENT);
         return image_to_buffered_image(canvas.snapshot(params, null));
