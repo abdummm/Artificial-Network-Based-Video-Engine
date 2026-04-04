@@ -58,6 +58,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.*;
 import javafx.scene.text.Font;
+import javafx.scene.transform.Transform;
 import javafx.stage.*;
 
 import java.awt.*;
@@ -9240,8 +9241,9 @@ public class HelloApplication extends Application {
     }
 
     private BufferedImage get_buffered_image_from_canvas(Canvas canvas) {
-        Image canvas_image = canvas.snapshot(null, null);
-        return image_to_buffered_image(canvas_image);
+        SnapshotParameters params = new SnapshotParameters();
+        params.setTransform(Transform.scale(1, 1)); // or match your target scale
+        return image_to_buffered_image(canvas.snapshot(params, null));
     }
 
     private void add_buffer_image_to_root_buffer_image(BufferedImage original_buffered_image, BufferedImage buffered_image_to_be_added){
