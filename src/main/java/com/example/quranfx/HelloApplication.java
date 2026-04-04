@@ -9225,10 +9225,10 @@ public class HelloApplication extends Application {
                 if(helloController.check_box_saying_help_spread_the_app.isSelected()){
                     graphics2D.drawImage(get_buffered_image_from_canvas(helloController.canvas_holding_help_spread_app),null,0,0);
                 }
-                BufferedImage real_buffered_image = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-                real_buffered_image.getGraphics().drawImage(bufferedImage, 0, 0, null);
+                BufferedImage bgr_buffered_image = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+                bgr_buffered_image.getGraphics().drawImage(bufferedImage, 0, 0, null);
                 graphics2D.dispose();
-                Frame current_frame = converter.convert(bufferedImage);
+                Frame current_frame = converter.convert(bgr_buffered_image);
                 recorder.record(current_frame);
             }
             recorder.stop();
