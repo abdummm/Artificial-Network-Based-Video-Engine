@@ -4061,7 +4061,7 @@ public class HelloApplication extends Application {
         WritableImage writableImage = new WritableImage(width, height);
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                writableImage.getPixelWriter().setColor(i, j, javafx.scene.paint.Color.BLACK);
+                writableImage.getPixelWriter().setColor(i, j, new javafx.scene.paint.Color(0,0,0,1));
             }
         }
         return writableImage;
@@ -9180,7 +9180,7 @@ public class HelloApplication extends Application {
         Path file_path = Paths.get(file_location,file_name);
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
         final int frames_per_second = 60;
-        FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_path.toUri().getPath().concat(".mp4"), 2160, 3840);
+        FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_path.toString().concat(".mp4"), 2160, 3840);
         recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
         recorder.setFrameRate(frames_per_second);
         recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
