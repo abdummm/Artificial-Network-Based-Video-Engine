@@ -8588,7 +8588,7 @@ public class HelloApplication extends Application {
         made_with_sabrly_text_item.setShadow_info(shadow_info);
         made_with_sabrly_text_item.getText_box_info().setCenter_position(new Point2D(1080D / 2D, 1920D * 0.95D));
         made_with_sabrly_text_item.setFont_size(28);
-        place_the_canvas_text(helloController, helloController.canvas_holding_help_spread_app, made_with_sabrly_text_item);
+        place_the_canvas_text(helloController, helloController.canvas_holding_help_spread_app, made_with_sabrly_text_item,0);
     }
 
     private String create_and_save_client_id_if_it_doesnt_exist() {
