@@ -9242,7 +9242,8 @@ public class HelloApplication extends Application {
 
     private BufferedImage get_buffered_image_from_canvas(Canvas canvas) {
         SnapshotParameters params = new SnapshotParameters();
-        params.setTransform(Transform.scale(1, 1)); // or match your target scale
+        params.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        params.setTransform(Transform.scale(1, 1));
         return image_to_buffered_image(canvas.snapshot(params, null));
     }
 
