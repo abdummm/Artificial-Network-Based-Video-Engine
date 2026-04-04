@@ -9205,32 +9205,32 @@ public class HelloApplication extends Application {
                 String image_id = return_the_image_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, time_in_nanoseconds));
                 if (image_id.equals(no_image_found)) {
                     BufferedImage bufferedImage = image_to_buffered_image(blacked_out_image);
-                    add_buffer_image_to_root_buffer_image(root_buffered_image,bufferedImage);
+                    add_buffer_image_to_root_buffer_image(root_buffered_image,bufferedImage,1080,1920);
                 } else {
                     Media_pool media_pool = hashMap_with_media_pool_items.get(image_id);
                     if (media_pool.isDid_the_image_get_down_scaled()) {
                         Path path = Paths.get("temp/images/scaled", image_id.concat(".raw"));
                         Image image = readRawImage(path.toString(), 1080, 1920);
                         BufferedImage bufferedImage = image_to_buffered_image(image);
-                        add_buffer_image_to_root_buffer_image(root_buffered_image,bufferedImage);
+                        add_buffer_image_to_root_buffer_image(root_buffered_image,bufferedImage,1080,1920);
                     } else {
                         Path path = Paths.get("temp/images/base", image_id.concat(".raw"));
                         Image image = readRawImage(path.toString(), media_pool.getWidth(), media_pool.getHeight());
                         BufferedImage bufferedImage = image_to_buffered_image(image);
-                        add_buffer_image_to_root_buffer_image(root_buffered_image,bufferedImage);
+                        add_buffer_image_to_root_buffer_image(root_buffered_image,bufferedImage,1080,1920);
                     }
                 }
                 for (Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()) {
                     if (language_info.isVisible_check_mark_checked()) {
                         place_the_canvas_text(helloController, language_info.getLanguage_canvas(), language_info.getArrayList_of_all_of_the_translations().get(0), time_in_nanoseconds);
-                        add_buffer_image_to_root_buffer_image(root_buffered_image,get_buffered_image_from_canvas(language_info.getLanguage_canvas()));
+                        add_buffer_image_to_root_buffer_image(root_buffered_image,get_buffered_image_from_canvas(language_info.getLanguage_canvas()),1080,1920);
                     }
                 }
                 if (helloController.check_box_saying_help_spread_the_app.isSelected()) {
-                    add_buffer_image_to_root_buffer_image(root_buffered_image,get_buffered_image_from_canvas(helloController.canvas_holding_help_spread_app));
+                    add_buffer_image_to_root_buffer_image(root_buffered_image,get_buffered_image_from_canvas(helloController.canvas_holding_help_spread_app),1080,1920);
                 }
                 BufferedImage bgr_buffered_image = new BufferedImage(root_buffered_image.getWidth(), root_buffered_image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-                add_buffer_image_to_root_buffer_image(bgr_buffered_image,root_buffered_image);
+                add_buffer_image_to_root_buffer_image(bgr_buffered_image,root_buffered_image,1080,1920);
                 Frame current_frame = converter.convert(bgr_buffered_image);
                 recorder.record(current_frame);
             }
@@ -9246,8 +9246,8 @@ public class HelloApplication extends Application {
         return image_to_buffered_image(canvas.snapshot(params, null));
     }
 
-    private void add_buffer_image_to_root_buffer_image(BufferedImage original_buffered_image, BufferedImage buffered_image_to_be_added){
-        original_buffered_image.getGraphics().drawImage(buffered_image_to_be_added, 0, 0, null);
+    private void add_buffer_image_to_root_buffer_image(BufferedImage original_buffered_image, BufferedImage buffered_image_to_be_added,int image_to_be_added_width,int image_to_be_added_height){
+        original_buffered_image.getGraphics().drawImage(buffered_image_to_be_added, 0, 0,image_to_be_added_width,image_to_be_added_height, null);
         original_buffered_image.getGraphics().dispose();
     }
 }
