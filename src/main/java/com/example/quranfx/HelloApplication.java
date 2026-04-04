@@ -93,6 +93,7 @@ import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.io.FileUtils;
 import org.bytedeco.ffmpeg.global.avcodec;
+import org.bytedeco.ffmpeg.global.avutil;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
@@ -9186,6 +9187,9 @@ public class HelloApplication extends Application {
         recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
         recorder.setFrameRate(frames_per_second);
         recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
+
+        recorder.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
+
         recorder.setSampleRate(44100);
         recorder.setAudioChannels(2);
         recorder.setAudioBitrate(192000);
@@ -9223,7 +9227,7 @@ public class HelloApplication extends Application {
                 }
                 graphics2D.dispose();
                 Frame current_frame = converter.convert(bufferedImage);
-                recorder.record(current_frame,AV_PIX_FMT_RGB32_1);
+                recorder.record(current_frame);
             }
             recorder.stop();
         } catch (Exception exception) {
