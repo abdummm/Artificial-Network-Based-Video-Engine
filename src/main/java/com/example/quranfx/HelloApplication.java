@@ -4066,7 +4066,7 @@ public class HelloApplication extends Application {
         WritableImage writableImage = new WritableImage(width, height);
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                writableImage.getPixelWriter().setColor(i, j, new javafx.scene.paint.Color(0,0,0,1));
+                writableImage.getPixelWriter().setColor(i, j, new javafx.scene.paint.Color(0, 0, 0, 1));
             }
         }
         return writableImage;
@@ -6844,7 +6844,8 @@ public class HelloApplication extends Application {
         Canvas canvas = new Canvas(1080, 1920);
         return canvas;
     }
-    private void place_the_canvas_text(HelloController helloController, Canvas canvas, Text_item text_item,long current_nano_seconds) {
+
+    private void place_the_canvas_text(HelloController helloController, Canvas canvas, Text_item text_item, long current_nano_seconds) {
         String adjusted_verse_text = text_item.getAdjusted_verse_text();
         Point2D point2D_of_the_text = text_item.getText_box_info().getCenter_position();
         javafx.scene.paint.Color color_of_text = text_item.getColor();
@@ -6858,7 +6859,7 @@ public class HelloApplication extends Application {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         double weight = shadow_info.getAccessory_weight(); // 0–15
-        double text_opacity = return_the_text_opacity(helloController, text_item,current_nano_seconds);
+        double text_opacity = return_the_text_opacity(helloController, text_item, current_nano_seconds);
         color_of_text = new javafx.scene.paint.Color(color_of_text.getRed(), color_of_text.getGreen(), color_of_text.getBlue(), color_of_text.getOpacity() * text_opacity);
         Paint paint = new Paint().setAntiAlias(true).setColor(colorToInt(color_of_text));
         stroke_color = new javafx.scene.paint.Color(stroke_color.getRed(), stroke_color.getGreen(), stroke_color.getBlue(), stroke_color.getOpacity() * text_opacity);
@@ -8593,7 +8594,7 @@ public class HelloApplication extends Application {
         made_with_sabrly_text_item.setShadow_info(shadow_info);
         made_with_sabrly_text_item.getText_box_info().setCenter_position(new Point2D(1080D / 2D, 1920D * 0.95D));
         made_with_sabrly_text_item.setFont_size(28);
-        place_the_canvas_text(helloController, helloController.canvas_holding_help_spread_app, made_with_sabrly_text_item,0);
+        place_the_canvas_text(helloController, helloController.canvas_holding_help_spread_app, made_with_sabrly_text_item, 0);
     }
 
     private String create_and_save_client_id_if_it_doesnt_exist() {
@@ -9181,9 +9182,9 @@ public class HelloApplication extends Application {
         return !file_name.matches(".*[\\\\/:*?\"<>|.].*");
     }
 
-    private void start_the_rendering_engine(HelloController helloController, String file_name,String file_location) {
+    private void start_the_rendering_engine(HelloController helloController, String file_name, String file_location) {
         FFmpegLogCallback.set();
-        Path file_path = Paths.get(file_location,file_name);
+        Path file_path = Paths.get(file_location, file_name);
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
         final int frames_per_second = 60;
         FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_path.toString().concat(".mp4"), 1080, 1920);
@@ -9202,7 +9203,7 @@ public class HelloApplication extends Application {
                 long time_in_nanoseconds = i / frames_per_second * (TimeUnit.SECONDS.toNanos(1));
                 String image_id = return_the_image_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, time_in_nanoseconds));
                 if (image_id.equals(no_image_found)) {
-                    bufferedImage= image_to_buffered_image(blacked_out_image);
+                    bufferedImage = image_to_buffered_image(blacked_out_image);
                 } else {
                     Media_pool media_pool = hashMap_with_media_pool_items.get(image_id);
                     if (media_pool.isDid_the_image_get_down_scaled()) {
@@ -9216,14 +9217,14 @@ public class HelloApplication extends Application {
                     }
                 }
                 Graphics2D graphics2D = bufferedImage.createGraphics();
-                for(Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()){
-                    if(language_info.isVisible_check_mark_checked()){
-                        place_the_canvas_text(helloController,language_info.getLanguage_canvas(),language_info.getArrayList_of_all_of_the_translations().get(0),time_in_nanoseconds);
-                        graphics2D.drawImage(get_buffered_image_from_canvas(language_info.getLanguage_canvas()),null,0,0);
+                for (Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()) {
+                    if (language_info.isVisible_check_mark_checked()) {
+                        place_the_canvas_text(helloController, language_info.getLanguage_canvas(), language_info.getArrayList_of_all_of_the_translations().get(0), time_in_nanoseconds);
+                        graphics2D.drawImage(get_buffered_image_from_canvas(language_info.getLanguage_canvas()), null, 0, 0);
                     }
                 }
-                if(helloController.check_box_saying_help_spread_the_app.isSelected()){
-                    graphics2D.drawImage(get_buffered_image_from_canvas(helloController.canvas_holding_help_spread_app),null,0,0);
+                if (helloController.check_box_saying_help_spread_the_app.isSelected()) {
+                    graphics2D.drawImage(get_buffered_image_from_canvas(helloController.canvas_holding_help_spread_app), null, 0, 0);
                 }
                 BufferedImage bgr_buffered_image = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
                 bgr_buffered_image.getGraphics().drawImage(bufferedImage, 0, 0, null);
@@ -9237,7 +9238,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    private BufferedImage get_buffered_image_from_canvas(Canvas canvas){
+    private BufferedImage get_buffered_image_from_canvas(Canvas canvas) {
         Image canvas_image = canvas.snapshot(null, null);
         return image_to_buffered_image(canvas_image);
     }
