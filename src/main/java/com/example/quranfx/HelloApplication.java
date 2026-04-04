@@ -111,6 +111,8 @@ import ws.schild.jave.process.ffmpeg.DefaultFFMPEGLocator;
 
 import javax.imageio.ImageIO;
 
+import static org.bytedeco.ffmpeg.global.avutil.AV_PIX_FMT_RGB32_1;
+
 
 public class HelloApplication extends Application {
     private String chapters_string;
@@ -9221,7 +9223,7 @@ public class HelloApplication extends Application {
                 }
                 graphics2D.dispose();
                 Frame current_frame = converter.convert(bufferedImage);
-                recorder.record(current_frame);
+                recorder.record(current_frame,AV_PIX_FMT_RGB32_1);
             }
             recorder.stop();
         } catch (Exception exception) {
