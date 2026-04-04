@@ -9219,19 +9219,17 @@ public class HelloApplication extends Application {
                         add_buffer_image_to_root_buffer_image(root_buffered_image,bufferedImage);
                     }
                 }
-                Graphics2D graphics2D = bufferedImage.createGraphics();
                 for (Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()) {
                     if (language_info.isVisible_check_mark_checked()) {
                         place_the_canvas_text(helloController, language_info.getLanguage_canvas(), language_info.getArrayList_of_all_of_the_translations().get(0), time_in_nanoseconds);
-                        graphics2D.drawImage(get_buffered_image_from_canvas(language_info.getLanguage_canvas()), null, 0, 0);
+                        add_buffer_image_to_root_buffer_image(root_buffered_image,get_buffered_image_from_canvas(language_info.getLanguage_canvas()));
                     }
                 }
                 if (helloController.check_box_saying_help_spread_the_app.isSelected()) {
-                    graphics2D.drawImage(get_buffered_image_from_canvas(helloController.canvas_holding_help_spread_app), null, 0, 0);
+                    add_buffer_image_to_root_buffer_image(root_buffered_image,get_buffered_image_from_canvas(helloController.canvas_holding_help_spread_app));
                 }
-                BufferedImage bgr_buffered_image = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-                bgr_buffered_image.getGraphics().drawImage(bufferedImage, 0, 0, null);
-                graphics2D.dispose();
+                BufferedImage bgr_buffered_image = new BufferedImage(root_buffered_image.getWidth(), root_buffered_image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+                add_buffer_image_to_root_buffer_image(bgr_buffered_image,root_buffered_image);
                 Frame current_frame = converter.convert(bgr_buffered_image);
                 recorder.record(current_frame);
             }
