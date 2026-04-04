@@ -113,6 +113,7 @@ import ws.schild.jave.process.ffmpeg.DefaultFFMPEGLocator;
 
 import javax.imageio.ImageIO;
 
+import static org.bytedeco.ffmpeg.global.avutil.AV_PIX_FMT_RGB32;
 import static org.bytedeco.ffmpeg.global.avutil.AV_PIX_FMT_RGB32_1;
 
 
@@ -1676,15 +1677,6 @@ public class HelloApplication extends Application {
 
     private BufferedImage image_to_buffered_image(Image image) {
         return SwingFXUtils.fromFXImage(image, null);
-    }
-
-    private BufferedImage image_to_buffered_image_with_specific_type(Image image,int buffered_image_type) {
-        BufferedImage buffer = new BufferedImage(
-                (int) image.getWidth(),
-                (int) image.getHeight(),
-                buffered_image_type
-        );
-        return SwingFXUtils.fromFXImage(image, buffer);
     }
 
     private void scroll_to_specific_verse_time(HelloController helloController) {
@@ -9198,9 +9190,6 @@ public class HelloApplication extends Application {
         recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
         recorder.setFrameRate(frames_per_second);
         recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
-
-        //recorder.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
-
         recorder.setSampleRate(44100);
         recorder.setAudioChannels(2);
         recorder.setAudioBitrate(192000);
@@ -9236,8 +9225,9 @@ public class HelloApplication extends Application {
                 if(helloController.check_box_saying_help_spread_the_app.isSelected()){
                     graphics2D.drawImage(get_buffered_image_from_canvas(helloController.canvas_holding_help_spread_app),null,0,0);
                 }
+                BufferedImage real_buffered_image = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+                real_buffered_image.getGraphics().drawImage(bufferedImage, 0, 0, null);
                 graphics2D.dispose();
-                System.out.println(bufferedImage.getType());
                 Frame current_frame = converter.convert(bufferedImage);
                 recorder.record(current_frame);
             }
