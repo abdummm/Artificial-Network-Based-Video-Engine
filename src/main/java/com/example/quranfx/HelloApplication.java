@@ -95,6 +95,7 @@ import org.apache.commons.io.FileUtils;
 import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.ffmpeg.global.avutil;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
+import org.bytedeco.javacv.FFmpegLogCallback;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
 import org.controlsfx.control.ToggleSwitch;
@@ -1675,6 +1676,15 @@ public class HelloApplication extends Application {
 
     private BufferedImage image_to_buffered_image(Image image) {
         return SwingFXUtils.fromFXImage(image, null);
+    }
+
+    private BufferedImage image_to_buffered_image_with_specific_type(Image image,int buffered_image_type) {
+        BufferedImage buffer = new BufferedImage(
+                (int) image.getWidth(),
+                (int) image.getHeight(),
+                buffered_image_type
+        );
+        return SwingFXUtils.fromFXImage(image, buffer);
     }
 
     private void scroll_to_specific_verse_time(HelloController helloController) {
@@ -9180,15 +9190,16 @@ public class HelloApplication extends Application {
     }
 
     private void start_the_rendering_engine(HelloController helloController, String file_name,String file_location) {
+        FFmpegLogCallback.set();
         Path file_path = Paths.get(file_location,file_name);
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
         final int frames_per_second = 60;
-        FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_path.toString().concat(".mp4"), 2160, 3840);
+        FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_path.toString().concat(".mp4"), 1080, 1920);
         recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
         recorder.setFrameRate(frames_per_second);
         recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
 
-        recorder.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
+        //recorder.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
 
         recorder.setSampleRate(44100);
         recorder.setAudioChannels(2);
@@ -9226,6 +9237,7 @@ public class HelloApplication extends Application {
                     graphics2D.drawImage(get_buffered_image_from_canvas(helloController.canvas_holding_help_spread_app),null,0,0);
                 }
                 graphics2D.dispose();
+                System.out.println(bufferedImage.getType());
                 Frame current_frame = converter.convert(bufferedImage);
                 recorder.record(current_frame);
             }
