@@ -9212,11 +9212,12 @@ public class HelloApplication extends Application {
                 Graphics2D graphics2D = bufferedImage.createGraphics();
                 for(Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()){
                     if(language_info.isVisible_check_mark_checked()){
-                        place_the_canvas_text(helloController,language_info.getLanguage_canvas(),language_info.getArrayList_of_all_of_the_translations().get(0));
-                        Image canvas_image = language_info.getLanguage_canvas().snapshot(null, null);
-                        BufferedImage canvas_buffered_image = image_to_buffered_image(canvas_image);
-                        graphics2D.drawImage(canvas_buffered_image,null,0,0);
+                        place_the_canvas_text(helloController,language_info.getLanguage_canvas(),language_info.getArrayList_of_all_of_the_translations().get(0),time_in_nanoseconds);
+                        graphics2D.drawImage(get_buffered_image_from_canvas(language_info.getLanguage_canvas()),null,0,0);
                     }
+                }
+                if(helloController.check_box_saying_help_spread_the_app.isSelected()){
+                    graphics2D.drawImage(get_buffered_image_from_canvas(helloController.canvas_holding_help_spread_app),null,0,0);
                 }
                 graphics2D.dispose();
                 Frame current_frame = converter.convert(bufferedImage);
@@ -9226,5 +9227,10 @@ public class HelloApplication extends Application {
         } catch (Exception exception) {
             System.err.println("The rendering engine ran into a problem. " + exception.getMessage());
         }
+    }
+
+    private BufferedImage get_buffered_image_from_canvas(Canvas canvas){
+        Image canvas_image = canvas.snapshot(null, null);
+        return image_to_buffered_image(canvas_image);
     }
 }
