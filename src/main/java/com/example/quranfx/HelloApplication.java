@@ -6842,7 +6842,7 @@ public class HelloApplication extends Application {
     }
 
     private Canvas create_the_translation_canvas() {
-        Canvas canvas = new Canvas(1080, 1920);
+        Canvas canvas = new Canvas(3840, 2160);
         return canvas;
     }
 
