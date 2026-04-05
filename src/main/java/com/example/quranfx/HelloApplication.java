@@ -9191,6 +9191,14 @@ public class HelloApplication extends Application {
         FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_path.toString().concat(".mp4"), 1080, 1920);
         recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
         recorder.setFrameRate(frames_per_second);
+        recorder.setVideoOption("crf", "0");
+        recorder.setVideoOption("preset", "veryslow");
+        recorder.setVideoOption("level", "5.1");
+        recorder.setGopSize(frames_per_second);
+
+        recorder.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
+        recorder.setVideoBitrate(20_000_000);
+
         recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
         recorder.setSampleRate(44100);
         recorder.setAudioChannels(2);
