@@ -25,8 +25,8 @@ public class Text_item {
     private double left_margin;
     private double right_margin;
     private Text_box_info text_box_info;
-    private final double video_height = 1920;
-    private final double video_width = 1080;
+    private final double video_height = 3840;
+    private final double video_width = 2160;
     private final double extra_width_padding = 25;
     private final double extra_height_padding = 20;
     private double fade_in;
