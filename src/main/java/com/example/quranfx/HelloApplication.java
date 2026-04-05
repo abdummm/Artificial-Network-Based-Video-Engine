@@ -9206,10 +9206,10 @@ public class HelloApplication extends Application {
         try {
             recorder.start();
             Java2DFrameConverter converter = new Java2DFrameConverter();
-            long number_of_frames = frames_per_second * get_duration() / (TimeUnit.SECONDS.toNanos(1));
+            long number_of_frames = frames_per_second * (get_duration() / (TimeUnit.SECONDS.toNanos(1))) ;
             for (int i = 0; i < number_of_frames; i++) {
                 BufferedImage root_buffered_image = new BufferedImage(2160, 3840, BufferedImage.TYPE_INT_ARGB);
-                long time_in_nanoseconds = i / (frames_per_second * (TimeUnit.SECONDS.toNanos(1)));
+                long time_in_nanoseconds = (i* 1_000_000_000L) /frames_per_second;
                 String image_id = return_the_image_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, time_in_nanoseconds));
                 if (!image_id.equals(no_image_found)) {
                     Media_pool media_pool = hashMap_with_media_pool_items.get(image_id);
