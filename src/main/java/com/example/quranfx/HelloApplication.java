@@ -3339,27 +3339,27 @@ public class HelloApplication extends Application {
     }
 
     private void convert_png_to_jpg(File old_file, File new_file) {
+        DefaultFFMPEGLocator locator = new DefaultFFMPEGLocator();
+        String ffmpegPath = locator.getExecutablePath();
         ProcessBuilder pb = new ProcessBuilder(
-                "ffmpeg",
+                ffmpegPath,
                 "-i", old_file.getAbsolutePath(),
                 "-vf", "format=yuva444p,geq='if(lte(alpha(X,Y),16),255,p(X,Y))':'if(lte(alpha(X,Y),16),128,p(X,Y))':'if(lte(alpha(X,Y),16),128,p(X,Y))'",
                 new_file.getAbsolutePath()
         );
-        pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
-        pb.redirectError(ProcessBuilder.Redirect.DISCARD);
+        pb.redirectErrorStream(true);
+        Process process = null;
         try {
-            Process process = pb.start();
+            process = pb.start();
+            process.getInputStream().transferTo(OutputStream.nullOutputStream());
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        show_alert("A problem happened when converting pngs to jpgs. Please restart the program.");
-                    }
-                });
-                throw new RuntimeException("FFmpeg failed to convert image!");
+                System.err.println("FFmpeg failed with exit code " + exitCode);
+                show_alert("Audio encoding failed. FFMPEG");
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -8582,8 +8582,8 @@ public class HelloApplication extends Application {
     }
 
     private void set_up_help_spread_app_canvas(HelloController helloController) {
-        helloController.canvas_holding_help_spread_app.setHeight(1920);
-        helloController.canvas_holding_help_spread_app.setWidth(1080);
+        helloController.canvas_holding_help_spread_app.setHeight(3840);
+        helloController.canvas_holding_help_spread_app.setWidth(2160);
         bind_the_canvas_to_the_image_view(helloController, helloController.canvas_holding_help_spread_app);
         Text_item made_with_sabrly_text_item = new Text_item("Made with sabrly.com");
         made_with_sabrly_text_item.setColor(javafx.scene.paint.Color.WHITE);
@@ -8593,8 +8593,8 @@ public class HelloApplication extends Application {
         shadow_info.setIs_the_accessory_on(true);
         made_with_sabrly_text_item.setStroke_info(stroke_info);
         made_with_sabrly_text_item.setShadow_info(shadow_info);
-        made_with_sabrly_text_item.getText_box_info().setCenter_position(new Point2D(1080D / 2D, 1920D * 0.95D));
-        made_with_sabrly_text_item.setFont_size(28);
+        made_with_sabrly_text_item.getText_box_info().setCenter_position(new Point2D(helloController.canvas_holding_help_spread_app.getWidth() / 2D, helloController.canvas_holding_help_spread_app.getHeight() * 0.95D));
+        made_with_sabrly_text_item.setFont_size(60);
         place_the_canvas_text(helloController, helloController.canvas_holding_help_spread_app, made_with_sabrly_text_item, 0);
     }
 
@@ -9208,7 +9208,7 @@ public class HelloApplication extends Application {
             Java2DFrameConverter converter = new Java2DFrameConverter();
             long number_of_frames = frames_per_second * get_duration() / (TimeUnit.SECONDS.toNanos(1));
             for (int i = 0; i < number_of_frames; i++) {
-                BufferedImage root_buffered_image = new BufferedImage(1080, 1920, BufferedImage.TYPE_INT_ARGB);
+                BufferedImage root_buffered_image = new BufferedImage(2160, 3840, BufferedImage.TYPE_INT_ARGB);
                 long time_in_nanoseconds = i / frames_per_second * (TimeUnit.SECONDS.toNanos(1));
                 String image_id = return_the_image_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, time_in_nanoseconds));
                 if (image_id.equals(no_image_found)) {
@@ -9216,17 +9216,17 @@ public class HelloApplication extends Application {
                     add_buffer_image_to_root_buffer_image(root_buffered_image,bufferedImage);
                 } else {
                     Media_pool media_pool = hashMap_with_media_pool_items.get(image_id);
-                    if (media_pool.isDid_the_image_get_down_scaled()) {
+                    /*if (media_pool.isDid_the_image_get_down_scaled()) {
                         Path path = Paths.get("temp/images/scaled", image_id.concat(".raw"));
                         Image image = readRawImage(path.toString(), 1080, 1920);
                         BufferedImage bufferedImage = image_to_buffered_image(image);
                         add_buffer_image_to_root_buffer_image(root_buffered_image,bufferedImage);
-                    } else {
+                    } else {*/
                         Path path = Paths.get("temp/images/base", image_id.concat(".raw"));
                         Image image = readRawImage(path.toString(), media_pool.getWidth(), media_pool.getHeight());
                         BufferedImage bufferedImage = image_to_buffered_image(image);
                         add_buffer_image_to_root_buffer_image(root_buffered_image,bufferedImage);
-                    }
+//                    }
                 }
                 for (Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()) {
                     if (language_info.isVisible_check_mark_checked()) {
