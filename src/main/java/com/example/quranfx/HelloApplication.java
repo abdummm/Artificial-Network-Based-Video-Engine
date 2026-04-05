@@ -58,7 +58,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.*;
 import javafx.scene.text.Font;
-import javafx.scene.transform.Transform;
 import javafx.stage.*;
 
 import java.awt.*;
@@ -2921,7 +2920,7 @@ public class HelloApplication extends Application {
                     empty_tile_pane_context_menu.hide();
                     if (mouseEvent.getY() <= y_drag_area && mouseEvent.getX() >= base_time_line && mouseEvent.getX() <= end_time_line) {
                         time_line_clicked(helloController, pane, mouseEvent.getX());
-                        which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, mouseEvent.getX() - time_line_pane_data.getTime_line_base_line()));
+                        update_the_verse_based_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, mouseEvent.getX() - time_line_pane_data.getTime_line_base_line()));
                         set_up_everything_image_view_time_line_x_pos(helloController, mouseEvent.getX(), Type_of_Image.FULL_QUALITY);
                     }
                     helloController.list_view_with_all_of_the_languages.refresh();
@@ -3009,7 +3008,7 @@ public class HelloApplication extends Application {
                 long time_of_x_pos_in_nano_seconds = pixels_to_nanoseconds(time_line_pane_data, x_position - time_line_pane_data.getTime_line_base_line());
                 time_line_clicked(helloController, pane, x_position);
                 if (x_position - time_line_pane_data.getTime_line_base_line() >= 0) {
-                    which_verse_am_i_on_milliseconds(helloController, time_of_x_pos_in_nano_seconds);
+                    update_the_verse_based_on_milliseconds(helloController, time_of_x_pos_in_nano_seconds);
                 }
                 set_up_everything_image_view_time_line_x_pos(helloController, x_position, Type_of_Image.THUMBNAIL_QUALITY);
                 /*set_the_chatgpt_image_view(helloController, return_the_image_on_click(pane, x_position), Type_of_Image.THUMBNAIL_QUALITY);
@@ -3271,7 +3270,12 @@ public class HelloApplication extends Application {
         mediaPlayer.play();
     }
 
-    private void which_verse_am_i_on_milliseconds(HelloController helloController, long milliseconds) {
+    private void update_the_verse_based_on_milliseconds(HelloController helloController, long milliseconds) {
+        selected_verse = which_verse_am_i_on_milliseconds(milliseconds);
+        the_verse_changed(helloController, selected_verse);
+    }
+
+    private int which_verse_am_i_on_milliseconds(long milliseconds) {
         Verse_class_final verse_class_final_with_current_ms_to_be_comapred = new Verse_class_final();
         verse_class_final_with_current_ms_to_be_comapred.setStart_millisecond(milliseconds);
         int index = Collections.binarySearch(ayats_processed, verse_class_final_with_current_ms_to_be_comapred, new Comparator<Verse_class_final>() {
@@ -3281,11 +3285,9 @@ public class HelloApplication extends Application {
             }
         });
         if (index >= 0) {
-            selected_verse = index;
-            the_verse_changed(helloController, selected_verse);
+            return index;
         } else {
-            selected_verse = (index * -1) - 2;
-            the_verse_changed(helloController, selected_verse);
+            return selected_verse = (index * -1) - 2;
         }
     }
 
@@ -7282,8 +7284,7 @@ public class HelloApplication extends Application {
             public void handle(ActionEvent actionEvent) {
                 long new_time = TimeUnit.MILLISECONDS.toNanos((long) mediaPlayer.getCurrentTime().toMillis()) - TimeUnit.MINUTES.toNanos(1);
                 new_time = make_sure_time_does_not_exceed_min_max(new_time);
-                which_verse_am_i_on_milliseconds(helloController, new_time);
-                the_verse_changed(helloController, selected_verse);
+                update_the_verse_based_on_milliseconds(helloController, new_time);
                 media_has_been_rewinded_or_forwaded(helloController, new_time);
                 //helloController.list_view_with_all_of_the_languages.refresh();
                 loop_through_all_verses_and_update(helloController, helloController.list_view_with_all_of_the_languages);
@@ -7343,8 +7344,7 @@ public class HelloApplication extends Application {
             public void handle(ActionEvent actionEvent) { // TODO make these buttons become disabled when it amkes sense for them to be so(start,end etc....)
                 long new_time = TimeUnit.MILLISECONDS.toNanos((long) mediaPlayer.getCurrentTime().toMillis()) + TimeUnit.MINUTES.toNanos(1);
                 new_time = make_sure_time_does_not_exceed_min_max(new_time);
-                which_verse_am_i_on_milliseconds(helloController, new_time);
-                the_verse_changed(helloController, selected_verse);
+                update_the_verse_based_on_milliseconds(helloController, new_time);
                 media_has_been_rewinded_or_forwaded(helloController, new_time);
                 //helloController.list_view_with_all_of_the_languages.refresh();
                 loop_through_all_verses_and_update(helloController, helloController.list_view_with_all_of_the_languages);
@@ -8524,11 +8524,11 @@ public class HelloApplication extends Application {
                 ayats_processed.get(verse_array_number + 1).setDuration(pixels_to_nanoseconds(time_line_pane_data, next_verse_new_width));
                 if (main_stack_pane.getLayoutX() + main_stack_pane.getWidth() < verse_resize_info.getInitial_polygon_x_position() && verse_resize_info.getPolygon_position() == Polygon_position.AFTER) {
                     verse_resize_info.setPolygon_position(Polygon_position.BEFORE);
-                    which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, verse_resize_info.getInitial_polygon_x_position() - time_line_pane_data.getTime_line_base_line()));
+                    update_the_verse_based_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, verse_resize_info.getInitial_polygon_x_position() - time_line_pane_data.getTime_line_base_line()));
                     helloController.list_view_with_all_of_the_languages.refresh();
                 } else if (main_stack_pane.getLayoutX() + main_stack_pane.getWidth() >= verse_resize_info.getInitial_polygon_x_position() && verse_resize_info.getPolygon_position() == Polygon_position.BEFORE) {
                     verse_resize_info.setPolygon_position(Polygon_position.AFTER);
-                    which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, verse_resize_info.getInitial_polygon_x_position() - time_line_pane_data.getTime_line_base_line()));
+                    update_the_verse_based_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, verse_resize_info.getInitial_polygon_x_position() - time_line_pane_data.getTime_line_base_line()));
                     helloController.list_view_with_all_of_the_languages.refresh();
                 }
                 last_seen_mouse_x_position[0] = mouse_event_last_seen_scene_x_position;
@@ -8561,11 +8561,11 @@ public class HelloApplication extends Application {
 
                 if (main_stack_pane.getLayoutX() < verse_resize_info.getInitial_polygon_x_position() && verse_resize_info.getPolygon_position() == Polygon_position.BEFORE) {
                     verse_resize_info.setPolygon_position(Polygon_position.AFTER);
-                    which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, verse_resize_info.getInitial_polygon_x_position() - time_line_pane_data.getTime_line_base_line()));
+                    update_the_verse_based_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, verse_resize_info.getInitial_polygon_x_position() - time_line_pane_data.getTime_line_base_line()));
                     helloController.list_view_with_all_of_the_languages.refresh();
                 } else if (main_stack_pane.getLayoutX() >= verse_resize_info.getInitial_polygon_x_position() && verse_resize_info.getPolygon_position() == Polygon_position.AFTER) {
                     verse_resize_info.setPolygon_position(Polygon_position.BEFORE);
-                    which_verse_am_i_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, verse_resize_info.getInitial_polygon_x_position() - time_line_pane_data.getTime_line_base_line()));
+                    update_the_verse_based_on_milliseconds(helloController, pixels_to_nanoseconds(time_line_pane_data, verse_resize_info.getInitial_polygon_x_position() - time_line_pane_data.getTime_line_base_line()));
                     helloController.list_view_with_all_of_the_languages.refresh();
                 }
                 last_seen_mouse_x_position[0] = mouse_event_last_seen_scene_x_position;
@@ -9190,13 +9190,13 @@ public class HelloApplication extends Application {
         final int frames_per_second = 60;
         FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_path.toString().concat(".mp4"), 2160, 3840);
         recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
+        recorder.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
         recorder.setFrameRate(frames_per_second);
         recorder.setVideoOption("crf", "0");
         recorder.setVideoOption("preset", "veryslow");
         recorder.setVideoOption("level", "5.1");
         recorder.setGopSize(frames_per_second);
 
-        recorder.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
         recorder.setVideoBitrate(20_000_000);
 
         recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
@@ -9209,7 +9209,7 @@ public class HelloApplication extends Application {
             long number_of_frames = frames_per_second * get_duration() / (TimeUnit.SECONDS.toNanos(1));
             for (int i = 0; i < number_of_frames; i++) {
                 BufferedImage root_buffered_image = new BufferedImage(2160, 3840, BufferedImage.TYPE_INT_ARGB);
-                long time_in_nanoseconds = i / frames_per_second * (TimeUnit.SECONDS.toNanos(1));
+                long time_in_nanoseconds = i / (frames_per_second * (TimeUnit.SECONDS.toNanos(1)));
                 String image_id = return_the_image_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, time_in_nanoseconds));
                 if (!image_id.equals(no_image_found)) {
                     Media_pool media_pool = hashMap_with_media_pool_items.get(image_id);
@@ -9220,7 +9220,7 @@ public class HelloApplication extends Application {
                 }
                 for (Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()) {
                     if (language_info.isVisible_check_mark_checked()) {
-                        place_the_canvas_text(helloController, language_info.getLanguage_canvas(), language_info.getArrayList_of_all_of_the_translations().get(0), time_in_nanoseconds);
+                        place_the_canvas_text(helloController, language_info.getLanguage_canvas(), language_info.getArrayList_of_all_of_the_translations().get(which_verse_am_i_on_milliseconds(time_in_nanoseconds)),time_in_nanoseconds);
                         add_buffer_image_to_root_buffer_image(root_buffered_image, get_buffered_image_from_canvas(language_info.getLanguage_canvas()));
                     }
                 }
