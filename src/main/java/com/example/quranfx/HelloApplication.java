@@ -9195,7 +9195,7 @@ public class HelloApplication extends Application {
             final int frames_per_second = 60;
             FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_path.toString().concat(".mp4"), 2160, 3840);
             recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
-            recorder.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
+            recorder.setPixelFormat(avutil.AV_PIX_FMT_BGR24);
             recorder.setFrameRate(frames_per_second);
             recorder.setVideoOption("crf", "0");
             recorder.setVideoOption("preset", "veryslow");
