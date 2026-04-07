@@ -9215,6 +9215,7 @@ public class HelloApplication extends Application {
                 for (int i = 0; i < number_of_frames; i++) {
                     BufferedImage root_buffered_image = new BufferedImage(2160, 3840, BufferedImage.TYPE_INT_ARGB);
                     long time_in_nanoseconds = (i* 1_000_000_000L) /frames_per_second;
+                    long time_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(time_in_nanoseconds);
                     String image_id = return_the_image_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, time_in_nanoseconds) + time_line_pane_data.getTime_line_base_line());
                     if (!image_id.equals(no_image_found)) {
                         Media_pool media_pool = hashMap_with_media_pool_items.get(image_id);
@@ -9235,6 +9236,7 @@ public class HelloApplication extends Application {
                     BufferedImage bgr_buffered_image = new BufferedImage(root_buffered_image.getWidth(), root_buffered_image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
                     add_buffer_image_to_root_buffer_image(bgr_buffered_image, root_buffered_image);
                     Frame current_frame = converter.convert(bgr_buffered_image);
+                    recorder.setTimestamp(time_in_milliseconds);
                     recorder.record(current_frame);
                 }
                 recorder.stop();
