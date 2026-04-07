@@ -9186,6 +9186,7 @@ public class HelloApplication extends Application {
     private void start_the_rendering_engine(HelloController helloController, String file_name, String file_location) {
         helloController.show_logo_loading_screen.setVisible(true);
         helloController.show_the_result_screen_stack_pane.setVisible(false);
+        render_video_dialogue_stage.close();
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(() -> {
             FFmpegLogCallback.set();
