@@ -94,10 +94,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.io.FileUtils;
 import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.ffmpeg.global.avutil;
-import org.bytedeco.javacv.FFmpegFrameRecorder;
-import org.bytedeco.javacv.FFmpegLogCallback;
+import org.bytedeco.javacv.*;
 import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.Java2DFrameConverter;
 import org.controlsfx.control.ToggleSwitch;
 import org.imgscalr.Scalr;
 import org.jetbrains.annotations.NotNull;
@@ -9194,6 +9192,7 @@ public class HelloApplication extends Application {
             Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
             final int frames_per_second = 60;
             FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_path.toString().concat(".mp4"), 2160, 3840);
+            FFmpegFrameGrabber audioGrabber = new FFmpegFrameGrabber("temp/sound/combined.wav");
             recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
             recorder.setPixelFormat(avutil.AV_PIX_FMT_BGR24);
             recorder.setFrameRate(frames_per_second);
@@ -9209,6 +9208,7 @@ public class HelloApplication extends Application {
             recorder.setAudioChannels(2);
             recorder.setAudioBitrate(192000);
             try {
+                audioGrabber.start();
                 recorder.start();
                 Java2DFrameConverter converter = new Java2DFrameConverter();
                 long number_of_frames = (get_duration() * frames_per_second) / 1_000_000_000L;
@@ -9238,6 +9238,11 @@ public class HelloApplication extends Application {
                     Frame current_frame = converter.convert(bgr_buffered_image);
                     recorder.setTimestamp(time_in_milliseconds);
                     recorder.record(current_frame);
+                    Frame audioFrame;
+                    while ((audioFrame = audioGrabber.grabSamples()) != null
+                            && audioGrabber.getTimestamp() <= time_in_milliseconds) {
+                        recorder.record(audioFrame);
+                    }
                 }
                 recorder.stop();
             } catch (Exception exception) {
