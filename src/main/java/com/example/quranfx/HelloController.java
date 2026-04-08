@@ -2,6 +2,7 @@ package com.example.quranfx;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
+import io.github.palexdev.materialfx.controls.MFXProgressBar;
 import io.github.palexdev.materialfx.controls.MFXProgressSpinner;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -242,4 +243,7 @@ public class HelloController {
 
     @FXML
     public HBox h_box_bottom_border_pane_time_line;
+
+    @FXML
+    public MFXProgressBar video_render_progress_bar;
 }
