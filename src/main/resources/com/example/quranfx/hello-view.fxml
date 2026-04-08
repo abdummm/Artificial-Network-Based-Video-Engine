@@ -41,6 +41,7 @@
 <?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
 <?import javafx.scene.layout.Priority?>
 <?import javafx.scene.shape.Rectangle?>
+<?import io.github.palexdev.materialfx.controls.MFXProgressBar?>
 <StackPane prefHeight="365.0" prefWidth="366.0" xmlns="http://javafx.com/javafx/23.0.1"
            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.quranfx.HelloController"
            style="-fx-background-color: #FFFFFF;" fx:id="parent_stack_pane">
@@ -49,6 +50,10 @@
         <MFXProgressSpinner fx:id="progress_indicator_first_loading_screen" prefWidth="30" prefHeight="30"
                             stylesheets="@mfx_spinner_style_loading_start.css">
         </MFXProgressSpinner>
+
+        <MFXProgressBar fx:id="video_render_progress_bar">
+
+        </MFXProgressBar>
 
         <JFXButton StackPane.alignment="BOTTOM_RIGHT" fx:id="settings_loading_screen"
                    focusTraversable="false">
