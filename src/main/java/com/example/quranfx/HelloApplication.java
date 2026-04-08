@@ -215,6 +215,7 @@ public class HelloApplication extends Application {
         HelloController helloController = fxmlLoader.getController();
         set_the_logo_at_the_start(helloController);
         center_the_progress_indicator(helloController, scene);
+        center_the_rendering_progress_indicator(helloController,scene);
         listen_to_height_change_property(helloController, scene);
         get_the_quran_api_token(helloController, true, scene);
         set_up_icon_for_settings_mark_button_on_loading_screen(helloController);
@@ -4318,11 +4319,27 @@ public class HelloApplication extends Application {
         }
     }
 
+    private void center_the_rendering_progress_indicator(HelloController helloController, Scene scene) {
+        if (helloController.show_logo_loading_screen.isVisible()) {
+            double scene_height;
+            if (scene.getHeight() == 0) {
+                scene_height = Screen.getPrimary().getBounds().getHeight() * screen_height_multiplier;
+            } else {
+                scene_height = scene.getHeight();
+            }
+            double logo_height = helloController.logo_at_the_start_of_the_app.getFitHeight();
+            double rendering_progress_bar_height = helloController.video_render_progress_bar.getPrefHeight();
+            double distance_mid_to_bottom = scene_height / 2D;
+            StackPane.setMargin(helloController.video_render_progress_bar, new Insets(distance_mid_to_bottom - (rendering_progress_bar_height / 2) + (logo_height / 2), 0, 0, 0));
+        }
+    }
+
     private void listen_to_height_change_property(HelloController helloController, Scene scene) {
         heightListener_to_scene_for_logo_at_start = new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
                 center_the_progress_indicator(helloController, scene);
+                center_the_rendering_progress_indicator(helloController,scene);
             }
         };
         scene.heightProperty().addListener(heightListener_to_scene_for_logo_at_start);
