@@ -9184,6 +9184,9 @@ public class HelloApplication extends Application {
     private void start_the_rendering_engine(HelloController helloController, String file_name, String file_location) {
         helloController.show_logo_loading_screen.setVisible(true);
         helloController.show_the_result_screen_stack_pane.setVisible(false);
+
+        helloController.progress_indicator_first_loading_screen.setVisible(false);
+        helloController.video_render_progress_bar.setVisible(true);
         render_video_dialogue_stage.close();
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(() -> {
