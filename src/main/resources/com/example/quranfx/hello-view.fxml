@@ -51,7 +51,7 @@
                             stylesheets="@mfx_spinner_style_loading_start.css">
         </MFXProgressSpinner>
 
-        <MFXProgressBar fx:id="video_render_progress_bar">
+        <MFXProgressBar fx:id="video_render_progress_bar" stylesheets="@mfx_spinner_style_loading_start.css" progress="0">
 
         </MFXProgressBar>
 
