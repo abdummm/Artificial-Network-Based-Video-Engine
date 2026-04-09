@@ -217,10 +217,10 @@ public class HelloApplication extends Application {
         center_the_progress_indicator(helloController, scene);
         center_the_rendering_progress_indicator(helloController,scene);
         listen_to_height_change_property(helloController, scene);
-        /*get_the_quran_api_token(helloController, true, scene);
+        get_the_quran_api_token(helloController, true, scene);
         set_up_icon_for_settings_mark_button_on_loading_screen(helloController);
         set_the_cursor_for_question_mark_button_on_loading_screen(helloController);
-        listen_to_settings_button_clicked_loading_screen(helloController);*/
+        listen_to_settings_button_clicked_loading_screen(helloController);
     }
 
 
