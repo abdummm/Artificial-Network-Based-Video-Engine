@@ -9232,15 +9232,18 @@ public class HelloApplication extends Application {
                 recorder.start();
                 Java2DFrameConverter converter = new Java2DFrameConverter();
                 long number_of_frames = (get_duration() * frames_per_second) / 1_000_000_000L;
+                Frame nextAudioFrame = audioGrabber.grabSamples();
                 for (int i = 0; i < number_of_frames; i++) {
                     int finalI = i;
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            double progress = ((double) finalI)/number_of_frames;
-                            helloController.video_render_progress_bar.setProgress(progress);
-                        }
-                    });
+                    if(i%frames_per_second==0){
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                double progress = ((double) finalI)/number_of_frames;
+                                helloController.video_render_progress_bar.setProgress(progress);
+                            }
+                        });
+                    }
                     BufferedImage root_buffered_image = new BufferedImage(2160, 3840, BufferedImage.TYPE_INT_ARGB);
                     long time_in_nanoseconds = (i* 1_000_000_000L) /frames_per_second;
                     long time_in_microseconds = TimeUnit.NANOSECONDS.toMicros(time_in_nanoseconds);
@@ -9266,12 +9269,16 @@ public class HelloApplication extends Application {
                     Frame current_frame = converter.convert(bgr_buffered_image);
                     recorder.setTimestamp(time_in_microseconds);
                     recorder.record(current_frame);
-                    Frame audioFrame;
-                    while ((audioFrame = audioGrabber.grabSamples()) != null
-                            && audioGrabber.getTimestamp() <= time_in_microseconds) {
-                        recorder.record(audioFrame);
+                    while (nextAudioFrame != null && audioGrabber.getTimestamp() <= time_in_microseconds) {
+                        recorder.record(nextAudioFrame);
+                        nextAudioFrame = audioGrabber.grabSamples();
                     }
                 }
+                while (nextAudioFrame != null) {
+                    recorder.record(nextAudioFrame);
+                    nextAudioFrame = audioGrabber.grabSamples();
+                }
+                audioGrabber.stop();
                 recorder.stop();
             } catch (Exception exception) {
                 System.err.println("The rendering engine ran into a problem. " + exception.getMessage());
