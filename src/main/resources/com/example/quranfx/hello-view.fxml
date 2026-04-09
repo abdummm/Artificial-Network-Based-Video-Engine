@@ -42,6 +42,7 @@
 <?import javafx.scene.layout.Priority?>
 <?import javafx.scene.shape.Rectangle?>
 <?import io.github.palexdev.materialfx.controls.MFXProgressBar?>
+<?import javafx.scene.control.ProgressBar?>
 <StackPane prefHeight="365.0" prefWidth="366.0" xmlns="http://javafx.com/javafx/23.0.1"
            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.quranfx.HelloController"
            style="-fx-background-color: #FFFFFF;" fx:id="parent_stack_pane">
@@ -51,9 +52,9 @@
                             stylesheets="@mfx_spinner_style_loading_start.css">
         </MFXProgressSpinner>
 
-        <MFXProgressBar fx:id="video_render_progress_bar" stylesheets="@mfx_spinner_style_loading_start.css" progress="0" visible="false">
+        <ProgressBar fx:id="video_render_progress_bar" maxHeight="3" prefHeight="3" maxWidth="150" prefWidth="150" visible="false" stylesheets="@progress_bar_style.css">
 
-        </MFXProgressBar>
+        </ProgressBar>
 
         <JFXButton StackPane.alignment="BOTTOM_RIGHT" fx:id="settings_loading_screen"
                    focusTraversable="false">
