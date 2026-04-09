@@ -52,9 +52,7 @@
                             stylesheets="@mfx_spinner_style_loading_start.css">
         </MFXProgressSpinner>
 
-        <ProgressBar fx:id="video_render_progress_bar" maxHeight="3" prefHeight="3" maxWidth="150" prefWidth="150" visible="false" stylesheets="@progress_bar_style.css">
-
-        </ProgressBar>
+        <ProgressBar fx:id="video_render_progress_bar" maxHeight="3" prefHeight="3" maxWidth="150" prefWidth="150" visible="false" stylesheets="@progress_bar_style.css"/>
 
         <JFXButton StackPane.alignment="BOTTOM_RIGHT" fx:id="settings_loading_screen"
                    focusTraversable="false">
