@@ -9214,7 +9214,7 @@ public class HelloApplication extends Application {
             FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_path.toString().concat(".mp4"), 2160, 3840);
             FFmpegFrameGrabber audioGrabber = new FFmpegFrameGrabber("temp/sound/combined.wav");
             recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
-            recorder.setPixelFormat(avutil.AV_PIX_FMT_YUVJ420P);
+            recorder.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
             recorder.setFrameRate(frames_per_second);
             recorder.setVideoOption("crf", "0");
             recorder.setVideoOption("preset", "veryslow");
@@ -9233,8 +9233,14 @@ public class HelloApplication extends Application {
                 Java2DFrameConverter converter = new Java2DFrameConverter();
                 long number_of_frames = (get_duration() * frames_per_second) / 1_000_000_000L;
                 for (int i = 0; i < number_of_frames; i++) {
-                    double progress = ((double) i)/number_of_frames;
-                    helloController.video_render_progress_bar.setProgress(progress);
+                    int finalI = i;
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            double progress = ((double) finalI)/number_of_frames;
+                            helloController.video_render_progress_bar.setProgress(progress);
+                        }
+                    });
                     BufferedImage root_buffered_image = new BufferedImage(2160, 3840, BufferedImage.TYPE_INT_ARGB);
                     long time_in_nanoseconds = (i* 1_000_000_000L) /frames_per_second;
                     long time_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(time_in_nanoseconds);
