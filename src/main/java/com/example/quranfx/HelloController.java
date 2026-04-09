@@ -245,5 +245,5 @@ public class HelloController {
     public HBox h_box_bottom_border_pane_time_line;
 
     @FXML
-    public MFXProgressBar video_render_progress_bar;
+    public ProgressBar video_render_progress_bar;
 }
