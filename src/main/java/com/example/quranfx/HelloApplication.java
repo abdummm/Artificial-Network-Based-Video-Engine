@@ -9329,7 +9329,7 @@ public class HelloApplication extends Application {
     private void add_buffer_image_to_root_buffer_image(BufferedImage original_buffered_image, BufferedImage buffered_image_to_be_added, float opacity) {
         Graphics2D graphics2D = original_buffered_image.createGraphics();
         graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
-        original_buffered_image.getGraphics().drawImage(buffered_image_to_be_added, 0, 0, 2160, 3840, null);
-        original_buffered_image.getGraphics().dispose();
+        graphics2D.drawImage(buffered_image_to_be_added, 0, 0, 2160, 3840, null);
+        graphics2D.dispose();
     }
 }
