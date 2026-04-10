@@ -9280,6 +9280,8 @@ public class HelloApplication extends Application {
                 }
                 audioGrabber.stop();
                 recorder.stop();
+                audioGrabber.release();
+                recorder.release();
             } catch (Exception exception) {
                 System.err.println("The rendering engine ran into a problem. " + exception.getMessage());
             }
