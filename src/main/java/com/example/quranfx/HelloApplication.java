@@ -141,6 +141,7 @@ public class HelloApplication extends Application {
     private HashMap<String, Media_pool> hashMap_with_media_pool_items = new HashMap<>();
     private Shape_object_time_line last_seen_image_vid_is_playing = null;
     private Image blacked_out_image;
+    private BufferedImage blacked_out_image_four_k;
     private Image blacked_out_image_whitened;
     private String quran_token;
     //private long token_expiry;
@@ -4074,6 +4075,18 @@ public class HelloApplication extends Application {
         return writableImage;
     }
 
+    private BufferedImage return_four_k_blacked_out_image() {
+        int width = 2160;
+        int height = 3840;
+        WritableImage writableImage = new WritableImage(width, height);
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                writableImage.getPixelWriter().setColor(i, j, new javafx.scene.paint.Color(0, 0, 0, 1));
+            }
+        }
+        return image_to_buffered_image(writableImage);
+    }
+
 
     private Image readRawImage(String filePath, int width, int height) {
         File file = new File(filePath);
@@ -4200,6 +4213,7 @@ public class HelloApplication extends Application {
     private void write_the_black_image_and_the_whitened_black_image() {
         blacked_out_image = return_16_9_black_image();
         blacked_out_image_whitened = whiten_the_image(image_to_buffered_image(blacked_out_image), 0.7f, 60f);
+        blacked_out_image_four_k = return_four_k_blacked_out_image();
     }
 
     private ImageView return_the_icon(String name, int width, int height) {
@@ -9244,6 +9258,7 @@ public class HelloApplication extends Application {
                 }
                 BufferedImage root_buffered_image = new BufferedImage(2160, 3840, BufferedImage.TYPE_INT_ARGB);
                 long time_in_nanoseconds = (i * 1_000_000_000L) / frames_per_second;
+                long time_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(time_in_nanoseconds);
                 long time_in_microseconds = TimeUnit.NANOSECONDS.toMicros(time_in_nanoseconds);
                 String image_id = return_the_image_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, time_in_nanoseconds) + time_line_pane_data.getTime_line_base_line());
                 if (!image_id.equals(no_image_found)) {
@@ -9252,6 +9267,14 @@ public class HelloApplication extends Application {
                     Image image = readRawImage(path.toString(), media_pool.getWidth(), media_pool.getHeight());
                     BufferedImage bufferedImage = image_to_buffered_image(image);
                     add_buffer_image_to_root_buffer_image(root_buffered_image, bufferedImage);
+                }
+                Shape_object_time_line shape_object_time_line = return_the_shape_on_click(helloController.time_line_pane,nanoseconds_to_pixels(time_line_pane_data,time_in_nanoseconds) + time_line_pane_data.getTime_line_base_line());
+                if (shape_object_time_line!=null) {
+                    double opacity = shape_object_time_line.getOpacity_settings().return_total_opacity(time_difference_compared_to_start(shape_object_time_line, helloController.time_line_pane), time_difference_compared_to_end(shape_object_time_line, helloController.time_line_pane));
+                    if(opacity>0){
+                        System.out.println("opacity: "+opacity);
+                        add_buffer_image_to_root_buffer_image(root_buffered_image,blacked_out_image_four_k,(float) opacity);
+                    }
                 }
                 for (Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()) {
                     if (language_info.isVisible_check_mark_checked()) {
@@ -9301,6 +9324,12 @@ public class HelloApplication extends Application {
     }
 
     private void add_buffer_image_to_root_buffer_image(BufferedImage original_buffered_image, BufferedImage buffered_image_to_be_added) {
+        add_buffer_image_to_root_buffer_image(original_buffered_image,buffered_image_to_be_added,1F);
+    }
+
+    private void add_buffer_image_to_root_buffer_image(BufferedImage original_buffered_image, BufferedImage buffered_image_to_be_added, float opacity) {
+        Graphics2D graphics2D = original_buffered_image.createGraphics();
+        graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
         original_buffered_image.getGraphics().drawImage(buffered_image_to_be_added, 0, 0, 2160, 3840, null);
         original_buffered_image.getGraphics().dispose();
     }
