@@ -9270,8 +9270,8 @@ public class HelloApplication extends Application {
                 }
                 Shape_object_time_line shape_object_time_line = return_the_shape_on_click(helloController.time_line_pane,nanoseconds_to_pixels(time_line_pane_data,time_in_nanoseconds) + time_line_pane_data.getTime_line_base_line());
                 if (shape_object_time_line!=null) {
-                    double time_difference_compared_to_start = time_in_nanoseconds - shape_object_time_line.getStart();
-                    double time_difference_compared_to_end = shape_object_time_line.getEnd() - time_in_nanoseconds;
+                    double time_difference_compared_to_start = time_in_nanoseconds - shape_object_time_line.getStart_time();
+                    double time_difference_compared_to_end = shape_object_time_line.getEnd_time() - time_in_nanoseconds;
                     double opacity = shape_object_time_line.getOpacity_settings().return_total_opacity(time_difference_compared_to_start, time_difference_compared_to_end);
                     if(opacity>0){
                         System.out.println("opacity: "+opacity);
