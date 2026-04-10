@@ -215,7 +215,7 @@ public class HelloApplication extends Application {
         HelloController helloController = fxmlLoader.getController();
         set_the_logo_at_the_start(helloController);
         center_the_progress_indicator(helloController, scene);
-        center_the_rendering_progress_indicator(helloController,scene);
+        center_the_rendering_progress_indicator(helloController, scene);
         listen_to_height_change_property(helloController, scene);
         get_the_quran_api_token(helloController, true, scene);
         set_up_icon_for_settings_mark_button_on_loading_screen(helloController);
@@ -4339,7 +4339,7 @@ public class HelloApplication extends Application {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number old_number, Number new_number) {
                 center_the_progress_indicator(helloController, scene);
-                center_the_rendering_progress_indicator(helloController,scene);
+                center_the_rendering_progress_indicator(helloController, scene);
             }
         };
         scene.heightProperty().addListener(heightListener_to_scene_for_logo_at_start);
@@ -9205,88 +9205,85 @@ public class HelloApplication extends Application {
         helloController.progress_indicator_first_loading_screen.setVisible(false);
         helloController.video_render_progress_bar.setVisible(true);
         render_video_dialogue_stage.close();
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.submit(() -> {
-            FFmpegLogCallback.set();
-            Path file_path = Paths.get(file_location, file_name);
-            Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
-            final int frames_per_second = 60;
-            FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_path.toString().concat(".mp4"), 2160, 3840);
-            FFmpegFrameGrabber audioGrabber = new FFmpegFrameGrabber("temp/sound/combined.wav");
-            recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
-            recorder.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
-            recorder.setFrameRate(frames_per_second);
-            recorder.setVideoOption("crf", "0");
-            recorder.setVideoOption("preset", "veryslow");
-            recorder.setVideoOption("level", "5.1");
-            recorder.setGopSize(frames_per_second);
+        FFmpegLogCallback.set();
+        Path file_path = Paths.get(file_location, file_name);
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
+        final int frames_per_second = 60;
+        FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_path.toString().concat(".mp4"), 2160, 3840);
+        FFmpegFrameGrabber audioGrabber = new FFmpegFrameGrabber("temp/sound/combined.wav");
+        recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
+        recorder.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
+        recorder.setFrameRate(frames_per_second);
+        recorder.setVideoOption("crf", "0");
+        recorder.setVideoOption("preset", "veryslow");
+        recorder.setVideoOption("level", "5.1");
+        recorder.setGopSize(frames_per_second);
 
-            recorder.setVideoBitrate(20_000_000);
+        recorder.setVideoBitrate(20_000_000);
 
-            recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
-            recorder.setSampleRate(44100);
-            recorder.setAudioChannels(2);
-            recorder.setAudioBitrate(192000);
-            try {
-                audioGrabber.start();
-                recorder.start();
-                Java2DFrameConverter converter = new Java2DFrameConverter();
-                long number_of_frames = (get_duration() * frames_per_second) / 1_000_000_000L;
-                Frame nextAudioFrame = audioGrabber.grabSamples();
-                for (int i = 0; i < number_of_frames; i++) {
-                    int finalI = i;
-                    if(i%frames_per_second==0){
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                double progress = ((double) finalI)/number_of_frames;
-                                helloController.video_render_progress_bar.setProgress(progress);
-                            }
-                        });
-                    }
-                    BufferedImage root_buffered_image = new BufferedImage(2160, 3840, BufferedImage.TYPE_INT_ARGB);
-                    long time_in_nanoseconds = (i* 1_000_000_000L) /frames_per_second;
-                    long time_in_microseconds = TimeUnit.NANOSECONDS.toMicros(time_in_nanoseconds);
-                    String image_id = return_the_image_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, time_in_nanoseconds) + time_line_pane_data.getTime_line_base_line());
-                    if (!image_id.equals(no_image_found)) {
-                        Media_pool media_pool = hashMap_with_media_pool_items.get(image_id);
-                        Path path = Paths.get("temp/images/base", image_id.concat(".raw"));
-                        Image image = readRawImage(path.toString(), media_pool.getWidth(), media_pool.getHeight());
-                        BufferedImage bufferedImage = image_to_buffered_image(image);
-                        add_buffer_image_to_root_buffer_image(root_buffered_image, bufferedImage);
-                    }
-                    for (Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()) {
-                        if (language_info.isVisible_check_mark_checked()) {
-                            place_the_canvas_text(helloController, language_info.getLanguage_canvas(), language_info.getArrayList_of_all_of_the_translations().get(which_verse_am_i_on_milliseconds(time_in_nanoseconds)),time_in_nanoseconds);
-                            add_buffer_image_to_root_buffer_image(root_buffered_image, get_buffered_image_from_canvas(language_info.getLanguage_canvas()));
+        recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
+        recorder.setSampleRate(44100);
+        recorder.setAudioChannels(2);
+        recorder.setAudioBitrate(192000);
+        try {
+            audioGrabber.start();
+            recorder.start();
+            Java2DFrameConverter converter = new Java2DFrameConverter();
+            long number_of_frames = (get_duration() * frames_per_second) / 1_000_000_000L;
+            Frame nextAudioFrame = audioGrabber.grabSamples();
+            for (int i = 0; i < number_of_frames; i++) {
+                int finalI = i;
+                if (i % frames_per_second == 0) {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            double progress = ((double) finalI) / number_of_frames;
+                            helloController.video_render_progress_bar.setProgress(progress);
                         }
-                    }
-                    if (helloController.check_box_saying_help_spread_the_app.isSelected()) {
-                        add_buffer_image_to_root_buffer_image(root_buffered_image, get_buffered_image_from_canvas(helloController.canvas_holding_help_spread_app));
-                    }
-                    BufferedImage bgr_buffered_image = new BufferedImage(root_buffered_image.getWidth(), root_buffered_image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-                    add_buffer_image_to_root_buffer_image(bgr_buffered_image, root_buffered_image);
-                    Frame current_frame = converter.convert(bgr_buffered_image);
-                    recorder.setTimestamp(time_in_microseconds);
-                    recorder.record(current_frame);
-                    while (nextAudioFrame != null && audioGrabber.getTimestamp() <= time_in_microseconds) {
-                        recorder.record(nextAudioFrame);
-                        nextAudioFrame = audioGrabber.grabSamples();
+                    });
+                }
+                BufferedImage root_buffered_image = new BufferedImage(2160, 3840, BufferedImage.TYPE_INT_ARGB);
+                long time_in_nanoseconds = (i * 1_000_000_000L) / frames_per_second;
+                long time_in_microseconds = TimeUnit.NANOSECONDS.toMicros(time_in_nanoseconds);
+                String image_id = return_the_image_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, time_in_nanoseconds) + time_line_pane_data.getTime_line_base_line());
+                if (!image_id.equals(no_image_found)) {
+                    Media_pool media_pool = hashMap_with_media_pool_items.get(image_id);
+                    Path path = Paths.get("temp/images/base", image_id.concat(".raw"));
+                    Image image = readRawImage(path.toString(), media_pool.getWidth(), media_pool.getHeight());
+                    BufferedImage bufferedImage = image_to_buffered_image(image);
+                    add_buffer_image_to_root_buffer_image(root_buffered_image, bufferedImage);
+                }
+                for (Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()) {
+                    if (language_info.isVisible_check_mark_checked()) {
+                        place_the_canvas_text(helloController, language_info.getLanguage_canvas(), language_info.getArrayList_of_all_of_the_translations().get(which_verse_am_i_on_milliseconds(time_in_nanoseconds)), time_in_nanoseconds);
+                        add_buffer_image_to_root_buffer_image(root_buffered_image, get_buffered_image_from_canvas(language_info.getLanguage_canvas()));
                     }
                 }
-                while (nextAudioFrame != null) {
+                if (helloController.check_box_saying_help_spread_the_app.isSelected()) {
+                    add_buffer_image_to_root_buffer_image(root_buffered_image, get_buffered_image_from_canvas(helloController.canvas_holding_help_spread_app));
+                }
+                BufferedImage bgr_buffered_image = new BufferedImage(root_buffered_image.getWidth(), root_buffered_image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+                add_buffer_image_to_root_buffer_image(bgr_buffered_image, root_buffered_image);
+                Frame current_frame = converter.convert(bgr_buffered_image);
+                recorder.setTimestamp(time_in_microseconds);
+                recorder.record(current_frame);
+                while (nextAudioFrame != null && audioGrabber.getTimestamp() <= time_in_microseconds) {
                     recorder.record(nextAudioFrame);
                     nextAudioFrame = audioGrabber.grabSamples();
                 }
-                audioGrabber.stop();
-                recorder.stop();
-                audioGrabber.release();
-                recorder.release();
-            } catch (Exception exception) {
-                System.err.println("The rendering engine ran into a problem. " + exception.getMessage());
             }
-        });
-        executor.shutdown();
+            while (nextAudioFrame != null) {
+                recorder.record(nextAudioFrame);
+                nextAudioFrame = audioGrabber.grabSamples();
+            }
+            helloController.video_render_progress_bar.setProgress(1.0);
+            audioGrabber.stop();
+            recorder.stop();
+            audioGrabber.release();
+            recorder.release();
+        } catch (Exception exception) {
+            System.err.println("The rendering engine ran into a problem. " + exception.getMessage());
+        }
     }
 
     private BufferedImage get_buffered_image_from_canvas(Canvas canvas) {
