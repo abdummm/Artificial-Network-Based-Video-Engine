@@ -83,6 +83,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import javafx.util.Duration;
@@ -9174,6 +9175,7 @@ public class HelloApplication extends Application {
                     showToast(render_video_dialogue_stage, "File location can't be empty", 3000);
                     return;
                 }
+                save_the_name_and_location(file_name_text_field.getText(),file_location_text_field.getText());
                 start_the_rendering_engine(helloController, file_name_text_field.getText(), file_location_text_field.getText());
             }
         });
@@ -9265,14 +9267,14 @@ public class HelloApplication extends Application {
                     BufferedImage bufferedImage = image_to_buffered_image(image);
                     add_buffer_image_to_root_buffer_image(root_buffered_image, bufferedImage);
                 }
-                Shape_object_time_line shape_object_time_line = return_the_shape_on_click(helloController.time_line_pane,nanoseconds_to_pixels(time_line_pane_data,time_in_nanoseconds) + time_line_pane_data.getTime_line_base_line());
-                if (shape_object_time_line!=null) {
+                Shape_object_time_line shape_object_time_line = return_the_shape_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, time_in_nanoseconds) + time_line_pane_data.getTime_line_base_line());
+                if (shape_object_time_line != null) {
                     double time_difference_compared_to_start = time_in_nanoseconds - shape_object_time_line.getStart_time();
                     double time_difference_compared_to_end = shape_object_time_line.getEnd_time() - time_in_nanoseconds;
                     double opacity = shape_object_time_line.getOpacity_settings().return_total_opacity(time_difference_compared_to_start, time_difference_compared_to_end);
-                    if(opacity>0){
-                        System.out.println("opacity: "+opacity);
-                        add_buffer_image_to_root_buffer_image(root_buffered_image,blacked_out_image_four_k,(float) opacity);
+                    if (opacity > 0) {
+                        System.out.println("opacity: " + opacity);
+                        add_buffer_image_to_root_buffer_image(root_buffered_image, blacked_out_image_four_k, (float) opacity);
                     }
                 }
                 for (Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()) {
@@ -9323,7 +9325,7 @@ public class HelloApplication extends Application {
     }
 
     private void add_buffer_image_to_root_buffer_image(BufferedImage original_buffered_image, BufferedImage buffered_image_to_be_added) {
-        add_buffer_image_to_root_buffer_image(original_buffered_image,buffered_image_to_be_added,1F);
+        add_buffer_image_to_root_buffer_image(original_buffered_image, buffered_image_to_be_added, 1F);
     }
 
     private void add_buffer_image_to_root_buffer_image(BufferedImage original_buffered_image, BufferedImage buffered_image_to_be_added, float opacity) {
@@ -9331,5 +9333,16 @@ public class HelloApplication extends Application {
         graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
         graphics2D.drawImage(buffered_image_to_be_added, 0, 0, 2160, 3840, null);
         graphics2D.dispose();
+    }
+
+    private void save_the_name_and_location(String file_name, String file_location) {
+        Preferences prefs = Preferences.userRoot().node("sabrly");
+        prefs.put("sabrly_render_file_name", file_name);
+        prefs.put("sabrly_render_file_location", file_location);
+        try {
+            prefs.flush();
+        } catch (BackingStoreException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
