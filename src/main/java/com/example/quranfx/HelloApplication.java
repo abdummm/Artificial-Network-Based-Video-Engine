@@ -9078,6 +9078,11 @@ public class HelloApplication extends Application {
         render_video_dialogue_stage = new Stage();
         render_video_dialogue_stage.initOwner(main_stage);
         render_video_dialogue_stage.initStyle(StageStyle.DECORATED);
+
+        String previous_file_name = get_the_file_name_render_engine();
+        String previous_file_location = get_the_file_location_name_render_engine();
+
+
         StackPane stackPane = new StackPane();
         VBox vBox = new VBox(10);
         vBox.setAlignment(Pos.CENTER);
@@ -9093,7 +9098,7 @@ public class HelloApplication extends Application {
         Label fake_label_saying_file_location = new Label("File location: ");
         fake_label_saying_file_location.setVisible(false);
         TextField file_name_text_field = new TextField();
-        file_name_text_field.setText("untitled");
+        file_name_text_field.setText(previous_file_name);
         JFXButton fake_browse_button = new JFXButton("Browse");
         fake_browse_button.setVisible(false);
         stack_pane_holding_label_name.getChildren().addAll(label_saying_file_name, fake_label_saying_file_location);
@@ -9107,7 +9112,7 @@ public class HelloApplication extends Application {
         Label fake_label_saying_file_name = new Label("File name: ");
         fake_label_saying_file_name.setVisible(false);
         TextField file_location_text_field = new TextField();
-        file_location_text_field.setText("");
+        file_location_text_field.setText(previous_file_location);
         file_location_text_field.setEditable(false);
         JFXButton browse_button = new JFXButton("Browse");
         stack_pane_holding_label_location.getChildren().addAll(label_saying_file_location, fake_label_saying_file_name);
@@ -9344,5 +9349,15 @@ public class HelloApplication extends Application {
         } catch (BackingStoreException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String get_the_file_name_render_engine(){
+        Preferences prefs = Preferences.userRoot().node("sabrly");
+        return prefs.get("sabrly_render_file_name", "");
+    }
+
+    private String get_the_file_location_name_render_engine(){
+        Preferences prefs = Preferences.userRoot().node("sabrly");
+        return prefs.get("sabrly_render_file_location", "");
     }
 }
