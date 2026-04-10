@@ -4076,15 +4076,12 @@ public class HelloApplication extends Application {
     }
 
     private BufferedImage return_four_k_blacked_out_image() {
-        int width = 2160;
-        int height = 3840;
-        WritableImage writableImage = new WritableImage(width, height);
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                writableImage.getPixelWriter().setColor(i, j, new javafx.scene.paint.Color(0, 0, 0, 1));
-            }
-        }
-        return image_to_buffered_image(writableImage);
+        BufferedImage buffered_image = new BufferedImage(2160, 3840, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics2D = buffered_image.createGraphics();
+        graphics2D.setColor(Color.BLACK);
+        graphics2D.fillRect(0, 0, 2160, 3840);
+        graphics2D.dispose();
+        return buffered_image;
     }
 
 
