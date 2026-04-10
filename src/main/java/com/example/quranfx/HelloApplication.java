@@ -9353,7 +9353,7 @@ public class HelloApplication extends Application {
 
     private String get_the_file_name_render_engine(){
         Preferences prefs = Preferences.userRoot().node("sabrly");
-        return prefs.get("sabrly_render_file_name", "");
+        return prefs.get("sabrly_render_file_name", "untitled");
     }
 
     private String get_the_file_location_name_render_engine(){
