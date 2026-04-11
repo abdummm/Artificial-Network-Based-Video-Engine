@@ -52,7 +52,12 @@
                             stylesheets="@mfx_spinner_style_loading_start.css">
         </MFXProgressSpinner>
 
-        <ProgressBar fx:id="video_render_progress_bar" maxHeight="3" prefHeight="3" maxWidth="150" prefWidth="150" visible="false" stylesheets="@progress_bar_style.css" progress="0"/>
+        <VBox>
+            <ProgressBar fx:id="video_render_progress_bar" maxHeight="3" prefHeight="3" maxWidth="150" prefWidth="150"
+                         visible="false" stylesheets="@progress_bar_style.css" progress="0"/>
+
+            <Label fx:id="label_for_percentage_rendering_engine" textFill="#B49552"/>
+        </VBox>
 
         <JFXButton StackPane.alignment="BOTTOM_RIGHT" fx:id="settings_loading_screen"
                    focusTraversable="false">
@@ -490,7 +495,7 @@
                                 <Canvas fx:id="canvas_on_top_of_time_line_pane" mouseTransparent="true"/>
                                 <Pane fx:id="pane_overlying_the_time_line_pane_for_polygon_indicator"
                                       mouseTransparent="false" pickOnBounds="false" StackPane.alignment="TOP_CENTER">
-                                    <JFXButton fx:id="split_verse_button" />
+                                    <JFXButton fx:id="split_verse_button"/>
                                 </Pane>
                             </StackPane>
                         </HBox>
