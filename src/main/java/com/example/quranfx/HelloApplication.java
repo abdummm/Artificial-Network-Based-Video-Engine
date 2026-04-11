@@ -4342,9 +4342,9 @@ public class HelloApplication extends Application {
                 scene_height = scene.getHeight();
             }
             double logo_height = helloController.logo_at_the_start_of_the_app.getFitHeight();
-            double rendering_progress_bar_height = helloController.video_render_progress_bar.getPrefHeight();
+            double rendering_progress_bar_height = helloController.vbox_holding_rendering_bar_and_label_render_engine_progress.getPrefHeight();
             double distance_mid_to_bottom = scene_height / 2D;
-            StackPane.setMargin(helloController.video_render_progress_bar, new Insets(distance_mid_to_bottom - (rendering_progress_bar_height / 2) + (logo_height / 2), 0, 0, 0));
+            StackPane.setMargin(helloController.vbox_holding_rendering_bar_and_label_render_engine_progress, new Insets(distance_mid_to_bottom - (rendering_progress_bar_height / 2) + (logo_height / 2), 0, 0, 0));
         }
     }
 
@@ -9220,7 +9220,7 @@ public class HelloApplication extends Application {
         helloController.show_the_result_screen_stack_pane.setVisible(false);
 
         helloController.progress_indicator_first_loading_screen.setVisible(false);
-        helloController.video_render_progress_bar.setVisible(true);
+        helloController.vbox_holding_rendering_bar_and_label_render_engine_progress.setVisible(true);
         render_video_dialogue_stage.close();
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -9261,7 +9261,7 @@ public class HelloApplication extends Application {
                                 public void run() {
                                     double progress = ((double) finalI) / number_of_frames;
                                     helloController.video_render_progress_bar.setProgress(progress);
-                                    helloController.label_for_percentage_rendering_engine.setText(String.valueOf((int) progress * 100).concat("%"));
+                                    helloController.label_for_percentage_rendering_engine.setText(String.valueOf((int) (progress * 100)).concat("%"));
                                 }
                             });
                         }
@@ -9309,8 +9309,13 @@ public class HelloApplication extends Application {
                         recorder.record(nextAudioFrame);
                         nextAudioFrame = audioGrabber.grabSamples();
                     }
-                    helloController.video_render_progress_bar.setProgress(1.0);
-                    helloController.label_for_percentage_rendering_engine.setText("100%");
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            helloController.video_render_progress_bar.setProgress(1.0);
+                            helloController.label_for_percentage_rendering_engine.setText("100%");
+                        }
+                    });
                     audioGrabber.stop();
                     recorder.stop();
                     audioGrabber.release();
