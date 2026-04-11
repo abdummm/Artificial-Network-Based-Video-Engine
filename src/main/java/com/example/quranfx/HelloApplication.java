@@ -9244,11 +9244,26 @@ public class HelloApplication extends Application {
         recorder.setSampleRate(44100);
         recorder.setAudioChannels(2);
         recorder.setAudioBitrate(192000);
+
+        long number_of_frames = (get_duration() * frames_per_second) / 1_000_000_000L;
+        BlockingQueue buffered_image_blocking_queue = new LinkedBlockingQueue<BufferedImage>();
+        AtomicInteger current_frame_number = new AtomicInteger(0);
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(100), new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if(current_frame_number.get() >= number_of_frames){
+                    ((Timeline)event.getSource()).stop();
+                    return;
+                }
+
+            }
+        }));
+        timeline.setCycleCount(Timeline.INDEFINITE); // run forever
+        timeline.play();
         try {
             audioGrabber.start();
             recorder.start();
             Java2DFrameConverter converter = new Java2DFrameConverter();
-            long number_of_frames = (get_duration() * frames_per_second) / 1_000_000_000L;
             Frame nextAudioFrame = audioGrabber.grabSamples();
             for (int i = 0; i < number_of_frames; i++) {
                 int finalI = i;
@@ -9319,6 +9334,7 @@ public class HelloApplication extends Application {
             recorder.release();
         } catch (Exception exception) {
             System.err.println("The rendering engine ran into a problem. " + exception.getMessage());
+            exception.printStackTrace();
         }
     }
 
