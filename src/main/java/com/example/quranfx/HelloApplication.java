@@ -9293,8 +9293,10 @@ public class HelloApplication extends Application {
                                 @Override
                                 public void run() {
                                     double progress = ((double) finalProcessed_frame) / number_of_frames;
-                                    helloController.video_render_progress_bar.setProgress(progress);
-                                    helloController.label_for_percentage_rendering_engine.setText(String.valueOf((int) (progress * 100)).concat("%"));
+                                    if(progress> helloController.video_render_progress_bar.getProgress()){
+                                        helloController.video_render_progress_bar.setProgress(progress);
+                                        helloController.label_for_percentage_rendering_engine.setText(String.valueOf((int) (progress * 100)).concat("%"));
+                                    }
                                 }
                             });
                         }
@@ -9336,8 +9338,6 @@ public class HelloApplication extends Application {
                         }
                         processed_frame++;
                     }
-
-
                     while (nextAudioFrame != null) {
                         recorder.record(nextAudioFrame);
                         nextAudioFrame = audioGrabber.grabSamples();
@@ -9354,7 +9354,8 @@ public class HelloApplication extends Application {
                     audioGrabber.release();
                     recorder.release();
                 } catch (Exception e) {
-
+                    System.err.println("The rendering engine ran into a problem. " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
         });
