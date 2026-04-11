@@ -246,4 +246,7 @@ public class HelloController {
 
     @FXML
     public ProgressBar video_render_progress_bar;
+
+    @FXML
+    public Label label_for_percentage_rendering_engine;
 }
