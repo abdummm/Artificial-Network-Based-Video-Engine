@@ -249,4 +249,7 @@ public class HelloController {
 
     @FXML
     public Label label_for_percentage_rendering_engine;
+
+    @FXML
+    public VBox vbox_holding_rendering_bar_and_label_render_engine_progress;
 }
