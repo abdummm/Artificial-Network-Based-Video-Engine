@@ -46,13 +46,13 @@
 <StackPane prefHeight="365.0" prefWidth="366.0" xmlns="http://javafx.com/javafx/23.0.1"
            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.quranfx.HelloController"
            style="-fx-background-color: #FFFFFF;" fx:id="parent_stack_pane">
-    <StackPane fx:id="show_logo_loading_screen" visible="false">
+    <StackPane fx:id="show_logo_loading_screen">
         <ImageView fx:id="logo_at_the_start_of_the_app" fitWidth="128" fitHeight="128"/>
         <MFXProgressSpinner fx:id="progress_indicator_first_loading_screen" prefWidth="30" prefHeight="30"
                             stylesheets="@mfx_spinner_style_loading_start.css">
         </MFXProgressSpinner>
 
-        <VBox fx:id="vbox_holding_rendering_bar_and_label_render_engine_progress" visible="true" alignment="CENTER">
+        <VBox fx:id="vbox_holding_rendering_bar_and_label_render_engine_progress" visible="false" alignment="CENTER">
             <ProgressBar fx:id="video_render_progress_bar" maxHeight="3" prefHeight="3" maxWidth="150" prefWidth="150"
                           stylesheets="@progress_bar_style.css" progress="0"/>
 
