@@ -52,11 +52,11 @@
                             stylesheets="@mfx_spinner_style_loading_start.css">
         </MFXProgressSpinner>
 
-        <VBox>
+        <VBox fx:id="vbox_holding_rendering_bar_and_label_render_engine_progress" visible="true" alignment="CENTER">
             <ProgressBar fx:id="video_render_progress_bar" maxHeight="3" prefHeight="3" maxWidth="150" prefWidth="150"
-                         visible="false" stylesheets="@progress_bar_style.css" progress="0"/>
+                          stylesheets="@progress_bar_style.css" progress="0"/>
 
-            <Label fx:id="label_for_percentage_rendering_engine" textFill="#B49552">
+            <Label fx:id="label_for_percentage_rendering_engine" textFill="#B49552" text="0%">
                 <VBox.margin>
                     <Insets top="10.0"/>
                 </VBox.margin>
