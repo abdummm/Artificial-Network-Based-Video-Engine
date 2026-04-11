@@ -9261,6 +9261,7 @@ public class HelloApplication extends Application {
                                 public void run() {
                                     double progress = ((double) finalI) / number_of_frames;
                                     helloController.video_render_progress_bar.setProgress(progress);
+                                    helloController.label_for_percentage_rendering_engine.setText(String.valueOf((int) progress * 100).concat("%"));
                                 }
                             });
                         }
@@ -9309,6 +9310,7 @@ public class HelloApplication extends Application {
                         nextAudioFrame = audioGrabber.grabSamples();
                     }
                     helloController.video_render_progress_bar.setProgress(1.0);
+                    helloController.label_for_percentage_rendering_engine.setText("100%");
                     audioGrabber.stop();
                     recorder.stop();
                     audioGrabber.release();
