@@ -9248,29 +9248,29 @@ public class HelloApplication extends Application {
         long number_of_frames = (get_duration() * frames_per_second) / 1_000_000_000L;
         BlockingQueue<ArrayList<BufferedImage>> buffered_image_blocking_queue = new LinkedBlockingQueue<>();
         AtomicInteger current_frame_number = new AtomicInteger(0);
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(100), new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if(current_frame_number.get() >= number_of_frames){
-                    ((Timeline)event.getSource()).stop();
-                    return;
-                }
-                long time_in_nanoseconds = (current_frame_number.get() * 1_000_000_000L) / frames_per_second;
-                ArrayList<BufferedImage> buffered_image_array_list = new ArrayList<>();
-                for (Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()) {
-                    if (language_info.isVisible_check_mark_checked()) {
-                        place_the_canvas_text(helloController, language_info.getLanguage_canvas(), language_info.getArrayList_of_all_of_the_translations().get(which_verse_am_i_on_milliseconds(time_in_nanoseconds)), time_in_nanoseconds);
-                        buffered_image_array_list.add(get_buffered_image_from_canvas(language_info.getLanguage_canvas()));
+        Timeline timeline = new Timeline();
+        KeyFrame kf = new KeyFrame(Duration.seconds(0),
+                event -> {
+                    if(current_frame_number.get() >= number_of_frames){
+                        timeline.stop();
+                        return;
                     }
-                }
-                try {
-                    buffered_image_blocking_queue.put(buffered_image_array_list);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                current_frame_number.incrementAndGet();
-            }
-        }));
+                    long time_in_nanoseconds = (current_frame_number.get() * 1_000_000_000L) / frames_per_second;
+                    ArrayList<BufferedImage> buffered_image_array_list = new ArrayList<>();
+                    for (Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()) {
+                        if (language_info.isVisible_check_mark_checked()) {
+                            place_the_canvas_text(helloController, language_info.getLanguage_canvas(), language_info.getArrayList_of_all_of_the_translations().get(which_verse_am_i_on_milliseconds(time_in_nanoseconds)), time_in_nanoseconds);
+                            buffered_image_array_list.add(get_buffered_image_from_canvas(language_info.getLanguage_canvas()));
+                        }
+                    }
+                    try {
+                        buffered_image_blocking_queue.put(buffered_image_array_list);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    current_frame_number.incrementAndGet();
+                });
+        timeline.getKeyFrames().addAll(kf, new KeyFrame(Duration.millis(100)));
         timeline.setCycleCount(Timeline.INDEFINITE); // run forever
         timeline.play();
         ExecutorService executor = Executors.newSingleThreadExecutor();
