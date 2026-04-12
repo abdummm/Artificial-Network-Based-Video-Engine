@@ -203,8 +203,6 @@ public class HelloApplication extends Application {
     private AnimationTimer timer = null;
     private Last_shown_Image id_of_the_last_image = new Last_shown_Image("", Type_of_Image.FULL_QUALITY);
 
-    private Canvas canvas_test = new Canvas();
-
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -4080,10 +4078,10 @@ public class HelloApplication extends Application {
     }
 
     private BufferedImage return_four_k_blacked_out_image() {
-        BufferedImage buffered_image = new BufferedImage(2160, 3840, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage buffered_image = new BufferedImage(Global_default_values.translation_canvas_width, Global_default_values.translation_canvas_height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = buffered_image.createGraphics();
         graphics2D.setColor(Color.BLACK);
-        graphics2D.fillRect(0, 0, 2160, 3840);
+        graphics2D.fillRect(0, 0, Global_default_values.translation_canvas_width, Global_default_values.translation_canvas_height);
         graphics2D.dispose();
         return buffered_image;
     }
@@ -6868,7 +6866,7 @@ public class HelloApplication extends Application {
     }
 
     private Canvas create_the_translation_canvas() {
-        Canvas canvas = new Canvas(2160, 3840);
+        Canvas canvas = new Canvas(Global_default_values.translation_canvas_width, Global_default_values.translation_canvas_height);
         return canvas;
     }
 
@@ -8606,10 +8604,8 @@ public class HelloApplication extends Application {
     }
 
     private void set_up_help_spread_app_canvas(HelloController helloController) {
-        helloController.canvas_holding_help_spread_app.setHeight(3840);
-        helloController.canvas_holding_help_spread_app.setWidth(2160);
-        canvas_test.setHeight(3840);
-        canvas_test.setWidth(2160);
+        helloController.canvas_holding_help_spread_app.setHeight(Global_default_values.translation_canvas_height);
+        helloController.canvas_holding_help_spread_app.setWidth(Global_default_values.translation_canvas_width);
         bind_the_canvas_to_the_image_view(helloController, helloController.canvas_holding_help_spread_app);
         Text_item made_with_sabrly_text_item = new Text_item("Made with sabrly.com");
         made_with_sabrly_text_item.setColor(javafx.scene.paint.Color.WHITE);
@@ -8622,7 +8618,6 @@ public class HelloApplication extends Application {
         made_with_sabrly_text_item.getText_box_info().setCenter_position(new Point2D(helloController.canvas_holding_help_spread_app.getWidth() / 2D, helloController.canvas_holding_help_spread_app.getHeight() * 0.95D));
         made_with_sabrly_text_item.setFont_size(60);
         place_the_canvas_text(helloController, helloController.canvas_holding_help_spread_app, made_with_sabrly_text_item, 0);
-        place_the_canvas_text(helloController, canvas_test, made_with_sabrly_text_item, 0);
     }
 
     private String create_and_save_client_id_if_it_doesnt_exist() {
@@ -9228,7 +9223,7 @@ public class HelloApplication extends Application {
         Path file_path = Paths.get(file_location, file_name);
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
         final int frames_per_second = 60;
-        FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_path.toString().concat(".mp4"), 2160, 3840);
+        FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_path.toString().concat(".mp4"), Global_default_values.translation_canvas_width, Global_default_values.translation_canvas_height);
         FFmpegFrameGrabber audioGrabber = new FFmpegFrameGrabber("temp/sound/combined.wav");
         recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
         recorder.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
@@ -9273,6 +9268,8 @@ public class HelloApplication extends Application {
         timeline.getKeyFrames().addAll(kf, new KeyFrame(Duration.millis(100)));
         timeline.setCycleCount(Timeline.INDEFINITE); // run forever
         timeline.play();
+
+        final BufferedImage created_with_sabrly_buffered_image = get_buffered_image_from_canvas(helloController.canvas_holding_help_spread_app);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(new Runnable() {
             @Override
@@ -9300,7 +9297,7 @@ public class HelloApplication extends Application {
                                 }
                             });
                         }
-                        BufferedImage root_buffered_image = new BufferedImage(2160, 3840, BufferedImage.TYPE_INT_ARGB);
+                        BufferedImage root_buffered_image = new BufferedImage(Global_default_values.translation_canvas_width, Global_default_values.translation_canvas_height, BufferedImage.TYPE_INT_ARGB);
                         long time_in_nanoseconds = (processed_frame * 1_000_000_000L) / frames_per_second;
                         long time_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(time_in_nanoseconds);
                         long time_in_microseconds = TimeUnit.NANOSECONDS.toMicros(time_in_nanoseconds);
@@ -9325,7 +9322,7 @@ public class HelloApplication extends Application {
                             add_buffer_image_to_root_buffer_image(root_buffered_image, buffered_image_from_queue);
                         }
                         if (helloController.check_box_saying_help_spread_the_app.isSelected()) {
-                            add_buffer_image_to_root_buffer_image(root_buffered_image, get_buffered_image_from_canvas(canvas_test));
+                            add_buffer_image_to_root_buffer_image(root_buffered_image, created_with_sabrly_buffered_image);
                         }
                         BufferedImage bgr_buffered_image = new BufferedImage(root_buffered_image.getWidth(), root_buffered_image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
                         add_buffer_image_to_root_buffer_image(bgr_buffered_image, root_buffered_image);
@@ -9377,7 +9374,7 @@ public class HelloApplication extends Application {
                         }
                     });
                 }
-                BufferedImage root_buffered_image = new BufferedImage(2160, 3840, BufferedImage.TYPE_INT_ARGB);
+                BufferedImage root_buffered_image = new BufferedImage(Global_default_values.translation_canvas_width, Global_default_values.translation_canvas_height, BufferedImage.TYPE_INT_ARGB);
                 long time_in_nanoseconds = (i * 1_000_000_000L) / frames_per_second;
                 long time_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(time_in_nanoseconds);
                 long time_in_microseconds = TimeUnit.NANOSECONDS.toMicros(time_in_nanoseconds);
@@ -9459,7 +9456,7 @@ public class HelloApplication extends Application {
     private void add_buffer_image_to_root_buffer_image(BufferedImage original_buffered_image, BufferedImage buffered_image_to_be_added, float opacity) {
         Graphics2D graphics2D = original_buffered_image.createGraphics();
         graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
-        graphics2D.drawImage(buffered_image_to_be_added, 0, 0, 2160, 3840, null);
+        graphics2D.drawImage(buffered_image_to_be_added, 0, 0, Global_default_values.translation_canvas_width, Global_default_values.translation_canvas_height, null);
         graphics2D.dispose();
     }
 
