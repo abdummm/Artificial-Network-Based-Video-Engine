@@ -9251,7 +9251,7 @@ public class HelloApplication extends Application {
         Timeline timeline = new Timeline();
         KeyFrame kf = new KeyFrame(Duration.seconds(0),
                 event -> {
-                    if(current_frame_number.get() >= number_of_frames){
+                    if (current_frame_number.get() >= number_of_frames) {
                         timeline.stop();
                         return;
                     }
@@ -9283,17 +9283,17 @@ public class HelloApplication extends Application {
                     Java2DFrameConverter converter = new Java2DFrameConverter();
                     Frame nextAudioFrame = audioGrabber.grabSamples();
                     int processed_frame = 0;
-                    while (current_frame_number.get() < number_of_frames ) {
-                        if(buffered_image_blocking_queue.isEmpty()){
-                           continue;
+                    while (current_frame_number.get() < number_of_frames) {
+                        if (buffered_image_blocking_queue.isEmpty()) {
+                            continue;
                         }
-                        if (processed_frame % frames_per_second == 0) {
+                        if (processed_frame % (frames_per_second / 10) == 0) {
                             final int finalProcessed_frame = processed_frame;
                             Platform.runLater(new Runnable() {
                                 @Override
                                 public void run() {
                                     double progress = ((double) finalProcessed_frame) / number_of_frames;
-                                    if(progress> helloController.video_render_progress_bar.getProgress()){
+                                    if (progress > helloController.video_render_progress_bar.getProgress()) {
                                         helloController.video_render_progress_bar.setProgress(progress);
                                         helloController.label_for_percentage_rendering_engine.setText(String.valueOf((int) (progress * 100)).concat("%"));
                                     }
@@ -9322,7 +9322,7 @@ public class HelloApplication extends Application {
                             }
                         }
                         for (BufferedImage buffered_image_from_queue : buffered_image_blocking_queue.take()) {
-                                add_buffer_image_to_root_buffer_image(root_buffered_image, buffered_image_from_queue);
+                            add_buffer_image_to_root_buffer_image(root_buffered_image, buffered_image_from_queue);
                         }
                         if (helloController.check_box_saying_help_spread_the_app.isSelected()) {
                             add_buffer_image_to_root_buffer_image(root_buffered_image, get_buffered_image_from_canvas(canvas_test));
