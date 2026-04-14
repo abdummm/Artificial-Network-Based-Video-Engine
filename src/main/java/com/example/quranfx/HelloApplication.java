@@ -6892,10 +6892,10 @@ public class HelloApplication extends Application {
     private void place_the_canvas_text(HelloController helloController, long milliseconds) {
         GraphicsContext gc = helloController.canvas_displaying_the_verses.getGraphicsContext2D();
         gc.clearRect(0, 0, helloController.canvas_displaying_the_verses.getWidth(), helloController.canvas_displaying_the_verses.getHeight());
-
+        int local_selected_verse = which_verse_am_i_on_milliseconds(milliseconds);
         for(Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()) {
             if(language_info.isVisible_check_mark_checked()){
-                place_the_canvas_text(helloController, helloController.canvas_displaying_the_verses, language_info.getArrayList_of_all_of_the_translations().get(selected_verse),milliseconds);
+                place_the_canvas_text(helloController, helloController.canvas_displaying_the_verses, language_info.getArrayList_of_all_of_the_translations().get(local_selected_verse),milliseconds);
             }
         }
         if(helloController.check_box_saying_help_spread_the_app.isSelected()){
