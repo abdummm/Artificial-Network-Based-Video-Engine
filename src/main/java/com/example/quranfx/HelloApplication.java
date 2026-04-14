@@ -9281,6 +9281,8 @@ public class HelloApplication extends Application {
         timeline.play();
 
         Canvas made_with_app_canvas = new Canvas(Global_default_values.translation_canvas_width,Global_default_values.translation_canvas_height);
+        Text_item made_with_sabrly_text_item = get_the_made_with_sabrly_text_item(made_with_app_canvas.getWidth() / 2D, made_with_app_canvas.getHeight() * 0.95D);
+        place_the_canvas_text(helloController, made_with_app_canvas, made_with_sabrly_text_item, 0);
         final BufferedImage created_with_sabrly_buffered_image = get_buffered_image_from_canvas(made_with_app_canvas);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(new Runnable() {
