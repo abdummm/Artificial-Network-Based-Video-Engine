@@ -6870,12 +6870,32 @@ public class HelloApplication extends Application {
         return canvas;
     }
 
-    private void place_the_canvas_text(HelloController helloController, int local_selected_verse) {
+    private void place_the_canvas_text(HelloController helloController) {
         GraphicsContext gc = helloController.canvas_displaying_the_verses.getGraphicsContext2D();
         gc.clearRect(0, 0, helloController.canvas_displaying_the_verses.getWidth(), helloController.canvas_displaying_the_verses.getHeight());
+
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
+        double polygon_x_pos = return_polygon_middle_position(time_line_pane_data);
+        long x_pos_time = pixels_to_nanoseconds(time_line_pane_data, polygon_x_pos - time_line_pane_data.getTime_line_base_line());
+
         for(Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()) {
             if(language_info.isVisible_check_mark_checked()){
-                place_the_canvas_text(helloController, helloController.canvas_displaying_the_verses, language_info.getArrayList_of_all_of_the_translations().get(local_selected_verse));
+                place_the_canvas_text(helloController, helloController.canvas_displaying_the_verses, language_info.getArrayList_of_all_of_the_translations().get(selected_verse),x_pos_time);
+            }
+        }
+        if(helloController.check_box_saying_help_spread_the_app.isSelected()){
+            Text_item made_with_sabrly_text_item = get_the_made_with_sabrly_text_item(helloController.canvas_displaying_the_verses.getWidth() / 2D, helloController.canvas_displaying_the_verses.getHeight() * 0.95D);
+            place_the_canvas_text(helloController, helloController.canvas_displaying_the_verses, made_with_sabrly_text_item, 0);
+        }
+    }
+
+    private void place_the_canvas_text(HelloController helloController,int selected_verse, long milliseconds) {
+        GraphicsContext gc = helloController.canvas_displaying_the_verses.getGraphicsContext2D();
+        gc.clearRect(0, 0, helloController.canvas_displaying_the_verses.getWidth(), helloController.canvas_displaying_the_verses.getHeight());
+
+        for(Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()) {
+            if(language_info.isVisible_check_mark_checked()){
+                place_the_canvas_text(helloController, helloController.canvas_displaying_the_verses, language_info.getArrayList_of_all_of_the_translations().get(selected_verse),milliseconds);
             }
         }
         if(helloController.check_box_saying_help_spread_the_app.isSelected()){
