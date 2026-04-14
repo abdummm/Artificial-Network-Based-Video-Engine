@@ -8607,20 +8607,11 @@ public class HelloApplication extends Application {
         helloController.canvas_holding_help_spread_app.setHeight(Global_default_values.translation_canvas_height);
         helloController.canvas_holding_help_spread_app.setWidth(Global_default_values.translation_canvas_width);
         bind_the_canvas_to_the_image_view(helloController, helloController.canvas_holding_help_spread_app);
-        Text_item made_with_sabrly_text_item = new Text_item("Made with sabrly.com");
-        made_with_sabrly_text_item.setColor(javafx.scene.paint.Color.WHITE);
-        Text_accessory_info stroke_info = new Text_accessory_info(Accessory_type.STROKE, 6, Global_default_values.max_stroke_weight);
-        Text_accessory_info shadow_info = new Text_accessory_info(Accessory_type.SHADOW, 10, Global_default_values.max_shadow_weight);
-        stroke_info.setIs_the_accessory_on(true);
-        shadow_info.setIs_the_accessory_on(true);
-        made_with_sabrly_text_item.setStroke_info(stroke_info);
-        made_with_sabrly_text_item.setShadow_info(shadow_info);
-        made_with_sabrly_text_item.getText_box_info().setCenter_position(new Point2D(helloController.canvas_holding_help_spread_app.getWidth() / 2D, helloController.canvas_holding_help_spread_app.getHeight() * 0.95D));
-        made_with_sabrly_text_item.setFont_size(60);
+        Text_item made_with_sabrly_text_item = get_the_made_with_sabrly_text_item(helloController.canvas_holding_help_spread_app.getWidth() / 2D, helloController.canvas_holding_help_spread_app.getHeight() * 0.95D);
         place_the_canvas_text(helloController, helloController.canvas_holding_help_spread_app, made_with_sabrly_text_item, 0);
     }
 
-    private Text_item get_the_made_with_sabrly_text_item(){
+    private Text_item get_the_made_with_sabrly_text_item(double text_x_position, double text_y_position){
         Text_item made_with_sabrly_text_item = new Text_item("Made with sabrly.com");
         made_with_sabrly_text_item.setColor(javafx.scene.paint.Color.WHITE);
         Text_accessory_info stroke_info = new Text_accessory_info(Accessory_type.STROKE, 6, Global_default_values.max_stroke_weight);
@@ -8629,7 +8620,7 @@ public class HelloApplication extends Application {
         shadow_info.setIs_the_accessory_on(true);
         made_with_sabrly_text_item.setStroke_info(stroke_info);
         made_with_sabrly_text_item.setShadow_info(shadow_info);
-        made_with_sabrly_text_item.getText_box_info().setCenter_position(new Point2D(helloController.canvas_holding_help_spread_app.getWidth() / 2D, helloController.canvas_holding_help_spread_app.getHeight() * 0.95D));
+        made_with_sabrly_text_item.getText_box_info().setCenter_position(new Point2D(text_x_position, text_y_position));
         made_with_sabrly_text_item.setFont_size(60);
         return made_with_sabrly_text_item;
     }
