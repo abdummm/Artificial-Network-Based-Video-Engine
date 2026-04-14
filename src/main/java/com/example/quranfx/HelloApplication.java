@@ -6870,6 +6870,20 @@ public class HelloApplication extends Application {
         return canvas;
     }
 
+    private void place_the_canvas_text(HelloController helloController, int local_selected_verse) {
+        GraphicsContext gc = helloController.canvas_displaying_the_verses.getGraphicsContext2D();
+        gc.clearRect(0, 0, helloController.canvas_displaying_the_verses.getWidth(), helloController.canvas_displaying_the_verses.getHeight());
+        for(Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()) {
+            if(language_info.isVisible_check_mark_checked()){
+                place_the_canvas_text(helloController, helloController.canvas_displaying_the_verses, language_info.getArrayList_of_all_of_the_translations().get(local_selected_verse));
+            }
+        }
+        if(helloController.check_box_saying_help_spread_the_app.isSelected()){
+            Text_item made_with_sabrly_text_item = get_the_made_with_sabrly_text_item(helloController.canvas_displaying_the_verses.getWidth() / 2D, helloController.canvas_displaying_the_verses.getHeight() * 0.95D);
+            place_the_canvas_text(helloController, helloController.canvas_displaying_the_verses, made_with_sabrly_text_item, 0);
+        }
+    }
+
     private void place_the_canvas_text(HelloController helloController, Canvas canvas, Text_item text_item, long current_nano_seconds) {
         String adjusted_verse_text = text_item.getAdjusted_verse_text();
         Point2D point2D_of_the_text = text_item.getText_box_info().getCenter_position();
