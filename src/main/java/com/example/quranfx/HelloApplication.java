@@ -9217,12 +9217,6 @@ public class HelloApplication extends Application {
     }
 
     private void start_the_rendering_engine(HelloController helloController, String file_name, String file_location) {
-        /*for(Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()){
-            if(language_info.isVisible_check_mark_checked()){
-                remove_all_the_bindings(language_info.getLanguage_canvas());
-            }
-        }
-        remove_all_the_bindings(helloController.canvas_holding_help_spread_app);*/
         helloController.show_logo_loading_screen.setVisible(true);
         helloController.show_the_result_screen_stack_pane.setVisible(false);
 
@@ -9492,16 +9486,5 @@ public class HelloApplication extends Application {
             prefs.put("sabrly_render_file_location", file_location);
         }
         return file_location;
-    }
-
-    private void remove_all_the_bindings(Canvas canvas){
-        canvas.translateXProperty().unbind();
-        canvas.translateYProperty().unbind();
-        canvas.scaleXProperty().unbind();
-        canvas.scaleYProperty().unbind();
-        canvas.setTranslateX(0);
-        canvas.setTranslateY(0);
-        canvas.setScaleX(1);
-        canvas.setScaleY(1);
     }
 }
