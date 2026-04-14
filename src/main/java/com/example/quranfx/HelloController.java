@@ -236,7 +236,7 @@ public class HelloController {
     public JFXButton split_verse_button;
 
     @FXML
-    public Canvas canvas_holding_help_spread_app;
+    public Canvas canvas_displaying_the_verses;
 
     @FXML
     public StackPane time_line_stack_pane;
