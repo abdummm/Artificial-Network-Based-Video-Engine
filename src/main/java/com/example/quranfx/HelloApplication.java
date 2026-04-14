@@ -8620,6 +8620,20 @@ public class HelloApplication extends Application {
         place_the_canvas_text(helloController, helloController.canvas_holding_help_spread_app, made_with_sabrly_text_item, 0);
     }
 
+    private Text_item get_the_made_with_sabrly_text_item(){
+        Text_item made_with_sabrly_text_item = new Text_item("Made with sabrly.com");
+        made_with_sabrly_text_item.setColor(javafx.scene.paint.Color.WHITE);
+        Text_accessory_info stroke_info = new Text_accessory_info(Accessory_type.STROKE, 6, Global_default_values.max_stroke_weight);
+        Text_accessory_info shadow_info = new Text_accessory_info(Accessory_type.SHADOW, 10, Global_default_values.max_shadow_weight);
+        stroke_info.setIs_the_accessory_on(true);
+        shadow_info.setIs_the_accessory_on(true);
+        made_with_sabrly_text_item.setStroke_info(stroke_info);
+        made_with_sabrly_text_item.setShadow_info(shadow_info);
+        made_with_sabrly_text_item.getText_box_info().setCenter_position(new Point2D(helloController.canvas_holding_help_spread_app.getWidth() / 2D, helloController.canvas_holding_help_spread_app.getHeight() * 0.95D));
+        made_with_sabrly_text_item.setFont_size(60);
+        return made_with_sabrly_text_item;
+    }
+
     private String create_and_save_client_id_if_it_doesnt_exist() {
         try {
             Preferences prefs = Preferences.userRoot().node("sabrly");
@@ -9212,6 +9226,12 @@ public class HelloApplication extends Application {
     }
 
     private void start_the_rendering_engine(HelloController helloController, String file_name, String file_location) {
+        /*for(Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()){
+            if(language_info.isVisible_check_mark_checked()){
+                remove_all_the_bindings(language_info.getLanguage_canvas());
+            }
+        }
+        remove_all_the_bindings(helloController.canvas_holding_help_spread_app);*/
         helloController.show_logo_loading_screen.setVisible(true);
         helloController.show_the_result_screen_stack_pane.setVisible(false);
 
@@ -9269,7 +9289,8 @@ public class HelloApplication extends Application {
         timeline.setCycleCount(Timeline.INDEFINITE); // run forever
         timeline.play();
 
-        final BufferedImage created_with_sabrly_buffered_image = get_buffered_image_from_canvas(helloController.canvas_holding_help_spread_app);
+        Canvas made_with_app_canvas = new Canvas(Global_default_values.translation_canvas_width,Global_default_values.translation_canvas_height);
+        final BufferedImage created_with_sabrly_buffered_image = get_buffered_image_from_canvas(made_with_app_canvas);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(new Runnable() {
             @Override
@@ -9318,8 +9339,9 @@ public class HelloApplication extends Application {
                                 add_buffer_image_to_root_buffer_image(root_buffered_image, blacked_out_image_four_k, (float) opacity);
                             }
                         }
-                        for (BufferedImage buffered_image_from_queue : buffered_image_blocking_queue.take()) {
-                            add_buffer_image_to_root_buffer_image(root_buffered_image, buffered_image_from_queue);
+                        ArrayList<BufferedImage> buffered_images_for_this_frame = buffered_image_blocking_queue.take();
+                        for(int i = 0;i<buffered_images_for_this_frame.size();i++){
+                            add_buffer_image_to_root_buffer_image(root_buffered_image, buffered_images_for_this_frame.get(i));
                         }
                         if (helloController.check_box_saying_help_spread_the_app.isSelected()) {
                             add_buffer_image_to_root_buffer_image(root_buffered_image, created_with_sabrly_buffered_image);
@@ -9436,14 +9458,6 @@ public class HelloApplication extends Application {
     }
 
     private BufferedImage get_buffered_image_from_canvas(Canvas canvas) {
-        canvas.scaleXProperty().unbind();
-        canvas.scaleYProperty().unbind();
-        canvas.translateXProperty().unbind();
-        canvas.translateYProperty().unbind();
-        canvas.setScaleX(1);
-        canvas.setScaleY(1);
-        canvas.setTranslateX(0);
-        canvas.setTranslateY(0);
         SnapshotParameters params = new SnapshotParameters();
         params.setFill(javafx.scene.paint.Color.TRANSPARENT);
         return image_to_buffered_image(canvas.snapshot(params, null));
@@ -9456,7 +9470,7 @@ public class HelloApplication extends Application {
     private void add_buffer_image_to_root_buffer_image(BufferedImage original_buffered_image, BufferedImage buffered_image_to_be_added, float opacity) {
         Graphics2D graphics2D = original_buffered_image.createGraphics();
         graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
-        graphics2D.drawImage(buffered_image_to_be_added, 0, 0, Global_default_values.translation_canvas_width, Global_default_values.translation_canvas_height, null);
+        graphics2D.drawImage(buffered_image_to_be_added, 0, 0,  null);
         graphics2D.dispose();
     }
 
@@ -9485,5 +9499,16 @@ public class HelloApplication extends Application {
             prefs.put("sabrly_render_file_location", file_location);
         }
         return file_location;
+    }
+
+    private void remove_all_the_bindings(Canvas canvas){
+        canvas.translateXProperty().unbind();
+        canvas.translateYProperty().unbind();
+        canvas.scaleXProperty().unbind();
+        canvas.scaleYProperty().unbind();
+        canvas.setTranslateX(0);
+        canvas.setTranslateY(0);
+        canvas.setScaleX(1);
+        canvas.setScaleY(1);
     }
 }
