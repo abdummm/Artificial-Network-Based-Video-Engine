@@ -7485,7 +7485,7 @@ public class HelloApplication extends Application {
         helloController.check_box_saying_help_spread_the_app.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean old_state, Boolean new_state) {
-                helloController.canvas_holding_help_spread_app.setVisible(new_state);
+                helloController.canvas_displaying_the_verses.setVisible(new_state);
                 send_analytics_event("help_spread_sabrly_clicked");
             }
         });
@@ -8604,11 +8604,11 @@ public class HelloApplication extends Application {
     }
 
     private void set_up_help_spread_app_canvas(HelloController helloController) {
-        helloController.canvas_holding_help_spread_app.setHeight(Global_default_values.translation_canvas_height);
-        helloController.canvas_holding_help_spread_app.setWidth(Global_default_values.translation_canvas_width);
-        bind_the_canvas_to_the_image_view(helloController, helloController.canvas_holding_help_spread_app);
-        Text_item made_with_sabrly_text_item = get_the_made_with_sabrly_text_item(helloController.canvas_holding_help_spread_app.getWidth() / 2D, helloController.canvas_holding_help_spread_app.getHeight() * 0.95D);
-        place_the_canvas_text(helloController, helloController.canvas_holding_help_spread_app, made_with_sabrly_text_item, 0);
+        helloController.canvas_displaying_the_verses.setHeight(Global_default_values.translation_canvas_height);
+        helloController.canvas_displaying_the_verses.setWidth(Global_default_values.translation_canvas_width);
+        bind_the_canvas_to_the_image_view(helloController, helloController.canvas_displaying_the_verses);
+        Text_item made_with_sabrly_text_item = get_the_made_with_sabrly_text_item(helloController.canvas_displaying_the_verses.getWidth() / 2D, helloController.canvas_displaying_the_verses.getHeight() * 0.95D);
+        place_the_canvas_text(helloController, helloController.canvas_displaying_the_verses, made_with_sabrly_text_item, 0);
     }
 
     private Text_item get_the_made_with_sabrly_text_item(double text_x_position, double text_y_position){
