@@ -6870,7 +6870,7 @@ public class HelloApplication extends Application {
         return canvas;
     }
 
-    private void place_the_canvas_text(HelloController helloController) {
+    /*private void place_the_canvas_text(HelloController helloController) {
         GraphicsContext gc = helloController.canvas_displaying_the_verses.getGraphicsContext2D();
         gc.clearRect(0, 0, helloController.canvas_displaying_the_verses.getWidth(), helloController.canvas_displaying_the_verses.getHeight());
 
@@ -6887,9 +6887,9 @@ public class HelloApplication extends Application {
             Text_item made_with_sabrly_text_item = get_the_made_with_sabrly_text_item(helloController.canvas_displaying_the_verses.getWidth() / 2D, helloController.canvas_displaying_the_verses.getHeight() * 0.95D);
             place_the_canvas_text(helloController, helloController.canvas_displaying_the_verses, made_with_sabrly_text_item, 0);
         }
-    }
+    }*/
 
-    private void place_the_canvas_text(HelloController helloController,int selected_verse, long milliseconds) {
+    private void place_the_canvas_text(HelloController helloController, long milliseconds) {
         GraphicsContext gc = helloController.canvas_displaying_the_verses.getGraphicsContext2D();
         gc.clearRect(0, 0, helloController.canvas_displaying_the_verses.getWidth(), helloController.canvas_displaying_the_verses.getHeight());
 
