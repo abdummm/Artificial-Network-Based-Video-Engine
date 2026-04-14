@@ -7,4 +7,6 @@ public class Global_default_values {
     public static final double max_shadow_weight = 15;
     public static final double max_fade_in_out_image_video = 2.0;
     public static final float height_text_margin = 10;
+    public static final int translation_canvas_height = 3840;
+    public static final int translation_canvas_width = 2160;
 }
