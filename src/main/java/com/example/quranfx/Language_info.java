@@ -14,7 +14,6 @@ public class Language_info {
     private boolean visible_check_mark_checked;
     private ArrayList<Text_item> arrayList_of_all_of_the_translations;
     private boolean item_extended;
-    private Canvas language_canvas;
     private ChangeListener<String> x_position_change_listener;
     private ChangeListener<String> y_position_change_listener;
     private ChangeListener<? super Color> color_change_listener;
@@ -41,7 +40,6 @@ public class Language_info {
         this.arrayList_of_all_of_the_translations = arrayList_of_all_of_the_translations;
         this.displayed_language_name = edit_displayed_language_name(language_name);
         this.item_extended = false;
-        this.language_canvas = null;
         this.advanced_options_selected = false;
         this.text_box_showing = false;
     }
@@ -99,14 +97,6 @@ public class Language_info {
         return arrayList_of_all_of_the_translations;
     }
 
-    public Canvas getLanguage_canvas() {
-        return language_canvas;
-    }
-
-    public void setLanguage_canvas(Canvas language_canvas) {
-        this.language_canvas = language_canvas;
-    }
-
     public ChangeListener<String> getX_position_change_listener() {
         return x_position_change_listener;
     }
@@ -147,7 +137,6 @@ public class Language_info {
                 ", visible_check_mark_checked=" + visible_check_mark_checked +
                 ", arrayList_of_all_of_the_translations=" + arrayList_of_all_of_the_translations +
                 ", item_extended=" + item_extended +
-                ", language_canvas=" + language_canvas +
                 ", x_position_change_listener=" + x_position_change_listener +
                 ", y_position_change_listener=" + y_position_change_listener +
                 ", color_change_listener=" + color_change_listener +
