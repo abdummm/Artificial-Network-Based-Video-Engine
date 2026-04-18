@@ -323,6 +323,7 @@ public class HelloApplication extends Application {
         set_the_buttons_color_change_when_hovered(helloController);
         close_everything_on_close(main_stage);
         //CrashLog.install();
+        set_up_the_verses_canvas(helloController);
         send_analytics_event("app_launched");
         check_if_this_is_the_first_launch_and_send_an_event_if_so();
         listen_to_mouse_leaving_and_entering_time_line(helloController);
@@ -8589,6 +8590,12 @@ public class HelloApplication extends Application {
         }
     }
 
+    private void set_up_the_verses_canvas(HelloController helloController) {
+        helloController.canvas_displaying_the_verses.setHeight(Global_default_values.translation_canvas_height);
+        helloController.canvas_displaying_the_verses.setWidth(Global_default_values.translation_canvas_width);
+        bind_the_canvas_to_the_image_view(helloController, helloController.canvas_displaying_the_verses);
+    }
+
     private void close_everything_on_close(Stage stage) {
         stage.setOnCloseRequest(e -> {
             Platform.exit();
@@ -9252,7 +9259,7 @@ public class HelloApplication extends Application {
                     for (Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()) {
                         if (language_info.isVisible_check_mark_checked()) {
                             place_the_canvas_text(helloController,canvas_to_be_used_for_buffer_image,time_in_nanoseconds);
-                            buffered_image_array_list.add(get_buffered_image_from_canvas(helloController.canvas_displaying_the_verses));
+                            buffered_image_array_list.add(get_buffered_image_from_canvas(canvas_to_be_used_for_buffer_image));
                         }
                     }
                     try {
