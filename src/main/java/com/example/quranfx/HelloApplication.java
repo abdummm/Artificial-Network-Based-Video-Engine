@@ -323,7 +323,6 @@ public class HelloApplication extends Application {
         set_the_buttons_color_change_when_hovered(helloController);
         close_everything_on_close(main_stage);
         //CrashLog.install();
-        set_up_help_spread_app_canvas(helloController);
         send_analytics_event("app_launched");
         check_if_this_is_the_first_launch_and_send_an_event_if_so();
         listen_to_mouse_leaving_and_entering_time_line(helloController);
@@ -7480,6 +7479,7 @@ public class HelloApplication extends Application {
         helloController.check_box_saying_help_spread_the_app.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean old_state, Boolean new_state) {
+                place_the_canvas_text(helloController);
                 send_analytics_event("help_spread_sabrly_clicked");
             }
         });
@@ -8596,14 +8596,6 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void set_up_help_spread_app_canvas(HelloController helloController) {
-        helloController.canvas_displaying_the_verses.setHeight(Global_default_values.translation_canvas_height);
-        helloController.canvas_displaying_the_verses.setWidth(Global_default_values.translation_canvas_width);
-        bind_the_canvas_to_the_image_view(helloController, helloController.canvas_displaying_the_verses);
-        Text_item made_with_sabrly_text_item = get_the_made_with_sabrly_text_item(helloController.canvas_displaying_the_verses.getWidth() / 2D, helloController.canvas_displaying_the_verses.getHeight() * 0.95D);
-        place_the_canvas_text(helloController, helloController.canvas_displaying_the_verses, made_with_sabrly_text_item, 0);
-    }
-
     private Text_item get_the_made_with_sabrly_text_item(double text_x_position, double text_y_position){
         Text_item made_with_sabrly_text_item = new Text_item("Made with sabrly.com");
         made_with_sabrly_text_item.setColor(javafx.scene.paint.Color.WHITE);
@@ -9259,7 +9251,7 @@ public class HelloApplication extends Application {
                     ArrayList<BufferedImage> buffered_image_array_list = new ArrayList<>();
                     for (Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()) {
                         if (language_info.isVisible_check_mark_checked()) {
-                            place_the_canvas_text(helloController, canvas_to_be_used_for_buffer_image, language_info.getArrayList_of_all_of_the_translations().get(which_verse_am_i_on_milliseconds(time_in_nanoseconds)), time_in_nanoseconds);
+                            place_the_canvas_text(helloController,canvas_to_be_used_for_buffer_image,time_in_nanoseconds);
                             buffered_image_array_list.add(get_buffered_image_from_canvas(helloController.canvas_displaying_the_verses));
                         }
                     }
@@ -9274,10 +9266,6 @@ public class HelloApplication extends Application {
         timeline.setCycleCount(Timeline.INDEFINITE); // run forever
         timeline.play();
 
-        canvas_to_be_used_for_buffer_image.getGraphicsContext2D().clearRect(0,0,canvas_to_be_used_for_buffer_image.getWidth(),canvas_to_be_used_for_buffer_image.getHeight());
-        Text_item made_with_sabrly_text_item = get_the_made_with_sabrly_text_item(canvas_to_be_used_for_buffer_image.getWidth() / 2D, canvas_to_be_used_for_buffer_image.getHeight() * 0.95D);
-        place_the_canvas_text(helloController, canvas_to_be_used_for_buffer_image, made_with_sabrly_text_item, 0);
-        final BufferedImage created_with_sabrly_buffered_image = get_buffered_image_from_canvas(canvas_to_be_used_for_buffer_image);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(new Runnable() {
             @Override
@@ -9329,9 +9317,6 @@ public class HelloApplication extends Application {
                         ArrayList<BufferedImage> buffered_images_for_this_frame = buffered_image_blocking_queue.take();
                         for(int i = 0;i<buffered_images_for_this_frame.size();i++){
                             add_buffer_image_to_root_buffer_image(root_buffered_image, buffered_images_for_this_frame.get(i));
-                        }
-                        if (helloController.check_box_saying_help_spread_the_app.isSelected()) {
-                            add_buffer_image_to_root_buffer_image(root_buffered_image, created_with_sabrly_buffered_image);
                         }
                         BufferedImage bgr_buffered_image = new BufferedImage(root_buffered_image.getWidth(), root_buffered_image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
                         add_buffer_image_to_root_buffer_image(bgr_buffered_image, root_buffered_image);
@@ -9463,7 +9448,7 @@ public class HelloApplication extends Application {
     private void add_buffer_image_to_root_buffer_image(BufferedImage original_buffered_image, BufferedImage buffered_image_to_be_added, float opacity) {
         Graphics2D graphics2D = original_buffered_image.createGraphics();
         graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
-        graphics2D.drawImage(buffered_image_to_be_added, 0, 0,  null);
+        graphics2D.drawImage(buffered_image_to_be_added, 0, 0,Global_default_values.translation_canvas_width,Global_default_values.translation_canvas_height,  null);
         graphics2D.dispose();
     }
 
