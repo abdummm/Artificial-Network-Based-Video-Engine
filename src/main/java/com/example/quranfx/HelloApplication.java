@@ -9222,7 +9222,12 @@ public class HelloApplication extends Application {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
         final int frames_per_second = 60;
         FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_path.toString().concat(".mp4"), Global_default_values.translation_canvas_width, Global_default_values.translation_canvas_height);
-        FFmpegFrameGrabber audioGrabber = new FFmpegFrameGrabber("temp/sound/combined.wav");
+        FFmpegFrameGrabber audioGrabber;
+        if(sound_mode == Sound_mode.CHOSEN){
+            audioGrabber = new FFmpegFrameGrabber("temp/sound/combined.wav");
+        } else if (sound_mode == Sound_mode.UPLOADED){
+            audioGrabber = new FFmpegFrameGrabber("temp/sound/converted.wav");
+        }
         recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
         recorder.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
         recorder.setFrameRate(frames_per_second);
