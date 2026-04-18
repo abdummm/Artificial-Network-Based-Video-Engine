@@ -7057,7 +7057,7 @@ public class HelloApplication extends Application {
         double total_rectangle_height = x_and_y_positions.getLayoutBounds().getHeight() + y_padding;
         double x_canvas_position = (canvas.getWidth() / 2D) - total_rectangle_width / 2D;
         double y_canvas_position;
-        if (y_position <= canvas.getHeight() * 0.55) {
+        if (y_position <= Global_default_values.translation_canvas_height * 0.55) {
             y_canvas_position = (canvas.getHeight() * 0.75D) + total_rectangle_height / 2D;
         } else {
             y_canvas_position = (canvas.getHeight() * 0.25D) + total_rectangle_height / 2D;
@@ -9219,7 +9219,7 @@ public class HelloApplication extends Application {
         FFmpegLogCallback.set();
         Path file_path = Paths.get(file_location, file_name);
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
-        final int frames_per_second = 60;
+        final int frames_per_second = 30;
         FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_path.toString().concat(".mp4"), Global_default_values.translation_canvas_width, Global_default_values.translation_canvas_height);
         FFmpegFrameGrabber audioGrabber;
         if (sound_mode == Sound_mode.CHOSEN) {
