@@ -9254,7 +9254,7 @@ public class HelloApplication extends Application {
                     ArrayList<BufferedImage> buffered_image_array_list = new ArrayList<>();
                     for (Language_info language_info : helloController.list_view_with_all_of_the_languages.getItems()) {
                         if (language_info.isVisible_check_mark_checked()) {
-                            place_the_canvas_text(helloController, helloController.canvas_displaying_the_verses, language_info.getArrayList_of_all_of_the_translations().get(which_verse_am_i_on_milliseconds(time_in_nanoseconds)), time_in_nanoseconds);
+                            place_the_canvas_text(helloController, canvas_to_be_used_for_buffer_image, language_info.getArrayList_of_all_of_the_translations().get(which_verse_am_i_on_milliseconds(time_in_nanoseconds)), time_in_nanoseconds);
                             buffered_image_array_list.add(get_buffered_image_from_canvas(helloController.canvas_displaying_the_verses));
                         }
                     }
@@ -9269,10 +9269,10 @@ public class HelloApplication extends Application {
         timeline.setCycleCount(Timeline.INDEFINITE); // run forever
         timeline.play();
 
-        Canvas made_with_app_canvas = new Canvas(Global_default_values.translation_canvas_width,Global_default_values.translation_canvas_height);
-        Text_item made_with_sabrly_text_item = get_the_made_with_sabrly_text_item(made_with_app_canvas.getWidth() / 2D, made_with_app_canvas.getHeight() * 0.95D);
-        place_the_canvas_text(helloController, made_with_app_canvas, made_with_sabrly_text_item, 0);
-        final BufferedImage created_with_sabrly_buffered_image = get_buffered_image_from_canvas(made_with_app_canvas);
+        canvas_to_be_used_for_buffer_image.getGraphicsContext2D().clearRect(0,0,canvas_to_be_used_for_buffer_image.getWidth(),canvas_to_be_used_for_buffer_image.getHeight());
+        Text_item made_with_sabrly_text_item = get_the_made_with_sabrly_text_item(canvas_to_be_used_for_buffer_image.getWidth() / 2D, canvas_to_be_used_for_buffer_image.getHeight() * 0.95D);
+        place_the_canvas_text(helloController, canvas_to_be_used_for_buffer_image, made_with_sabrly_text_item, 0);
+        final BufferedImage created_with_sabrly_buffered_image = get_buffered_image_from_canvas(canvas_to_be_used_for_buffer_image);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(new Runnable() {
             @Override
