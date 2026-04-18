@@ -6885,7 +6885,7 @@ public class HelloApplication extends Application {
         javafx.scene.paint.Color stroke_color = strokeText.getAccessory_color();
         double stroke_weight = strokeText.getAccessory_weight();
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
         double weight = shadow_info.getAccessory_weight(); // 0–15
         double text_opacity = return_the_text_opacity(helloController, text_item, current_nano_seconds);
         color_of_text = new javafx.scene.paint.Color(color_of_text.getRed(), color_of_text.getGreen(), color_of_text.getBlue(), color_of_text.getOpacity() * text_opacity);
