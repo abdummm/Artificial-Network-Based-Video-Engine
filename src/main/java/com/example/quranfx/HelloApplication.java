@@ -7610,6 +7610,8 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 send_analytics_event("verse_text_position_updated");
+                place_the_canvas_text(helloController);
+                set_all_the_languages_selected_set_to_false(helloController);
                 ObservableList<Language_info> all_of_the_languages = helloController.list_view_with_all_of_the_languages.getItems();
                 Smallest_text_box_info smallest_text_box_info = return_the_smallest_text_box_info(helloController, all_of_the_languages, mouseEvent);
                 if (smallest_text_box_info.isSet()) {
@@ -7790,6 +7792,13 @@ public class HelloApplication extends Application {
                 }
             }
         });
+    }
+
+    private void set_all_the_languages_selected_set_to_false(HelloController helloController){
+        ObservableList<Language_info> all_of_the_languages = helloController.list_view_with_all_of_the_languages.getItems();
+        for(Language_info language_info : all_of_the_languages){
+            language_info.setText_box_showing(false);
+        }
     }
 
     private void set_the_holding_cursor_of_image_view_for_text(HelloController helloController, Type_of_cursor type_of_cursor) {
@@ -8271,13 +8280,17 @@ public class HelloApplication extends Application {
     }
 
     private void loop_through_all_verses_and_update(HelloController helloController, ListView<Language_info> all_translations) {
+        ArrayList<Language_info> array_list_of_language_info_with_the_text_box_showing = new ArrayList<>();
         for (Language_info language_info : all_translations.getItems()) {
             if (language_info.isVisible_check_mark_checked()) {
                 place_the_canvas_text(helloController);
                 if (language_info.isText_box_showing()) {
-                    place_the_box_surrounding_the_text(helloController, language_info);
+                    array_list_of_language_info_with_the_text_box_showing.add(language_info);
                 }
             }
+        }
+        if(!array_list_of_language_info_with_the_text_box_showing.isEmpty()){
+            place_the_box_surrounding_the_text(helloController, array_list_of_language_info_with_the_text_box_showing.getLast());
         }
     }
 
