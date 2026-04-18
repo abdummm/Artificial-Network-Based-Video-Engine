@@ -9225,7 +9225,7 @@ public class HelloApplication extends Application {
         FFmpegFrameGrabber audioGrabber;
         if(sound_mode == Sound_mode.CHOSEN){
             audioGrabber = new FFmpegFrameGrabber("temp/sound/combined.wav");
-        } else if (sound_mode == Sound_mode.UPLOADED){
+        } else { //sound_mode == Sound_mode.UPLOADED
             audioGrabber = new FFmpegFrameGrabber("temp/sound/converted.wav");
         }
         recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
