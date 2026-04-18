@@ -6846,7 +6846,6 @@ public class HelloApplication extends Application {
             if(language_info.isVisible_check_mark_checked()){
                 if(language_info.equals(language_not_to_draw)){
                     place_the_canvas_text(helloController, helloController.canvas_displaying_the_verses, text_item,x_pos_time);
-
                 } else {
                     place_the_canvas_text(helloController, helloController.canvas_displaying_the_verses, language_info.getArrayList_of_all_of_the_translations().get(selected_verse),x_pos_time);
                 }
@@ -6885,7 +6884,6 @@ public class HelloApplication extends Application {
         javafx.scene.paint.Color stroke_color = strokeText.getAccessory_color();
         double stroke_weight = strokeText.getAccessory_weight();
         GraphicsContext gc = canvas.getGraphicsContext2D();
-
         double weight = shadow_info.getAccessory_weight(); // 0–15
         double text_opacity = return_the_text_opacity(helloController, text_item, current_nano_seconds);
         color_of_text = new javafx.scene.paint.Color(color_of_text.getRed(), color_of_text.getGreen(), color_of_text.getBlue(), color_of_text.getOpacity() * text_opacity);
@@ -7482,7 +7480,6 @@ public class HelloApplication extends Application {
         helloController.check_box_saying_help_spread_the_app.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean old_state, Boolean new_state) {
-                helloController.canvas_displaying_the_verses.setVisible(new_state);
                 send_analytics_event("help_spread_sabrly_clicked");
             }
         });
