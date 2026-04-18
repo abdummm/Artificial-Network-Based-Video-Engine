@@ -9362,6 +9362,12 @@ public class HelloApplication extends Application {
                 } catch (Exception e) {
                     System.err.println("The rendering engine ran into a problem. " + e.getMessage());
                     e.printStackTrace();
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            show_alert("The rendering engine has ran into a problem. Please try again later.");
+                        }
+                    });
                 }
             }
         });
