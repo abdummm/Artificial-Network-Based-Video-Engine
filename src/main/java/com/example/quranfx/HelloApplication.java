@@ -7932,6 +7932,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 send_analytics_event("Help spread sabrly settings used");
+                set_all_the_languages_selected_set_to_false(helloController);
             }
         });
     }
