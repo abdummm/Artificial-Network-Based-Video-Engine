@@ -170,6 +170,7 @@ public class HelloApplication extends Application {
     private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
     private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
     private final static Running_mode running_mode = Running_mode.DEBUG;
+    private final static int max_rectangle_width = 16384;
 
     private final static int image_view_in_tile_pane_width = 90;
     private final static int image_view_in_tile_pane_height = 160;
