@@ -3673,15 +3673,21 @@ public class HelloApplication extends Application {
                         double[] collision_result = return_the_collision(rectangleChangedInfo.getTree_set_containing_all_of_the_items(), rectangleChangedInfo.getOriginal_start_rectangle(), rectangleChangedInfo.getOriginal_start_rectangle() + new_width, CollisionSearchType.End);
                         if (rectangle.getX() + new_width <= time_line_pane_data.getTime_line_end_base_line() && new_width >= min_rectnagle_width) {
                             if (collision_result[0] < 0) {
-                                rectangle.setWidth(new_width);
+                                if(new_width >= max_rectangle_width) {
+
+                                } else {
+                                    rectangle.setWidth(new_width);
+                                }
                             } else {
-                                rectangle.setWidth((collision_result[0] - 1) - rectangleChangedInfo.getOriginal_start_rectangle());
+                                double checked_rectangle_width = Math.min((collision_result[0] - 1) - rectangleChangedInfo.getOriginal_start_rectangle(),max_rectangle_width);
+                                rectangle.setWidth(checked_rectangle_width);
                             }
                         } else if (new_width < min_rectnagle_width) {
                             rectangle.setWidth(min_rectnagle_width);
                         } else if (rectangle.getX() + new_width > time_line_pane_data.getTime_line_end_base_line()) {
                             if (!is_there_is_a_collosion(rectangleChangedInfo.getTree_set_containing_all_of_the_items(), rectangleChangedInfo.getOriginal_start_rectangle(), rectangleChangedInfo.getOriginal_start_rectangle() + time_line_pane_data.getTime_line_end_base_line() - rectangleChangedInfo.getOriginal_start_rectangle())) {
-                                rectangle.setWidth(time_line_pane_data.getTime_line_end_base_line() - rectangleChangedInfo.getOriginal_start_rectangle());
+                                double checked_rectangle_width = Math.min(time_line_pane_data.getTime_line_end_base_line() - rectangleChangedInfo.getOriginal_start_rectangle(),max_rectangle_width);
+                                rectangle.setWidth(checked_rectangle_width);
                             }
                         }
                         double polygon_pos = return_polygon_middle_position(time_line_pane_data);
