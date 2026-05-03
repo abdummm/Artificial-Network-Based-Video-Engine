@@ -170,7 +170,7 @@ public class HelloApplication extends Application {
     private final static String clientSecret_live = Quran_api_secrets.clientSecret_live;
     private final static Live_mode live_or_pre_live_quran_api = Live_mode.LIVE;
     private final static Running_mode running_mode = Running_mode.DEBUG;
-    private final static int max_rectangle_width = 16384;
+    private final static int max_rectangle_width = 1000 /*16384*/;
 
     private final static int image_view_in_tile_pane_width = 90;
     private final static int image_view_in_tile_pane_height = 160;
@@ -1576,20 +1576,12 @@ public class HelloApplication extends Application {
 
     private void clear_temp_directory() {
         File base_images_file = new File("temp/images/base/");
-        File edited_images_file = new File("temp/images/edited/");
         File scaled_images_file = new File("temp/images/scaled/");
         File sounds_files = new File("temp/sound/");
         File converted_images_file = new File("temp/converted images/");
         if (base_images_file.exists() && base_images_file.isDirectory()) {
             try {
                 FileUtils.cleanDirectory(base_images_file);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (edited_images_file.exists() && edited_images_file.isDirectory()) {
-            try {
-                FileUtils.cleanDirectory(edited_images_file);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -1635,7 +1627,6 @@ public class HelloApplication extends Application {
         File images = new File("temp/images");
         File sound = new File("temp/sound");
         File images_base = new File("temp/images/base");
-        File images_edited = new File("temp/images/edited");
         File scaled_images_file = new File("temp/images/scaled");
         File converted_images_file = new File("temp/converted images");
         if (!directory.exists()) {
@@ -1649,9 +1640,6 @@ public class HelloApplication extends Application {
         }
         if (!images_base.exists()) {
             images_base.mkdirs();
-        }
-        if (!images_edited.exists()) {
-            images_edited.mkdirs();
         }
         if (!scaled_images_file.exists()) {
             scaled_images_file.mkdirs();
@@ -2317,7 +2305,7 @@ public class HelloApplication extends Application {
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                     Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
-                    Rectangle created_rectangle = create_and_return_time_line_rectangle(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1)));
+                    Rectangle created_rectangle = create_and_return_time_line_rectangle(helloController.time_line_pane,time_line_pane_data.getTime_line_base_line(), nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1)));
                     created_rectangle.setVisible(false);
                     Shape_object_time_line shapeObjectTimeLine = new Shape_object_time_line(0, nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1)), created_rectangle, mediaPool.getId(), 0, TimeUnit.SECONDS.toNanos(1), new Opacity_settings());
                     set_up_the_image_rectangle(created_rectangle, mediaPool.getThumbnail(), helloController.time_line_pane, new Opacity_settings());
@@ -3383,10 +3371,9 @@ public class HelloApplication extends Application {
         }
     }
 
-    private Rectangle create_and_return_time_line_rectangle(Pane pane, double width) {
+    private Rectangle create_and_return_time_line_rectangle(Pane pane,double start_x_pos, double width) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         double height = 60;
-        double x_pos = time_line_pane_data.getTime_line_base_line();
         /*x_pos -= (width / 2);
         x_pos = Math.max(x_pos, time_line_pane_data.getTime_line_base_line());
         if (x_pos + width >= time_line_pane_data.getTime_line_end_base_line()) {
@@ -3394,9 +3381,9 @@ public class HelloApplication extends Application {
         }*/
         Rectangle rectangle;
         rectangle = new Rectangle(width, height);
-        pane.getChildren().add(pane.getChildren().size() - 1, rectangle);
         rectangle.setY(60);
-        rectangle.setX(x_pos);
+        rectangle.setX(start_x_pos);
+        pane.getChildren().add(pane.getChildren().size() - 1, rectangle);
         return rectangle;
     }
 
@@ -3532,6 +3519,7 @@ public class HelloApplication extends Application {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         Rectangle rectangle = (Rectangle) shapeObjectTimeLine.getShape();
         double change_cursor_to_double_arrow_buffer = 10;
+        final boolean[] new_dragged_rectangle_created_already = {false};
         rectangle.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -3673,11 +3661,20 @@ public class HelloApplication extends Application {
                         double[] collision_result = return_the_collision(rectangleChangedInfo.getTree_set_containing_all_of_the_items(), rectangleChangedInfo.getOriginal_start_rectangle(), rectangleChangedInfo.getOriginal_start_rectangle() + new_width, CollisionSearchType.End);
                         if (rectangle.getX() + new_width <= time_line_pane_data.getTime_line_end_base_line() && new_width >= min_rectnagle_width) {
                             if (collision_result[0] < 0) {
-                                if(new_width >= max_rectangle_width) {
-
+                                rectangle.setWidth(Math.min(new_width,max_rectangle_width));
+                                /*if(new_width >= max_rectangle_width) {
+                                    rectangle.setWidth(max_rectangle_width);
+                                    double new_rectangle_start = rectangle.getX() + max_rectangle_width;
+                                    double new_rectangle_end = new_rectangle_start + nanoseconds_to_pixels(time_line_pane_data,TimeUnit.MILLISECONDS.toNanos(1000));
+                                    Media_pool media_pool = hashMap_with_media_pool_items.get(shapeObjectTimeLine.getImage_id());
+                                    Rectangle created_rectangle = create_and_return_time_line_rectangle(helloController.time_line_pane,new_rectangle_start, nanoseconds_to_pixels(time_line_pane_data, TimeUnit.MILLISECONDS.toNanos(1000)));
+                                    Shape_object_time_line new_rectangle_shape_object_timeLine = new Shape_object_time_line(new_rectangle_start, new_rectangle_end, created_rectangle, UUID.randomUUID().toString(), (long) nanoseconds_to_pixels(time_line_pane_data,(long) new_rectangle_start), (long) nanoseconds_to_pixels(time_line_pane_data,(long) (new_rectangle_end)), new Opacity_settings());
+                                    set_up_the_image_rectangle(created_rectangle, media_pool.getThumbnail(), helloController.time_line_pane, new Opacity_settings());
+                                    configure_the_image_rectangle(new_rectangle_shape_object_timeLine, helloController, helloController.time_line_pane, media_pool.getThumbnail());
+                                    new_dragged_rectangle_created_already[0] = true;
                                 } else {
                                     rectangle.setWidth(new_width);
-                                }
+                                }*/
                             } else {
                                 double checked_rectangle_width = Math.min((collision_result[0] - 1) - rectangleChangedInfo.getOriginal_start_rectangle(),max_rectangle_width);
                                 rectangle.setWidth(checked_rectangle_width);
@@ -3739,6 +3736,7 @@ public class HelloApplication extends Application {
                         rectangle.setUserData(null);
                     }
                 }
+                new_dragged_rectangle_created_already[0] = false;
             }
         });
     }
