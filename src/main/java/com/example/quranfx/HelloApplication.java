@@ -6969,7 +6969,7 @@ public class HelloApplication extends Application {
         Bitmap bitmap = Bitmap.makeFromImage(skImage);
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
-        ByteBuffer buffer = bitmap.peekPixels();
+        ByteBuffer buffer = bitmap.peekPixels().getBuffer();
         if (cached_text_image == null ||
                 cached_text_image.getWidth() != width ||
                 cached_text_image.getHeight() != height) {
