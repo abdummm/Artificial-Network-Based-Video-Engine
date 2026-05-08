@@ -5,9 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
-    <artifactId>Text_to_Video_Generator</artifactId>
+    <artifactId>Sabrly</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>QuranFx</name>
+    <name>Sabrly</name>
+
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -49,22 +50,22 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>23.0.2</version>
+            <version>21.0.11</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>23.0.2</version>
+            <version>21.0.11</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
-            <version>23.0.2</version>
+            <version>21.0.11</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-media</artifactId>
-            <version>23.0.2</version>
+            <version>21.0.11</version>
         </dependency>
         <dependency>
             <groupId>org.controlsfx</groupId>
@@ -131,7 +132,17 @@
         <dependency>
             <groupId>io.github.humbleui</groupId>
             <artifactId>skija-macos-arm64</artifactId>
-            <version>0.143.0</version>
+            <version>0.143.13</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.humbleui</groupId>
+            <artifactId>skija-macos-x64</artifactId>
+            <version>0.143.13</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.humbleui</groupId>
+            <artifactId>skija-windows-x64</artifactId>
+            <version>0.143.13</version>
         </dependency>
         <dependency>
             <groupId>eu.hansolo</groupId>
@@ -218,6 +229,17 @@
 
     <build>
         <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Multi-Release>true</Multi-Release>
+                        </manifestEntries>
+                    </archive>
+                    <finalName>mr-jar-demo.jar</finalName>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>one.jpro</groupId>
                 <artifactId>jpro-maven-plugin</artifactId>
