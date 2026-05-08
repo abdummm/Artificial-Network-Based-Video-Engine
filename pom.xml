@@ -107,7 +107,7 @@
             <artifactId>jave-all-deps</artifactId>
             <version>3.5.0</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.version}</version>
@@ -118,7 +118,7 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
         <!-- Source: https://mvnrepository.com/artifact/commons-io/commons-io -->
         <dependency>
             <groupId>commons-io</groupId>
@@ -139,14 +139,6 @@
                         </manifestEntries>
                     </archive>
                     <finalName>mr-jar-demo.jar</finalName>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>one.jpro</groupId>
-                <artifactId>jpro-maven-plugin</artifactId>
-                <version>2025.2.1</version>
-                <configuration>
-                    <mainClassName>com.example.quranfx.HelloApplication</mainClassName>
                 </configuration>
             </plugin>
             <plugin>
