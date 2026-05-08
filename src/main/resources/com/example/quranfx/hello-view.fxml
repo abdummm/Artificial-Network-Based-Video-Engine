@@ -33,7 +33,6 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.ScrollPane?>
-<?import atlantafx.base.controls.RingProgressIndicator?>
 <?import io.github.palexdev.materialfx.controls.MFXProgressSpinner?>
 <?import javafx.scene.shape.Circle?>
 <?import com.jfoenix.controls.JFXProgressBar?>
