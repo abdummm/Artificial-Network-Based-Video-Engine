@@ -1,10 +1,8 @@
 package com.example.quranfx;
 
-import com.sun.source.tree.Tree;
 import javafx.scene.shape.Polygon;
 
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.TreeSet;
 
 public class Time_line_pane_data {
