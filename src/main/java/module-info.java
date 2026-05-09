@@ -6,17 +6,14 @@ module com.example.quranfx {
     requires javafx.media;
     requires javafx.swing;
 
-    requires okhttp3;
-    requires com.fasterxml.jackson.core;
-    requires com.fasterxml.jackson.databind;
     requires org.jsoup;
 
     requires org.bytedeco.javacv;
     requires org.bytedeco.ffmpeg;
 
     requires org.apache.commons.io;
-    requires thumbnailator;
-    requires metadata.extractor;
+    requires net.coobird.thumbnailator;
+    requires com.drew.metadata;
     requires imgscalr.lib;
     requires com.jfoenix;
 
@@ -24,10 +21,12 @@ module com.example.quranfx {
     requires java.prefs;
     requires java.net.http;
     requires jave.core;
-    requires annotations;
     requires java.desktop;
     requires org.controlsfx.controls;
     requires MaterialFX;
+    requires tools.jackson.databind;
+    requires okhttp3;
+    requires annotations;
 
     opens com.example.quranfx to javafx.fxml;
     exports com.example.quranfx;
