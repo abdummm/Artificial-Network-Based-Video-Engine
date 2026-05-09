@@ -195,6 +195,7 @@ public class HelloApplication extends Application {
     private final static String unit_sign_beside_opacity = "%";
     private final static String unit_sign_beside_fade_in_fade_out = "s";
     private final static double distance_for_resize_arrow_text_on_cavnas = 15D;
+    private final static boolean debug_mode = false;
 
 
     //private final static double circle_button_radius = 20D;
@@ -230,6 +231,9 @@ public class HelloApplication extends Application {
 
 
     private void everything_to_be_called_at_the_start(HelloController helloController, Scene scene) {
+        if(debug_mode){
+            CrashLog.install();
+        }
         make_the_first_real_screen_visible(helloController);
         listen_to_surat_choose(helloController);
         dalle_spinner_listener(helloController);
@@ -323,7 +327,6 @@ public class HelloApplication extends Application {
         listen_to_split_verse(helloController);
         set_the_buttons_color_change_when_hovered(helloController);
         close_everything_on_close(main_stage);
-        //CrashLog.install();
         set_up_the_verses_canvas(helloController);
         send_analytics_event("app_launched");
         check_if_this_is_the_first_launch_and_send_an_event_if_so();
@@ -562,9 +565,9 @@ public class HelloApplication extends Application {
         int end_ayat = return_end_ayat(helloController);
         int surat_number = helloController.choose_the_surat.getSelectionModel().getSelectedIndex() + 1;
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.submit(new Runnable() {
+       /* executor.submit(new Runnable() {
             @Override
-            public void run() {
+            public void run() {*/
                 if (sound_path.isEmpty()) {
                     Reciters_info reciters_info = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().getFirst();
                     sound_mode = Sound_mode.CHOSEN;
@@ -593,8 +596,8 @@ public class HelloApplication extends Application {
                         set_up_the_fourth_screen(helloController);
                     }
                 });
-            }
-        });
+  /*          }
+        });*/
         executor.shutdown();
     }
 
@@ -1406,6 +1409,7 @@ public class HelloApplication extends Application {
     }
 
     private void get_the_sound_and_concat_them_into_one(int start_ayat, int end_ayat, int surat_number_int, Reciters_info recitersInfo) {
+        Path base_path = get_os_base_path();
         OkHttpClient client = new OkHttpClient.Builder()
                 .protocols(Collections.singletonList(Protocol.HTTP_1_1))
                 .connectTimeout(10, TimeUnit.SECONDS)
@@ -1470,7 +1474,7 @@ public class HelloApplication extends Application {
                                 }
                             }
                             byte[] mp3Bytes = buffer.toByteArray();
-                            File tempFile = new File("temp/sound", String.format("%03d.mp3", verse_number));
+                            File tempFile = new File(base_path.resolve("temp/sound").toString(), String.format("%03d.mp3", verse_number));
                             tempFile.deleteOnExit();
                             try (FileOutputStream fos = new FileOutputStream(tempFile)) {
                                 fos.write(mp3Bytes);
@@ -1496,7 +1500,7 @@ public class HelloApplication extends Application {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        File tempFile = new File("temp/sound", String.format("%03d.wav", start_ayat));
+        File tempFile = new File(base_path.resolve("temp/sound").toString(), String.format("%03d.wav", start_ayat));
         audio_frequncy_of_the_sound = get_sample_rate_using_jave(tempFile);
         int get_the_number_of_audio_channels_local = get_number_of_channels_using_jave(tempFile);
         //int get_the_number_of_audio_channels_local = set_the_number_of_audio_channels(getNumberOfChannels(tempFile.getAbsolutePath()));
@@ -1508,7 +1512,7 @@ public class HelloApplication extends Application {
                 ayats_processed.get(i).setStart_millisecond(start_millisecond);
             }
         }
-        File listFile = new File("temp/sound", "list.txt");
+        File listFile = new File(base_path.resolve("temp/sound").toString(), "list.txt");
         listFile.deleteOnExit();
         try (PrintWriter writer = new PrintWriter(listFile)) {
             for (int i = start_ayat; i <= end_ayat; i++) {
@@ -1531,7 +1535,7 @@ public class HelloApplication extends Application {
                     "-c:a", "pcm_s16le",
                     "-ar", String.valueOf(audio_frequncy_of_the_sound),
                     "-ac", String.valueOf(number_of_audio_channels),
-                    "temp/sound/combined.wav"
+                    base_path.resolve("temp/sound/combined.wav").toString()
             );
             pb.redirectErrorStream(true);
             Process process = pb.start();
@@ -1541,7 +1545,7 @@ public class HelloApplication extends Application {
                 System.err.println("FFmpeg failed with exit code " + exitCode);
                 show_alert("Audio encoding failed. FFMPEG");
             } else {
-                File out_put_file = new File("temp/sound/combined.wav");
+                File out_put_file = new File(base_path.resolve("temp/sound/combined.wav").toString());
                 out_put_file.deleteOnExit();
                 sound_path = out_put_file.getAbsolutePath();
             }
@@ -1552,10 +1556,11 @@ public class HelloApplication extends Application {
 
 
     private void clear_temp_directory() {
-        File base_images_file = new File("temp/images/base/");
-        File scaled_images_file = new File("temp/images/scaled/");
-        File sounds_files = new File("temp/sound/");
-        File converted_images_file = new File("temp/converted images/");
+        Path base_path = get_os_base_path();
+        File base_images_file = new File(base_path.resolve("temp/images/base/").toString());
+        File scaled_images_file = new File(base_path.resolve("temp/images/scaled/").toString());
+        File sounds_files = new File(base_path.resolve("temp/sound/").toString());
+        File converted_images_file = new File(base_path.resolve("temp/converted images/").toString());
         if (base_images_file.exists() && base_images_file.isDirectory()) {
             try {
                 FileUtils.cleanDirectory(base_images_file);
@@ -1600,12 +1605,13 @@ public class HelloApplication extends Application {
     }
 
     private void make_temp_dir() {
-        File directory = new File("temp/");
-        File images = new File("temp/images");
-        File sound = new File("temp/sound");
-        File images_base = new File("temp/images/base");
-        File scaled_images_file = new File("temp/images/scaled");
-        File converted_images_file = new File("temp/converted images");
+        Path base_path = get_os_base_path();
+        File directory = new File(base_path.resolve("temp/").toString());
+        File images = new File(base_path.resolve("temp/images").toString());
+        File sound = new File(base_path.resolve("temp/sound").toString());
+        File images_base = new File(base_path.resolve("temp/images/base").toString());
+        File scaled_images_file = new File(base_path.resolve("temp/images/scaled").toString());
+        File converted_images_file = new File(base_path.resolve("temp/converted images").toString());
         if (!directory.exists()) {
             directory.mkdirs();
         }
@@ -1624,6 +1630,29 @@ public class HelloApplication extends Application {
         if (!converted_images_file.exists()) {
             converted_images_file.mkdirs();
         }
+    }
+
+    private Path get_os_base_path() {
+        String os = System.getProperty("os.name").toLowerCase();
+
+        if (os.contains("win")) {
+            String appData = System.getenv("APPDATA");
+            if (appData != null && !appData.isBlank()) {
+                return Paths.get(appData, app_name);
+            }
+            return Paths.get(System.getProperty("user.home"), app_name);
+        }
+
+        if (os.contains("mac")) {
+            return Paths.get(
+                    System.getProperty("user.home"),
+                    "Library",
+                    "Application Support",
+                    app_name
+            );
+        }
+
+        return Paths.get(System.getProperty("user.home"), app_name);
     }
 
     private BufferedImage return_buffer_image_from_file(String file_path) {
@@ -1775,7 +1804,8 @@ public class HelloApplication extends Application {
     }
 
     private File convert_mp3_to_wav(File input_file, String output_name) {
-        String output_file_path = "temp/sound/".concat(output_name);
+        Path base_path = get_os_base_path();
+        String output_file_path = base_path.resolve("temp/sound/".concat(output_name)).toString();
         int sample_rate = get_sample_rate_using_jave(input_file);
         int number_of_audio_channels_local = get_number_of_channels_using_jave(input_file);
         try {
@@ -2088,6 +2118,7 @@ public class HelloApplication extends Application {
     }
 
     private void add_the_images_to_the_media_pool_in_the_back_ground(HelloController helloController, List<File> files) {
+        Path base_path = get_os_base_path();
         if (files != null && !files.isEmpty()) {
             helloController.progress_indicator_media_pool.setVisible(true);
             helloController.scroll_pane_hosting_tile_pane_media_pool.setDisable(true);
@@ -2102,12 +2133,12 @@ public class HelloApplication extends Application {
                         String fileName_lower_case = image_file.getName().toLowerCase();
                         Image image;
                         if (fileName_lower_case.endsWith("heic")) {
-                            File new_jpg_file = new File("temp/converted images/".concat(UUID.randomUUID().toString()).concat(".jpg"));
+                            File new_jpg_file = new File(base_path.resolve("temp/converted images/".concat(UUID.randomUUID().toString()).concat(".jpg")).toString());
                             new_jpg_file.deleteOnExit();
                             convertHeicToJpg(image_file, new_jpg_file);
                             image = new Image(new FileInputStream(new_jpg_file));
                         } else if (fileName_lower_case.endsWith("png")) {
-                            File new_jpg_file = new File("temp/converted images/".concat(UUID.randomUUID().toString()).concat(".jpg"));
+                            File new_jpg_file = new File(base_path.resolve("temp/converted images/".concat(UUID.randomUUID().toString()).concat(".jpg")).toString());
                             new_jpg_file.deleteOnExit();
                             convert_png_to_jpg(image_file, new_jpg_file);
                             image = new Image(new FileInputStream(new_jpg_file));
@@ -2124,21 +2155,21 @@ public class HelloApplication extends Application {
                         Media_pool mediaPool_item;
                         bufferedImage = return_argb_buffered_image(bufferedImage);
                         if (is_this_the_correct_ratio(picAspectRatio, bufferedImage)) {
-                            write_the_raw_file(bufferedImage, "temp/images/base", image_id);
+                            write_the_raw_file(bufferedImage, base_path.resolve("temp/images/base").toString(), image_id);
                             if (do_i_need_to_down_scale(bufferedImage, picAspectRatio)) {
                                 did_the_image_get_down_scaled = true;
                                 BufferedImage down_sized_buffed_image = return_argb_buffered_image(return_resized_downscale_buffer_image(bufferedImage, picAspectRatio));
-                                write_the_raw_file(down_sized_buffed_image, "temp/images/scaled", image_id);
+                                write_the_raw_file(down_sized_buffed_image, base_path.resolve("temp/images/scaled").toString(), image_id);
                             }
                             mediaPool_item = new Media_pool(image_id, create_a_thumbnail(bufferedImage, picAspectRatio), image_file.getName(), did_the_image_get_down_scaled, bufferedImage.getWidth(), bufferedImage.getHeight());
                         } else {
                             BufferedImage filled_with_black = fill_the_back_ground_with_color(bufferedImage, new Color(0, 0, 0, 255));
                             BufferedImage filled_transparent = fill_the_back_ground_with_color(bufferedImage, new Color(0, 0, 0, 0));
-                            write_the_raw_file(filled_with_black, "temp/images/base", image_id);
+                            write_the_raw_file(filled_with_black, base_path.resolve("temp/images/base").toString(), image_id);
                             if (do_i_need_to_down_scale(filled_with_black, picAspectRatio)) {
                                 did_the_image_get_down_scaled = true;
                                 BufferedImage down_sized_buffed_image = return_argb_buffered_image(return_resized_downscale_buffer_image(filled_with_black, picAspectRatio));
-                                write_the_raw_file(down_sized_buffed_image, "temp/images/scaled", image_id);
+                                write_the_raw_file(down_sized_buffed_image, base_path.resolve("temp/images/scaled").toString(), image_id);
                             }
                             mediaPool_item = new Media_pool(image_id, create_a_thumbnail(filled_transparent, picAspectRatio), create_a_thumbnail(filled_with_black, picAspectRatio), image_file.getName(), did_the_image_get_down_scaled, filled_with_black.getWidth(), filled_with_black.getHeight());
                         }
@@ -3946,6 +3977,7 @@ public class HelloApplication extends Application {
                 helloController.chatgpt_image_view.setImage(blacked_out_image);
                 //helloController.blurry_chatgpt_image_view.setImage(blacked_out_image_whitened);
             } else {
+                Path base_path = get_os_base_path();
                 Media_pool media_pool = hashMap_with_media_pool_items.get(image_id);
                 helloController.chatgpt_image_view.setImage(media_pool.getBlacked_thumbnail());
                 // helloController.blurry_chatgpt_image_view.setImage(whiten_the_image(image_to_buffered_image(media_pool.getBlacked_thumbnail()), 0.7f, 60f));
@@ -3954,11 +3986,11 @@ public class HelloApplication extends Application {
                         @Override
                         public void run() {
                             if (media_pool.isDid_the_image_get_down_scaled()) {
-                                Path path = Paths.get("temp/images/scaled", image_id.concat(".raw"));
+                                Path path = Paths.get(base_path.resolve("temp/images/scaled").toString(), image_id.concat(".raw"));
                                 Image image = readRawImage(path.toString(), 1080, 1920);
                                 helloController.chatgpt_image_view.setImage(image);
                             } else {
-                                Path path = Paths.get("temp/images/base", image_id.concat(".raw"));
+                                Path path = Paths.get(base_path.resolve("temp/images/base").toString(), image_id.concat(".raw"));
                                 Image image = readRawImage(path.toString(), media_pool.getWidth(), media_pool.getHeight());
                                 helloController.chatgpt_image_view.setImage(image);
                             }
@@ -9212,6 +9244,7 @@ public class HelloApplication extends Application {
         helloController.vbox_holding_rendering_bar_and_label_render_engine_progress.setVisible(true);
         render_video_dialogue_stage.close();
 
+        Path base_path = get_os_base_path();
         FFmpegLogCallback.set();
         Path file_path = Paths.get(file_location, file_name);
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
@@ -9219,9 +9252,9 @@ public class HelloApplication extends Application {
         FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(file_path.toString().concat(".mp4"), Global_default_values.translation_canvas_width, Global_default_values.translation_canvas_height);
         FFmpegFrameGrabber audioGrabber;
         if (sound_mode == Sound_mode.CHOSEN) {
-            audioGrabber = new FFmpegFrameGrabber("temp/sound/combined.wav");
+            audioGrabber = new FFmpegFrameGrabber(base_path.resolve("temp/sound/combined.wav").toString());
         } else { //sound_mode == Sound_mode.UPLOADED
-            audioGrabber = new FFmpegFrameGrabber("temp/sound/converted.wav");
+            audioGrabber = new FFmpegFrameGrabber(base_path.resolve("temp/sound/converted.wav").toString());
         }
         recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
         recorder.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
@@ -9303,7 +9336,7 @@ public class HelloApplication extends Application {
                         String image_id = return_the_image_on_click(helloController.time_line_pane, nanoseconds_to_pixels(time_line_pane_data, time_in_nanoseconds) + time_line_pane_data.getTime_line_base_line());
                         if (!image_id.equals(no_image_found)) {
                             Media_pool media_pool = hashMap_with_media_pool_items.get(image_id);
-                            Path path = Paths.get("temp/images/base", image_id.concat(".raw"));
+                            Path path = Paths.get(base_path.resolve("temp/images/base").toString(), image_id.concat(".raw"));
                             Image image = readRawImage(path.toString(), media_pool.getWidth(), media_pool.getHeight());
                             BufferedImage bufferedImage = image_to_buffered_image(image);
                             add_buffer_image_to_root_buffer_image(root_buffered_image, bufferedImage);
