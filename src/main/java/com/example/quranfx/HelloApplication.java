@@ -5,9 +5,6 @@ import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSnackbar;
 import io.github.humbleui.skija.*;
@@ -92,8 +89,6 @@ import javafx.util.Duration;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.resizers.configurations.ScalingMode;
 import okhttp3.*;
-import com.fasterxml.jackson.core.*;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.io.FileUtils;
 import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.ffmpeg.global.avutil;
@@ -104,6 +99,10 @@ import org.imgscalr.Scalr;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 import ws.schild.jave.Encoder;
 import ws.schild.jave.EncoderException;
 import ws.schild.jave.MultimediaObject;
@@ -231,7 +230,7 @@ public class HelloApplication extends Application {
 
 
     private void everything_to_be_called_at_the_start(HelloController helloController, Scene scene) {
-        if(debug_mode){
+        if (debug_mode) {
             CrashLog.install();
         }
         make_the_first_real_screen_visible(helloController);
@@ -451,8 +450,8 @@ public class HelloApplication extends Application {
         } else {
             show_alert("There was a problem getting the list of chapters. Please try again later.");
             try {
-                throw new JsonParseException(null, "'chapters' field is missing or null in JSON data.");
-            } catch (JsonParseException e) {
+                throw new Exception("'chapters' field is missing or null in JSON data.");
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -528,12 +527,7 @@ public class HelloApplication extends Application {
 
     private JsonNode return_name_node(String response_string) {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode nameNode = null;
-        try {
-            nameNode = mapper.readTree(response_string);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        JsonNode nameNode = mapper.readTree(response_string);
         return nameNode;
     }
 
@@ -565,9 +559,9 @@ public class HelloApplication extends Application {
         int end_ayat = return_end_ayat(helloController);
         int surat_number = helloController.choose_the_surat.getSelectionModel().getSelectedIndex() + 1;
         ExecutorService executor = Executors.newSingleThreadExecutor();
-       /* executor.submit(new Runnable() {
+        executor.submit(new Runnable() {
             @Override
-            public void run() {*/
+            public void run() {
                 if (sound_path.isEmpty()) {
                     Reciters_info reciters_info = helloController.list_view_with_the_recitors.getSelectionModel().getSelectedItems().getFirst();
                     sound_mode = Sound_mode.CHOSEN;
@@ -596,8 +590,8 @@ public class HelloApplication extends Application {
                         set_up_the_fourth_screen(helloController);
                     }
                 });
-  /*          }
-        });*/
+            }
+        });
         executor.shutdown();
     }
 
@@ -2313,7 +2307,7 @@ public class HelloApplication extends Application {
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                     Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
-                    Rectangle created_rectangle = create_and_return_time_line_rectangle(helloController.time_line_pane,time_line_pane_data.getTime_line_base_line(), nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1)));
+                    Rectangle created_rectangle = create_and_return_time_line_rectangle(helloController.time_line_pane, time_line_pane_data.getTime_line_base_line(), nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1)));
                     created_rectangle.setVisible(false);
                     Shape_object_time_line shapeObjectTimeLine = new Shape_object_time_line(0, nanoseconds_to_pixels(time_line_pane_data, TimeUnit.SECONDS.toNanos(1)), created_rectangle, mediaPool.getId(), 0, TimeUnit.SECONDS.toNanos(1), new Opacity_settings());
                     set_up_the_image_rectangle(created_rectangle, mediaPool.getThumbnail(), helloController.time_line_pane, new Opacity_settings());
@@ -3379,7 +3373,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    private Rectangle create_and_return_time_line_rectangle(Pane pane,double start_x_pos, double width) {
+    private Rectangle create_and_return_time_line_rectangle(Pane pane, double start_x_pos, double width) {
         Time_line_pane_data time_line_pane_data = (Time_line_pane_data) pane.getUserData();
         double height = 60;
         /*x_pos -= (width / 2);
@@ -3669,7 +3663,7 @@ public class HelloApplication extends Application {
                         double[] collision_result = return_the_collision(rectangleChangedInfo.getTree_set_containing_all_of_the_items(), rectangleChangedInfo.getOriginal_start_rectangle(), rectangleChangedInfo.getOriginal_start_rectangle() + new_width, CollisionSearchType.End);
                         if (rectangle.getX() + new_width <= time_line_pane_data.getTime_line_end_base_line() && new_width >= min_rectnagle_width) {
                             if (collision_result[0] < 0) {
-                                rectangle.setWidth(Math.min(new_width,max_rectangle_width));
+                                rectangle.setWidth(Math.min(new_width, max_rectangle_width));
                                 /*if(new_width >= max_rectangle_width) {
                                     rectangle.setWidth(max_rectangle_width);
                                     double new_rectangle_start = rectangle.getX() + max_rectangle_width;
@@ -3684,14 +3678,14 @@ public class HelloApplication extends Application {
                                     rectangle.setWidth(new_width);
                                 }*/
                             } else {
-                                double checked_rectangle_width = Math.min((collision_result[0] - 1) - rectangleChangedInfo.getOriginal_start_rectangle(),max_rectangle_width);
+                                double checked_rectangle_width = Math.min((collision_result[0] - 1) - rectangleChangedInfo.getOriginal_start_rectangle(), max_rectangle_width);
                                 rectangle.setWidth(checked_rectangle_width);
                             }
                         } else if (new_width < min_rectnagle_width) {
                             rectangle.setWidth(min_rectnagle_width);
                         } else if (rectangle.getX() + new_width > time_line_pane_data.getTime_line_end_base_line()) {
                             if (!is_there_is_a_collosion(rectangleChangedInfo.getTree_set_containing_all_of_the_items(), rectangleChangedInfo.getOriginal_start_rectangle(), rectangleChangedInfo.getOriginal_start_rectangle() + time_line_pane_data.getTime_line_end_base_line() - rectangleChangedInfo.getOriginal_start_rectangle())) {
-                                double checked_rectangle_width = Math.min(time_line_pane_data.getTime_line_end_base_line() - rectangleChangedInfo.getOriginal_start_rectangle(),max_rectangle_width);
+                                double checked_rectangle_width = Math.min(time_line_pane_data.getTime_line_end_base_line() - rectangleChangedInfo.getOriginal_start_rectangle(), max_rectangle_width);
                                 rectangle.setWidth(checked_rectangle_width);
                             }
                         }
@@ -4425,9 +4419,9 @@ public class HelloApplication extends Application {
                 }
             } else {
                 show_alert("There was a problem getting the translations. Please try again later.");
-                throw new JsonParseException(null, "'translations' field is missing or null in JSON data.");
+                throw new Exception("'translations' field is missing or null in JSON data.");
             }
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -7808,9 +7802,9 @@ public class HelloApplication extends Application {
         });
     }
 
-    private void set_all_the_languages_selected_set_to_false(HelloController helloController){
+    private void set_all_the_languages_selected_set_to_false(HelloController helloController) {
         ObservableList<Language_info> all_of_the_languages = helloController.list_view_with_all_of_the_languages.getItems();
-        for(Language_info language_info : all_of_the_languages){
+        for (Language_info language_info : all_of_the_languages) {
             language_info.setText_box_showing(false);
         }
     }
@@ -8304,7 +8298,7 @@ public class HelloApplication extends Application {
                 }
             }
         }
-        if(!array_list_of_language_info_with_the_text_box_showing.isEmpty()){
+        if (!array_list_of_language_info_with_the_text_box_showing.isEmpty()) {
             place_the_box_surrounding_the_text(helloController, array_list_of_language_info_with_the_text_box_showing.getLast());
         }
     }
