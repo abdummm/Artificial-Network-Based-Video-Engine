@@ -439,29 +439,6 @@ public class HelloApplication extends Application {
         }
     }
 
-    /*private void call_the_chatgpt_api(HelloController helloController, String ayat_text, int ayat_number) throws JsonProcessingException {
-        HttpUrl httpurl = new HttpUrl.Builder()
-                .scheme("https")
-                .host("api.openai.com")
-                .addPathSegment("v1")
-                .addPathSegment("images")
-                .addPathSegment("generations")
-                .build();
-        OkHttpClient client = new OkHttpClient().newBuilder().build();
-        RequestBody body = RequestBody.create(null, "{\"model\":\"dall-e-2\",\"prompt\":\"" + basic_prompt.replace("\"", "") + ayat_text.replace("\"", "") + "\",\"n\":1,\"size\":\"256x256\",\"style\":\"vivid\",\"response_format\":\"b64_json\"}");
-        Request request = new Request.Builder()
-                .url(httpurl)
-                .addHeader("Content-Type", "application/json")
-                .post(body) // Note that it's a POST request
-                .build();
-        try {
-            Response response = client.newCall(request).execute();
-            String response_string = response.body().string();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }*/
-
     private void add_surats_to_the_list_view(HelloController helloController, String response_string) {
         JsonNode nameNode = return_name_node(response_string);
         if (nameNode != null && nameNode.get("chapters") != null) {
