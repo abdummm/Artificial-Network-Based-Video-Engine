@@ -2921,6 +2921,7 @@ public class HelloApplication extends Application {
                 } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
                     empty_tile_pane_context_menu.show(helloController.tile_pane_media_pool, mouseEvent.getScreenX(), mouseEvent.getScreenY());
                 }
+                send_analytics_event("time_line_clicked");
             }
         });
     }
@@ -7933,6 +7934,7 @@ public class HelloApplication extends Application {
         helloController.render_video.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                send_analytics_event("render_video_button_clicked");
                 show_a_dialogue_asking_user_to_choose_video_render_save_location(helloController);
             }
         });
