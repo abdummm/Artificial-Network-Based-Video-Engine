@@ -2324,6 +2324,7 @@ public class HelloApplication extends Application {
                     Media_pool_item_dragged media_pool_item_dragged = new Media_pool_item_dragged(ghost, mouseEvent.getSceneX(), mouseEvent.getSceneY(), mediaPool.getId(), shapeObjectTimeLine, time_line_pane_data.getTree_set_containing_all_of_the_items());
                     helloController.pane_holding_the_fourth_screen.getChildren().add(ghost);
                     imageView.setUserData(media_pool_item_dragged);
+                    send_analytics_event("Media_pool_image_clicked");
                 }
             }
         });
@@ -2977,6 +2978,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 polygon.setCursor(Cursor.CLOSED_HAND);
+                send_analytics_event("time_line_polygon_clicked");
             }
         });
         polygon.setOnMouseReleased(new EventHandler<MouseEvent>() {
@@ -3542,6 +3544,7 @@ public class HelloApplication extends Application {
         rectangle.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                send_analytics_event("image_rectanlge_clicked");
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                     double mouse_scene_x_translated = helloController.time_line_pane.sceneToLocal(mouseEvent.getSceneX(), mouseEvent.getSceneY()).getX();
                     double local_x = mouse_scene_x_translated - shapeObjectTimeLine.getStart();
@@ -8492,6 +8495,7 @@ public class HelloApplication extends Application {
         main_stack_pane.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                send_analytics_event("verse_rectnagle_clicked");
                 Point2D time_line_mouse_position = main_stack_pane.localToParent(mouseEvent.getX(), mouseEvent.getY());
                 double polygon_x_position = return_polygon_middle_position(time_line_pane_data);
                 if (mouseEvent.getX() <= rectangle_cursor_change_margin && (verse_position_mode == Verse_position_mode.MIDDLE || verse_position_mode == Verse_position_mode.END)) {
