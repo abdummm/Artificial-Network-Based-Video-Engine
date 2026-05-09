@@ -132,13 +132,13 @@
         <plugins>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version>
                 <configuration>
                     <archive>
                         <manifestEntries>
                             <Multi-Release>true</Multi-Release>
                         </manifestEntries>
                     </archive>
-                    <finalName>mr-jar-demo.jar</finalName>
                 </configuration>
             </plugin>
             <plugin>
