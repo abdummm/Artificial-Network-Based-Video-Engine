@@ -8430,6 +8430,7 @@ public class HelloApplication extends Application {
         helloController.split_verse_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                send_analytics_event("split_verse_clicked");
                 Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
                 long polygon_time_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(pixels_to_nanoseconds(time_line_pane_data, return_polygon_middle_position(time_line_pane_data) - time_line_pane_data.getTime_line_base_line()));
                 long verse_start_in_milliseconds = TimeUnit.NANOSECONDS.toMillis(ayats_processed.get(selected_verse).getStart_millisecond());
@@ -8822,6 +8823,30 @@ public class HelloApplication extends Application {
         send_analytics_event("language_expanded", event_hashmap);
     }
 
+    private void send_render_analytics_event(HelloController helloController, String file_name, String file_location) {
+        if (running_mode == Running_mode.DEBUG) {
+            return;
+        }
+
+        HashMap<String, Object> event_hashmap = new HashMap<>();
+        event_hashmap.put("sound_mode", sound_mode == Sound_mode.CHOSEN ? "chosen" : "uploaded");
+        event_hashmap.put("verse_count", ayats_processed.size());
+        int unique_verses = (int) ayats_processed.stream()
+                .map(Verse_class_final::getVerse_number)
+                .distinct()
+                .count();
+        event_hashmap.put("unique_verse_count", unique_verses);
+        long total_duration_ms = TimeUnit.NANOSECONDS.toMillis(get_duration());
+        event_hashmap.put("duration_seconds", (int) (total_duration_ms / 1000));
+        Time_line_pane_data time_line_pane_data = (Time_line_pane_data) helloController.time_line_pane.getUserData();
+        int image_rectangle_count = time_line_pane_data.getTree_set_containing_all_of_the_items().size();
+        event_hashmap.put("image_count", image_rectangle_count);
+        event_hashmap.put("help_spread_sabrly_enabled", helloController.check_box_saying_help_spread_the_app.isSelected());
+        event_hashmap.put("surat_name", surat_name_selected);
+
+        send_analytics_event("render_started", event_hashmap);
+    }
+
     private void check_if_this_is_the_first_launch_and_send_an_event_if_so() {
         String first_time_app_open_prefs = "app_opened_for_the_first_time";
         Preferences prefs = Preferences.userRoot().node("sabrly");
@@ -9201,7 +9226,6 @@ public class HelloApplication extends Application {
                     showToast(render_video_dialogue_stage, "File location can't be empty", 3000);
                     return;
                 }
-                send_analytics_event("");
                 save_the_name_and_location(file_name_text_field.getText(), file_location_text_field.getText());
                 start_the_rendering_engine(helloController, file_name_text_field.getText(), file_location_text_field.getText());
             }
