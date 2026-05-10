@@ -9201,6 +9201,7 @@ public class HelloApplication extends Application {
                     showToast(render_video_dialogue_stage, "File location can't be empty", 3000);
                     return;
                 }
+                send_analytics_event("");
                 save_the_name_and_location(file_name_text_field.getText(), file_location_text_field.getText());
                 start_the_rendering_engine(helloController, file_name_text_field.getText(), file_location_text_field.getText());
             }
