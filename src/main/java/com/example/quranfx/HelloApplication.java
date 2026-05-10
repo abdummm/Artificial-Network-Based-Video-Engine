@@ -9151,6 +9151,7 @@ public class HelloApplication extends Application {
         browse_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                send_analytics_event("render_browse_button_clicked");
                 File chosen_directory = open_the_file_chooser_to_select_a_dialog();
                 if (chosen_directory != null) {
                     file_location_text_field.setText(chosen_directory.getAbsolutePath());
