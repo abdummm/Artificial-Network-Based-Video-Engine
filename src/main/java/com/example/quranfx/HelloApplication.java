@@ -8843,7 +8843,24 @@ public class HelloApplication extends Application {
         event_hashmap.put("image_count", image_rectangle_count);
         event_hashmap.put("help_spread_sabrly_enabled", helloController.check_box_saying_help_spread_the_app.isSelected());
         event_hashmap.put("surat_name", surat_name_selected);
-
+        ObservableList<Language_info> all_the_languages = helloController.list_view_with_all_of_the_languages.getItems();
+        Language_info arabic_language = null;
+        for(Language_info language_info : all_the_languages) {
+            if(language_info.getLanguage_name().equals("arabic")){
+                arabic_language = language_info;
+                break;
+            }
+        }
+        if(arabic_language != null){
+            StringBuilder arabic_verses_string_builder = new StringBuilder();
+            for(Text_item text_item : arabic_language.getArrayList_of_all_of_the_translations()){
+                arabic_verses_string_builder.append(text_item).append(' ');
+            }
+            int arabic_letters = countArabicLetters(arabic_verses_string_builder.toString());
+            event_hashmap.put("arabic_letters", arabic_letters);
+        } else {
+            event_hashmap.put("arabic_letters", 0);
+        }
         send_analytics_event("render_started", event_hashmap);
     }
 
