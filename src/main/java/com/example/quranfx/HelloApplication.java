@@ -8848,7 +8848,11 @@ public class HelloApplication extends Application {
         for(Language_info language_info : all_the_languages) {
             if(language_info.getLanguage_name().equals("arabic")){
                 arabic_language = language_info;
-                break;
+            }
+            if(language_info.isVisible_check_mark_checked()){
+                HashMap<String, Object> language_hashmap = new HashMap<>();
+                language_hashmap.put("language", language_info.getLanguage_name());
+                send_analytics_event("language_selected_render",language_hashmap);
             }
         }
         if(arabic_language != null){
