@@ -6390,8 +6390,6 @@ public class HelloApplication extends Application {
                             ChangeListener<? super javafx.scene.paint.Color> color_picker_change_listener = new ChangeListener<javafx.scene.paint.Color>() {
                                 @Override
                                 public void changed(ObservableValue<? extends javafx.scene.paint.Color> observableValue, javafx.scene.paint.Color old_color, javafx.scene.paint.Color new_color) {
-                                    System.out.println("old color: " + old_color);
-                                    System.out.println("new_color" + new_color.toString());
                                     text_item_of_the_selected_verse.setColor(new_color);
                                     place_the_canvas_text(helloController);
                                     place_the_box_surrounding_the_text(helloController, item);
@@ -6902,7 +6900,6 @@ public class HelloApplication extends Application {
         double text_opacity = return_the_text_opacity(helloController, text_item, current_nano_seconds);
         color_of_text = new javafx.scene.paint.Color(color_of_text.getRed(), color_of_text.getGreen(), color_of_text.getBlue(), color_of_text.getOpacity() * text_opacity);
         Paint paint = new Paint().setAntiAlias(true).setColor(colorToInt(color_of_text));
-        System.out.println("color: " + color_of_text.toString());
         stroke_color = new javafx.scene.paint.Color(stroke_color.getRed(), stroke_color.getGreen(), stroke_color.getBlue(), stroke_color.getOpacity() * text_opacity);
         Paint strokePaint = new Paint().setAntiAlias(true).setStroke(true).setStrokeWidth((float) stroke_weight).setColor(colorToInt(stroke_color)).setStrokeJoin(PaintStrokeJoin.ROUND).setStrokeCap(PaintStrokeCap.ROUND);
         Paint shadowPaint;
@@ -7087,11 +7084,12 @@ public class HelloApplication extends Application {
     }
 
     public static int colorToInt(javafx.scene.paint.Color color) {
+        // There is a bug in the skia library in terms that it accepts abgr instead of argb
         int a = (int) Math.round(color.getOpacity() * 255);
         int r = (int) Math.round(color.getRed() * 255);
         int g = (int) Math.round(color.getGreen() * 255);
         int b = (int) Math.round(color.getBlue() * 255);
-        return (a << 24) | (r << 16) | (g << 8) | b;
+        return (a << 24) | (b << 16) | (g << 8) | r;
     }
 
     /*private void set_the_width_and_height_of_text_box(Text_item text_item) {
